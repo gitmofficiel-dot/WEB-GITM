@@ -9,6 +9,7 @@ import AIChatBot from './components/AIChatBot';
 const Home = lazy(() => import('./components/Home'));
 const NewsPage = lazy(() => import('./components/NewsPage'));
 const NewsDetails = lazy(() => import('./components/NewsDetails'));
+const GlobalNewsDetails = lazy(() => import('./components/GlobalNewsDetails'));
 const GalleryPage = lazy(() => import('./components/GalleryPage'));
 const EventsPage = lazy(() => import('./components/EventsPage'));
 const EventDetails = lazy(() => import('./components/EventDetails'));
@@ -66,6 +67,7 @@ const AppContent = () => {
         <Route path="/" element={<Home setView={setView} />} />
         <Route path="/news" element={<NewsPage />} />
         <Route path="/news/:id" element={<NewsDetails />} />
+        <Route path="/news/global/:id" element={<GlobalNewsDetails />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/events/:id" element={<EventDetails />} />

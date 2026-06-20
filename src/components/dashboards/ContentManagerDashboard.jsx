@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { FileEdit, Image as ImageIcon, MessageSquare, Plus, Edit2, Trash2, Bot, Sparkles, Video, FileText, Loader } from 'lucide-react';
+import { FileEdit, Image as ImageIcon, MessageSquare, Plus, Edit2, Trash2, Bot, Sparkles, Video, FileText, Loader, UploadCloud } from 'lucide-react';
 import CloudinaryUploader from '../CloudinaryUploader';
 import { generateArticle } from '../../config/openrouter';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
 export default function ContentManagerDashboard() {
-  const { lang, news, setNews, gallery, setGallery, user } = useLanguage();
+  const { lang, news, setNews, gallery, setGallery, user, events, setEvents } = useLanguage();
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [articlePrompt, setArticlePrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [activeTab, setActiveTab] = useState('list'); // 'list' or 'create'
+  const [newPostType, setNewPostType] = useState('news'); // 'news', 'event', 'training'
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleUploadSuccess = (info) => {
     // info contains { secure_url, public_id, format, width, height, bytes, resource_type }
@@ -65,9 +68,14 @@ export default function ContentManagerDashboard() {
     <div className="space-y-6 animate-fade-in-up">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-2xl font-bold font-orbitron">{txt(lang, 'Content Manager Dashboard', 'لوحة مدير المحتوى', 'Tableau de bord Gestionnaire de contenu', '内容管理器仪表板')}</h2>
-        <button className="btn-primary px-4 py-2 flex items-center gap-2 rounded-lg text-sm font-bold">
-          <Plus size={16} /> {txt(lang, 'Create New Post', 'إنشاء منشور جديد', 'Nouveau poste', '创建新帖子')}
-        </button>
+        <div className="flex gap-2">
+          <button onClick={() => setActiveTab('list')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${activeTab === 'list' ? 'bg-cyan-500 text-white' : 'glass-card text-slate-500 hover:text-cyan-500'}`}>
+            {txt(lang, 'Content List', 'قائمة المحتوى', 'Liste du contenu', '内容列表')}
+          </button>
+          <button onClick={() => setActiveTab('create')} className={`px-4 py-2 flex items-center gap-2 rounded-lg text-sm font-bold transition-colors ${activeTab === 'create' ? 'bg-cyan-500 text-white' : 'btn-primary'}`}>
+            <Plus size={16} /> {txt(lang, 'Create New Post', 'إنشاء منشور جديد', 'Nouveau poste', '创建新帖子')}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -91,76 +99,133 @@ export default function ContentManagerDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content Area */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="glass-card rounded-2xl p-6">
-            <h3 className="text-lg font-bold mb-6">Recent Content</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-cyan-300 dark:border-slate-700 text-sm font-bold text-slate-500">
-                <th className="p-3">Title</th>
-                <th className="p-3">Type</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Date</th>
-                <th className="p-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {news.slice(0, 5).map((item) => (
-                <tr key={item.id} className="border-b border-cyan-200 dark:border-slate-800 hover:bg-cyan-50 dark:hover:bg-slate-800/50">
-                  <td className="p-3 font-medium text-[#1e3a5f] dark:text-white max-w-[200px] truncate">
-                    {lang === 'ar' ? item.title_ar : item.title_en}
-                  </td>
-                  <td className="p-3 text-sm text-slate-500">{item.category}</td>
-                  <td className="p-3">
-                    <span className="px-2 py-1 text-[10px] uppercase font-bold rounded bg-emerald-100 text-emerald-600">Published</span>
-                  </td>
-                  <td className="p-3 text-sm text-slate-500">{item.date}</td>
-                  <td className="p-3 text-right">
-                    <div className="flex justify-end gap-2">
-                      <button className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"><Edit2 size={14}/></button>
-                      <button onClick={() => deleteNews(item.id)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"><Trash2 size={14}/></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* AI Content Writer */}
-      <div className="glass-card rounded-2xl p-6 border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.15)] relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-6 opacity-5">
-          <FileEdit size={120} />
-        </div>
-        <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-purple-500">
-          <Bot className="w-5 h-5 text-purple-400" />
-          {txt(lang, 'AI Article Writer', 'الكاتب الذكي للمقالات AI', 'Rédacteur IA', 'AI文章撰写器')}
-        </h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 max-w-2xl">
-          {txt(lang, 'Enter a brief sentence about an event, and the AI will draft a complete, professional news article ready for publishing.', 'أدخل جملة قصيرة عن حدث، وسيقوم الذكاء الاصطناعي بصياغة مقال إخباري احترافي كامل وجاهز للنشر.', 'Entrez une brève phrase...', '输入关于事件的简短句子...')}
-        </p>
-        
-        <div className="bg-cyan-50 dark:bg-slate-900/50 rounded-xl p-4 border border-purple-500/20">
-          <textarea 
-            value={articlePrompt}
-            onChange={(e) => setArticlePrompt(e.target.value)}
-            placeholder={txt(lang, 'e.g., "GITM team won 1st place in the national robotics hackathon yesterday."', 'مثال: "فريق GITM فاز بالمركز الأول في الهاكاثون الوطني للروبوتات أمس."', 'Ex: "L\'équipe GITM a gagné..."', '例如：“GITM团队昨天在全国机器人黑客马拉松中获得了第一名。”')}
-            className="w-full h-20 bg-transparent border border-cyan-400 dark:border-slate-700 rounded-lg p-3 outline-none text-sm resize-none focus:border-purple-500 mb-3 text-[#0B132B] dark:text-white"
-          ></textarea>
-          <div className="flex justify-end gap-2">
-            <button 
-              onClick={generateAIArticle}
-              disabled={isGenerating}
-              className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 text-white rounded-lg text-sm font-bold shadow-lg shadow-purple-500/20 transition-all flex items-center gap-2"
-            >
-              {isGenerating ? <Loader className="animate-spin w-4 h-4" /> : <Sparkles size={16} />}
-              {txt(lang, 'Generate Article', 'توليد المقال', 'Générer', '生成文章')}
-            </button>
+          {activeTab === 'list' ? (
+            <>
+              <div className="glass-card rounded-2xl p-6">
+                <h3 className="text-lg font-bold mb-6">Recent Content</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-cyan-300 dark:border-slate-700 text-sm font-bold text-slate-500">
+                    <th className="p-3">Title</th>
+                    <th className="p-3">Type</th>
+                    <th className="p-3">Status</th>
+                    <th className="p-3">Date</th>
+                    <th className="p-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {news.slice(0, 5).map((item) => (
+                    <tr key={item.id} className="border-b border-cyan-200 dark:border-slate-800 hover:bg-cyan-50 dark:hover:bg-slate-800/50">
+                      <td className="p-3 font-medium text-[#1e3a5f] dark:text-white max-w-[200px] truncate">
+                        {lang === 'ar' ? item.title_ar : item.title_en}
+                      </td>
+                      <td className="p-3 text-sm text-slate-500">{item.category}</td>
+                      <td className="p-3">
+                        <span className="px-2 py-1 text-[10px] uppercase font-bold rounded bg-emerald-100 text-emerald-600">Published</span>
+                      </td>
+                      <td className="p-3 text-sm text-slate-500">{item.date}</td>
+                      <td className="p-3 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"><Edit2 size={14}/></button>
+                          <button onClick={() => deleteNews(item.id)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"><Trash2 size={14}/></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          {/* AI Content Writer */}
+          <div className="glass-card rounded-2xl p-6 border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.15)] relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-6 opacity-5">
+              <FileEdit size={120} />
+            </div>
+            <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-purple-500">
+              <Bot className="w-5 h-5 text-purple-400" />
+              {txt(lang, 'AI Article Writer', 'الكاتب الذكي للمقالات AI', 'Rédacteur IA', 'AI文章撰写器')}
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 max-w-2xl">
+              {txt(lang, 'Enter a brief sentence about an event, and the AI will draft a complete, professional news article ready for publishing.', 'أدخل جملة قصيرة عن حدث، وسيقوم الذكاء الاصطناعي بصياغة مقال إخباري احترافي كامل وجاهز للنشر.', 'Entrez une brève phrase...', '输入关于事件的简短句子...')}
+            </p>
+            
+            <div className="bg-cyan-50 dark:bg-slate-900/50 rounded-xl p-4 border border-purple-500/20">
+              <textarea 
+                value={articlePrompt}
+                onChange={(e) => setArticlePrompt(e.target.value)}
+                placeholder={txt(lang, 'e.g., "GITM team won 1st place in the national robotics hackathon yesterday."', 'مثال: "فريق GITM فاز بالمركز الأول في الهاكاثون الوطني للروبوتات أمس."', 'Ex: "L\'équipe GITM a gagné..."', '例如：“GITM团队昨天在全国机器人黑客马拉松中获得了第一名。”')}
+                className="w-full h-20 bg-transparent border border-cyan-400 dark:border-slate-700 rounded-lg p-3 outline-none text-sm resize-none focus:border-purple-500 mb-3 text-[#0B132B] dark:text-white"
+              ></textarea>
+              <div className="flex justify-end gap-2">
+                <button 
+                  onClick={generateAIArticle}
+                  disabled={isGenerating}
+                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 text-white rounded-lg text-sm font-bold shadow-lg shadow-purple-500/20 transition-all flex items-center gap-2"
+                >
+                  {isGenerating ? <Loader className="animate-spin w-4 h-4" /> : <Sparkles size={16} />}
+                  {txt(lang, 'Generate Article', 'توليد المقال', 'Générer', '生成文章')}
+                </button>
+              </div>
+            </div>
+          </div>
+            </>
+          ) : (
+            <div className="glass-card rounded-2xl p-6 border-cyan-500/30">
+              <h3 className="text-xl font-bold mb-6 font-orbitron">{txt(lang, 'Content Builder', 'منشئ المحتوى', 'Créateur de contenu', '内容生成器')}</h3>
+              
+              <div className="flex gap-4 mb-6">
+                {['news', 'event', 'training'].map(type => (
+                  <button 
+                    key={type}
+                    onClick={() => setNewPostType(type)}
+                    className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${newPostType === type ? 'bg-cyan-500 text-white shadow-lg' : 'bg-cyan-50 text-cyan-600 dark:bg-slate-800 dark:text-cyan-400'}`}
+                  >
+                    {type === 'news' ? txt(lang, 'News Article', 'مقال إخباري', 'Article de presse', '新闻报道') :
+                     type === 'event' ? txt(lang, 'Event/Competition', 'فعالية / مسابقة', 'Événement', '事件') :
+                     txt(lang, 'Academy Training', 'تدريب أكاديمي', 'Formation', '培训')}
+                  </button>
+                ))}
+              </div>
+
+              <div className="space-y-4">
+                <input type="text" placeholder={txt(lang, 'Post Title', 'عنوان المنشور', 'Titre', '标题')} className="w-full bg-white dark:bg-slate-900 border border-cyan-200 dark:border-slate-700 rounded-xl p-3 outline-none focus:border-cyan-500" />
+                <textarea placeholder={txt(lang, 'Content / Description', 'المحتوى / الوصف', 'Contenu', '内容')} className="w-full h-32 bg-white dark:bg-slate-900 border border-cyan-200 dark:border-slate-700 rounded-xl p-3 outline-none focus:border-cyan-500 resize-none"></textarea>
+                
+                {/* Drag and Drop Zone */}
+                <div 
+                  className={`w-full p-8 border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all ${isDragging ? 'border-cyan-500 bg-cyan-500/10 scale-[1.02]' : 'border-cyan-300 dark:border-slate-600 hover:border-cyan-500 hover:bg-cyan-50 dark:hover:bg-slate-800/50'}`}
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={(e) => { e.preventDefault(); setIsDragging(false); alert('Drag and drop simulated! Click Upload to sync to Cloudinary.'); }}
+                >
+                  <UploadCloud size={48} className={`mb-4 ${isDragging ? 'text-cyan-500' : 'text-slate-400'}`} />
+                  <p className="font-bold text-[#1e3a5f] dark:text-white mb-2 text-center">
+                    {txt(lang, 'Drag and Drop Media Here', 'اسحب وأفلت الوسائط هنا', 'Glisser-déposer des médias', '拖放媒体到这里')}
+                  </p>
+                  <p className="text-xs text-slate-500 text-center max-w-xs mb-4">
+                    {txt(lang, 'Supports Images (JPG, PNG), Videos (MP4), and Documents (PDF, DOCX)', 'يدعم الصور، الفيديوهات، والمستندات', 'Supporte Images, Vidéos et Documents', '支持图片，视频和文档')}
+                  </p>
+                  
+                  {/* Reuse CloudinaryUploader as the actual upload trigger */}
+                  <div className="w-full max-w-xs">
+                    <CloudinaryUploader onUploadSuccess={handleUploadSuccess} buttonText={txt(lang, 'Or Click to Browse', 'أو انقر لتصفح الملفات', 'Ou cliquez pour naviguer', '或点击浏览')} />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 mt-6">
+                  <button onClick={() => setActiveTab('list')} className="px-6 py-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold transition-colors">
+                    {txt(lang, 'Cancel', 'إلغاء', 'Annuler', '取消')}
+                  </button>
+                  <button onClick={() => { alert('Post created successfully!'); setActiveTab('list'); }} className="btn-primary px-8 py-2 rounded-xl font-bold">
+                    {txt(lang, 'Publish Post', 'نشر المحتوى', 'Publier', '发布')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-    </div>
       
     {/* Sidebar Area */}
       <div className="space-y-6">
