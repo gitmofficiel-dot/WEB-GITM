@@ -5,59 +5,14 @@ import { useLanguage } from '../context/LanguageContext';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
-const UPCOMING_EVENTS = [
-  {
-    id: 1,
-    title: { en: 'AI Innovators Hackathon', ar: 'هاكاثون مبتكري الذكاء الاصطناعي' },
-    date: '2026-06-25T09:00:00',
-    location: 'GITM Tech Hub, Casablanca',
-    type: 'Hackathon',
-    desc: { en: 'A 48-hour coding marathon focused on building next-gen AI solutions.', ar: 'ماراثون برمجة لمدة 48 ساعة يركز على بناء حلول الذكاء الاصطناعي.' },
-    icon: Trophy,
-    color: 'from-cyan-500 to-blue-600',
-    image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80'
-  },
-  {
-    id: 2,
-    title: { en: 'Web3 & Future of Finance', ar: 'الويب 3 ومستقبل التمويل' },
-    date: '2026-07-10T14:00:00',
-    location: 'Virtual Event',
-    type: 'Conference',
-    desc: { en: 'Explore the decentralized web and its impact on global financial systems.', ar: 'اكتشف الويب اللامركزي وتأثيره على الأنظمة المالية.' },
-    icon: Megaphone,
-    color: 'from-purple-500 to-fuchsia-600',
-    image: 'https://images.unsplash.com/photo-1639762681485-074b7f4ec651?w=800&q=80'
-  }
-];
-
-const PAST_EVENTS = [
-  {
-    id: 3,
-    title: { en: 'React 19 Masterclass', ar: 'دورة متقدمة في React 19' },
-    date: '2026-05-15',
-    location: 'Rabat Tech Center',
-    type: 'Workshop',
-    desc: { en: 'Deep dive into the new features of React 19 including concurrent rendering.', ar: 'تعمق في الميزات الجديدة لـ React 19.' },
-    status: 'completed'
-  },
-  {
-    id: 4,
-    title: { en: 'Cybersecurity Meetup', ar: 'ملتقى الأمن السيبراني' },
-    date: '2026-04-20',
-    location: 'Marrakech Innovation Lab',
-    type: 'Meetup',
-    desc: { en: 'Networking and talks on modern threat landscapes.', ar: 'تواصل ومحادثات حول مشهد التهديدات الحديثة.' },
-    status: 'completed'
-  },
-  {
-    id: 5,
-    title: { en: 'Cloud Native Summit', ar: 'قمة الحوسبة السحابية الأصلية' },
-    date: '2026-03-10',
-    location: 'Casablanca Technopark',
-    type: 'Conference',
-    desc: { en: 'Best practices for deploying scalable cloud applications.', ar: 'أفضل الممارسات لنشر التطبيقات السحابية.' },
-    status: 'completed'
-  }
+// We will use events from LanguageContext instead of hardcoded arrays.
+const ICONS = [Trophy, Megaphone, CheckCircle2];
+const GRADIENTS = ['from-cyan-500 to-blue-600', 'from-purple-500 to-fuchsia-600', 'from-emerald-500 to-teal-600'];
+const IMAGES = [
+  'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80',
+  'https://images.unsplash.com/photo-1639762681485-074b7f4ec651?w=800&q=80',
+  'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+  'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&q=80'
 ];
 
 const Countdown = ({ targetDate, lang }) => {
@@ -98,19 +53,53 @@ const Countdown = ({ targetDate, lang }) => {
 };
 
 export default function EventsPage() {
-  const { lang, competitions } = useLanguage();
+  const { lang, events, competitions, user, eventRegistrations, setEventRegistrations } = useLanguage();
   
-  // Registration Modal State
+  // Enriched Events with images and icons
+  const enrichedEvents = events.map((ev, idx) => ({
+    ...ev,
+    image: IMAGES[idx % IMAGES.length],
+    color: GRADIENTS[idx % GRADIENTS.length],
+    Icon: ICONS[idx % ICONS.length]
+  }));
+
+  const upcomingEvents = enrichedEvents.filter(e => e.status === 'upcoming');
+  const pastEvents = enrichedEvents.filter(e => e.status === 'completed');
+  
+  // Modals State
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [registerEmail, setRegisterEmail] = useState('');
+  const [viewDetailsEvent, setViewDetailsEvent] = useState(null);
+  
+  // Registration Form State
   const [isRegistering, setIsRegistering] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  
+  // Dynamic Form Fields
+  const [projectName, setProjectName] = useState('');
+  const [teamMembers, setTeamMembers] = useState('');
+  const [fileAttached, setFileAttached] = useState(false);
 
   const handleRegister = (e) => {
     e.preventDefault();
-    if (!registerEmail) return;
+    if (!user) return alert(txt(lang, 'Please login first to register', 'الرجاء تسجيل الدخول أولاً', 'Veuillez vous connecter', '请先登录'));
+    
     setIsRegistering(true);
     setTimeout(() => {
+      // Mock File Upload & Registration Save
+      const newRegistration = {
+        id: Date.now(),
+        eventId: selectedEvent.id,
+        eventTitle: lang === 'ar' ? selectedEvent.title_ar : selectedEvent.title_en,
+        userId: user.email,
+        userName: user.name,
+        projectName: projectName,
+        teamMembers: teamMembers,
+        hasFile: fileAttached,
+        status: 'pending',
+        dateSubmitted: new Date().toISOString()
+      };
+      setEventRegistrations(prev => [newRegistration, ...prev]);
+      
       setIsRegistering(false);
       setIsRegistered(true);
     }, 1500);
@@ -118,8 +107,10 @@ export default function EventsPage() {
 
   const closeRegistration = () => {
     setSelectedEvent(null);
-    setRegisterEmail('');
     setIsRegistered(false);
+    setProjectName('');
+    setTeamMembers('');
+    setFileAttached(false);
   };
 
   return (
@@ -159,28 +150,28 @@ export default function EventsPage() {
                   {txt(lang, 'Next Upcoming Event', 'الحدث القادم', 'Prochain événement', '下一个即将举行的活动')}
                 </div>
                 <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-4 text-[#1e3a5f] dark:text-white">
-                  {UPCOMING_EVENTS[0].title[lang] || UPCOMING_EVENTS[0].title.en}
+                  {lang === 'ar' ? upcomingEvents[0]?.title_ar : upcomingEvents[0]?.title_en}
                 </h2>
                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                  {UPCOMING_EVENTS[0].desc[lang] || UPCOMING_EVENTS[0].desc.en}
+                  {lang === 'ar' ? upcomingEvents[0]?.description_ar : upcomingEvents[0]?.description_en}
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-6 mb-8 text-sm font-medium">
                   <div className="flex items-center gap-2 text-teal-600 dark:text-cyan-400 bg-teal-50 dark:bg-cyan-900/20 px-4 py-2 rounded-lg">
                     <CalendarIcon size={18} />
-                    {new Date(UPCOMING_EVENTS[0].date).toLocaleDateString()}
+                    {new Date(upcomingEvents[0]?.date || Date.now()).toLocaleDateString()}
                   </div>
                   <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 px-4 py-2 rounded-lg">
                     <MapPin size={18} />
-                    {UPCOMING_EVENTS[0].location}
+                    {upcomingEvents[0]?.location}
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-4">
-                  <button onClick={() => setSelectedEvent(UPCOMING_EVENTS[0])} className="btn-primary px-8 py-3 rounded-full font-bold shadow-lg shadow-teal-500/30 flex items-center gap-2">
+                  <button onClick={() => setSelectedEvent(upcomingEvents[0])} className="btn-primary px-8 py-3 rounded-full font-bold shadow-lg shadow-teal-500/30 flex items-center gap-2">
                     {txt(lang, 'Register Now', 'سجل الآن', 'S\'inscrire maintenant', '现在注册')} <ArrowRight size={18} className={`${lang === 'ar' ? 'rotate-180' : ''}`} />
                   </button>
-                  <button className="btn-glass px-8 py-3 rounded-full font-bold flex items-center gap-2">
+                  <button onClick={() => setViewDetailsEvent(upcomingEvents[0])} className="btn-glass px-8 py-3 rounded-full font-bold flex items-center gap-2">
                     {txt(lang, 'View Details', 'عرض التفاصيل', 'Voir les détails', '查看详情')}
                   </button>
                 </div>
@@ -190,19 +181,20 @@ export default function EventsPage() {
                 <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-6">
                   {txt(lang, 'Event Starts In', 'يبدأ الحدث في', 'L\'événement commence dans', '活动开始于')}
                 </h3>
-                <Countdown targetDate={UPCOMING_EVENTS[0].date} lang={lang} />
+                {upcomingEvents[0] && <Countdown targetDate={upcomingEvents[0].date} lang={lang} />}
               </div>
             </div>
           </div>
         </motion.div>
 
         {/* Other Upcoming Events */}
+        {upcomingEvents.length > 1 && (
         <div className="mb-20">
           <h2 className="text-3xl font-orbitron font-bold mb-8 flex items-center gap-3">
             <PlayCircle className="text-teal-500" /> {txt(lang, 'More Upcoming Events', 'المزيد من الأحداث القادمة', 'Plus d\'événements', '更多即将举行的活动')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {UPCOMING_EVENTS.slice(1).map(ev => (
+            {upcomingEvents.slice(1).map(ev => (
               <motion.div key={ev.id} whileHover={{ y: -5 }} className="card-3d glass-card rounded-3xl overflow-hidden flex flex-col group border-t-4 border-t-purple-500">
                 <div className="h-48 relative overflow-hidden">
                   <img src={ev.image} alt="event" className="w-full h-full object-cover transform group-hover:scale-110 transition-duration-700" />
@@ -221,7 +213,7 @@ export default function EventsPage() {
 
                 <div className="p-6 flex flex-col flex-grow">
                   <h3 className="text-xl font-orbitron font-bold mb-3 group-hover:text-purple-500 transition-colors text-[#1e3a5f] dark:text-white">
-                    {ev.title[lang] || ev.title.en}
+                    {lang === 'ar' ? ev.title_ar : ev.title_en}
                   </h3>
                   <div className="space-y-2 mb-6 flex-grow">
                     <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
@@ -231,14 +223,20 @@ export default function EventsPage() {
                       <MapPin size={16}/> {ev.location}
                     </div>
                   </div>
-                  <button onClick={() => setSelectedEvent(ev)} className="w-full py-3 rounded-xl border border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors font-bold text-sm flex justify-center items-center gap-2">
-                    {txt(lang, 'RSVP', 'تأكيد الحضور', 'RSVP', '回复')}
-                  </button>
+                  <div className="flex gap-2">
+                    <button onClick={() => setSelectedEvent(ev)} className="flex-1 py-3 rounded-xl border border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors font-bold text-sm flex justify-center items-center gap-2">
+                      {txt(lang, 'RSVP', 'تأكيد الحضور', 'RSVP', '回复')}
+                    </button>
+                    <button onClick={() => setViewDetailsEvent(ev)} className="flex-1 py-3 rounded-xl bg-cyan-100 dark:bg-slate-800 text-[#1e3a5f] dark:text-slate-300 hover:bg-cyan-200 dark:hover:bg-slate-700 transition-colors font-bold text-sm flex justify-center items-center">
+                      {txt(lang, 'Details', 'التفاصيل', 'Détails', '详情')}
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))}
           </div>
         </div>
+        )}
 
         {/* Competitions Section */}
         <div className="mb-20">
@@ -287,22 +285,22 @@ export default function EventsPage() {
             <CheckCircle2 /> {txt(lang, 'Past Events', 'الأحداث السابقة', 'Événements passés', '过去的活动')}
           </h2>
           <div className="glass-card rounded-2xl overflow-hidden">
-            {PAST_EVENTS.map((ev, idx) => (
-              <div key={ev.id} className={`p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:bg-cyan-50 dark:hover:bg-slate-800/50 transition-colors ${idx !== PAST_EVENTS.length - 1 ? 'border-b border-cyan-300 dark:border-slate-800' : ''}`}>
+            {pastEvents.map((ev, idx) => (
+              <div key={ev.id} className={`p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:bg-cyan-50 dark:hover:bg-slate-800/50 transition-colors ${idx !== pastEvents.length - 1 ? 'border-b border-cyan-300 dark:border-slate-800' : ''}`}>
                 <div className="flex items-center gap-6">
                   <div className="w-16 h-16 rounded-xl bg-cyan-100 dark:bg-slate-800 flex flex-col items-center justify-center flex-shrink-0 text-slate-500">
                     <span className="text-sm font-bold">{new Date(ev.date).toLocaleString('default', { month: 'short' })}</span>
                     <span className="text-xl font-orbitron font-bold">{new Date(ev.date).getDate()}</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold mb-1">{ev.title[lang] || ev.title.en}</h3>
+                    <h3 className="text-lg font-bold mb-1">{lang === 'ar' ? ev.title_ar : ev.title_en}</h3>
                     <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
                       <span className="flex items-center gap-1"><MapPin size={14}/> {ev.location}</span>
                       <span className="flex items-center gap-1"><Users size={14}/> {ev.type}</span>
                     </div>
                   </div>
                 </div>
-                <button className="text-teal-600 dark:text-cyan-400 font-medium text-sm flex items-center gap-1 hover:underline whitespace-nowrap">
+                <button onClick={() => setViewDetailsEvent(ev)} className="text-teal-600 dark:text-cyan-400 font-medium text-sm flex items-center gap-1 hover:underline whitespace-nowrap">
                   {txt(lang, 'View Recap', 'عرض الملخص', 'Voir le résumé', '查看回顾')} <ArrowRight size={16} />
                 </button>
               </div>
@@ -335,25 +333,69 @@ export default function EventsPage() {
                 <div className="p-6 text-[#1e3a5f] dark:text-slate-200">
                   <div className="mb-6">
                     <p className="text-sm text-slate-500 mb-1">{txt(lang, 'Registering for:', 'التسجيل في:', 'S\'inscrire pour:', '注册用于：')}</p>
-                    <p className="font-bold text-lg">{selectedEvent.title?.[lang] || selectedEvent.title?.en || selectedEvent.title_en || selectedEvent.title_ar}</p>
+                    <p className="font-bold text-lg">{selectedEvent.title_ar ? (lang === 'ar' ? selectedEvent.title_ar : selectedEvent.title_en) : (selectedEvent.title?.en || '')}</p>
                   </div>
 
                   {!isRegistered ? (
                     <form onSubmit={handleRegister} className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-bold mb-2">{txt(lang, 'Email Address', 'البريد الإلكتروني', 'Adresse e-mail', '电子邮件地址')}</label>
-                        <input 
-                          type="email" 
-                          required
-                          value={registerEmail}
-                          onChange={(e) => setRegisterEmail(e.target.value)}
-                          placeholder="student@gitm.ma" 
-                          className="w-full px-4 py-3 rounded-xl border border-cyan-400 dark:border-slate-700 bg-cyan-50 dark:bg-slate-800 text-[#0B132B] dark:text-white outline-none focus:border-teal-500"
-                        />
-                      </div>
-                      <button type="submit" disabled={isRegistering} className="w-full btn-primary px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 mt-4">
+                      {user ? (
+                        <div className="bg-cyan-50 dark:bg-slate-800/50 p-4 rounded-xl border border-cyan-200 dark:border-slate-700 flex items-center gap-4 mb-4">
+                          <div className="w-10 h-10 rounded-full bg-cyan-200 dark:bg-slate-700 flex items-center justify-center text-[#1e3a5f] dark:text-white font-bold uppercase">
+                            {user.name?.[0]}
+                          </div>
+                          <div>
+                            <p className="font-bold text-sm">{user.name}</p>
+                            <p className="text-xs text-slate-500">{user.email}</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-800/30 text-sm">
+                          {txt(lang, 'You must be logged in to register for an official event.', 'يجب أن تكون مسجلاً الدخول للتسجيل في الفعاليات الرسمية.', 'Connectez-vous.', '登录')}
+                        </div>
+                      )}
+                      
+                      {selectedEvent.requirements?.needsProjectName && (
+                        <div>
+                          <label className="block text-sm font-bold mb-2">{txt(lang, 'Project Name', 'اسم المشروع', 'Nom du projet', '项目名称')}</label>
+                          <input 
+                            type="text" 
+                            required
+                            value={projectName}
+                            onChange={(e) => setProjectName(e.target.value)}
+                            placeholder={txt(lang, 'My awesome project', 'مشروعي الرائع', '', '')} 
+                            className="w-full px-4 py-3 rounded-xl border border-cyan-400 dark:border-slate-700 bg-cyan-50 dark:bg-slate-800 text-[#0B132B] dark:text-white outline-none focus:border-teal-500"
+                          />
+                        </div>
+                      )}
+
+                      {selectedEvent.requirements?.teamMax > 1 && (
+                        <div>
+                          <label className="block text-sm font-bold mb-2">{txt(lang, `Team Members (Max ${selectedEvent.requirements.teamMax})`, `أعضاء الفريق (الحد الأقصى ${selectedEvent.requirements.teamMax})`, '', '')}</label>
+                          <textarea 
+                            required
+                            value={teamMembers}
+                            onChange={(e) => setTeamMembers(e.target.value)}
+                            placeholder={txt(lang, 'List team members names, separated by comma', 'اكتب أسماء أعضاء الفريق، مفصولة بفاصلة', '', '')} 
+                            className="w-full px-4 py-3 rounded-xl border border-cyan-400 dark:border-slate-700 bg-cyan-50 dark:bg-slate-800 text-[#0B132B] dark:text-white outline-none focus:border-teal-500 resize-none h-24"
+                          ></textarea>
+                        </div>
+                      )}
+
+                      {selectedEvent.requirements?.needsFileUpload && (
+                        <div>
+                          <label className="block text-sm font-bold mb-2">{txt(lang, 'Upload Project Pitch (PDF/Images)', 'رفع ملفات المشروع (PDF/صور)', '', '')}</label>
+                          <div className="w-full px-4 py-6 rounded-xl border-2 border-dashed border-cyan-400 dark:border-slate-700 bg-cyan-50 dark:bg-slate-800 flex flex-col items-center justify-center cursor-pointer hover:bg-cyan-100 dark:hover:bg-slate-700/50 transition-colors" onClick={() => setFileAttached(true)}>
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${fileAttached ? 'bg-emerald-100 text-emerald-500' : 'bg-slate-200 dark:bg-slate-900 text-slate-400'}`}>
+                              {fileAttached ? <CheckCircle2 /> : <Users />}
+                            </div>
+                            <span className="text-sm text-slate-500 font-bold">{fileAttached ? txt(lang, 'Files Attached', 'تم الرفع', '', '') : txt(lang, 'Click to Attach Files (Mock)', 'انقر لرفع الملفات (محاكاة)', '', '')}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      <button type="submit" disabled={isRegistering || !user} className={`w-full px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 mt-4 ${user ? 'btn-primary' : 'bg-slate-300 dark:bg-slate-800 text-slate-500 cursor-not-allowed'}`}>
                         {isRegistering ? <Loader className="animate-spin w-5 h-5" /> : <CheckCircle2 size={18} />} 
-                        {txt(lang, 'Confirm Registration', 'تأكيد التسجيل', 'Confirmer', '确认注册')}
+                        {txt(lang, 'Confirm Official Registration', 'تأكيد التسجيل الرسمي', 'Confirmer', '确认注册')}
                       </button>
                     </form>
                   ) : (
@@ -372,6 +414,111 @@ export default function EventsPage() {
                       </button>
                     </div>
                   )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {viewDetailsEvent && (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+              onClick={() => setViewDetailsEvent(null)}
+            >
+              <motion.div 
+                initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
+                className="bg-[#e0fcfc] dark:bg-slate-900 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl border border-cyan-300 dark:border-slate-800"
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="relative h-64 sm:h-80 w-full rounded-t-3xl overflow-hidden">
+                  <img src={viewDetailsEvent.image || IMAGES[0]} alt="Event Cover" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#e0fcfc] dark:from-slate-900 to-transparent" />
+                  <button onClick={() => setViewDetailsEvent(null)} className="absolute top-4 right-4 rtl:left-4 rtl:right-auto bg-black/50 text-white hover:bg-red-500 p-2 rounded-full backdrop-blur-md transition-colors">
+                    <X size={24} />
+                  </button>
+                  <div className="absolute bottom-6 left-6 rtl:right-6 rtl:left-auto">
+                    <span className="px-3 py-1 bg-cyan-500 text-white rounded-full text-xs font-bold uppercase shadow-lg">
+                      {viewDetailsEvent.type}
+                    </span>
+                    <h2 className="text-3xl md:text-4xl font-orbitron font-bold text-[#1e3a5f] dark:text-white mt-2 drop-shadow-lg">
+                      {lang === 'ar' ? viewDetailsEvent.title_ar : viewDetailsEvent.title_en}
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="p-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="md:col-span-2 space-y-6">
+                      <div>
+                        <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                          <Megaphone className="text-cyan-500" /> {txt(lang, 'About The Event', 'حول الفعالية', 'À propos', '关于')}
+                        </h3>
+                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg">
+                          {lang === 'ar' ? viewDetailsEvent.description_ar : viewDetailsEvent.description_en}
+                        </p>
+                      </div>
+                      
+                      {viewDetailsEvent.status === 'completed' && (
+                        <div className="bg-slate-100 dark:bg-slate-800 p-6 rounded-2xl border border-cyan-200 dark:border-slate-700">
+                          <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                            <PlayCircle className="text-cyan-500" /> {txt(lang, 'Event Recap', 'ملخص الفعالية', 'Résumé', '回顾')}
+                          </h3>
+                          <div className="aspect-video bg-black/20 rounded-xl flex items-center justify-center relative overflow-hidden group cursor-pointer">
+                            <img src={viewDetailsEvent.image || IMAGES[1]} className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-30 transition-opacity" />
+                            <PlayCircle size={48} className="text-white z-10 group-hover:scale-110 transition-transform" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-6">
+                      <div className="bg-cyan-50 dark:bg-slate-800/50 p-6 rounded-2xl border border-cyan-200 dark:border-slate-700 space-y-4">
+                        <div className="flex items-start gap-3">
+                          <CalendarIcon className="text-cyan-500 mt-1 shrink-0" />
+                          <div>
+                            <p className="text-sm text-slate-500">{txt(lang, 'Start Date', 'تاريخ البدء', 'Début', '开始')}</p>
+                            <p className="font-bold">{new Date(viewDetailsEvent.date).toLocaleDateString()} - {new Date(viewDetailsEvent.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                          </div>
+                        </div>
+                        {viewDetailsEvent.endDate && (
+                          <div className="flex items-start gap-3">
+                            <Clock className="text-amber-500 mt-1 shrink-0" />
+                            <div>
+                              <p className="text-sm text-slate-500">{txt(lang, 'End Date', 'تاريخ الانتهاء', 'Fin', '结束')}</p>
+                              <p className="font-bold">{new Date(viewDetailsEvent.endDate).toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex items-start gap-3">
+                          <MapPin className="text-indigo-500 mt-1 shrink-0" />
+                          <div>
+                            <p className="text-sm text-slate-500">{txt(lang, 'Location', 'الموقع', 'Lieu', '位置')}</p>
+                            <p className="font-bold">{viewDetailsEvent.location}</p>
+                          </div>
+                        </div>
+                        {viewDetailsEvent.contactDate && (
+                          <div className="flex items-start gap-3 border-t border-cyan-200 dark:border-slate-700 pt-4 mt-2">
+                            <Mail className="text-purple-500 mt-1 shrink-0" />
+                            <div>
+                              <p className="text-sm text-slate-500">{txt(lang, 'Results Announcement', 'تاريخ إعلان النتائج', 'Annonce', '公告')}</p>
+                              <p className="font-bold text-purple-600 dark:text-purple-400">{new Date(viewDetailsEvent.contactDate).toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {viewDetailsEvent.status === 'upcoming' && (
+                        <button 
+                          onClick={() => { setViewDetailsEvent(null); setSelectedEvent(viewDetailsEvent); }} 
+                          className="w-full btn-primary py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-lg"
+                        >
+                          {txt(lang, 'Official Registration', 'تسجيل رسمي', 'Inscription', '注册')} <ArrowRight size={18} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             </motion.div>

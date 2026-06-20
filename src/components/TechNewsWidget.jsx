@@ -84,23 +84,25 @@ const TechNewsWidget = () => {
           <option value="fr">{lang === 'ar' ? 'الفرنسية' : 'French'}</option>
         </select>
       </div>
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {news.map((item, idx) => {
           const isSaved = savedItems?.news?.some(n => n.id === item.id);
           return (
           <div 
             key={item.id} 
-            className="block p-4 rounded-xl bg-cyan-50 dark:bg-slate-900/50 hover:bg-cyan-100 dark:hover:bg-slate-800/80 transition-colors border border-cyan-200 dark:border-slate-800 group relative"
+            className="card-3d glass-card block p-4 rounded-xl bg-cyan-50 dark:bg-slate-900/50 hover:bg-cyan-100 dark:hover:bg-slate-800/80 transition-colors border border-cyan-200 dark:border-slate-800 group relative flex flex-col justify-between min-h-[150px]"
           >
-            <div className="mb-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400 text-[10px] font-bold w-fit uppercase tracking-wider">
-              <Globe size={10} /> {item.isApi ? (lang === 'ar' ? 'أخبار عالمية (API)' : 'Global News (API)') : (lang === 'ar' ? 'أخبار محلية' : 'Local News')}
+            <div>
+              <div className="mb-3 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400 text-[10px] font-bold w-fit uppercase tracking-wider">
+                <Globe size={10} /> {item.isApi ? (lang === 'ar' ? 'أخبار عالمية (API)' : 'Global News (API)') : (lang === 'ar' ? 'أخبار محلية' : 'Local News')}
+              </div>
+              
+              <button onClick={() => setSelectedNews(item)} className="text-left w-full">
+                <h4 className="font-semibold text-sm text-[#1e3a5f] dark:text-slate-200 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-3 leading-snug">
+                  {item.title}
+                </h4>
+              </button>
             </div>
-            
-            <button onClick={() => setSelectedNews(item)} className="text-left w-full">
-              <h4 className="font-semibold text-sm text-[#1e3a5f] dark:text-slate-200 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-2">
-                {item.title}
-              </h4>
-            </button>
             <div className="flex items-center justify-between mt-3">
               <span className="text-xs text-slate-500 dark:text-slate-400">
                 {item.isApi ? `${item.score} points • ${item.by}` : `GITM Official • ${item.by}`}

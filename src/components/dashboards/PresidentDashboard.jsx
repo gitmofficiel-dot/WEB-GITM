@@ -3,7 +3,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { Users, BookOpen, Building, Newspaper, Activity, Shield, Award, Edit, Trash2, Bot, TrendingUp, AlertTriangle } from 'lucide-react';
 
 export default function PresidentDashboard() {
-  const { lang, t, user } = useLanguage();
+  const { lang, t, user, eventRegistrations, setEventRegistrations } = useLanguage();
   const [members, setMembers] = useState([
     { id: 1, name: 'Ahmed Ali', role: 'member', badges: ['speaker'] },
     { id: 2, name: 'Sara Khan', role: 'teacher', badges: ['writer', 'speaker'] }
@@ -11,6 +11,10 @@ export default function PresidentDashboard() {
   const [news, setNews] = useState([
     { id: 1, title: 'Annual Summit 2026', date: '2026-07-01' }
   ]);
+
+  const handleUpdateRegStatus = (id, newStatus) => {
+    setEventRegistrations(prev => prev.map(reg => reg.id === id ? { ...reg, status: newStatus } : reg));
+  };
 
   return (
     <div className="space-y-6">
@@ -85,6 +89,49 @@ export default function PresidentDashboard() {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Event Registrations Review */}
+          <div className="glass-card p-6">
+            <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><Award className="w-5 h-5 text-amber-500" /> Event Registrations Review</h3>
+            {(!eventRegistrations || eventRegistrations.length === 0) ? (
+              <p className="text-sm text-slate-500">No event registrations found.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead><tr className="border-b dark:border-gray-700">
+                    <th className="p-2">Event</th><th className="p-2">User / Project</th><th className="p-2">Files</th><th className="p-2">Status</th><th className="p-2">Action</th>
+                  </tr></thead>
+                  <tbody>
+                    {eventRegistrations.map(reg => (
+                      <tr key={reg.id} className="border-b dark:border-gray-700/50">
+                        <td className="p-2 font-semibold text-cyan-600 dark:text-cyan-400">{reg.eventTitle}</td>
+                        <td className="p-2">
+                          <p className="font-bold">{reg.userName}</p>
+                          <p className="text-xs text-slate-500">{reg.projectName || 'N/A'}</p>
+                        </td>
+                        <td className="p-2">
+                          {reg.hasFile ? <span className="text-emerald-500 flex items-center gap-1 text-xs"><Bot size={12}/> Attached</span> : '-'}
+                        </td>
+                        <td className="p-2">
+                          <span className={`px-2 py-1 text-xs rounded uppercase font-bold ${reg.status === 'approved' ? 'bg-emerald-100 text-emerald-600' : reg.status === 'rejected' ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'}`}>
+                            {reg.status}
+                          </span>
+                        </td>
+                        <td className="p-2 flex gap-2">
+                          {reg.status === 'pending' && (
+                            <>
+                              <button onClick={() => handleUpdateRegStatus(reg.id, 'approved')} className="px-2 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded text-xs transition-colors">Approve</button>
+                              <button onClick={() => handleUpdateRegStatus(reg.id, 'rejected')} className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs transition-colors">Reject</button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           <div className="glass-card p-6">

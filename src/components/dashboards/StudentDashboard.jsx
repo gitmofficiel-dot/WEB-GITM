@@ -7,7 +7,7 @@ import { generateArticle } from '../../config/openrouter';
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
 export default function StudentDashboard() {
-  const { lang, user, setView, savedItems, toggleSave } = useLanguage();
+  const { lang, user, setView, savedItems, toggleSave, eventRegistrations } = useLanguage();
   const [textToAnalyze, setTextToAnalyze] = useState('');
   const [analysisResult, setAnalysisResult] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -36,6 +36,8 @@ export default function StudentDashboard() {
     { course: 'Edge AI Architecture', assignment: 'Final Project', score: 95 },
     { course: 'IoT Cloud Systems', assignment: 'Quiz 2', score: 88 }
   ];
+
+  const myRegistrations = eventRegistrations?.filter(r => r.userId === user?.email) || [];
 
   return (
     <div className="space-y-6 animate-fade-in-up">
@@ -146,6 +148,41 @@ export default function StudentDashboard() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Event & Project Registrations */}
+        <div className="glass-card rounded-2xl p-6 lg:col-span-2">
+          <h3 className="text-lg font-bold flex items-center gap-2 mb-6">
+            <Award className="text-purple-500" size={20} />
+            {txt(lang, 'My Projects & Event Registrations', 'مشاريعي وتسجيلات الفعاليات', 'Mes Projets et Inscriptions', '我的项目和活动注册')}
+          </h3>
+          {myRegistrations.length === 0 ? (
+            <div className="text-center py-8 text-slate-500">
+              {txt(lang, 'You have not registered for any events yet.', 'لم تقم بالتسجيل في أي فعالية بعد.', 'Aucune inscription.', '您尚未注册任何活动。')}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {myRegistrations.map((reg) => (
+                <div key={reg.id} className="p-4 rounded-xl bg-cyan-50 dark:bg-slate-800/50 border border-cyan-300 dark:border-slate-700">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-bold text-[#1e3a5f] dark:text-white truncate pr-4">{reg.eventTitle}</h4>
+                    <span className={`text-xs font-bold px-2 py-1 rounded uppercase shrink-0 ${reg.status === 'approved' ? 'bg-emerald-100 text-emerald-600' : reg.status === 'rejected' ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'}`}>
+                      {reg.status}
+                    </span>
+                  </div>
+                  {reg.projectName && (
+                    <p className="text-sm text-slate-600 dark:text-slate-300 mb-2">
+                      <span className="font-bold">{txt(lang, 'Project:', 'المشروع:', 'Projet:', '项目：')}</span> {reg.projectName}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-4 text-xs text-slate-500 mt-4">
+                    <span className="flex items-center gap-1"><Clock size={12} /> {new Date(reg.dateSubmitted).toLocaleDateString()}</span>
+                    {reg.hasFile && <span className="flex items-center gap-1 text-emerald-500"><FileText size={12} /> {txt(lang, 'Files Attached', 'يوجد ملف', 'Fichiers', '文件')}</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* AI Text Analyzer */}

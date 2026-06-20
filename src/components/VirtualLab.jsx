@@ -1,6 +1,6 @@
 import React, { Suspense, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Environment, ContactShadows, Float, Text, Html } from '@react-three/drei';
+import { OrbitControls, Float, Text, Html } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { Box, Activity, Cpu, Wifi } from 'lucide-react';
@@ -125,26 +125,20 @@ export default function VirtualLab() {
           </span>
         </div>
 
-        {/* 3D Canvas */}
-        <Canvas camera={{ position: [0, 2, 8], fov: 50 }}>
+        {/* 3D Canvas - Optimized for performance */}
+        <Canvas camera={{ position: [0, 2, 8], fov: 50 }} dpr={[1, 1.5]} performance={{ min: 0.5 }}>
           <color attach="background" args={['#0B132B']} />
-          <ambientLight intensity={0.5} />
-          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} color="#06b6d4" />
-          <pointLight position={[-10, -10, -10]} intensity={1} color="#8b5cf6" />
+          <ambientLight intensity={0.8} />
+          <spotLight position={[10, 10, 10]} angle={0.2} penumbra={1} intensity={2} color="#06b6d4" />
+          <pointLight position={[-10, -10, -10]} intensity={1.5} color="#8b5cf6" />
           
           <Suspense fallback={null}>
-            <Environment preset="city" />
-            
             {/* Main Center Node */}
             <TechNode position={[0, 0, 0]} color="#1e293b" label="Core Processing Unit" icon={Cpu} testData={testDataItems[0]} />
             
             {/* Satellite Nodes */}
             <TechNode position={[-3, 1, -2]} color="#334155" label="Sensor Array Alpha" icon={Activity} testData={testDataItems[1]} />
             <TechNode position={[3, -1, 1]} color="#334155" label="Comms Module (5G)" icon={Wifi} testData={testDataItems[2]} />
-
-            {/* Connecting lines could go here in a more advanced setup */}
-
-            <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={20} blur={2} far={4} />
           </Suspense>
           
           <OrbitControls 
