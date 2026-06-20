@@ -30,3 +30,29 @@ export const generateArticle = async (promptText) => {
     throw error;
   }
 };
+
+export const autoTranslateContent = async (text) => {
+  try {
+    const response = await openRouterClient.chat.completions.create({
+      model: 'openai/gpt-4o', // or 'openai/gpt-oss-120b:free'
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an expert translator. The user will give you a text in any language. You must translate it into 4 languages: Arabic, English, French, and Chinese. Return a JSON object with strictly these keys: "ar", "en", "fr", "zh". The values should be the translated text. DO NOT return markdown blocks, only the raw JSON.'
+        },
+        {
+          role: 'user',
+          content: text,
+        },
+      ],
+      response_format: { type: 'json_object' }
+    });
+
+    // Parse the JSON returned by the AI
+    const result = JSON.parse(response.choices[0].message.content);
+    return result;
+  } catch (error) {
+    console.error('Error translating content with OpenRouter:', error);
+    throw error;
+  }
+};
