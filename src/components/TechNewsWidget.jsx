@@ -15,36 +15,42 @@ const TechNewsWidget = () => {
       setLoading(true);
       setError(false);
       try {
-        if (newsLang === 'en') {
-          // Fetch top stories from Hacker News API (Public API)
-          const topStoriesRes = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
-          if (!topStoriesRes.ok) throw new Error('Failed to fetch');
-          const storyIds = await topStoriesRes.json();
-          
-          // Fetch details for top 5 stories
-          const storyPromises = storyIds.slice(0, 5).map(id => 
-            fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r => r.json())
-          );
-          const stories = await Promise.all(storyPromises);
-          setNews(stories.map(s => ({
+        // Fetch top stories from Hacker News API (Public API)
+        const topStoriesRes = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
+        if (!topStoriesRes.ok) throw new Error('Failed to fetch');
+        const storyIds = await topStoriesRes.json();
+        
+        // Fetch details for top 5 stories
+        const storyPromises = storyIds.slice(0, 5).map(id => 
+          fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r => r.json())
+        );
+        const stories = await Promise.all(storyPromises);
+
+        // Translate titles if needed
+        const translatedStories = await Promise.all(stories.map(async (s) => {
+          let translatedTitle = s.title;
+          if (newsLang !== 'en') {
+            try {
+              const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(s.title)}&langpair=en|${newsLang}`);
+              const data = await res.json();
+              if (data.responseData && data.responseData.translatedText) {
+                translatedTitle = data.responseData.translatedText;
+              }
+            } catch (e) {
+              console.error('Translation failed', e);
+            }
+          }
+          return {
             id: s.id,
-            title: s.title,
+            title: translatedTitle,
             score: s.score,
             by: s.by,
             url: s.url,
             isApi: true
-          })));
-        } else {
-          // Use local localized news for other languages
-          setNews(localNews.slice(0, 5).map(s => ({
-            id: s.id,
-            title: s[`title_${newsLang}`] || s.title_en || s.title_ar,
-            score: 'GITM',
-            by: s.author,
-            url: s.url || '',
-            isApi: false
-          })));
-        }
+          };
+        }));
+
+        setNews(translatedStories);
         setLoading(false);
       } catch (err) {
         setError(true);
@@ -52,7 +58,7 @@ const TechNewsWidget = () => {
       }
     };
     fetchNews();
-  }, [newsLang, localNews]);
+  }, [newsLang]);
 
   const title = lang === 'ar' ? 'أخبار التقنية العالمية' : 'Global Tech News';
 
@@ -80,7 +86,7 @@ const TechNewsWidget = () => {
           className="px-3 py-1 rounded-lg border border-cyan-400 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm outline-none focus:border-blue-500 text-[#1e3a5f] dark:text-white"
         >
           <option value="ar">{lang === 'ar' ? 'العربية' : 'Arabic'}</option>
-          <option value="en">{lang === 'ar' ? 'الإنجليزية (Live)' : 'English (Live)'}</option>
+          <option value="en">{lang === 'ar' ? 'الإنجليزية' : 'English'}</option>
           <option value="fr">{lang === 'ar' ? 'الفرنسية' : 'French'}</option>
         </select>
       </div>
