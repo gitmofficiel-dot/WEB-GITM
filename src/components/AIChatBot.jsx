@@ -105,7 +105,7 @@ const AIChatBot = () => {
                 <Bot className="text-cyan-400" size={18} />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white font-orbitron">{lang === 'ar' ? 'المساعد الذكي لـ GITM' : 'GITM AI Assistant'}</h3>
+                <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white font-orbitron">{lang === 'ar' ? 'المساعد الذكي لـ GITM' : 'GITM AI Assistant'}</h3>
                 <span className="flex items-center gap-1.5 text-[10px] text-emerald-400">
                   <span className="status-online w-1.5 h-1.5" />
                   {lang === 'ar' ? 'متصل الآن' : 'Online'}
@@ -123,10 +123,10 @@ const AIChatBot = () => {
                   {msg.sender === 'user' ? <User className="text-emerald-400" size={12} /> : <Bot className="text-cyan-400" size={12} />}
                 </div>
                 <div className="flex flex-col gap-1">
-                  <div className={`p-3 text-xs leading-relaxed text-slate-200 ${msg.sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'}`}>
+                  <div className={`p-3 text-xs leading-relaxed text-[#1e3a5f] dark:text-slate-200 ${msg.sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'}`}>
                     {msg.text}
                   </div>
-                  <span className={`text-[9px] text-slate-500 ${msg.sender === 'user' ? 'text-right rtl:text-left' : 'text-left rtl:text-right'}`}>
+                  <span className={`text-[9px] text-slate-600 dark:text-slate-500 ${msg.sender === 'user' ? 'text-right rtl:text-left' : 'text-left rtl:text-right'}`}>
                     {msg.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -164,7 +164,7 @@ const AIChatBot = () => {
           )}
 
           {/* Input Area */}
-          <div className="p-4 bg-black/20 border-t border-white/10">
+          <div className="p-4 bg-cyan-100/50 dark:bg-black/20 border-t border-cyan-300 dark:border-white/10">
             <form 
               onSubmit={(e) => { e.preventDefault(); handleSend(); }}
               className="relative flex items-center"
@@ -174,13 +174,13 @@ const AIChatBot = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={lang === 'ar' ? 'اكتب أو تحدث...' : 'Type or speak...'}
-                className="w-full bg-[#e0fcfc]/5 border border-white/10 rounded-xl py-3 pl-4 pr-20 rtl:pr-4 rtl:pl-20 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                className="w-full bg-white dark:bg-[#e0fcfc]/5 border border-cyan-300 dark:border-white/10 rounded-xl py-3 pl-4 pr-20 rtl:pr-4 rtl:pl-20 text-sm text-[#1e3a5f] dark:text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
               />
               <div className="absolute right-2 rtl:left-2 rtl:right-auto flex items-center">
                 <button
                   type="button"
                   onClick={startListening}
-                  className={`p-2 rounded-full transition-colors mr-1 rtl:mr-0 rtl:ml-1 ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-slate-400 hover:text-cyan-400 hover:bg-[#e0fcfc]/5'}`}
+                  className={`p-2 rounded-full transition-colors mr-1 rtl:mr-0 rtl:ml-1 ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-cyan-600 dark:text-slate-400 hover:text-cyan-700 dark:hover:text-cyan-400 hover:bg-cyan-200 dark:hover:bg-[#e0fcfc]/5'}`}
                 >
                   {isListening ? <Mic size={16} /> : <MicOff size={16} />}
                 </button>
