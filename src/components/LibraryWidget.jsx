@@ -9,9 +9,10 @@ const LibraryWidget = () => {
   const [error, setError] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('programming');
+  const [searchLang, setSearchLang] = useState('');
   const [selectedBook, setSelectedBook] = useState(null);
 
-  const fetchBooks = async (query) => {
+  const fetchBooks = async (query, langFilter = '') => {
     setLoading(true);
     setError(false);
     try {
@@ -20,7 +21,12 @@ const LibraryWidget = () => {
         'User-Agent': 'GITM-Academy-App (gitm.officiel@gmail.com)'
       };
       
-      const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=4`, { headers });
+      let url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=4`;
+      if (langFilter) {
+        url += `&language=${langFilter}`;
+      }
+      
+      const res = await fetch(url, { headers });
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
       setBooks(data.docs || []);
@@ -32,7 +38,7 @@ const LibraryWidget = () => {
   };
 
   useEffect(() => {
-    fetchBooks(searchQuery);
+    fetchBooks(searchQuery, searchLang);
   }, []);
 
   const title = lang === 'ar' ? 'مكتبة البرمجة' : 'Programming Library';
@@ -43,14 +49,29 @@ const LibraryWidget = () => {
         <h3 className="text-xl font-bold font-orbitron flex items-center gap-2 text-[#1e3a5f] dark:text-white">
           <BookOpen className="text-blue-500" /> {title}
         </h3>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2 justify-end">
+          <select
+            value={searchLang}
+            onChange={(e) => {
+              setSearchLang(e.target.value);
+              fetchBooks(searchQuery, e.target.value);
+            }}
+            className="px-3 py-1 rounded-lg border border-cyan-400 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm outline-none focus:border-blue-500 text-[#1e3a5f] dark:text-white"
+          >
+            <option value="">{lang === 'ar' ? 'كل اللغات' : 'All Langs'}</option>
+            <option value="ara">{lang === 'ar' ? 'العربية' : 'Arabic'}</option>
+            <option value="eng">{lang === 'ar' ? 'الإنجليزية' : 'English'}</option>
+            <option value="fre">{lang === 'ar' ? 'الفرنسية' : 'French'}</option>
+            <option value="chi">{lang === 'ar' ? 'الصينية' : 'Chinese'}</option>
+            <option value="spa">{lang === 'ar' ? 'الإسبانية' : 'Spanish'}</option>
+          </select>
           <input 
             type="text" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && fetchBooks(searchQuery)}
+            onKeyDown={(e) => e.key === 'Enter' && fetchBooks(searchQuery, searchLang)}
             placeholder={lang === 'ar' ? 'ابحث عن كتاب...' : 'Search books...'}
-            className="px-3 py-1 rounded-lg border border-cyan-400 dark:border-slate-600 bg-[#e0fcfc] dark:bg-slate-800 text-sm outline-none focus:border-blue-500 text-[#1e3a5f] dark:text-white w-32 sm:w-48"
+            className="px-3 py-1 rounded-lg border border-cyan-400 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm outline-none focus:border-blue-500 text-[#1e3a5f] dark:text-white w-28 sm:w-48"
           />
         </div>
       </div>

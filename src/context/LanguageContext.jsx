@@ -113,10 +113,10 @@ export const LanguageProvider = ({ children }) => {
   const [events, setEvents] = useState(() => {
     const saved = localStorage.getItem('gitm_events');
     return saved ? JSON.parse(saved) : [
-      { id: 1, title_ar: 'هاكاثون GITM 2026', title_en: 'GITM Hackathon 2026', date: '2026-07-15', time: '09:00', location: 'Casablanca TechHub', type: 'hackathon', status: 'upcoming', description_ar: 'مسابقة برمجية على مدار 48 ساعة', description_en: '48-hour coding competition' },
-      { id: 2, title_ar: 'ورشة الذكاء الاصطناعي', title_en: 'AI Workshop', date: '2026-07-05', time: '14:00', location: 'GITM Lab', type: 'workshop', status: 'upcoming', description_ar: 'تعلم أساسيات التعلم العميق', description_en: 'Learn deep learning fundamentals' },
-      { id: 3, title_ar: 'مؤتمر التكنولوجيا المغربي', title_en: 'Morocco Tech Conference', date: '2026-08-20', time: '10:00', location: 'Rabat Convention Center', type: 'conference', status: 'upcoming', description_ar: 'أكبر مؤتمر تقني في المغرب', description_en: 'Morocco\'s largest tech conference' },
-      { id: 4, title_ar: 'لقاء الأعضاء الشهري', title_en: 'Monthly Members Meetup', date: '2026-06-01', time: '18:00', location: 'Online', type: 'meetup', status: 'completed', description_ar: 'اجتماع شهري لمراجعة التقدم', description_en: 'Monthly progress review meeting' },
+      { id: 1, title_ar: 'هاكاثون GITM 2026', title_en: 'GITM Hackathon 2026', date: '2026-07-15T09:00', endDate: '2026-07-17T18:00', contactDate: '2026-07-20', location: 'Casablanca TechHub', type: 'hackathon', status: 'upcoming', description_ar: 'مسابقة برمجية على مدار 48 ساعة', description_en: '48-hour coding competition', requirements: { teamMin: 2, teamMax: 5, needsProjectName: true, needsFileUpload: true } },
+      { id: 2, title_ar: 'ورشة الذكاء الاصطناعي', title_en: 'AI Workshop', date: '2026-07-05T14:00', endDate: '2026-07-05T18:00', contactDate: '2026-07-06', location: 'GITM Lab', type: 'workshop', status: 'upcoming', description_ar: 'تعلم أساسيات التعلم العميق', description_en: 'Learn deep learning fundamentals', requirements: { teamMin: 1, teamMax: 1, needsProjectName: false, needsFileUpload: false } },
+      { id: 3, title_ar: 'مؤتمر التكنولوجيا المغربي', title_en: 'Morocco Tech Conference', date: '2026-08-20T10:00', endDate: '2026-08-21T18:00', contactDate: '2026-08-25', location: 'Rabat Convention Center', type: 'conference', status: 'upcoming', description_ar: 'أكبر مؤتمر تقني في المغرب', description_en: 'Morocco\'s largest tech conference', requirements: { teamMin: 1, teamMax: 1, needsProjectName: false, needsFileUpload: false } },
+      { id: 4, title_ar: 'لقاء الأعضاء الشهري', title_en: 'Monthly Members Meetup', date: '2026-06-01T18:00', endDate: '2026-06-01T20:00', contactDate: '2026-06-02', location: 'Online', type: 'meetup', status: 'completed', description_ar: 'اجتماع شهري لمراجعة التقدم', description_en: 'Monthly progress review meeting' },
     ];
   });
 
@@ -154,6 +154,12 @@ export const LanguageProvider = ({ children }) => {
       return { ...prev, [type]: updated };
     });
   };
+
+  // 12. Event Registrations (Project Submissions)
+  const [eventRegistrations, setEventRegistrations] = useState(() => {
+    const saved = localStorage.getItem('gitm_event_registrations');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   // Effect: Sync Language
   useEffect(() => {
@@ -272,6 +278,7 @@ export const LanguageProvider = ({ children }) => {
   useEffect(() => { localStorage.setItem('gitm_competitions', JSON.stringify(competitions)); }, [competitions]);
   useEffect(() => { localStorage.setItem('gitm_partners', JSON.stringify(partners)); }, [partners]);
   useEffect(() => { localStorage.setItem('gitm_saved_items', JSON.stringify(savedItems)); }, [savedItems]);
+  useEffect(() => { localStorage.setItem('gitm_event_registrations', JSON.stringify(eventRegistrations)); }, [eventRegistrations]);
 
   // Effect: Sync user role
   useEffect(() => {
@@ -414,6 +421,8 @@ export const LanguageProvider = ({ children }) => {
       setPartners,
       savedItems,
       toggleSave,
+      eventRegistrations,
+      setEventRegistrations,
     }}>
       {children}
     </LanguageContext.Provider>
