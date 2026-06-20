@@ -56,7 +56,7 @@ export default function TeacherDashboard() {
           </div>
           <div className="space-y-3">
             {courses.map((c, idx) => (
-              <div key={c.id} className="flex justify-between items-center p-3 bg-white/5 dark:bg-black/20 rounded border-l-4 border-blue-500">
+              <div key={c.id} className="flex justify-between items-center p-3 bg-[#e0fcfc]/5 dark:bg-black/20 rounded border-l-4 border-blue-500">
                 <div className="flex items-center gap-3">
                   <span className="font-bold opacity-50">{idx + 1}.</span>
                   <BookOpen className="w-4 h-4 text-blue-400"/>
@@ -81,7 +81,7 @@ export default function TeacherDashboard() {
             </h3>
             <p className="text-xs text-slate-400 mb-4">Paste lesson text or upload a PDF, and let AI generate 10 multiple-choice questions automatically.</p>
             
-            <div className="bg-white/5 dark:bg-black/20 p-4 rounded mb-4 border border-cyan-500/30">
+            <div className="bg-[#e0fcfc]/5 dark:bg-black/20 p-4 rounded mb-4 border border-cyan-500/30">
               <textarea 
                 placeholder="Paste lesson content here..." 
                 className="w-full h-24 bg-transparent border border-gray-500/50 rounded mb-3 p-3 outline-none text-sm resize-none focus:border-cyan-500"
@@ -124,7 +124,7 @@ export default function TeacherDashboard() {
           <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-amber-500"><FileText className="w-5 h-5" /> Pending Assignments Review</h3>
           <div className="space-y-4">
             {pendingReviews.map(pr => (
-              <div key={pr.id} className="p-4 bg-white/5 dark:bg-black/20 rounded-xl border border-white/10 flex justify-between items-center">
+              <div key={pr.id} className="p-4 bg-[#e0fcfc]/5 dark:bg-black/20 rounded-xl border border-white/10 flex justify-between items-center">
                 <div>
                   <h4 className="font-bold text-sm">{pr.student}</h4>
                   <p className="text-xs text-gray-500">{pr.course} - {pr.lesson}</p>

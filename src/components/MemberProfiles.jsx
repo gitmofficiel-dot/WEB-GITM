@@ -12,7 +12,7 @@ const BADGE_INFO = {
   speaker: { icon: Megaphone, label: 'Speaker', class: 'badge-speaker', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' },
   developer: { icon: Code, label: 'Developer', class: 'badge-developer', color: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300' },
   designer: { icon: Palette, label: 'Designer', class: 'badge-designer', color: 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300' },
-  admin: { icon: Shield, label: 'Admin', class: 'badge-admin', color: 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900' }
+  admin: { icon: Shield, label: 'Admin', class: 'badge-admin', color: 'bg-slate-800 text-white dark:bg-cyan-200 dark:text-[#0B132B]' }
 };
 
 const MOCK_MEMBERS = [
@@ -119,7 +119,7 @@ export default function MemberProfiles() {
   };
 
   return (
-    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-slate-800 dark:text-slate-200 transition-colors duration-300">
+    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-[#1e3a5f] dark:text-slate-200 transition-colors duration-300">
       <div className="max-w-7xl mx-auto relative z-10">
         
         <motion.div 
@@ -136,14 +136,14 @@ export default function MemberProfiles() {
         </motion.div>
 
         {/* Toolbar */}
-        <div className="flex flex-col lg:flex-row justify-between items-center gap-6 mb-12 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-lg">
+        <div className="flex flex-col lg:flex-row justify-between items-center gap-6 mb-12 bg-[#e0fcfc]/50 dark:bg-slate-900/50 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-lg">
           <div className="relative w-full lg:w-96">
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={txt(lang, 'Search members...', 'ابحث عن الأعضاء...', 'Rechercher...', '搜索成员...')}
-              className="w-full bg-white/80 dark:bg-slate-800/80 py-3 px-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 border border-slate-200 dark:border-slate-700"
+              className="w-full bg-[#e0fcfc]/80 dark:bg-slate-800/80 py-3 px-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 border border-cyan-300 dark:border-slate-700"
             />
             <Search className={`absolute top-3.5 ${lang === 'ar' ? 'right-4' : 'left-4'} text-slate-400`} size={20} />
           </div>
@@ -152,7 +152,7 @@ export default function MemberProfiles() {
             <Filter size={20} className="text-slate-500 mr-2" />
             <button
               onClick={() => setFilterBadge('all')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-colors ${filterBadge === 'all' ? 'bg-teal-600 text-white' : 'bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700'}`}
+              className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-colors ${filterBadge === 'all' ? 'bg-teal-600 text-white' : 'bg-cyan-200 dark:bg-slate-800 hover:bg-cyan-300 dark:hover:bg-slate-700'}`}
             >
               {txt(lang, 'All', 'الكل', 'Tous', '所有')}
             </button>
@@ -160,7 +160,7 @@ export default function MemberProfiles() {
               <button
                 key={key}
                 onClick={() => setFilterBadge(key)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors ${filterBadge === key ? 'ring-2 ring-teal-500 ' + info.color : 'bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:hover:bg-slate-700 opacity-70 hover:opacity-100'}`}
+                className={`px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 transition-colors ${filterBadge === key ? 'ring-2 ring-teal-500 ' + info.color : 'bg-cyan-100 dark:bg-slate-800/50 hover:bg-cyan-200 dark:hover:bg-slate-700 opacity-70 hover:opacity-100'}`}
               >
                 <info.icon size={14} /> <span className="hidden sm:inline">{info.label}</span>
               </button>
@@ -196,7 +196,7 @@ export default function MemberProfiles() {
                     )}
 
                     <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-teal-400 to-blue-500 p-1 mb-4">
-                      <div className="w-full h-full rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-3xl font-orbitron font-bold text-teal-600 dark:text-cyan-400">
+                      <div className="w-full h-full rounded-full bg-[#e0fcfc] dark:bg-slate-900 flex items-center justify-center text-3xl font-orbitron font-bold text-teal-600 dark:text-cyan-400">
                         {member.name.split(' ').map(n=>n[0]).join('').substring(0,2)}
                       </div>
                     </div>
@@ -216,7 +216,7 @@ export default function MemberProfiles() {
                         );
                       })}
                       {member.badges.length > 3 && (
-                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold">
+                        <div className="w-8 h-8 rounded-full bg-cyan-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold">
                           +{member.badges.length - 3}
                         </div>
                       )}
@@ -232,7 +232,7 @@ export default function MemberProfiles() {
                     className="absolute inset-0 w-full h-full backface-hidden glass-card rounded-2xl overflow-hidden p-6 flex flex-col shadow-xl border-t-4 border-t-blue-500"
                     style={{ transform: 'rotateY(180deg)' }}
                   >
-                    <div className="flex items-center gap-3 mb-4 border-b border-slate-200 dark:border-slate-700 pb-4">
+                    <div className="flex items-center gap-3 mb-4 border-b border-cyan-300 dark:border-slate-700 pb-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-teal-400 to-blue-500 flex items-center justify-center text-white font-bold">
                         {member.name.charAt(0)}
                       </div>
@@ -252,16 +252,16 @@ export default function MemberProfiles() {
                       <h4 className="text-xs font-bold uppercase text-slate-400 mb-2">{txt(lang, 'Skills', 'المهارات', 'Compétences', '技能')}</h4>
                       <div className="flex flex-wrap gap-1">
                         {member.skills.map(s => (
-                          <span key={s} className="px-2 py-1 text-[10px] font-bold rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                          <span key={s} className="px-2 py-1 text-[10px] font-bold rounded bg-cyan-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                             {s}
                           </span>
                         ))}
                       </div>
                     </div>
 
-                    <div className="flex justify-center gap-4 mt-auto pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <div className="flex justify-center gap-4 mt-auto pt-4 border-t border-cyan-300 dark:border-slate-700">
                       {member.social.github && (
-                        <a href={member.social.github} className="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors">
+                        <a href={member.social.github} className="text-slate-400 hover:text-[#1e3a5f] dark:hover:text-white transition-colors">
                           <Github size={20} />
                         </a>
                       )}

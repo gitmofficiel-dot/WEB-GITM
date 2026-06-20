@@ -27,7 +27,7 @@ const PartnersSlider = () => {
   );
 
   return (
-    <section className="py-12 bg-white dark:bg-gray-900 overflow-hidden border-y border-gray-100 dark:border-gray-800">
+    <section className="py-12 bg-[#e0fcfc] dark:bg-gray-900 overflow-hidden border-y border-gray-100 dark:border-gray-800">
       <div className="mb-8 text-center">
         <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">
           {lang === 'ar' ? 'المؤسسات الشريكة' : 'Partner Organizations'}

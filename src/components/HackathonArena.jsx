@@ -93,7 +93,7 @@ const HackathonArena = () => {
           <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20 uppercase tracking-wider mb-3 inline-block animate-pulse">
             {lang === 'ar' ? 'البطولة الوطنية للابتكار الهندسي' : 'National Hardware Hackathon Arena'}
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 dark:text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e3a5f] dark:text-white font-orbitron tracking-wide mb-4 uppercase">
             {lang === 'ar' ? 'حلبة هاكاثون GITM للبرمجة' : 'GITM Hackathon Arena'}
           </h2>
           <div className="w-20 h-1 bg-red-500 mx-auto mb-4"></div>
@@ -114,18 +114,18 @@ const HackathonArena = () => {
             <Clock className="text-red-400 animate-spin-slow" size={24} />
           </div>
 
-          <div className="p-5 rounded-xl glass border border-[#3A506B]/20 bg-slate-50 dark:bg-black/20 flex items-center justify-between">
+          <div className="p-5 rounded-xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 flex items-center justify-between">
             <div>
               <span className="text-[10px] text-slate-400 dark:text-cyber-muted block uppercase tracking-wider">{lang === 'ar' ? 'التحديات النشطة' : 'Active Challenges'}</span>
-              <span className="text-2xl font-black font-orbitron text-slate-800 dark:text-white">{challenges.length} Tasks</span>
+              <span className="text-2xl font-black font-orbitron text-[#1e3a5f] dark:text-white">{challenges.length} Tasks</span>
             </div>
             <Code className="text-[#00E5FF]" size={24} />
           </div>
 
-          <div className="p-5 rounded-xl glass border border-[#3A506B]/20 bg-slate-50 dark:bg-black/20 flex items-center justify-between">
+          <div className="p-5 rounded-xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 flex items-center justify-between">
             <div>
               <span className="text-[10px] text-slate-400 dark:text-cyber-muted block uppercase tracking-wider">{lang === 'ar' ? 'الفرق المسجلة' : 'Teams Registered'}</span>
-              <span className="text-2xl font-black font-orbitron text-slate-800 dark:text-white">{scoreboard.length} Swarms</span>
+              <span className="text-2xl font-black font-orbitron text-[#1e3a5f] dark:text-white">{scoreboard.length} Swarms</span>
             </div>
             <Users className="text-[#00FF87]" size={24} />
           </div>
@@ -140,7 +140,7 @@ const HackathonArena = () => {
               className={`px-6 py-3 text-xs md:text-sm font-bold uppercase tracking-wider border-b-2 transition-all ${
                 activeTab === tab 
                   ? 'border-red-500 text-red-500' 
-                  : 'border-transparent text-slate-400 hover:text-slate-800 dark:hover:text-white'
+                  : 'border-transparent text-slate-400 hover:text-[#1e3a5f] dark:hover:text-white'
               }`}
             >
               {tab === 'challenges' && (lang === 'ar' ? 'قائمة التحديات' : 'Coding Challenges')}
@@ -165,7 +165,7 @@ const HackathonArena = () => {
                     className={`p-5 rounded-xl border transition-spring cursor-pointer ${
                       selectedChallenge?.id === ch.id
                         ? 'border-red-500 bg-red-500/5'
-                        : 'border-[#3A506B]/20 dark:border-white/5 bg-white dark:bg-black/20 hover:border-red-500/30'
+                        : 'border-[#3A506B]/20 dark:border-white/5 bg-[#e0fcfc] dark:bg-black/20 hover:border-red-500/30'
                     }`}
                   >
                     <div className="flex justify-between items-center mb-2">
@@ -177,15 +177,15 @@ const HackathonArena = () => {
                       </span>
                     </div>
 
-                    <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-2">{ch.title}</h4>
+                    <h4 className="text-sm font-bold text-[#1e3a5f] dark:text-white mb-2">{ch.title}</h4>
                     <p className="text-xs text-slate-500 dark:text-cyber-muted leading-relaxed">{ch.desc}</p>
                   </div>
                 ))}
               </div>
 
               {/* Submission Area */}
-              <div className="lg:col-span-5 p-6 rounded-2xl glass border border-[#3A506B]/20 bg-slate-50 dark:bg-black/20 space-y-4">
-                <h3 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider font-orbitron">
+              <div className="lg:col-span-5 p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 space-y-4">
+                <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron">
                   {lang === 'ar' ? 'تقديم الكود المصدري للحل' : 'Submit Challenge Solution'}
                 </h3>
 
@@ -207,7 +207,7 @@ const HackathonArena = () => {
                         placeholder={lang === 'ar' ? '// اكتب الحل البرمجي بلغة C++ أو Python هنا...' : '// Write solution code in C++ or Python here...'}
                         value={codeSolution}
                         onChange={(e) => setCodeSolution(e.target.value)}
-                        className="w-full h-64 p-3 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-white dark:bg-black/40 text-slate-100 outline-none font-mono text-xs resize-none"
+                        className="w-full h-64 p-3 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-[#e0fcfc] dark:bg-black/40 text-slate-100 outline-none font-mono text-xs resize-none"
                         style={{ direction: 'ltr', textAlign: 'left' }}
                       />
                     </div>
@@ -230,8 +230,8 @@ const HackathonArena = () => {
           )}
 
           {activeTab === 'leaderboard' && (
-            <div className="p-6 rounded-2xl glass border border-[#3A506B]/20 bg-slate-50 dark:bg-black/20">
-              <h3 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider font-orbitron mb-6 flex items-center gap-2">
+            <div className="p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20">
+              <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron mb-6 flex items-center gap-2">
                 <Trophy className="text-yellow-500" size={16} />
                 <span>{lang === 'ar' ? 'لوحة الصدارة الحية للهاكاثون' : 'Live Scoreboard Leaderboard'}</span>
               </h3>
@@ -249,7 +249,7 @@ const HackathonArena = () => {
                   </thead>
                   <tbody className="divide-y divide-[#3A506B]/10 dark:divide-white/5">
                     {scoreboard.map(row => (
-                      <tr key={row.rank} className="text-slate-700 dark:text-cyber-text hover:bg-white/5 transition-all">
+                      <tr key={row.rank} className="text-[#2d507b] dark:text-cyber-text hover:bg-[#e0fcfc]/5 transition-all">
                         <td className="py-3 font-bold text-center">
                           {row.rank === 1 ? '🥇 1' : row.rank === 2 ? '🥈 2' : row.rank === 3 ? '🥉 3' : row.rank}
                         </td>
@@ -266,10 +266,10 @@ const HackathonArena = () => {
           )}
 
           {activeTab === 'register' && (
-            <div className="max-w-md mx-auto p-6 rounded-2xl glass border border-[#3A506B]/20 bg-slate-50 dark:bg-black/20 space-y-6">
+            <div className="max-w-md mx-auto p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 space-y-6">
               <div className="text-center">
                 <Users size={32} className="text-red-500 mx-auto mb-3" />
-                <h3 className="text-base font-bold text-slate-800 dark:text-white uppercase tracking-wider font-orbitron">
+                <h3 className="text-base font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron">
                   {lang === 'ar' ? 'تسجيل فريق الهاكاثون' : 'Join Hackathon Team'}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-cyber-muted mt-1">
@@ -286,7 +286,7 @@ const HackathonArena = () => {
                     placeholder={lang === 'ar' ? 'مثال: Atlas-Hackers' : 'e.g. Atlas-Hackers'}
                     value={teamName}
                     onChange={(e) => setTeamName(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-white dark:bg-black/45 text-slate-100 outline-none font-bold"
+                    className="w-full p-2.5 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-[#e0fcfc] dark:bg-black/45 text-slate-100 outline-none font-bold"
                   />
                 </div>
 
@@ -298,7 +298,7 @@ const HackathonArena = () => {
                     placeholder={lang === 'ar' ? 'مثال: عمر بنجلون، فاطمة الزهراء الإدريسي' : 'e.g. Omar, Fatima, Anass'}
                     value={members}
                     onChange={(e) => setMembers(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-white dark:bg-black/45 text-slate-100 outline-none"
+                    className="w-full p-2.5 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-[#e0fcfc] dark:bg-black/45 text-slate-100 outline-none"
                   />
                 </div>
 

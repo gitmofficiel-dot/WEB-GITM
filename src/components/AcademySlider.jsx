@@ -23,11 +23,11 @@ const AcademySlider = ({ setView }) => {
   };
 
   return (
-    <section className="py-16 bg-white dark:bg-gray-800/30">
+    <section className="py-16 bg-[#e0fcfc] dark:bg-gray-800/30">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-10">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-gray-900 dark:text-white mb-2">
+            <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-[#0B132B] dark:text-white mb-2">
               {lang === 'ar' ? 'أكاديمية GITM' : 'GITM Academy'}
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full"></div>
@@ -48,7 +48,7 @@ const AcademySlider = ({ setView }) => {
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {courses.map((course) => (
-            <div key={course.id} className="min-w-[300px] md:min-w-[350px] snap-center glass-card card-3d p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-xl transition-all shrink-0">
+            <div key={course.id} className="min-w-[300px] md:min-w-[350px] snap-center glass-card card-3d p-6 rounded-2xl bg-[#e0fcfc] dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-xl transition-all shrink-0">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl">
                   <BookOpen size={24} />
@@ -57,7 +57,7 @@ const AcademySlider = ({ setView }) => {
                   <Star size={16} fill="currentColor" /> {course.rating}
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{course.title[lang] || course.title.en}</h3>
+              <h3 className="text-xl font-bold text-[#0B132B] dark:text-white mb-2">{course.title[lang] || course.title.en}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{lang === 'ar' ? 'المدرب:' : 'Instructor:'} {course.instructor}</p>
               
               <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-4">
@@ -77,7 +77,7 @@ const AcademySlider = ({ setView }) => {
         <div className="text-center mt-6">
           <button 
             onClick={() => setView && setView('academy')}
-            className="btn-primary px-8 py-3 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold transition-all hover:scale-105 inline-block"
+            className="btn-primary px-8 py-3 rounded-full bg-gray-900 dark:bg-[#e0fcfc] text-white dark:text-[#0B132B] font-semibold transition-all hover:scale-105 inline-block"
           >
             {lang === 'ar' ? 'استكشف الأكاديمية' : 'Explore Academy'}
           </button>

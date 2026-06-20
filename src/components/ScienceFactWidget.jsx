@@ -31,19 +31,19 @@ const ScienceFactWidget = () => {
   const title = lang === 'ar' ? 'معلومة رياضية اليوم' : 'Math Fact of the Day';
 
   return (
-    <div className="glass-card p-6 rounded-2xl bg-white/40 dark:bg-gray-800/40 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg relative overflow-hidden group">
+    <div className="glass-card p-6 rounded-2xl bg-[#e0fcfc]/40 dark:bg-gray-800/40 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg relative overflow-hidden group">
       <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
         <Microscope size={120} />
       </div>
       
       <div className="flex items-center justify-between mb-4 relative z-10">
-        <h3 className="text-xl font-bold font-orbitron flex items-center gap-2 text-slate-800 dark:text-white">
+        <h3 className="text-xl font-bold font-orbitron flex items-center gap-2 text-[#1e3a5f] dark:text-white">
           <Microscope className="text-emerald-500" /> {title}
         </h3>
         <button 
           onClick={fetchFact} 
           disabled={loading}
-          className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors disabled:opacity-50"
+          className="p-2 bg-cyan-100 dark:bg-slate-800 hover:bg-cyan-200 dark:hover:bg-slate-700 rounded-full transition-colors disabled:opacity-50"
         >
           <RefreshCw size={16} className={`text-slate-600 dark:text-slate-300 ${loading ? 'animate-spin' : ''}`} />
         </button>
@@ -57,7 +57,7 @@ const ScienceFactWidget = () => {
             <AlertCircle size={16} /> {lang === 'ar' ? 'خطأ في جلب المعلومة' : 'Error loading fact'}
           </p>
         ) : (
-          <p className="text-lg text-slate-700 dark:text-slate-300 italic font-medium">
+          <p className="text-lg text-[#2d507b] dark:text-slate-300 italic font-medium">
             "{fact}"
           </p>
         )}

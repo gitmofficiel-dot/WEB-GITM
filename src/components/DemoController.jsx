@@ -32,15 +32,15 @@ const DemoController = () => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-72 rounded-2xl glass border border-slate-200 dark:border-white/10 p-5 shadow-2xl animate-fade-in text-right rtl:text-right ltr:text-left">
-      <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/5 pb-2 mb-3">
+    <div className="fixed bottom-6 right-6 z-50 w-72 rounded-2xl glass border border-cyan-300 dark:border-white/10 p-5 shadow-2xl animate-fade-in text-right rtl:text-right ltr:text-left">
+      <div className="flex items-center justify-between border-b border-cyan-300 dark:border-white/5 pb-2 mb-3">
         <button 
           onClick={() => setIsCollapsed(true)} 
           className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
         >
           <Minimize2 size={14} />
         </button>
-        <span className="text-[10px] font-bold text-slate-800 dark:text-white uppercase tracking-wider font-orbitron flex items-center space-x-1 rtl:space-x-reverse">
+        <span className="text-[10px] font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron flex items-center space-x-1 rtl:space-x-reverse">
           <span>{t('dashboards.demoControl')}</span>
         </span>
       </div>
@@ -59,7 +59,7 @@ const DemoController = () => {
               className={`w-full px-3 py-2 rounded-xl text-xs font-semibold text-right rtl:text-right ltr:text-left transition-all flex items-center justify-between border ${
                 isActive
                   ? 'bg-[#0d9488]/10 border-[#0d9488] text-[#0d9488] dark:bg-emerald-500/10 dark:border-emerald-500 dark:text-emerald-400 shadow-sm'
-                  : 'bg-slate-50 dark:bg-white/5 border-transparent text-slate-700 dark:text-cyber-muted hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white'
+                  : 'bg-cyan-50 dark:bg-[#e0fcfc]/5 border-transparent text-[#2d507b] dark:text-cyber-muted hover:bg-cyan-100 dark:hover:bg-[#e0fcfc]/10 hover:text-[#0B132B] dark:hover:text-white'
               }`}
             >
               <span className="font-mono text-[8px] uppercase tracking-wider text-slate-400 dark:text-cyber-muted">

@@ -93,7 +93,7 @@ const FloatingCards = () => {
           transition={{ duration: 0.8 }}
           className="text-center px-4"
         >
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900 dark:text-white drop-shadow-lg">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-[#0B132B] dark:text-white drop-shadow-lg">
             {language === 'ar' ? 'تأثير يمتد عالمياً' : language === 'fr' ? 'Un Impact Mondial' : language === 'zh' ? '全球影响力' : 'Global Impact'}
           </h2>
           <p className="text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto drop-shadow-md">
@@ -125,17 +125,17 @@ const FloatingCards = () => {
             <div className={`
               ${card.animationClass}
               glass-card p-4 rounded-2xl border border-white/20 dark:border-white/10 
-              bg-white/40 dark:bg-gray-800/40 backdrop-blur-md shadow-xl hover:shadow-2xl
-              flex items-center gap-4 w-64 cursor-pointer hover:bg-white/60 dark:hover:bg-gray-800/60 transition-colors
+              bg-[#e0fcfc]/40 dark:bg-gray-800/40 backdrop-blur-md shadow-xl hover:shadow-2xl
+              flex items-center gap-4 w-64 cursor-pointer hover:bg-[#e0fcfc]/60 dark:hover:bg-gray-800/60 transition-colors
             `}>
-              <div className="p-3 bg-white dark:bg-gray-900 rounded-xl shadow-inner">
+              <div className="p-3 bg-[#e0fcfc] dark:bg-gray-900 rounded-xl shadow-inner">
                 {card.icon}
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   {card.title}
                 </p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                <p className="text-xl font-bold text-[#0B132B] dark:text-white">
                   {card.value}
                 </p>
               </div>

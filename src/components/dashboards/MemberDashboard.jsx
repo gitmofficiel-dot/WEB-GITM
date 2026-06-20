@@ -118,15 +118,15 @@ export default function MemberDashboard() {
           </h3>
           <div className="space-y-3">
             {myTasks.map(task => (
-              <div key={task.id} className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div key={task.id} className="flex items-center gap-4 p-4 rounded-xl bg-cyan-50 dark:bg-slate-800/50 border border-cyan-300 dark:border-slate-700">
                 <input 
                   type="checkbox" 
                   checked={task.status === 'completed'} 
                   readOnly
-                  className="w-5 h-5 rounded border-slate-300 text-teal-500 focus:ring-teal-500"
+                  className="w-5 h-5 rounded border-cyan-400 text-teal-500 focus:ring-teal-500"
                 />
                 <div className="flex-1">
-                  <h4 className={`font-medium ${task.status === 'completed' ? 'line-through text-slate-400' : 'text-slate-800 dark:text-white'}`}>
+                  <h4 className={`font-medium ${task.status === 'completed' ? 'line-through text-slate-400' : 'text-[#1e3a5f] dark:text-white'}`}>
                     {task.title}
                   </h4>
                   <p className="text-xs text-slate-500 mt-1">Due: {task.deadline}</p>
@@ -134,7 +134,7 @@ export default function MemberDashboard() {
                 <span className={`px-2 py-1 text-[10px] uppercase font-bold rounded ${
                   task.status === 'completed' ? 'bg-emerald-100 text-emerald-600' : 
                   task.status === 'in-progress' ? 'bg-blue-100 text-blue-600' : 
-                  'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
+                  'bg-cyan-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
                 }`}>
                   {task.status}
                 </span>
@@ -176,7 +176,7 @@ export default function MemberDashboard() {
             <Activity className="text-blue-500" size={20} />
             {txt(lang, 'Recent Activity', 'النشاط الأخير', 'Activité récente', '近期活动')}
           </h3>
-          <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 rtl:before:mr-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-slate-200 dark:before:bg-slate-700">
+          <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 rtl:before:mr-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-cyan-200 dark:before:bg-slate-700">
             {[
               { text: 'Pushed 5 commits to EduChain repo', time: '2 hours ago', icon: Briefcase, color: 'bg-blue-500' },
               { text: 'Completed Review for PR #42', time: '5 hours ago', icon: CheckSquare, color: 'bg-emerald-500' },
@@ -186,8 +186,8 @@ export default function MemberDashboard() {
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white shrink-0 z-10 border-4 border-white dark:border-[#0B132B] ${act.color}`}>
                   <act.icon size={14} />
                 </div>
-                <div className="glass p-4 rounded-xl flex-1 border border-slate-200 dark:border-slate-800">
-                  <p className="text-sm font-medium text-slate-800 dark:text-white">{act.text}</p>
+                <div className="glass p-4 rounded-xl flex-1 border border-cyan-300 dark:border-slate-800">
+                  <p className="text-sm font-medium text-[#1e3a5f] dark:text-white">{act.text}</p>
                   <span className="text-xs text-slate-500">{act.time}</span>
                 </div>
               </div>

@@ -15,7 +15,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-12 bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen pt-24 pb-12 bg-cyan-50 dark:bg-slate-900 flex flex-col items-center justify-center px-4">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -31,7 +31,7 @@ export default function ForgotPassword() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 mb-4 shadow-lg">
             {submitted ? <CheckCircle className="text-white w-8 h-8" /> : <KeyRound className="text-white w-8 h-8" />}
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">
+          <h2 className="text-2xl font-bold text-[#1e3a5f] dark:text-white mb-2">
             {lang === 'ar' ? 'نسيت كلمة المرور؟' : 'Forgot Password?'}
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -53,7 +53,7 @@ export default function ForgotPassword() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  className="block w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-3 border border-cyan-300 dark:border-slate-700 rounded-xl bg-cyan-50 dark:bg-slate-800/50 text-[#0B132B] dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   placeholder="you@example.com"
                 />
               </div>

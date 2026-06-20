@@ -55,11 +55,11 @@ const Methodology = () => {
                   </span>
                   
                   {/* Divider */}
-                  <div className={`w-[1px] h-8 ${isActive ? 'bg-emerald-500/30' : 'bg-white/5'}`}></div>
+                  <div className={`w-[1px] h-8 ${isActive ? 'bg-emerald-500/30' : 'bg-[#e0fcfc]/5'}`}></div>
                   
                   {/* Icon & Title */}
                   <div className="flex-1 flex items-center space-x-3 rtl:space-x-reverse min-w-0">
-                    <div className={`p-2 rounded-lg ${isActive ? 'bg-emerald-500/10 text-emerald-400 animate-pulse' : 'bg-white/5 text-cyber-muted'}`}>
+                    <div className={`p-2 rounded-lg ${isActive ? 'bg-emerald-500/10 text-emerald-400 animate-pulse' : 'bg-[#e0fcfc]/5 text-cyber-muted'}`}>
                       <StepIcon size={16} />
                     </div>
                     <span className="font-bold text-xs md:text-sm truncate text-white">

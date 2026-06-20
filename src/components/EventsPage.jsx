@@ -123,7 +123,7 @@ export default function EventsPage() {
   };
 
   return (
-    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-slate-800 dark:text-slate-200 transition-colors duration-300">
+    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-[#1e3a5f] dark:text-slate-200 transition-colors duration-300">
       <div className="max-w-7xl mx-auto relative z-10">
         
         {/* Header */}
@@ -152,13 +152,13 @@ export default function EventsPage() {
         >
           <div className="glass-card rounded-3xl p-1 border border-teal-500/30 dark:border-cyan-500/30 shadow-[0_0_30px_rgba(0,229,255,0.15)] overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-blue-500/10 dark:from-cyan-500/10 dark:to-purple-500/10" />
-            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[23px] p-8 md:p-12 flex flex-col lg:flex-row items-center gap-12 relative z-10">
+            <div className="bg-[#e0fcfc]/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[23px] p-8 md:p-12 flex flex-col lg:flex-row items-center gap-12 relative z-10">
               <div className="flex-1 w-full">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-bold mb-6">
                   <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                   {txt(lang, 'Next Upcoming Event', 'الحدث القادم', 'Prochain événement', '下一个即将举行的活动')}
                 </div>
-                <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-4 text-slate-800 dark:text-white">
+                <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-4 text-[#1e3a5f] dark:text-white">
                   {UPCOMING_EVENTS[0].title[lang] || UPCOMING_EVENTS[0].title.en}
                 </h2>
                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
@@ -208,7 +208,7 @@ export default function EventsPage() {
                   <img src={ev.image} alt="event" className="w-full h-full object-cover transform group-hover:scale-110 transition-duration-700" />
                   <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors z-10" />
                   <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-start">
-                    <span className="text-xs font-bold px-3 py-1 bg-white/90 dark:bg-slate-900/90 rounded-full text-slate-800 dark:text-white shadow-md">
+                    <span className="text-xs font-bold px-3 py-1 bg-[#e0fcfc]/90 dark:bg-slate-900/90 rounded-full text-[#1e3a5f] dark:text-white shadow-md">
                       {ev.type}
                     </span>
                     <div className="text-right">
@@ -220,7 +220,7 @@ export default function EventsPage() {
                 </div>
 
                 <div className="p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-orbitron font-bold mb-3 group-hover:text-purple-500 transition-colors text-slate-800 dark:text-white">
+                  <h3 className="text-xl font-orbitron font-bold mb-3 group-hover:text-purple-500 transition-colors text-[#1e3a5f] dark:text-white">
                     {ev.title[lang] || ev.title.en}
                   </h3>
                   <div className="space-y-2 mb-6 flex-grow">
@@ -247,13 +247,13 @@ export default function EventsPage() {
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {competitions?.map(comp => (
-              <div key={comp.id} className="glass-card rounded-2xl p-6 border-l-4 hover:bg-white/5 transition-colors group" style={{ borderLeftColor: comp.scope === 'international' ? '#3b82f6' : '#10b981' }}>
+              <div key={comp.id} className="glass-card rounded-2xl p-6 border-l-4 hover:bg-[#e0fcfc]/5 transition-colors group" style={{ borderLeftColor: comp.scope === 'international' ? '#3b82f6' : '#10b981' }}>
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-2">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${comp.scope === 'international' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'}`}>
                       {comp.scope === 'international' ? <><Globe size={12} className="inline mr-1" /> {txt(lang, 'International', 'دولي', 'International', '国际')}</> : <><MapPin size={12} className="inline mr-1" /> {txt(lang, 'National', 'وطني', 'National', '国家')}</>}
                     </span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${comp.status === 'open' ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'}`}>
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${comp.status === 'open' ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400' : 'bg-cyan-100 text-[#2d507b] dark:bg-slate-800 dark:text-slate-400'}`}>
                       {comp.status === 'open' ? txt(lang, 'Open for Registration', 'مفتوح للتسجيل', 'Ouvert', '开放注册') : comp.status}
                     </span>
                   </div>
@@ -262,7 +262,7 @@ export default function EventsPage() {
                   </div>
                 </div>
                 
-                <h3 className="text-2xl font-bold mb-4 text-slate-800 dark:text-white group-hover:text-amber-500 transition-colors">
+                <h3 className="text-2xl font-bold mb-4 text-[#1e3a5f] dark:text-white group-hover:text-amber-500 transition-colors">
                   {lang === 'ar' ? comp.title_ar : comp.title_en}
                 </h3>
                 
@@ -288,9 +288,9 @@ export default function EventsPage() {
           </h2>
           <div className="glass-card rounded-2xl overflow-hidden">
             {PAST_EVENTS.map((ev, idx) => (
-              <div key={ev.id} className={`p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${idx !== PAST_EVENTS.length - 1 ? 'border-b border-slate-200 dark:border-slate-800' : ''}`}>
+              <div key={ev.id} className={`p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:bg-cyan-50 dark:hover:bg-slate-800/50 transition-colors ${idx !== PAST_EVENTS.length - 1 ? 'border-b border-cyan-300 dark:border-slate-800' : ''}`}>
                 <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-800 flex flex-col items-center justify-center flex-shrink-0 text-slate-500">
+                  <div className="w-16 h-16 rounded-xl bg-cyan-100 dark:bg-slate-800 flex flex-col items-center justify-center flex-shrink-0 text-slate-500">
                     <span className="text-sm font-bold">{new Date(ev.date).toLocaleString('default', { month: 'short' })}</span>
                     <span className="text-xl font-orbitron font-bold">{new Date(ev.date).getDate()}</span>
                   </div>
@@ -320,10 +320,10 @@ export default function EventsPage() {
             >
               <motion.div 
                 initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-                className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800"
+                className="bg-[#e0fcfc] dark:bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-cyan-300 dark:border-slate-800"
                 onClick={e => e.stopPropagation()}
               >
-                <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-between p-6 border-b border-cyan-200 dark:border-slate-800">
                   <h3 className="font-bold font-orbitron text-xl gradient-text">
                     {txt(lang, 'Event Registration', 'التسجيل في الفعالية', 'Inscription', '活动注册')}
                   </h3>
@@ -332,7 +332,7 @@ export default function EventsPage() {
                   </button>
                 </div>
                 
-                <div className="p-6 text-slate-800 dark:text-slate-200">
+                <div className="p-6 text-[#1e3a5f] dark:text-slate-200">
                   <div className="mb-6">
                     <p className="text-sm text-slate-500 mb-1">{txt(lang, 'Registering for:', 'التسجيل في:', 'S\'inscrire pour:', '注册用于：')}</p>
                     <p className="font-bold text-lg">{selectedEvent.title?.[lang] || selectedEvent.title?.en || selectedEvent.title_en || selectedEvent.title_ar}</p>
@@ -348,7 +348,7 @@ export default function EventsPage() {
                           value={registerEmail}
                           onChange={(e) => setRegisterEmail(e.target.value)}
                           placeholder="student@gitm.ma" 
-                          className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:border-teal-500"
+                          className="w-full px-4 py-3 rounded-xl border border-cyan-400 dark:border-slate-700 bg-cyan-50 dark:bg-slate-800 text-[#0B132B] dark:text-white outline-none focus:border-teal-500"
                         />
                       </div>
                       <button type="submit" disabled={isRegistering} className="w-full btn-primary px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 mt-4">
@@ -367,7 +367,7 @@ export default function EventsPage() {
                       <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
                         {txt(lang, 'Your digital ticket and event details have been sent to your email.', 'تم إرسال تذكرتك الرقمية وتفاصيل الفعالية إلى بريدك الإلكتروني.', 'Billet envoyé.', '门票已发送。')}
                       </p>
-                      <button onClick={closeRegistration} className="px-6 py-2 bg-slate-200 dark:bg-slate-800 rounded-full font-bold hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                      <button onClick={closeRegistration} className="px-6 py-2 bg-cyan-200 dark:bg-slate-800 rounded-full font-bold hover:bg-cyan-300 dark:hover:bg-slate-700 transition-colors">
                         {txt(lang, 'Close', 'إغلاق', 'Fermer', '关闭')}
                       </button>
                     </div>

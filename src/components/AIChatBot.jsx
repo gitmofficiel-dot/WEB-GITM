@@ -155,7 +155,7 @@ const AIChatBot = () => {
                 <button
                   key={s.id}
                   onClick={() => handleSend(s.label)}
-                  className="px-3 py-1.5 rounded-full text-[10px] font-medium bg-white/5 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 transition-colors"
+                  className="px-3 py-1.5 rounded-full text-[10px] font-medium bg-[#e0fcfc]/5 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 transition-colors"
                 >
                   {s.label}
                 </button>
@@ -174,13 +174,13 @@ const AIChatBot = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={lang === 'ar' ? 'اكتب أو تحدث...' : 'Type or speak...'}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-4 pr-20 rtl:pr-4 rtl:pl-20 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                className="w-full bg-[#e0fcfc]/5 border border-white/10 rounded-xl py-3 pl-4 pr-20 rtl:pr-4 rtl:pl-20 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
               />
               <div className="absolute right-2 rtl:left-2 rtl:right-auto flex items-center">
                 <button
                   type="button"
                   onClick={startListening}
-                  className={`p-2 rounded-full transition-colors mr-1 rtl:mr-0 rtl:ml-1 ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-slate-400 hover:text-cyan-400 hover:bg-white/5'}`}
+                  className={`p-2 rounded-full transition-colors mr-1 rtl:mr-0 rtl:ml-1 ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-slate-400 hover:text-cyan-400 hover:bg-[#e0fcfc]/5'}`}
                 >
                   {isListening ? <Mic size={16} /> : <MicOff size={16} />}
                 </button>

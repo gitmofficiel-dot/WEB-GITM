@@ -70,7 +70,7 @@ const TechExhibitions = () => {
     <section className="py-16 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-[#0B132B] dark:text-white mb-4">
             {lang === 'ar' ? 'المعارض التقنية القادمة' : 'Upcoming Tech Exhibitions'}
           </h2>
           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
@@ -84,7 +84,7 @@ const TechExhibitions = () => {
             <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide mb-4 inline-block">
               {lang === 'ar' ? 'الحدث القادم' : 'Next Event'}
             </span>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{nextEvent.name[lang] || nextEvent.name.en}</h3>
+            <h3 className="text-2xl font-bold text-[#0B132B] dark:text-white mb-2">{nextEvent.name[lang] || nextEvent.name.en}</h3>
             <p className="text-gray-600 dark:text-gray-300 mb-4">{nextEvent.description[lang] || nextEvent.description.en}</p>
             
             <Countdown targetDate={nextEvent.date} lang={lang} />
@@ -99,10 +99,10 @@ const TechExhibitions = () => {
               <motion.div 
                 whileHover={{ scale: 1.02 }}
                 key={exhibition.id} 
-                className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 rounded-2xl bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all gap-4"
+                className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 rounded-2xl bg-[#e0fcfc] dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all gap-4"
               >
                 <div className="flex-1">
-                  <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{exhibition.name[lang] || exhibition.name.en}</h4>
+                  <h4 className="text-xl font-bold text-[#0B132B] dark:text-white mb-2">{exhibition.name[lang] || exhibition.name.en}</h4>
                   <p className="text-sm text-gray-500 dark:text-gray-400">{exhibition.description[lang] || exhibition.description.en}</p>
                 </div>
                 <div className="flex flex-col gap-2 min-w-[200px]">

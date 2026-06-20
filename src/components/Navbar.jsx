@@ -45,7 +45,7 @@ const Navbar = () => {
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled 
-          ? 'py-2 bg-white/80 dark:bg-cyber-bg/90 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 shadow-lg dark:shadow-none' 
+          ? 'py-2 bg-[#e0fcfc]/80 dark:bg-cyber-bg/90 backdrop-blur-xl border-b border-cyan-300/50 dark:border-white/5 shadow-lg dark:shadow-none' 
           : 'py-4 bg-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -60,7 +60,7 @@ const Navbar = () => {
                 <img src="/logo.png" alt="GITM Logo" className="w-full h-full object-cover" />
               </div>
               <div className="hidden sm:block">
-                <span className="text-sm font-black text-slate-800 dark:text-white font-orbitron tracking-wider">GITM</span>
+                <span className="text-sm font-black text-[#1e3a5f] dark:text-white font-orbitron tracking-wider">GITM</span>
                 <span className="text-[8px] text-slate-400 dark:text-cyber-muted block font-mono tracking-widest uppercase">
                   Innovation Tech
                 </span>
@@ -79,7 +79,7 @@ const Navbar = () => {
                     className={`flex items-center space-x-1.5 rtl:space-x-reverse px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-300 ${
                       isActive
                         ? 'bg-teal-500/10 dark:bg-[#00E5FF]/10 text-teal-600 dark:text-[#00E5FF] border border-teal-500/20 dark:border-[#00E5FF]/20'
-                        : 'text-slate-600 dark:text-cyber-muted hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
+                        : 'text-slate-600 dark:text-cyber-muted hover:text-[#1e3a5f] dark:hover:text-white hover:bg-cyan-100 dark:hover:bg-[#e0fcfc]/5'
                     }`}
                   >
                     <Icon size={14} />
@@ -95,7 +95,7 @@ const Navbar = () => {
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-cyber-muted hover:text-slate-800 dark:hover:text-white transition-all"
+                className="p-2 rounded-xl hover:bg-cyan-100 dark:hover:bg-[#e0fcfc]/5 text-slate-500 dark:text-cyber-muted hover:text-[#1e3a5f] dark:hover:text-white transition-all"
                 title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
               >
                 {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
@@ -105,7 +105,7 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={() => { setLangDropdown(!langDropdown); setProfileDropdown(false); }}
-                  className="flex items-center space-x-1.5 rtl:space-x-reverse px-2.5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-cyber-muted hover:text-slate-800 dark:hover:text-white transition-all text-xs font-semibold"
+                  className="flex items-center space-x-1.5 rtl:space-x-reverse px-2.5 py-2 rounded-xl hover:bg-cyan-100 dark:hover:bg-[#e0fcfc]/5 text-slate-500 dark:text-cyber-muted hover:text-[#1e3a5f] dark:hover:text-white transition-all text-xs font-semibold"
                 >
                   <Globe size={14} />
                   <span className="hidden sm:inline">{langLabels[lang]}</span>
@@ -115,7 +115,7 @@ const Navbar = () => {
                 {langDropdown && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setLangDropdown(false)} />
-                    <div className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-40 rounded-xl glass-strong border border-slate-200 dark:border-white/10 shadow-xl z-20 overflow-hidden animate-fade-in-down">
+                    <div className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-40 rounded-xl glass-strong border border-cyan-300 dark:border-white/10 shadow-xl z-20 overflow-hidden animate-fade-in-down">
                       {Object.entries(langLabels).map(([code, label]) => (
                         <button
                           key={code}
@@ -123,7 +123,7 @@ const Navbar = () => {
                           className={`w-full px-4 py-2.5 text-xs font-semibold text-left rtl:text-right transition-colors flex items-center justify-between ${
                             lang === code 
                               ? 'bg-teal-500/10 dark:bg-[#00E5FF]/10 text-teal-600 dark:text-[#00E5FF]' 
-                              : 'text-slate-600 dark:text-cyber-muted hover:bg-slate-50 dark:hover:bg-white/5'
+                              : 'text-slate-600 dark:text-cyber-muted hover:bg-cyan-50 dark:hover:bg-[#e0fcfc]/5'
                           }`}
                         >
                           <span>{label}</span>
@@ -149,22 +149,22 @@ const Navbar = () => {
                         <span className="text-[10px] font-bold text-white dark:text-black">{user.name?.[0]?.toUpperCase() || 'U'}</span>
                       )}
                     </div>
-                    <span className="text-xs font-bold text-slate-700 dark:text-white hidden sm:inline max-w-[80px] truncate">{user.name}</span>
+                    <span className="text-xs font-bold text-[#2d507b] dark:text-white hidden sm:inline max-w-[80px] truncate">{user.name}</span>
                     <ChevronDown size={12} className="text-slate-400 dark:text-cyber-muted" />
                   </button>
 
                   {profileDropdown && (
                     <>
                       <div className="fixed inset-0 z-10" onClick={() => setProfileDropdown(false)} />
-                      <div className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-52 rounded-xl glass-strong border border-slate-200 dark:border-white/10 shadow-xl z-20 overflow-hidden animate-fade-in-down">
-                        <div className="px-4 py-3 border-b border-slate-100 dark:border-white/5">
-                          <p className="text-xs font-bold text-slate-800 dark:text-white truncate">{user.name}</p>
+                      <div className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-52 rounded-xl glass-strong border border-cyan-300 dark:border-white/10 shadow-xl z-20 overflow-hidden animate-fade-in-down">
+                        <div className="px-4 py-3 border-b border-cyan-200 dark:border-white/5">
+                          <p className="text-xs font-bold text-[#1e3a5f] dark:text-white truncate">{user.name}</p>
                           <p className="text-[10px] text-slate-400 dark:text-cyber-muted truncate">{user.email}</p>
                           <span className="text-[9px] font-mono text-teal-500 dark:text-[#00E5FF] uppercase font-bold mt-1 block">{user.role}</span>
                         </div>
                         <button
                           onClick={() => { setView('dashboard'); setProfileDropdown(false); }}
-                          className="w-full px-4 py-2.5 text-xs font-semibold text-left rtl:text-right text-slate-600 dark:text-cyber-muted hover:bg-slate-50 dark:hover:bg-white/5 flex items-center space-x-2 rtl:space-x-reverse"
+                          className="w-full px-4 py-2.5 text-xs font-semibold text-left rtl:text-right text-slate-600 dark:text-cyber-muted hover:bg-cyan-50 dark:hover:bg-[#e0fcfc]/5 flex items-center space-x-2 rtl:space-x-reverse"
                         >
                           <LayoutDashboard size={14} />
                           <span>{lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}</span>
@@ -193,7 +193,7 @@ const Navbar = () => {
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="lg:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-600 dark:text-cyber-muted"
+                className="lg:hidden p-2 rounded-xl hover:bg-cyan-100 dark:hover:bg-[#e0fcfc]/5 text-slate-600 dark:text-cyber-muted"
               >
                 {mobileOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
@@ -206,10 +206,10 @@ const Navbar = () => {
       {mobileOpen && (
         <>
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileOpen(false)} />
-          <div className="fixed top-0 right-0 rtl:right-auto rtl:left-0 w-72 h-full bg-white dark:bg-cyber-bg border-l rtl:border-l-0 rtl:border-r border-slate-200 dark:border-white/5 z-50 p-6 overflow-y-auto animate-slide-in-right lg:hidden">
+          <div className="fixed top-0 right-0 rtl:right-auto rtl:left-0 w-72 h-full bg-[#e0fcfc] dark:bg-cyber-bg border-l rtl:border-l-0 rtl:border-r border-cyan-300 dark:border-white/5 z-50 p-6 overflow-y-auto animate-slide-in-right lg:hidden">
             <div className="flex justify-between items-center mb-8">
-              <span className="font-orbitron font-black text-lg text-slate-800 dark:text-white">GITM</span>
-              <button onClick={() => setMobileOpen(false)} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5">
+              <span className="font-orbitron font-black text-lg text-[#1e3a5f] dark:text-white">GITM</span>
+              <button onClick={() => setMobileOpen(false)} className="p-2 rounded-xl hover:bg-cyan-100 dark:hover:bg-[#e0fcfc]/5">
                 <X size={20} className="text-slate-500 dark:text-cyber-muted" />
               </button>
             </div>
@@ -225,7 +225,7 @@ const Navbar = () => {
                     className={`w-full flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                       isActive
                         ? 'bg-teal-500/10 dark:bg-[#00E5FF]/10 text-teal-600 dark:text-[#00E5FF] border border-teal-500/20 dark:border-[#00E5FF]/20'
-                        : 'text-slate-600 dark:text-cyber-muted hover:bg-slate-50 dark:hover:bg-white/5'
+                        : 'text-slate-600 dark:text-cyber-muted hover:bg-cyan-50 dark:hover:bg-[#e0fcfc]/5'
                     }`}
                   >
                     <Icon size={18} />

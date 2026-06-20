@@ -70,7 +70,7 @@ export default function CollaborationBoard() {
                 {c.name.charAt(0)}
               </div>
             ))}
-            <div className="w-8 h-8 rounded-full border-2 border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-500 z-0">
+            <div className="w-8 h-8 rounded-full border-2 border-cyan-400 dark:border-slate-700 bg-cyan-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-500 z-0">
               <Plus size={14} />
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function CollaborationBoard() {
             <button
               key={tool.id}
               onClick={() => setActiveTool(tool.id)}
-              className={`p-3 rounded-xl transition-colors ${activeTool === tool.id ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+              className={`p-3 rounded-xl transition-colors ${activeTool === tool.id ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30' : 'text-slate-500 hover:bg-cyan-100 dark:hover:bg-slate-800'}`}
             >
               <tool.icon size={20} />
             </button>
@@ -125,7 +125,7 @@ export default function CollaborationBoard() {
                 height: el.height
               }}
             >
-              {el.type === 'text' && <span className="font-bold text-slate-800 dark:text-white p-2 outline-none" contentEditable>{el.text}</span>}
+              {el.type === 'text' && <span className="font-bold text-[#1e3a5f] dark:text-white p-2 outline-none" contentEditable>{el.text}</span>}
             </motion.div>
           ))}
 
@@ -146,7 +146,7 @@ export default function CollaborationBoard() {
 
           {elements.length === 0 && (
             <div className="absolute inset-0 flex items-center justify-center text-slate-400 pointer-events-none">
-              <p className="font-medium bg-white/80 dark:bg-slate-900/80 px-4 py-2 rounded-lg backdrop-blur-sm">
+              <p className="font-medium bg-[#e0fcfc]/80 dark:bg-slate-900/80 px-4 py-2 rounded-lg backdrop-blur-sm">
                 {txt(lang, 'Select a tool to start drawing architecture.', 'اختر أداة لبدء رسم المخطط المعماري.', 'Sélectionnez un outil', '选择一个工具')}
               </p>
             </div>

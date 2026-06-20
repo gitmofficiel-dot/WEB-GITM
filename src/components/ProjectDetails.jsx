@@ -23,7 +23,7 @@ export default function ProjectDetails() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-20 bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen pt-24 pb-20 bg-cyan-50 dark:bg-slate-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <button onClick={() => setView('projects')} className="mb-6 flex items-center text-slate-500 hover:text-blue-600 transition font-medium">
@@ -31,7 +31,7 @@ export default function ProjectDetails() {
         </button>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-black text-slate-800 dark:text-white mb-4">{project.title}</h1>
+          <h1 className="text-4xl md:text-5xl font-black text-[#1e3a5f] dark:text-white mb-4">{project.title}</h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mb-6">{project.subtitle}</p>
           <div className="flex flex-wrap gap-2">
             {project.tags.map((tag, i) => (
@@ -53,8 +53,8 @@ export default function ProjectDetails() {
             </motion.div>
 
             {/* Explanation & Summary */}
-            <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-slate-200 dark:border-slate-700">
-              <h3 className="text-2xl font-bold mb-4 text-slate-800 dark:text-white">{lang === 'ar' ? 'ملخص المشروع' : 'Project Summary'}</h3>
+            <div className="bg-[#e0fcfc] dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-cyan-300 dark:border-slate-700">
+              <h3 className="text-2xl font-bold mb-4 text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'ملخص المشروع' : 'Project Summary'}</h3>
               <div className="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
                 <p>This project implements an ultra-efficient object detection pipeline running natively on a Jetson Nano. By converting YOLOv8 weights to TensorRT, we achieved 45 FPS.</p>
                 <p>The drone uses this visual data to map its surroundings and avoid obstacles dynamically without needing a cloud connection.</p>
@@ -84,17 +84,17 @@ export default function ProjectDetails() {
 
           <div className="lg:col-span-1 space-y-6">
             {/* Files & Reports */}
-            <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+            <div className="bg-[#e0fcfc] dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-cyan-300 dark:border-slate-700">
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><FileText className="w-5 h-5 text-emerald-500"/> {lang === 'ar' ? 'الملفات والتقارير' : 'Files & Reports'}</h3>
               <div className="space-y-3">
                 {project.files.map((f, i) => (
-                  <button key={i} className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors group">
+                  <button key={i} className="w-full flex items-center justify-between p-3 rounded-xl bg-cyan-50 dark:bg-slate-700/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors group">
                     <div className="flex items-center gap-3 overflow-hidden">
                       <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center shrink-0">
                         <Download className="w-5 h-5 text-emerald-600" />
                       </div>
                       <div className="text-left rtl:text-right overflow-hidden">
-                        <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{f.name}</p>
+                        <p className="text-sm font-bold text-[#1e3a5f] dark:text-white truncate">{f.name}</p>
                         <p className="text-xs text-slate-500">{f.size}</p>
                       </div>
                     </div>
@@ -104,7 +104,7 @@ export default function ProjectDetails() {
             </div>
 
             {/* Team */}
-            <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+            <div className="bg-[#e0fcfc] dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-cyan-300 dark:border-slate-700">
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><Users className="w-5 h-5 text-blue-500"/> {lang === 'ar' ? 'فريق العمل' : 'Project Team'}</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">

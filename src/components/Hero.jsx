@@ -12,7 +12,7 @@ const Hero = ({ setView }) => {
   const subtitle = lang === 'ar' ? 'مجموعة الابتكار التكنولوجي المغربية - ريادة وإبداع' : 'Moroccan Technological Innovation Group - Leadership and Creativity';
   
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-gray-900 pt-20">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#e0fcfc] dark:bg-gray-900 pt-20">
       {/* Background Particles placeholder */}
       <div className="absolute inset-0 z-0 opacity-30 dark:opacity-20 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
@@ -54,7 +54,7 @@ const Hero = ({ setView }) => {
             </button>
             <button 
               onClick={() => setView && setView('contact')}
-              className="btn-glass px-8 py-3 rounded-full bg-white/10 backdrop-blur-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-800 dark:text-white font-semibold transition-all flex items-center justify-center"
+              className="btn-glass px-8 py-3 rounded-full bg-[#e0fcfc]/10 backdrop-blur-md border border-gray-200 dark:border-gray-700 hover:bg-cyan-50 dark:hover:bg-gray-800 text-gray-800 dark:text-white font-semibold transition-all flex items-center justify-center"
             >
               {lang === 'ar' ? 'اتصل بنا' : 'Contact Us'}
             </button>
@@ -85,11 +85,11 @@ const Hero = ({ setView }) => {
               { icon: <Code className="text-cyan-500" />, count: '12+', label: lang === 'ar' ? 'مشاريع نشطة' : 'Active Projects' },
               { icon: <Users className="text-green-500" />, count: '25+', label: lang === 'ar' ? 'أعضاء الفريق' : 'Team Members' },
             ].map((stat, i) => (
-              <div key={i} className="glass-card card-3d p-6 rounded-2xl bg-white/40 dark:bg-gray-800/40 backdrop-blur-lg border border-white/20 dark:border-gray-700/50 hover-lift text-center">
+              <div key={i} className="glass-card card-3d p-6 rounded-2xl bg-[#e0fcfc]/40 dark:bg-gray-800/40 backdrop-blur-lg border border-white/20 dark:border-gray-700/50 hover-lift text-center">
                 <div className="flex justify-center mb-3 text-3xl">
                   {stat.icon}
                 </div>
-                <h3 className="text-3xl font-bold font-orbitron text-gray-900 dark:text-white mb-1">{stat.count}</h3>
+                <h3 className="text-3xl font-bold font-orbitron text-[#0B132B] dark:text-white mb-1">{stat.count}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</p>
               </div>
             ))}

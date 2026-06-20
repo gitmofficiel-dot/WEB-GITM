@@ -73,7 +73,7 @@ const Contact = () => {
             <div className="border-t border-white/5 pt-6 mt-8">
               <button 
                 onClick={() => alert('Redirecting to secure scheduling portal (Cal.com/GITM)...')}
-                className="w-full py-4 px-6 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center space-x-3 rtl:space-x-reverse hover:shadow-glow-cyan"
+                className="w-full py-4 px-6 rounded-xl bg-[#e0fcfc]/5 border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center space-x-3 rtl:space-x-reverse hover:shadow-glow-cyan"
               >
                 <Calendar size={16} className="animate-float" />
                 <span>{t('contact.scheduleBtn')}</span>

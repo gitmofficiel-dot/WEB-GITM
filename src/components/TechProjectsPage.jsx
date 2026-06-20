@@ -81,7 +81,7 @@ export default function TechProjectsPage() {
   const filteredProjects = PROJECTS.filter(p => filter === 'all' || p.status === filter);
 
   return (
-    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-slate-800 dark:text-slate-200 transition-colors duration-300">
+    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-[#1e3a5f] dark:text-slate-200 transition-colors duration-300">
       <div className="max-w-7xl mx-auto relative z-10">
         
         <motion.div 
@@ -127,7 +127,7 @@ export default function TechProjectsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white dark:bg-slate-800 rounded-3xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group flex flex-col"
+                className="bg-[#e0fcfc] dark:bg-slate-800 rounded-3xl overflow-hidden shadow-lg border border-cyan-300 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group flex flex-col"
                 onClick={() => setView('project-details')}
               >
                 <div className="h-48 relative overflow-hidden">
@@ -141,15 +141,15 @@ export default function TechProjectsPage() {
                 </div>
 
                 <div className="p-6 flex-grow flex flex-col">
-                  <h2 className="text-xl font-bold mb-3 text-slate-800 dark:text-white group-hover:text-teal-600 dark:group-hover:text-cyan-400 transition-colors">{proj.name}</h2>
+                  <h2 className="text-xl font-bold mb-3 text-[#1e3a5f] dark:text-white group-hover:text-teal-600 dark:group-hover:text-cyan-400 transition-colors">{proj.name}</h2>
                   <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 mb-4 flex-grow">
                     {proj.desc[lang] || proj.desc.en}
                   </p>
 
-                  <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between mt-auto">
+                  <div className="pt-4 border-t border-cyan-200 dark:border-slate-700 flex items-center justify-between mt-auto">
                     <div className="flex -space-x-2">
                       {proj.team.map((member, i) => (
-                        <div key={i} className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 border-2 border-white dark:border-slate-800 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-300 z-10">
+                        <div key={i} className="w-8 h-8 rounded-full bg-cyan-200 dark:bg-slate-700 border-2 border-white dark:border-slate-800 flex items-center justify-center text-xs font-bold text-[#2d507b] dark:text-slate-300 z-10">
                           {member}
                         </div>
                       ))}

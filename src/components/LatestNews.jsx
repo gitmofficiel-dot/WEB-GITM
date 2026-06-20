@@ -12,11 +12,11 @@ const LatestNews = ({ setView }) => {
     .slice(0, 3);
 
   return (
-    <section className="py-16 bg-gray-50 dark:bg-gray-900/50">
+    <section className="py-16 bg-cyan-50 dark:bg-gray-900/50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-end mb-10">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-gray-900 dark:text-white mb-2">
+            <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-[#0B132B] dark:text-white mb-2">
               {lang === 'ar' ? 'آخر الأخبار' : 'Latest News'}
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full"></div>
@@ -37,7 +37,7 @@ const LatestNews = ({ setView }) => {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
               key={item.id || index} 
-              className="glass-card card-3d group cursor-pointer bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700"
+              className="glass-card card-3d group cursor-pointer bg-[#e0fcfc] dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700"
             >
               <div className="h-48 bg-gradient-to-br from-emerald-100 to-cyan-100 dark:from-emerald-900/40 dark:to-cyan-900/40 flex items-center justify-center text-6xl group-hover:scale-110 transition-transform duration-500">
                 {item.image || '📰'}
@@ -47,7 +47,7 @@ const LatestNews = ({ setView }) => {
                   <span className="flex items-center gap-1"><Calendar size={14} /> {item.date}</span>
                   <span className="flex items-center gap-1 text-emerald-600 dark:text-cyan-400 bg-emerald-50 dark:bg-cyan-900/30 px-2 py-1 rounded-full whitespace-nowrap overflow-hidden text-ellipsis"><Tag size={12} /> {item.category || item.category?.en || 'News'}</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-2">
+                <h3 className="text-xl font-bold text-[#0B132B] dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-2">
                   {item.title_ar || item.title_en || item.title?.en || item.title}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">

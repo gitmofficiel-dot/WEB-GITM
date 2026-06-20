@@ -85,7 +85,7 @@ const Showcase = () => {
                 className={`w-full md:w-auto flex items-center justify-center space-x-3 rtl:space-x-reverse px-6 py-4 rounded-xl border text-sm font-bold transition-all duration-300 ${
                   isActive
                     ? `${catStyle.text} ${catStyle.border} ${catStyle.bg} ${catStyle.glow} scale-105`
-                    : 'text-cyber-muted border-white/5 bg-white/5 hover:border-white/10 hover:text-white'
+                    : 'text-cyber-muted border-white/5 bg-[#e0fcfc]/5 hover:border-white/10 hover:text-white'
                 }`}
               >
                 <CatIcon size={18} />
@@ -141,7 +141,7 @@ const Showcase = () => {
                 {currentProject.tech.split(', ').map((techItem) => (
                   <span 
                     key={techItem} 
-                    className={`px-3 py-1 rounded-md text-[10px] md:text-xs font-mono font-bold bg-white/5 border border-white/10 ${style.text}`}
+                    className={`px-3 py-1 rounded-md text-[10px] md:text-xs font-mono font-bold bg-[#e0fcfc]/5 border border-white/10 ${style.text}`}
                   >
                     {techItem}
                   </span>
@@ -161,7 +161,7 @@ const Showcase = () => {
                   className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
                     rightPanelTab === '3d'
                       ? 'bg-gradient-to-r from-[#00E5FF] to-cyan-500 text-black font-black'
-                      : 'text-cyber-muted hover:text-white bg-white/5'
+                      : 'text-cyber-muted hover:text-white bg-[#e0fcfc]/5'
                   }`}
                 >
                   {t('lang') === 'ar' || true ? 'لوحة ثلاثية الأبعاد (3D Model)' : '3D Model'}
@@ -171,7 +171,7 @@ const Showcase = () => {
                   className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
                     rightPanelTab === 'arch'
                       ? 'bg-gradient-to-r from-[#00FF87] to-emerald-500 text-black font-black'
-                      : 'text-cyber-muted hover:text-white bg-white/5'
+                      : 'text-cyber-muted hover:text-white bg-[#e0fcfc]/5'
                   }`}
                 >
                   {t('lang') === 'ar' || true ? 'مخطط البنية (Architecture)' : 'Architecture'}

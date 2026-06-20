@@ -81,7 +81,7 @@ const AppContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0B132B] text-slate-900 dark:text-white transition-colors duration-300 font-sans relative overflow-x-hidden flex flex-col">
+    <div className="min-h-screen bg-cyan-50 dark:bg-[#0B132B] text-[#0B132B] dark:text-white transition-colors duration-300 font-sans relative overflow-x-hidden flex flex-col">
       {/* Global Background Elements */}
       <div className="fixed inset-0 z-0 bg-grid-slate-200 dark:bg-grid-white/[0.02] bg-[size:30px_30px]" />
       <div className="fixed inset-0 z-0 bg-gradient-to-br from-transparent to-teal-50/50 dark:to-cyan-900/10 pointer-events-none" />

@@ -107,7 +107,7 @@ const AIFeatures = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-6xl font-bold mb-6 text-gray-900 dark:text-white"
+            className="text-5xl md:text-6xl font-bold mb-6 text-[#0B132B] dark:text-white"
           >
             {language === 'ar' ? 'مستقبل الأعمال ' : language === 'fr' ? 'L\'avenir des Affaires ' : language === 'zh' ? '未来的商业 ' : 'The Future of Business '}
             <span className="gradient-text bg-gradient-to-r from-blue-600 to-purple-600">
@@ -134,13 +134,13 @@ const AIFeatures = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               whileHover={{ y: -5 }}
-              className="glass-card card-3d p-8 rounded-2xl border border-white/20 dark:border-white/5 bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl relative group overflow-hidden"
+              className="glass-card card-3d p-8 rounded-2xl border border-white/20 dark:border-white/5 bg-[#e0fcfc]/50 dark:bg-gray-900/50 backdrop-blur-xl relative group overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl inline-block shadow-lg border border-gray-100 dark:border-gray-700 relative z-10">
+              <div className="mb-6 p-4 bg-[#e0fcfc] dark:bg-gray-800 rounded-xl inline-block shadow-lg border border-gray-100 dark:border-gray-700 relative z-10">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white relative z-10">
+              <h3 className="text-xl font-bold mb-3 text-[#0B132B] dark:text-white relative z-10">
                 {feature.title}
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-6 relative z-10">
@@ -159,10 +159,10 @@ const AIFeatures = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="max-w-4xl mx-auto glass-card border border-white/20 dark:border-white/10 rounded-3xl p-8 md:p-12 bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl shadow-2xl"
+          className="max-w-4xl mx-auto glass-card border border-white/20 dark:border-white/10 rounded-3xl p-8 md:p-12 bg-[#e0fcfc]/60 dark:bg-gray-900/60 backdrop-blur-2xl shadow-2xl"
         >
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
+            <h2 className="text-3xl font-bold mb-4 text-[#0B132B] dark:text-white">
               {language === 'ar' ? 'جرب الذكاء الاصطناعي' : language === 'fr' ? 'Démo Interactive' : language === 'zh' ? '互动演示' : 'Interactive Demo'}
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
@@ -179,7 +179,7 @@ const AIFeatures = () => {
                 value={demoInput}
                 onChange={(e) => setDemoInput(e.target.value)}
                 placeholder={language === 'ar' ? 'اكتب أو انسخ نصاً هنا...' : language === 'fr' ? 'Tapez ou collez du texte ici...' : language === 'zh' ? '在此处输入或粘贴文本...' : 'Type or paste some text here...'}
-                className="w-full h-40 p-4 bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all dark:text-white"
+                className="w-full h-40 p-4 bg-[#e0fcfc]/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all dark:text-white"
               ></textarea>
               <div className="flex gap-3">
                 <button
@@ -217,7 +217,7 @@ const AIFeatures = () => {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 {language === 'ar' ? 'النتيجة المدعومة بالذكاء الاصطناعي' : language === 'fr' ? 'Résultat IA' : language === 'zh' ? '人工智能结果' : 'AI Output'}
               </label>
-              <div className={`w-full h-40 p-4 bg-gray-50/80 dark:bg-gray-900/80 border ${demoOutput ? 'border-green-400 dark:border-green-500' : 'border-gray-200 dark:border-gray-700'} rounded-xl transition-all relative overflow-hidden flex flex-col`}>
+              <div className={`w-full h-40 p-4 bg-cyan-50/80 dark:bg-gray-900/80 border ${demoOutput ? 'border-green-400 dark:border-green-500' : 'border-gray-200 dark:border-gray-700'} rounded-xl transition-all relative overflow-hidden flex flex-col`}>
                 {isProcessing ? (
                   <div className="flex-1 flex flex-col items-center justify-center text-blue-500 gap-3">
                     <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }}>

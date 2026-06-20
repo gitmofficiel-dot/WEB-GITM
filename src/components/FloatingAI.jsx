@@ -73,7 +73,7 @@ export default function FloatingAI() {
               <div className="h-16 bg-gradient-to-r from-teal-500 to-cyan-500 flex items-center justify-between px-4 text-white shrink-0 relative overflow-hidden">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="flex items-center gap-3 relative z-10">
-                  <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                  <div className="w-10 h-10 rounded-full bg-[#e0fcfc]/20 flex items-center justify-center backdrop-blur-sm">
                     <Bot className="w-6 h-6" />
                   </div>
                   <div>
@@ -83,13 +83,13 @@ export default function FloatingAI() {
                     </p>
                   </div>
                 </div>
-                <button onClick={() => setIsOpen(false)} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors relative z-10">
+                <button onClick={() => setIsOpen(false)} className="w-8 h-8 rounded-full bg-[#e0fcfc]/10 hover:bg-[#e0fcfc]/20 flex items-center justify-center transition-colors relative z-10">
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               {/* Chat Body */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-xl">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-cyan-50/50 dark:bg-slate-900/50 backdrop-blur-xl">
                 {messages.map(msg => (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}
@@ -98,13 +98,13 @@ export default function FloatingAI() {
                     className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div className={`flex gap-2 max-w-[85%] ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.sender === 'user' ? 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300' : 'bg-gradient-to-br from-teal-400 to-cyan-500 text-white'}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.sender === 'user' ? 'bg-cyan-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300' : 'bg-gradient-to-br from-teal-400 to-cyan-500 text-white'}`}>
                         {msg.sender === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                       </div>
                       <div className={`p-3 rounded-2xl text-sm ${
                         msg.sender === 'user' 
-                          ? 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white rounded-tr-none rtl:rounded-tl-none rtl:rounded-tr-2xl' 
-                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-tl-none rtl:rounded-tr-none rtl:rounded-tl-2xl shadow-sm'
+                          ? 'bg-cyan-200 dark:bg-slate-700 text-[#1e3a5f] dark:text-white rounded-tr-none rtl:rounded-tl-none rtl:rounded-tr-2xl' 
+                          : 'bg-[#e0fcfc] dark:bg-slate-800 text-[#2d507b] dark:text-slate-300 border border-cyan-300 dark:border-slate-700 rounded-tl-none rtl:rounded-tr-none rtl:rounded-tl-2xl shadow-sm'
                       }`}>
                         {msg.text}
                       </div>
@@ -118,7 +118,7 @@ export default function FloatingAI() {
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-white flex items-center justify-center shrink-0">
                         <Bot className="w-4 h-4" />
                       </div>
-                      <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-tl-none rtl:rounded-tr-none rtl:rounded-tl-2xl shadow-sm flex items-center gap-1">
+                      <div className="p-4 rounded-2xl bg-[#e0fcfc] dark:bg-slate-800 border border-cyan-300 dark:border-slate-700 rounded-tl-none rtl:rounded-tr-none rtl:rounded-tl-2xl shadow-sm flex items-center gap-1">
                         <div className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
                         <div className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '150ms' }}></div>
                         <div className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '300ms' }}></div>
@@ -130,14 +130,14 @@ export default function FloatingAI() {
               </div>
 
               {/* Chat Input */}
-              <div className="p-3 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 shrink-0">
+              <div className="p-3 bg-[#e0fcfc] dark:bg-slate-800 border-t border-cyan-300 dark:border-slate-700 shrink-0">
                 <form onSubmit={handleSend} className="relative flex items-center">
                   <input 
                     type="text" 
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={lang === 'ar' ? 'اكتب رسالتك هنا...' : 'Type your message...'}
-                    className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full py-2.5 pl-4 pr-12 rtl:pr-4 rtl:pl-12 text-sm focus:outline-none focus:border-teal-500 text-slate-800 dark:text-white"
+                    className="w-full bg-cyan-100 dark:bg-slate-900 border border-cyan-300 dark:border-slate-700 rounded-full py-2.5 pl-4 pr-12 rtl:pr-4 rtl:pl-12 text-sm focus:outline-none focus:border-teal-500 text-[#1e3a5f] dark:text-white"
                   />
                   <button 
                     type="submit"

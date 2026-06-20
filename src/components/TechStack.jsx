@@ -65,7 +65,7 @@ const TechStack = () => {
                 <div>
                   {/* Category Header */}
                   <div className="flex items-center space-x-3 rtl:space-x-reverse mb-6">
-                    <div className={`p-2.5 rounded-xl bg-white/5 ${cat.textColor}`}>
+                    <div className={`p-2.5 rounded-xl bg-[#e0fcfc]/5 ${cat.textColor}`}>
                       <CatIcon size={22} className="animate-float" />
                     </div>
                     <h3 className="text-md md:text-lg font-bold text-white tracking-wide">

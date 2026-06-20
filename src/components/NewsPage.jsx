@@ -79,7 +79,7 @@ export default function NewsPage() {
   const regularNews = filteredNews.filter(n => !n.featured).slice(0, visibleCount);
 
   return (
-    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-slate-800 dark:text-slate-200 transition-colors duration-300">
+    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-[#1e3a5f] dark:text-slate-200 transition-colors duration-300">
       <div className="max-w-7xl mx-auto relative z-10">
         
         {/* Header Section */}
@@ -118,7 +118,7 @@ export default function NewsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={txt(lang, 'Search news...', 'ابحث في الأخبار...', 'Rechercher...', '搜索新闻...')}
-              className="w-full glass-card py-3 px-12 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-cyan-500 text-slate-800 dark:text-white"
+              className="w-full glass-card py-3 px-12 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-cyan-500 text-[#1e3a5f] dark:text-white"
             />
             <Search className={`absolute top-3 ${lang === 'ar' ? 'right-4' : 'left-4'} text-slate-400`} size={20} />
           </div>
@@ -156,7 +156,7 @@ export default function NewsPage() {
                     </div>
                     <button 
                       onClick={() => toggleSave('news', featuredNews)}
-                      className={`p-2 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'bg-slate-100 text-slate-400 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700'}`}
+                      className={`p-2 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'bg-cyan-100 text-slate-400 hover:bg-cyan-200 dark:bg-slate-800 dark:hover:bg-slate-700'}`}
                     >
                       <Bookmark size={20} className={isSaved ? 'fill-current' : ''} />
                     </button>
@@ -174,7 +174,7 @@ export default function NewsPage() {
                   </p>
                   <div className="flex items-center justify-between mt-auto">
                     <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                      <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-cyan-200 dark:bg-slate-700 flex items-center justify-center">
                         <User size={20} />
                       </div>
                       <span className="font-medium">{featuredNews.author}</span>
@@ -221,7 +221,7 @@ export default function NewsPage() {
                     </div>
                     <button 
                       onClick={() => toggleSave('news', item)}
-                      className={`p-1.5 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                      className={`p-1.5 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'text-slate-400 hover:bg-cyan-200 dark:hover:bg-slate-700'}`}
                     >
                       <Bookmark size={16} className={isSaved ? 'fill-current' : ''} />
                     </button>
@@ -267,25 +267,25 @@ export default function NewsPage() {
           >
             <motion.div 
               initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800" 
+              className="bg-[#e0fcfc] dark:bg-slate-900 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-cyan-300 dark:border-slate-800" 
               onClick={e => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+              <div className="flex items-center justify-between p-4 border-b border-cyan-300 dark:border-slate-800 bg-cyan-50 dark:bg-slate-900/50">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="text-teal-500" size={24} />
-                  <span className="font-bold text-slate-800 dark:text-slate-200">{txt(lang, 'Official News', 'خبر رسمي', 'Nouvelles officielles', '官方新闻')}</span>
+                  <span className="font-bold text-[#1e3a5f] dark:text-slate-200">{txt(lang, 'Official News', 'خبر رسمي', 'Nouvelles officielles', '官方新闻')}</span>
                 </div>
                 <button onClick={() => setSelectedArticle(null)} className="p-2 text-slate-500 hover:text-red-500 dark:hover:text-red-400 rounded-xl transition-colors">
                   <X size={24} />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto p-6 md:p-10 text-slate-800 dark:text-slate-200">
+              <div className="flex-1 overflow-y-auto p-6 md:p-10 text-[#1e3a5f] dark:text-slate-200">
                 <div className="flex items-center gap-4 text-sm text-teal-600 dark:text-cyan-400 font-medium mb-4">
                   <span className="flex items-center gap-1"><Calendar size={16}/> {selectedArticle.date}</span>
                   <span className="flex items-center gap-1"><Tag size={16}/> {selectedArticle.category}</span>
                   <span className="flex items-center gap-1"><User size={16}/> {selectedArticle.author}</span>
                 </div>
-                <h2 className="text-3xl md:text-4xl font-orbitron font-bold mb-6 text-slate-900 dark:text-white">
+                <h2 className="text-3xl md:text-4xl font-orbitron font-bold mb-6 text-[#0B132B] dark:text-white">
                   {lang === 'ar' ? selectedArticle.title_ar : selectedArticle.title_en}
                 </h2>
                 <div className="prose dark:prose-invert max-w-none text-lg leading-relaxed">

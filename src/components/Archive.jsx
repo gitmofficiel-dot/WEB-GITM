@@ -79,10 +79,10 @@ const Archive = () => {
             return (
               <div 
                 key={idx}
-                className="group relative rounded-2xl glass border border-slate-200 dark:border-white/5 overflow-hidden flex flex-col justify-between hover:scale-[1.02] hover:border-emerald-500/30 transition-all duration-500 hover:shadow-lg dark:hover:shadow-glow-emerald"
+                className="group relative rounded-2xl glass border border-cyan-300 dark:border-white/5 overflow-hidden flex flex-col justify-between hover:scale-[1.02] hover:border-emerald-500/30 transition-all duration-500 hover:shadow-lg dark:hover:shadow-glow-emerald"
               >
                 {/* Visual Backdrop (Abstract Technology Illustration instead of empty image) */}
-                <div className={`h-48 bg-gradient-to-br ${item.color} relative flex items-center justify-center border-b border-slate-200 dark:border-white/5`}>
+                <div className={`h-48 bg-gradient-to-br ${item.color} relative flex items-center justify-center border-b border-cyan-300 dark:border-white/5`}>
                   
                   {/* Technology Overlay Grid */}
                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 dark:from-white/2 to-transparent opacity-40"></div>
@@ -105,14 +105,14 @@ const Archive = () => {
 
                 {/* Text Content */}
                 <div className="p-6 text-right rtl:text-right ltr:text-left">
-                  <h3 className="text-base md:text-lg font-bold text-slate-800 dark:text-white mb-2 group-hover:text-[#0d9488] dark:group-hover:text-emerald-400 transition-colors">
+                  <h3 className="text-base md:text-lg font-bold text-[#1e3a5f] dark:text-white mb-2 group-hover:text-[#0d9488] dark:group-hover:text-emerald-400 transition-colors">
                     {item.title}
                   </h3>
                   <p className="text-xs md:text-sm text-slate-600 dark:text-cyber-muted leading-relaxed mb-4">
                     {item.desc}
                   </p>
 
-                  <div className="flex justify-end pt-2 border-t border-slate-100 dark:border-white/5">
+                  <div className="flex justify-end pt-2 border-t border-cyan-200 dark:border-white/5">
                     <button className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-cyber-muted hover:text-[#0d9488] dark:hover:text-emerald-400 transition-colors flex items-center space-x-1 rtl:space-x-reverse">
                       <Eye size={12} />
                       <span>{lang === 'ar' ? 'عرض السجل الفني' : 'View Technical Record'}</span>

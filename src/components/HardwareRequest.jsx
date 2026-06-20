@@ -84,7 +84,7 @@ const HardwareRequest = () => {
           <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#00FF87]/10 text-[#00FF87] border border-[#00FF87]/20 uppercase tracking-wider mb-3 inline-block">
             {lang === 'ar' ? 'مخزن العتاد الرقمي' : 'Hardware Request & Inventory'}
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 dark:text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e3a5f] dark:text-white font-orbitron tracking-wide mb-4 uppercase">
             {lang === 'ar' ? 'نظام إعارة الأجهزة والمعدات' : 'Hardware Request System'}
           </h2>
           <div className="w-20 h-1 bg-[#00FF87] mx-auto mb-4"></div>
@@ -100,14 +100,14 @@ const HardwareRequest = () => {
           
           {/* Inventory Catalogue (Left/col-span-8) */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="p-4 rounded-xl glass border border-[#3A506B]/20 flex items-center space-x-2 rtl:space-x-reverse bg-slate-50 dark:bg-black/20">
+            <div className="p-4 rounded-xl glass border border-[#3A506B]/20 flex items-center space-x-2 rtl:space-x-reverse bg-cyan-50 dark:bg-black/20">
               <Search className="text-slate-400 dark:text-cyber-muted" size={16} />
               <input
                 type="text"
                 placeholder={lang === 'ar' ? 'ابحث عن جهاز (مثال: STM32, LiDAR)...' : 'Search hardware (e.g. STM32, LiDAR)...'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-transparent border-none outline-none text-xs flex-1 text-slate-800 dark:text-white"
+                className="bg-transparent border-none outline-none text-xs flex-1 text-[#1e3a5f] dark:text-white"
               />
             </div>
 
@@ -122,7 +122,7 @@ const HardwareRequest = () => {
                   className={`p-5 rounded-xl border transition-spring cursor-pointer flex flex-col justify-between ${
                     selectedItem?.id === item.id 
                       ? 'border-[#00FF87] bg-[#00FF87]/5' 
-                      : 'border-[#3A506B]/20 dark:border-white/5 bg-white dark:bg-black/20 hover:border-[#3A506B]/40'
+                      : 'border-[#3A506B]/20 dark:border-white/5 bg-[#e0fcfc] dark:bg-black/20 hover:border-[#3A506B]/40'
                   }`}
                 >
                   <div>
@@ -135,7 +135,7 @@ const HardwareRequest = () => {
                       </span>
                     </div>
 
-                    <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-2">{item.name}</h4>
+                    <h4 className="text-sm font-bold text-[#1e3a5f] dark:text-white mb-2">{item.name}</h4>
                     <p className="text-xs text-slate-500 dark:text-cyber-muted leading-relaxed line-clamp-2">{item.desc}</p>
                   </div>
 
@@ -154,8 +154,8 @@ const HardwareRequest = () => {
             </div>
 
             {/* Active Requests Tracker */}
-            <div className="p-6 rounded-2xl glass border border-[#3A506B]/20 bg-slate-50 dark:bg-black/20">
-              <h3 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider font-orbitron mb-4">
+            <div className="p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20">
+              <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron mb-4">
                 {lang === 'ar' ? 'سجل طلبات الاستعارة النشطة' : 'Active Hardware Loan Log'}
               </h3>
               <div className="overflow-x-auto">
@@ -170,7 +170,7 @@ const HardwareRequest = () => {
                   </thead>
                   <tbody className="divide-y divide-[#3A506B]/10 dark:divide-white/5">
                     {borrowRequests.map(req => (
-                      <tr key={req.id} className="text-slate-700 dark:text-cyber-text">
+                      <tr key={req.id} className="text-[#2d507b] dark:text-cyber-text">
                         <td className="py-2.5 font-bold">{req.name}</td>
                         <td className="py-2.5">{req.requester}</td>
                         <td className="py-2.5">{req.returnDate}</td>
@@ -190,9 +190,9 @@ const HardwareRequest = () => {
           </div>
 
           {/* Borrow Form panel (Right/col-span-4) */}
-          <div className="lg:col-span-4 p-6 rounded-2xl glass border border-[#3A506B]/20 bg-slate-50 dark:bg-black/20 space-y-6">
+          <div className="lg:col-span-4 p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider font-orbitron">
+              <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron">
                 {lang === 'ar' ? 'طلب إعارة عتاد جديد' : 'New Loan Request'}
               </h3>
               <Package size={18} className="text-[#00FF87]" />
@@ -207,7 +207,7 @@ const HardwareRequest = () => {
                   placeholder={lang === 'ar' ? 'مثال: سارة الفاسي' : 'e.g. Sara Fassi'}
                   value={formData.name}
                   onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
-                  className="w-full p-2.5 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-white dark:bg-black/40 text-slate-800 dark:text-white outline-none"
+                  className="w-full p-2.5 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-[#e0fcfc] dark:bg-black/40 text-[#1e3a5f] dark:text-white outline-none"
                 />
               </div>
 
@@ -219,7 +219,7 @@ const HardwareRequest = () => {
                   placeholder="name@gitm.ma"
                   value={formData.email}
                   onChange={(e) => setFormData(f => ({ ...f, email: e.target.value }))}
-                  className="w-full p-2.5 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-white dark:bg-black/40 text-slate-800 dark:text-white outline-none font-mono"
+                  className="w-full p-2.5 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-[#e0fcfc] dark:bg-black/40 text-[#1e3a5f] dark:text-white outline-none font-mono"
                 />
               </div>
 
@@ -234,7 +234,7 @@ const HardwareRequest = () => {
                     placeholder="e.g. MCU-F401-01"
                     value={formData.itemCode}
                     onChange={(e) => setFormData(f => ({ ...f, itemCode: e.target.value }))}
-                    className="flex-1 p-2.5 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-white dark:bg-black/40 text-slate-800 dark:text-white outline-none font-mono"
+                    className="flex-1 p-2.5 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-[#e0fcfc] dark:bg-black/40 text-[#1e3a5f] dark:text-white outline-none font-mono"
                   />
                   <button
                     type="button"
@@ -252,7 +252,7 @@ const HardwareRequest = () => {
                 <select
                   value={formData.duration}
                   onChange={(e) => setFormData(f => ({ ...f, duration: e.target.value }))}
-                  className="w-full p-2.5 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-white dark:bg-black/40 text-slate-800 dark:text-white outline-none"
+                  className="w-full p-2.5 rounded-lg border border-[#3A506B]/20 dark:border-white/5 bg-[#e0fcfc] dark:bg-black/40 text-[#1e3a5f] dark:text-white outline-none"
                 >
                   <option value="3">{lang === 'ar' ? '3 أيام' : '3 Days'}</option>
                   <option value="7">{lang === 'ar' ? 'أسبوع واحد' : '1 Week'}</option>
@@ -306,7 +306,7 @@ const HardwareRequest = () => {
               </p>
               
               {/* Progress bar */}
-              <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+              <div className="w-full h-1 bg-[#e0fcfc]/5 rounded-full overflow-hidden">
                 <div 
                   style={{ width: `${scannerProgress}%` }}
                   className="h-full bg-[#00FF87] transition-all"

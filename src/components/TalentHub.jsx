@@ -63,7 +63,7 @@ const TalentHub = () => {
           <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#00E5FF]/10 text-[#00E5FF] border border-[#00E5FF]/20 uppercase tracking-wider mb-3 inline-block">
             {lang === 'ar' ? 'بوابة المواهب والتوظيف' : 'GITM Talent Placement Hub'}
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 dark:text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e3a5f] dark:text-white font-orbitron tracking-wide mb-4 uppercase">
             {lang === 'ar' ? 'خريجو الأكاديمية المتميزون' : 'Academy Graduate Portfolios'}
           </h2>
           <div className="w-20 h-1 bg-[#00E5FF] mx-auto mb-4"></div>
@@ -76,14 +76,14 @@ const TalentHub = () => {
 
         {/* Filters Controls */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10 items-center">
-          <div className="md:col-span-6 p-3 rounded-xl glass border border-[#3A506B]/20 flex items-center space-x-2 rtl:space-x-reverse bg-slate-50 dark:bg-black/20">
+          <div className="md:col-span-6 p-3 rounded-xl glass border border-[#3A506B]/20 flex items-center space-x-2 rtl:space-x-reverse bg-cyan-50 dark:bg-black/20">
             <Search className="text-slate-400 dark:text-cyber-muted" size={16} />
             <input
               type="text"
               placeholder={lang === 'ar' ? 'ابحث بالاسم أو المهارات (مثال: C++, ROS2)...' : 'Search by name or skills (e.g. C++, ROS2)...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-transparent border-none outline-none text-xs flex-1 text-slate-800 dark:text-white"
+              className="bg-transparent border-none outline-none text-xs flex-1 text-[#1e3a5f] dark:text-white"
             />
           </div>
 
@@ -95,7 +95,7 @@ const TalentHub = () => {
                 className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border duration-150 ${
                   trackFilter === track
                     ? 'bg-gradient-to-r from-[#00E5FF] to-cyan-500 text-black border-cyan-500'
-                    : 'bg-white/5 dark:bg-black/20 text-slate-600 dark:text-cyber-muted border-[#3A506B]/20 dark:border-white/5 hover:border-slate-300'
+                    : 'bg-[#e0fcfc]/5 dark:bg-black/20 text-slate-600 dark:text-cyber-muted border-[#3A506B]/20 dark:border-white/5 hover:border-cyan-400'
                 }`}
               >
                 {track === 'all' && (lang === 'ar' ? 'الكل' : 'All Candidates')}
@@ -119,12 +119,12 @@ const TalentHub = () => {
                 className={`p-6 rounded-xl border transition-spring cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${
                   selectedStudent?.id === student.id
                     ? 'border-[#00E5FF] bg-[#00E5FF]/5'
-                    : 'border-[#3A506B]/20 dark:border-white/5 bg-white dark:bg-black/20 hover:border-[#3A506B]/40'
+                    : 'border-[#3A506B]/20 dark:border-white/5 bg-[#e0fcfc] dark:bg-black/20 hover:border-[#3A506B]/40'
                 }`}
               >
                 <div className="text-right rtl:text-right ltr:text-left">
                   <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                    <h3 className="text-base font-extrabold text-slate-800 dark:text-white">{student.name}</h3>
+                    <h3 className="text-base font-extrabold text-[#1e3a5f] dark:text-white">{student.name}</h3>
                     <span className="text-[9px] font-mono font-bold bg-[#00E5FF]/10 text-[#00E5FF] px-2 py-0.5 rounded border border-[#00E5FF]/20 uppercase">
                       {student.trackLabel}
                     </span>
@@ -134,7 +134,7 @@ const TalentHub = () => {
 
                   <div className="flex flex-wrap gap-1.5">
                     {student.skills.map(skill => (
-                      <span key={skill} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5 text-[9px] font-mono text-slate-500 dark:text-cyber-muted">
+                      <span key={skill} className="px-2 py-0.5 rounded bg-cyan-100 dark:bg-[#e0fcfc]/5 border border-cyan-300 dark:border-white/5 text-[9px] font-mono text-slate-500 dark:text-cyber-muted">
                         {skill}
                       </span>
                     ))}
@@ -161,7 +161,7 @@ const TalentHub = () => {
                   <div className="w-16 h-16 rounded-full bg-[#00E5FF]/10 border border-[#00E5FF]/20 text-[#00E5FF] font-bold flex items-center justify-center text-xl font-orbitron mb-3">
                     {selectedStudent.name[0]}
                   </div>
-                  <h3 className="text-lg font-black text-slate-800 dark:text-white font-orbitron">{selectedStudent.name}</h3>
+                  <h3 className="text-lg font-black text-[#1e3a5f] dark:text-white font-orbitron">{selectedStudent.name}</h3>
                   <span className="text-xs font-mono text-[#00E5FF]">{selectedStudent.trackLabel}</span>
                 </div>
 
@@ -169,7 +169,7 @@ const TalentHub = () => {
                 <div className="space-y-3 text-xs">
                   <div>
                     <span className="text-slate-400 dark:text-[#8A99AD] block uppercase text-[9px] tracking-wider mb-0.5">{lang === 'ar' ? 'نبذة تعريفية' : 'About Candidate'}</span>
-                    <p className="text-slate-700 dark:text-cyber-text leading-relaxed">{selectedStudent.bio}</p>
+                    <p className="text-[#2d507b] dark:text-cyber-text leading-relaxed">{selectedStudent.bio}</p>
                   </div>
 
                   <div className="flex items-center gap-1.5 text-slate-600 dark:text-cyber-muted">

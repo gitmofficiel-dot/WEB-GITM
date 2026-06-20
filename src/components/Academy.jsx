@@ -132,7 +132,7 @@ export default function Academy() {
         const hasPrev = lessonIndex > 0;
 
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-20">
+            <div className="min-h-screen bg-cyan-50 dark:bg-slate-900 pt-20">
                 <LessonView 
                     lesson={lesson}
                     lang={lang}
@@ -156,15 +156,15 @@ export default function Academy() {
         const courseCompleted = completedLessons[selectedCourse.id] || [];
 
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-24 pb-20">
+            <div className="min-h-screen bg-cyan-50 dark:bg-slate-900 pt-24 pb-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <button onClick={goBack} className="mb-8 flex items-center text-slate-500 hover:text-emerald-600 transition font-medium bg-white dark:bg-slate-800 px-4 py-2 rounded-full shadow-sm">
+                    <button onClick={goBack} className="mb-8 flex items-center text-slate-500 hover:text-emerald-600 transition font-medium bg-[#e0fcfc] dark:bg-slate-800 px-4 py-2 rounded-full shadow-sm">
                         <ArrowLeft className="w-5 h-5 mr-2 rtl:ml-2 rtl:rotate-180" /> {texts.back}
                     </button>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2">
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 mb-8 relative overflow-hidden">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[#e0fcfc] dark:bg-slate-800 rounded-3xl shadow-sm border border-cyan-300 dark:border-slate-700 p-8 mb-8 relative overflow-hidden">
                                 <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-br ${selectedCourse.color} opacity-10 rounded-full blur-3xl -mr-20 -mt-20`}></div>
                                 
                                 <div className="flex items-center mb-6 relative z-10">
@@ -173,11 +173,11 @@ export default function Academy() {
                                     </div>
                                     <div>
                                         <div className="flex items-center space-x-3 rtl:space-x-reverse mb-2">
-                                            <span className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold uppercase tracking-wider">
+                                            <span className="px-3 py-1 bg-cyan-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold uppercase tracking-wider">
                                                 {selectedCourse.mode === 'remote' ? texts.remote : texts.inPerson}
                                             </span>
                                         </div>
-                                        <h1 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-white">
+                                        <h1 className="text-3xl md:text-4xl font-bold text-[#1e3a5f] dark:text-white">
                                             {getLoc(selectedCourse, 'title', lang)}
                                         </h1>
                                     </div>
@@ -193,7 +193,7 @@ export default function Academy() {
                                     <button
                                         key={tab}
                                         onClick={() => setActiveTab(tab)}
-                                        className={`px-6 py-3 rounded-xl font-semibold capitalize whitespace-nowrap transition-all ${activeTab === tab ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
+                                        className={`px-6 py-3 rounded-xl font-semibold capitalize whitespace-nowrap transition-all ${activeTab === tab ? 'bg-emerald-600 text-white shadow-md' : 'bg-[#e0fcfc] dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-cyan-100 dark:hover:bg-slate-700 border border-cyan-300 dark:border-slate-700'}`}
                                     >
                                         {texts[tab]}
                                     </button>
@@ -203,14 +203,14 @@ export default function Academy() {
                             <AnimatePresence mode="wait">
                                 <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
                                     {activeTab === 'overview' && (
-                                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-slate-200 dark:border-slate-700">
-                                            <h3 className="text-2xl font-bold mb-6 text-slate-800 dark:text-white">Course Overview</h3>
+                                        <div className="bg-[#e0fcfc] dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-cyan-300 dark:border-slate-700">
+                                            <h3 className="text-2xl font-bold mb-6 text-[#1e3a5f] dark:text-white">Course Overview</h3>
                                             
                                             {selectedCourse.mode === 'in-person' && (
-                                                <div className="mb-8 p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-start">
+                                                <div className="mb-8 p-6 bg-cyan-50 dark:bg-slate-900/50 rounded-2xl border border-cyan-300 dark:border-slate-700 flex items-start">
                                                     <MapPin className="w-8 h-8 text-emerald-500 mr-4 rtl:ml-4 flex-shrink-0" />
                                                     <div>
-                                                        <h4 className="font-bold text-slate-800 dark:text-white text-lg mb-1">Location Details</h4>
+                                                        <h4 className="font-bold text-[#1e3a5f] dark:text-white text-lg mb-1">Location Details</h4>
                                                         <p className="text-slate-600 dark:text-slate-400">{selectedCourse.location}</p>
                                                         <div className="mt-4 w-full rounded-xl flex items-center justify-center">
                                                             <MapWidget />
@@ -235,13 +235,13 @@ export default function Academy() {
                                             {selectedCourse.lessons.map((lesson, idx) => {
                                                 const isCompleted = courseCompleted.includes(lesson.id);
                                                 return (
-                                                    <div key={lesson.id} onClick={() => handleLessonSelect(lesson.id)} className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between cursor-pointer hover:border-emerald-400 dark:hover:border-emerald-500 transition group">
+                                                    <div key={lesson.id} onClick={() => handleLessonSelect(lesson.id)} className="bg-[#e0fcfc] dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-cyan-300 dark:border-slate-700 flex items-center justify-between cursor-pointer hover:border-emerald-400 dark:hover:border-emerald-500 transition group">
                                                         <div className="flex items-center">
-                                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-5 rtl:ml-5 font-bold text-lg ${isCompleted ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'}`}>
+                                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-5 rtl:ml-5 font-bold text-lg ${isCompleted ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-cyan-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'}`}>
                                                                 {idx + 1}
                                                             </div>
                                                             <div>
-                                                                <h4 className="font-bold text-slate-800 dark:text-white text-lg group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
+                                                                <h4 className="font-bold text-[#1e3a5f] dark:text-white text-lg group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
                                                                     {getLoc(lesson, 'title', lang)}
                                                                 </h4>
                                                                 <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center mt-1">
@@ -302,13 +302,13 @@ export default function Academy() {
 
     // Render Catalog
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-32 pb-20">
+        <div className="min-h-screen bg-cyan-50 dark:bg-slate-900 pt-32 pb-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="inline-flex items-center justify-center p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl mb-6">
                         <BookOpen className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
                     </motion.div>
-                    <motion.h1 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">
+                    <motion.h1 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="text-4xl md:text-5xl font-extrabold text-[#0B132B] dark:text-white mb-4 tracking-tight">
                         {texts.title}
                     </motion.h1>
                     <motion.p initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
@@ -326,7 +326,7 @@ export default function Academy() {
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 * index }}
-                            className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col"
+                            className="bg-[#e0fcfc] dark:bg-slate-800 rounded-3xl shadow-sm border border-cyan-300 dark:border-slate-700 overflow-hidden group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col"
                         >
                             <div className={`h-32 bg-gradient-to-r ${course.color} p-6 relative overflow-hidden flex items-center justify-center`}>
                                 <div className="absolute inset-0 bg-black/10"></div>
@@ -339,11 +339,11 @@ export default function Academy() {
                                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${course.mode === 'remote' ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400'}`}>
                                         {course.mode === 'remote' ? texts.remote : texts.inPerson}
                                     </span>
-                                    <span className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold uppercase tracking-wider">
+                                    <span className="px-3 py-1 bg-cyan-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold uppercase tracking-wider">
                                         {course.lessons.length} {texts.lessons}
                                     </span>
                                 </div>
-                                <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-3 leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white mb-3 leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                                     {getLoc(course, 'title', lang)}
                                 </h3>
                                 <p className="text-slate-600 dark:text-slate-400 mb-6 flex-grow">
@@ -351,7 +351,7 @@ export default function Academy() {
                                 </p>
                                 <button 
                                     onClick={() => setSelectedCourseId(course.id)}
-                                    className="w-full py-3.5 rounded-xl font-bold bg-slate-100 hover:bg-emerald-600 text-slate-800 hover:text-white dark:bg-slate-700 dark:text-white dark:hover:bg-emerald-600 transition-all duration-300 flex items-center justify-center group/btn"
+                                    className="w-full py-3.5 rounded-xl font-bold bg-cyan-100 hover:bg-emerald-600 text-[#1e3a5f] hover:text-white dark:bg-slate-700 dark:text-white dark:hover:bg-emerald-600 transition-all duration-300 flex items-center justify-center group/btn"
                                 >
                                     {texts.start} <ArrowRight className="w-5 h-5 ml-2 rtl:mr-2 rtl:rotate-180 opacity-0 -translate-x-2 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all" />
                                 </button>

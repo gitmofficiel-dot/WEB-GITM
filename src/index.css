@@ -25,9 +25,9 @@
 
 /* Light mode overrides */
 :root:not(.dark) {
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(0, 0, 0, 0.08);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(224, 252, 252, 0.7);
+  --glass-border: rgba(0, 150, 150, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 150, 150, 0.08);
 }
 
 /* ========================================
@@ -160,9 +160,9 @@ html[dir="rtl"] body {
 }
 
 :root:not(.dark) .glass-strong {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  background: rgba(224, 252, 252, 0.85);
+  border: 1px solid rgba(0, 150, 150, 0.15);
+  box-shadow: 0 12px 40px rgba(0, 150, 150, 0.1);
 }
 
 .glass-card {
@@ -644,5 +644,5 @@ html[dir="rtl"] .chat-bubble-ai {
 
 @media print {
   .no-print { display: none !important; }
-  body { background: white !important; color: black !important; }
+  body { background: #e0fcfc !important; color: #0B132B !important; }
 }

@@ -41,7 +41,7 @@ export default function PartnerDashboard() {
             <Building2 className="text-blue-500" size={20} />
             Collaboration Metrics
           </h3>
-          <div className="flex justify-center items-center h-64 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl">
+          <div className="flex justify-center items-center h-64 border-2 border-dashed border-cyan-300 dark:border-slate-700 rounded-xl">
             <p className="text-slate-500">Interactive charts will be rendered here.</p>
           </div>
         </div>
@@ -53,13 +53,13 @@ export default function PartnerDashboard() {
           </h3>
           <div className="space-y-4">
             {[1, 2].map((_, i) => (
-              <div key={i} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div key={i} className="p-4 rounded-xl bg-cyan-50 dark:bg-slate-800/50 border border-cyan-300 dark:border-slate-700">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-bold text-slate-800 dark:text-white">Summer Internship Program 2026</h4>
+                    <h4 className="font-bold text-[#1e3a5f] dark:text-white">Summer Internship Program 2026</h4>
                     <p className="text-sm text-slate-500 mt-1">Hosting 10 GITM students for embedded systems roles.</p>
                   </div>
-                  <button className="p-2 bg-white dark:bg-slate-800 rounded shadow-sm border border-slate-200 dark:border-slate-700 text-teal-500 hover:text-teal-600 transition-colors">
+                  <button className="p-2 bg-[#e0fcfc] dark:bg-slate-800 rounded shadow-sm border border-cyan-300 dark:border-slate-700 text-teal-500 hover:text-teal-600 transition-colors">
                     <ExternalLink size={16} />
                   </button>
                 </div>
@@ -87,14 +87,14 @@ export default function PartnerDashboard() {
               { name: 'Sara El Fassi', match: '94%', skills: ['Python', 'Raspberry Pi', 'Edge AI'] },
               { name: 'Youssef M.', match: '91%', skills: ['C', 'STM32', 'Robotics'] },
             ].map((student, i) => (
-              <div key={i} className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-emerald-500/20">
+              <div key={i} className="bg-cyan-50 dark:bg-slate-800/50 p-4 rounded-xl border border-emerald-500/20">
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-slate-800 dark:text-white">{student.name}</h4>
+                  <h4 className="font-bold text-[#1e3a5f] dark:text-white">{student.name}</h4>
                   <span className="bg-emerald-500/10 text-emerald-500 font-bold px-2 py-1 rounded text-xs">Match: {student.match}</span>
                 </div>
                 <div className="flex flex-wrap gap-1 mb-4">
                   {student.skills.map((skill, j) => (
-                    <span key={j} className="text-[10px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">
+                    <span key={j} className="text-[10px] bg-cyan-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">
                       {skill}
                     </span>
                   ))}

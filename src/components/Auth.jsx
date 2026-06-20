@@ -43,11 +43,11 @@ const Auth = () => {
       <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
         {/* Left Card: Core Form */}
-        <div className="lg:col-span-6 p-8 rounded-2xl glass border border-slate-200 dark:border-white/5 flex flex-col justify-between relative overflow-hidden shadow-2xl">
+        <div className="lg:col-span-6 p-8 rounded-2xl glass border border-cyan-300 dark:border-white/5 flex flex-col justify-between relative overflow-hidden shadow-2xl">
           <div className="absolute -top-24 -left-24 w-48 h-48 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none"></div>
 
           <div>
-            <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-2 font-orbitron tracking-wide text-center lg:text-right rtl:text-right ltr:text-left">
+            <h2 className="text-xl md:text-2xl font-black text-[#1e3a5f] dark:text-white mb-2 font-orbitron tracking-wide text-center lg:text-right rtl:text-right ltr:text-left">
               {mode === 'login' && t('auth.loginTitle')}
               {mode === 'register' && t('auth.registerTitle')}
               {mode === 'forgot' && t('auth.forgotPassword')}
@@ -71,7 +71,7 @@ const Auth = () => {
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full pr-10 pl-4 py-3 rtl:pl-10 rtl:pr-4 rounded-lg bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 focus:border-[#0d9488] dark:focus:border-emerald-500/40 text-slate-900 dark:text-white text-xs md:text-sm focus:outline-none transition-all"
+                      className="w-full pr-10 pl-4 py-3 rtl:pl-10 rtl:pr-4 rounded-lg bg-cyan-100 dark:bg-black/40 border border-cyan-300 dark:border-white/5 focus:border-[#0d9488] dark:focus:border-emerald-500/40 text-[#0B132B] dark:text-white text-xs md:text-sm focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -86,7 +86,7 @@ const Auth = () => {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full pr-10 pl-4 py-3 rtl:pl-10 rtl:pr-4 rounded-lg bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 focus:border-[#0d9488] dark:focus:border-emerald-500/40 text-slate-900 dark:text-white text-xs md:text-sm focus:outline-none transition-all"
+                    className="w-full pr-10 pl-4 py-3 rtl:pl-10 rtl:pr-4 rounded-lg bg-cyan-100 dark:bg-black/40 border border-cyan-300 dark:border-white/5 focus:border-[#0d9488] dark:focus:border-emerald-500/40 text-[#0B132B] dark:text-white text-xs md:text-sm focus:outline-none transition-all"
                   />
                 </div>
               </div>
@@ -101,7 +101,7 @@ const Auth = () => {
                       required
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="w-full pr-10 pl-4 py-3 rtl:pl-10 rtl:pr-4 rounded-lg bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 focus:border-[#0d9488] dark:focus:border-emerald-500/40 text-slate-900 dark:text-white text-xs md:text-sm focus:outline-none transition-all"
+                      className="w-full pr-10 pl-4 py-3 rtl:pl-10 rtl:pr-4 rounded-lg bg-cyan-100 dark:bg-black/40 border border-cyan-300 dark:border-white/5 focus:border-[#0d9488] dark:focus:border-emerald-500/40 text-[#0B132B] dark:text-white text-xs md:text-sm focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -119,7 +119,7 @@ const Auth = () => {
           </div>
 
           {/* Footer switches */}
-          <div className="mt-8 pt-4 border-t border-slate-200 dark:border-white/5 text-center text-xs space-y-2">
+          <div className="mt-8 pt-4 border-t border-cyan-300 dark:border-white/5 text-center text-xs space-y-2">
             {mode === 'login' ? (
               <>
                 <button onClick={() => setMode('register')} className="text-[#0d9488] dark:text-emerald-400 font-semibold hover:underline block mx-auto">
@@ -138,7 +138,7 @@ const Auth = () => {
         </div>
 
         {/* Right Card: Instant Demo Accounts Roster */}
-        <div className="lg:col-span-6 p-8 rounded-2xl bg-black/40 border border-slate-200 dark:border-white/5 flex flex-col justify-between relative overflow-hidden">
+        <div className="lg:col-span-6 p-8 rounded-2xl bg-black/40 border border-cyan-300 dark:border-white/5 flex flex-col justify-between relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"></div>
           
           <div>
@@ -155,7 +155,7 @@ const Auth = () => {
                 <button
                   key={account.role}
                   onClick={() => loginUser(account.email, account.role, account.name)}
-                  className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all text-right rtl:text-right ltr:text-left flex flex-col justify-between hover:scale-[1.02] group"
+                  className="p-4 rounded-xl bg-[#e0fcfc]/5 border border-white/5 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all text-right rtl:text-right ltr:text-left flex flex-col justify-between hover:scale-[1.02] group"
                 >
                   <span className="text-xs font-bold text-white group-hover:text-cyan-400 transition-colors">
                     {account.name}

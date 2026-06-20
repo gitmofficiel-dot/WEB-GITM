@@ -25,11 +25,11 @@ const MapWidget = () => {
   const title = lang === 'ar' ? 'مقر الأكاديمية (الدار البيضاء)' : 'Academy Location (Casablanca)';
 
   return (
-    <div className="glass-card p-6 rounded-2xl bg-white/40 dark:bg-gray-800/40 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg relative">
-      <h3 className="text-xl font-bold font-orbitron mb-4 flex items-center gap-2 text-slate-800 dark:text-white">
+    <div className="glass-card p-6 rounded-2xl bg-[#e0fcfc]/40 dark:bg-gray-800/40 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg relative">
+      <h3 className="text-xl font-bold font-orbitron mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
         <MapPin className="text-rose-500" /> {title}
       </h3>
-      <div className="h-[300px] w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 relative z-10">
+      <div className="h-[300px] w-full rounded-xl overflow-hidden border border-cyan-300 dark:border-slate-700 relative z-10">
         <MapContainer center={position} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
           <TileLayer
             attribution='&copy; <a href="https://www.tomtom.com/en_gb/routing-and-maps/">TomTom</a>'

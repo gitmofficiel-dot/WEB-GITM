@@ -43,7 +43,7 @@ export default function UniversityDashboard() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-500">
+              <tr className="border-b border-cyan-300 dark:border-slate-700 text-sm font-bold text-slate-500">
                 <th className="p-3">Student ID</th>
                 <th className="p-3">Name</th>
                 <th className="p-3">Program</th>
@@ -53,12 +53,12 @@ export default function UniversityDashboard() {
             </thead>
             <tbody>
               {[1,2,3,4].map((item) => (
-                <tr key={item} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                <tr key={item} className="border-b border-cyan-200 dark:border-slate-800 hover:bg-cyan-50 dark:hover:bg-slate-800/50">
                   <td className="p-3 text-sm text-slate-500">STU-2026-00{item}</td>
-                  <td className="p-3 font-medium text-slate-800 dark:text-white">Student Name {item}</td>
+                  <td className="p-3 font-medium text-[#1e3a5f] dark:text-white">Student Name {item}</td>
                   <td className="p-3 text-sm">Edge AI Engineering</td>
                   <td className="p-3">
-                    <div className="w-24 bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full">
+                    <div className="w-24 bg-cyan-200 dark:bg-slate-700 h-1.5 rounded-full">
                       <div className="bg-indigo-500 h-1.5 rounded-full" style={{ width: `${60 + item * 10}%` }}></div>
                     </div>
                   </td>
@@ -89,14 +89,14 @@ export default function UniversityDashboard() {
             { name: 'Sara El Fassi', match: 'Highly Rec.', skills: ['Python', 'Raspberry Pi', 'Edge AI'] },
             { name: 'Youssef M.', match: 'Recommended', skills: ['C', 'STM32', 'Robotics'] },
           ].map((student, i) => (
-            <div key={i} className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-indigo-500/20">
+            <div key={i} className="bg-cyan-50 dark:bg-slate-800/50 p-4 rounded-xl border border-indigo-500/20">
               <div className="flex justify-between items-start mb-2">
-                <h4 className="font-bold text-slate-800 dark:text-white">{student.name}</h4>
+                <h4 className="font-bold text-[#1e3a5f] dark:text-white">{student.name}</h4>
                 <span className="bg-indigo-500/10 text-indigo-500 font-bold px-2 py-1 rounded text-[10px] uppercase tracking-wider">{student.match}</span>
               </div>
               <div className="flex flex-wrap gap-1 mb-4">
                 {student.skills.map((skill, j) => (
-                  <span key={j} className="text-[10px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">
+                  <span key={j} className="text-[10px] bg-cyan-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">
                     {skill}
                   </span>
                 ))}

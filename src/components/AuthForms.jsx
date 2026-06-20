@@ -63,7 +63,7 @@ export default function AuthForms({ initialMode = 'login', setView }) {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 mb-4 shadow-lg">
               {mode === 'login' ? <LogIn className="text-white w-8 h-8" /> : <UserPlus className="text-white w-8 h-8" />}
             </div>
-            <h2 className="text-3xl font-orbitron font-bold text-slate-800 dark:text-white mb-2">
+            <h2 className="text-3xl font-orbitron font-bold text-[#1e3a5f] dark:text-white mb-2">
               {mode === 'login' 
                 ? txt(lang, 'Welcome Back', 'مرحباً بعودتك', 'Bon retour', '欢迎回来')
                 : txt(lang, 'Create Account', 'إنشاء حساب جديد', 'Créer un compte', '创建账户')}
@@ -83,7 +83,7 @@ export default function AuthForms({ initialMode = 'login', setView }) {
             )}
             {mode === 'register' && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-[#2d507b] dark:text-slate-300 mb-2">
                   {txt(lang, 'Full Name', 'الاسم الكامل', 'Nom complet', '全名')}
                 </label>
                 <div className="relative">
@@ -95,7 +95,7 @@ export default function AuthForms({ initialMode = 'login', setView }) {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="block w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors"
+                    className="block w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-3 border border-cyan-300 dark:border-slate-700 rounded-xl bg-cyan-50 dark:bg-slate-800/50 text-[#0B132B] dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors"
                     placeholder="John Doe"
                   />
                 </div>
@@ -103,7 +103,7 @@ export default function AuthForms({ initialMode = 'login', setView }) {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-[#2d507b] dark:text-slate-300 mb-2">
                 {txt(lang, 'Email Address', 'البريد الإلكتروني', 'Adresse e-mail', '电子邮件地址')}
               </label>
               <div className="relative">
@@ -115,14 +115,14 @@ export default function AuthForms({ initialMode = 'login', setView }) {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors"
+                  className="block w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-3 border border-cyan-300 dark:border-slate-700 rounded-xl bg-cyan-50 dark:bg-slate-800/50 text-[#0B132B] dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors"
                   placeholder="you@example.com"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex justify-between">
+              <label className="block text-sm font-medium text-[#2d507b] dark:text-slate-300 mb-2 flex justify-between">
                 <span>{txt(lang, 'Password', 'كلمة المرور', 'Mot de passe', '密码')}</span>
                 {mode === 'login' && (
                   <button type="button" onClick={() => setView('forgot-password')} className="text-teal-600 dark:text-cyan-400 hover:underline text-xs">
@@ -139,7 +139,7 @@ export default function AuthForms({ initialMode = 'login', setView }) {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors"
+                  className="block w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-3 border border-cyan-300 dark:border-slate-700 rounded-xl bg-cyan-50 dark:bg-slate-800/50 text-[#0B132B] dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors"
                   placeholder="••••••••"
                 />
               </div>
@@ -174,12 +174,12 @@ export default function AuthForms({ initialMode = 'login', setView }) {
               </p>
             )}
             
-            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700 space-y-3">
+            <div className="mt-6 pt-6 border-t border-cyan-300 dark:border-slate-700 space-y-3">
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <button 
                   type="button" 
                   onClick={() => handleProviderSignIn(googleProvider)}
-                  className="flex items-center justify-center gap-2 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                  className="flex items-center justify-center gap-2 py-2 rounded-xl border border-cyan-300 dark:border-slate-700 hover:bg-cyan-50 dark:hover:bg-slate-800 transition"
                 >
                   <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-4 h-4" />
                   <span className="text-sm font-bold">Google</span>
@@ -187,7 +187,7 @@ export default function AuthForms({ initialMode = 'login', setView }) {
                 <button 
                   type="button" 
                   onClick={() => handleProviderSignIn(githubProvider)}
-                  className="flex items-center justify-center gap-2 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                  className="flex items-center justify-center gap-2 py-2 rounded-xl border border-cyan-300 dark:border-slate-700 hover:bg-cyan-50 dark:hover:bg-slate-800 transition"
                 >
                   <Github className="w-4 h-4" />
                   <span className="text-sm font-bold">GitHub</span>

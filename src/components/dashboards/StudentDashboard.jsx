@@ -102,9 +102,9 @@ export default function StudentDashboard() {
           </div>
           <div className="space-y-4">
             {enrolledCourses.map(course => (
-              <div key={course.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div key={course.id} className="p-4 rounded-xl bg-cyan-50 dark:bg-slate-800/50 border border-cyan-300 dark:border-slate-700">
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-slate-800 dark:text-white">{course.title}</h4>
+                  <h4 className="font-bold text-[#1e3a5f] dark:text-white">{course.title}</h4>
                   <span className={`text-xs font-bold px-2 py-1 rounded uppercase ${course.status === 'completed' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
                     {course.status}
                   </span>
@@ -113,7 +113,7 @@ export default function StudentDashboard() {
                   <span className="flex items-center gap-1"><Star size={12} className="text-amber-500" /> {course.rating}</span>
                   <span>{course.progress}%</span>
                 </div>
-                <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div className="w-full bg-cyan-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
                   <div className={`h-full rounded-full ${course.status === 'completed' ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${course.progress}%` }}></div>
                 </div>
                 {course.status !== 'completed' && (
@@ -134,9 +134,9 @@ export default function StudentDashboard() {
           </h3>
           <div className="space-y-4">
             {recentGrades.map((grade, i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 hover:border-blue-500/50 transition-colors">
+              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-cyan-50 dark:bg-slate-800/50 border border-cyan-300 dark:border-slate-700 hover:border-blue-500/50 transition-colors">
                 <div>
-                  <h4 className="font-bold text-sm text-slate-800 dark:text-white mb-1">{grade.assignment}</h4>
+                  <h4 className="font-bold text-sm text-[#1e3a5f] dark:text-white mb-1">{grade.assignment}</h4>
                   <p className="text-xs text-slate-500">{grade.course}</p>
                 </div>
                 <div className="flex flex-col items-end">
@@ -166,12 +166,12 @@ export default function StudentDashboard() {
             )}
           </p>
 
-          <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-emerald-500/20">
+          <div className="bg-cyan-50 dark:bg-slate-900/50 rounded-xl p-4 border border-emerald-500/20">
             <textarea 
               value={textToAnalyze}
               onChange={(e) => setTextToAnalyze(e.target.value)}
               placeholder={txt(lang, 'Paste text here...', 'الصق النص هنا...', 'Collez le texte ici...', '在此处粘贴文本...')}
-              className="w-full h-24 bg-transparent border border-slate-300 dark:border-slate-700 rounded-lg p-3 outline-none text-sm resize-none focus:border-emerald-500 mb-3 text-slate-900 dark:text-white"
+              className="w-full h-24 bg-transparent border border-cyan-400 dark:border-slate-700 rounded-lg p-3 outline-none text-sm resize-none focus:border-emerald-500 mb-3 text-[#0B132B] dark:text-white"
             ></textarea>
             
             <div className="flex justify-end gap-2 mb-4">
@@ -190,7 +190,7 @@ export default function StudentDashboard() {
                 <h4 className="font-bold text-sm text-emerald-800 dark:text-emerald-300 mb-2">
                   {txt(lang, 'Analysis Result:', 'نتيجة التحليل:', 'Résultat:', '分析结果：')}
                 </h4>
-                <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+                <div className="text-sm text-[#2d507b] dark:text-slate-300 whitespace-pre-wrap">
                   {analysisResult}
                 </div>
               </div>
@@ -216,12 +216,12 @@ export default function StudentDashboard() {
             {/* Saved Books */}
             {savedItems?.books?.length > 0 && (
               <div>
-                <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+                <h4 className="font-bold text-sm text-[#2d507b] dark:text-slate-300 mb-3 flex items-center gap-2">
                   <BookOpen size={16} /> {txt(lang, 'Books', 'الكتب', 'Livres', '图书')}
                 </h4>
                 <div className="space-y-3">
                   {savedItems.books.map(book => (
-                    <div key={book.key} className="flex justify-between items-center p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                    <div key={book.key} className="flex justify-between items-center p-3 rounded-xl bg-cyan-50 dark:bg-slate-800/50 border border-cyan-300 dark:border-slate-700">
                       <div className="flex-1 min-w-0 pr-4">
                         <h5 className="font-semibold text-sm truncate">{book.title}</h5>
                         <p className="text-xs text-slate-500">{book.author_name?.[0]}</p>
@@ -243,12 +243,12 @@ export default function StudentDashboard() {
             {/* Saved News */}
             {savedItems?.news?.length > 0 && (
               <div>
-                <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+                <h4 className="font-bold text-sm text-[#2d507b] dark:text-slate-300 mb-3 flex items-center gap-2">
                   <FileText size={16} /> {txt(lang, 'News', 'الأخبار', 'Nouvelles', '新闻')}
                 </h4>
                 <div className="space-y-3">
                   {savedItems.news.map(item => (
-                    <div key={item.id} className="flex justify-between items-center p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                    <div key={item.id} className="flex justify-between items-center p-3 rounded-xl bg-cyan-50 dark:bg-slate-800/50 border border-cyan-300 dark:border-slate-700">
                       <div className="flex-1 min-w-0 pr-4">
                         <h5 className="font-semibold text-sm truncate">{item.title_ar || item.title || item.title_en}</h5>
                         <p className="text-xs text-slate-500">{item.date || 'API News'}</p>
@@ -282,18 +282,18 @@ export default function StudentDashboard() {
           >
             <motion.div 
               initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-slate-900 w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800" 
+              className="bg-[#e0fcfc] dark:bg-slate-900 w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-cyan-300 dark:border-slate-800" 
               onClick={e => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
-                <span className="font-bold text-slate-800 dark:text-slate-200 text-sm truncate max-w-md">
+              <div className="flex items-center justify-between p-4 border-b border-cyan-300 dark:border-slate-800 bg-cyan-50 dark:bg-slate-900/50">
+                <span className="font-bold text-[#1e3a5f] dark:text-slate-200 text-sm truncate max-w-md">
                   {selectedIframeUrl}
                 </span>
                 <button onClick={() => setSelectedIframeUrl(null)} className="p-2 text-slate-500 hover:text-red-500 dark:hover:text-red-400 rounded-xl transition-colors">
                   <X size={24} />
                 </button>
               </div>
-              <div className="flex-1 bg-slate-100 dark:bg-slate-950">
+              <div className="flex-1 bg-cyan-100 dark:bg-slate-950">
                 <iframe 
                   src={selectedIframeUrl} 
                   className="w-full h-full border-none"

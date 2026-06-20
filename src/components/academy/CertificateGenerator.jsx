@@ -35,7 +35,7 @@ export default function CertificateGenerator({ studentName, courseName, issueDat
 
       <div 
         ref={certificateRef}
-        className="w-full aspect-[1.414/1] relative rounded-lg overflow-hidden shadow-2xl border-8 border-slate-800 dark:border-slate-100 bg-white dark:bg-slate-900 print:shadow-none print:border-none"
+        className="w-full aspect-[1.414/1] relative rounded-lg overflow-hidden shadow-2xl border-8 border-slate-800 dark:border-cyan-200 bg-[#e0fcfc] dark:bg-slate-900 print:shadow-none print:border-none"
       >
         {/* Certificate Background Pattern */}
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #0f172a 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
@@ -52,7 +52,7 @@ export default function CertificateGenerator({ studentName, courseName, issueDat
             <Award className="w-10 h-10 text-white -rotate-45" />
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-black font-orbitron text-slate-800 dark:text-white uppercase tracking-widest mb-2">
+          <h1 className="text-4xl md:text-5xl font-black font-orbitron text-[#1e3a5f] dark:text-white uppercase tracking-widest mb-2">
             Certificate
           </h1>
           <h2 className="text-xl md:text-2xl text-emerald-600 dark:text-cyan-400 tracking-wider mb-8 uppercase font-bold">
@@ -60,7 +60,7 @@ export default function CertificateGenerator({ studentName, courseName, issueDat
           </h2>
 
           <p className="text-slate-500 dark:text-slate-400 mb-2 italic">This is to certify that</p>
-          <h3 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-white mb-6 border-b-2 border-slate-200 dark:border-slate-700 pb-2 px-12">
+          <h3 className="text-3xl md:text-4xl font-bold text-[#1e3a5f] dark:text-white mb-6 border-b-2 border-cyan-300 dark:border-slate-700 pb-2 px-12">
             {studentName}
           </h3>
 
@@ -71,12 +71,12 @@ export default function CertificateGenerator({ studentName, courseName, issueDat
 
           <div className="flex justify-between w-full max-w-xl px-12 mt-auto">
             <div className="flex flex-col items-center">
-              <span className="text-slate-800 dark:text-white font-bold border-b border-slate-400 pb-1 w-32">{issueDate}</span>
+              <span className="text-[#1e3a5f] dark:text-white font-bold border-b border-slate-400 pb-1 w-32">{issueDate}</span>
               <span className="text-xs text-slate-500 uppercase tracking-wider mt-2">Issue Date</span>
             </div>
             
             <div className="flex flex-col items-center">
-              <span className="text-slate-800 dark:text-white font-bold border-b border-slate-400 pb-1 w-32 font-signature text-xl">Dr. Youssef</span>
+              <span className="text-[#1e3a5f] dark:text-white font-bold border-b border-slate-400 pb-1 w-32 font-signature text-xl">Dr. Youssef</span>
               <span className="text-xs text-slate-500 uppercase tracking-wider mt-2">GITM President</span>
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function CertificateGenerator({ studentName, courseName, issueDat
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email to receive the certificate" 
-              className="flex-1 px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+              className="flex-1 px-4 py-3 rounded-xl border border-cyan-400 dark:border-slate-700 bg-[#e0fcfc] dark:bg-slate-800 text-[#0B132B] dark:text-white outline-none focus:border-emerald-500"
             />
             <button type="submit" disabled={isSending} className="btn-primary px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-50">
               {isSending ? <Loader className="animate-spin w-5 h-5" /> : <Mail size={18} />} 
@@ -107,7 +107,7 @@ export default function CertificateGenerator({ studentName, courseName, issueDat
       </div>
       
       <div className="flex gap-4 mt-2">
-        <button className="btn-glass px-6 py-3 rounded-xl font-bold flex items-center gap-2 text-slate-700 dark:text-white">
+        <button className="btn-glass px-6 py-3 rounded-xl font-bold flex items-center gap-2 text-[#2d507b] dark:text-white">
           <Share2 size={18} /> Share to LinkedIn
         </button>
       </div>

@@ -29,7 +29,7 @@ const CurrencyWidget = () => {
   const title = lang === 'ar' ? 'أسعار العملات (USD)' : 'Currency Rates (USD)';
 
   if (loading) return (
-    <div className="glass-card p-4 rounded-xl flex items-center justify-center h-24 bg-white/30 dark:bg-gray-800/30 backdrop-blur-md border border-white/20 dark:border-gray-700">
+    <div className="glass-card p-4 rounded-xl flex items-center justify-center h-24 bg-[#e0fcfc]/30 dark:bg-gray-800/30 backdrop-blur-md border border-white/20 dark:border-gray-700">
       <Loader className="animate-spin text-purple-500" />
     </div>
   );
@@ -41,7 +41,7 @@ const CurrencyWidget = () => {
   );
 
   return (
-    <div className="glass-card p-4 rounded-xl bg-white/40 dark:bg-gray-800/40 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg hover-lift transition-transform">
+    <div className="glass-card p-4 rounded-xl bg-[#e0fcfc]/40 dark:bg-gray-800/40 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg hover-lift transition-transform">
       <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider flex items-center gap-1">
         <DollarSign size={14} className="text-emerald-500" /> {title}
       </h4>

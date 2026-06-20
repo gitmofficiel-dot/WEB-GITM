@@ -96,7 +96,7 @@ export default function ContentManagerDashboard() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-500">
+              <tr className="border-b border-cyan-300 dark:border-slate-700 text-sm font-bold text-slate-500">
                 <th className="p-3">Title</th>
                 <th className="p-3">Type</th>
                 <th className="p-3">Status</th>
@@ -106,8 +106,8 @@ export default function ContentManagerDashboard() {
             </thead>
             <tbody>
               {news.slice(0, 5).map((item) => (
-                <tr key={item.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                  <td className="p-3 font-medium text-slate-800 dark:text-white max-w-[200px] truncate">
+                <tr key={item.id} className="border-b border-cyan-200 dark:border-slate-800 hover:bg-cyan-50 dark:hover:bg-slate-800/50">
+                  <td className="p-3 font-medium text-[#1e3a5f] dark:text-white max-w-[200px] truncate">
                     {lang === 'ar' ? item.title_ar : item.title_en}
                   </td>
                   <td className="p-3 text-sm text-slate-500">{item.category}</td>
@@ -141,12 +141,12 @@ export default function ContentManagerDashboard() {
           {txt(lang, 'Enter a brief sentence about an event, and the AI will draft a complete, professional news article ready for publishing.', 'أدخل جملة قصيرة عن حدث، وسيقوم الذكاء الاصطناعي بصياغة مقال إخباري احترافي كامل وجاهز للنشر.', 'Entrez une brève phrase...', '输入关于事件的简短句子...')}
         </p>
         
-        <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-purple-500/20">
+        <div className="bg-cyan-50 dark:bg-slate-900/50 rounded-xl p-4 border border-purple-500/20">
           <textarea 
             value={articlePrompt}
             onChange={(e) => setArticlePrompt(e.target.value)}
             placeholder={txt(lang, 'e.g., "GITM team won 1st place in the national robotics hackathon yesterday."', 'مثال: "فريق GITM فاز بالمركز الأول في الهاكاثون الوطني للروبوتات أمس."', 'Ex: "L\'équipe GITM a gagné..."', '例如：“GITM团队昨天在全国机器人黑客马拉松中获得了第一名。”')}
-            className="w-full h-20 bg-transparent border border-slate-300 dark:border-slate-700 rounded-lg p-3 outline-none text-sm resize-none focus:border-purple-500 mb-3 text-slate-900 dark:text-white"
+            className="w-full h-20 bg-transparent border border-cyan-400 dark:border-slate-700 rounded-lg p-3 outline-none text-sm resize-none focus:border-purple-500 mb-3 text-[#0B132B] dark:text-white"
           ></textarea>
           <div className="flex justify-end gap-2">
             <button 
@@ -183,12 +183,12 @@ export default function ContentManagerDashboard() {
             <div className="mt-6 space-y-3">
               <h4 className="text-sm font-bold text-slate-400">{txt(lang, 'Recently Uploaded:', 'المرفوعات الأخيرة:', 'Récemment:', '最近上传：')}</h4>
               {uploadedFiles.slice(0, 3).map((file, idx) => (
-                <div key={idx} className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-cyan-500/20 flex items-center gap-3">
+                <div key={idx} className="bg-cyan-50 dark:bg-slate-900/50 p-3 rounded-lg border border-cyan-500/20 flex items-center gap-3">
                   {file.resource_type === 'image' ? <ImageIcon size={16} className="text-cyan-500"/> : 
                    file.resource_type === 'video' ? <Video size={16} className="text-purple-500"/> : 
                    <FileText size={16} className="text-amber-500"/>}
                   <div className="flex-1 truncate">
-                    <p className="text-xs font-bold text-slate-800 dark:text-white truncate">{file.original_filename}</p>
+                    <p className="text-xs font-bold text-[#1e3a5f] dark:text-white truncate">{file.original_filename}</p>
                     <p className="text-[10px] text-slate-500">{(file.bytes / 1024).toFixed(1)} KB • {file.format}</p>
                   </div>
                 </div>

@@ -47,7 +47,7 @@ export default function LessonView({ lesson, onBack, onNext, onPrev, hasNext, ha
                     <ArrowLeft className="w-5 h-5 mr-2 rtl:ml-2 rtl:rotate-180" /> {texts.back}
                 </button>
                 <div className="mb-8 text-center">
-                    <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-4">{getLoc(lesson, 'title', lang)}</h1>
+                    <h1 className="text-3xl font-bold text-[#1e3a5f] dark:text-white mb-4">{getLoc(lesson, 'title', lang)}</h1>
                     <div className="inline-flex items-center px-4 py-2 bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 rounded-full text-sm font-medium">
                         <FileText className="w-4 h-4 mr-2 rtl:ml-2" />
                         {texts.pretest}
@@ -70,7 +70,7 @@ export default function LessonView({ lesson, onBack, onNext, onPrev, hasNext, ha
                 <ArrowLeft className="w-5 h-5 mr-2 rtl:ml-2 rtl:rotate-180" /> {texts.back}
             </button>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[#e0fcfc] dark:bg-slate-800 rounded-3xl shadow-sm border border-cyan-300 dark:border-slate-700 overflow-hidden">
                 {lesson.videoUrl ? (
                     <div 
                         className="relative aspect-video bg-slate-900 flex items-center justify-center group cursor-pointer overflow-hidden"
@@ -100,7 +100,7 @@ export default function LessonView({ lesson, onBack, onNext, onPrev, hasNext, ha
                     </div>
                 ) : (
                     <div className="p-8 pb-0">
-                        <h1 className="text-3xl font-bold text-slate-800 dark:text-white">{getLoc(lesson, 'title', lang)}</h1>
+                        <h1 className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{getLoc(lesson, 'title', lang)}</h1>
                     </div>
                 )}
 
@@ -115,12 +115,12 @@ export default function LessonView({ lesson, onBack, onNext, onPrev, hasNext, ha
 
                     {lesson.images && lesson.images.length > 0 && (
                         <div className="mb-12">
-                            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center">
+                            <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-6 flex items-center">
                                 <ImageIcon className="w-6 h-6 mr-3 rtl:ml-3 text-emerald-500" /> {texts.gallery}
                             </h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 {lesson.images.map((img, idx) => (
-                                    <div key={idx} className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm group">
+                                    <div key={idx} className="rounded-2xl overflow-hidden border border-cyan-300 dark:border-slate-700 shadow-sm group">
                                         <img src={img} alt={`Diagram ${idx}`} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500" />
                                     </div>
                                 ))}
@@ -129,13 +129,13 @@ export default function LessonView({ lesson, onBack, onNext, onPrev, hasNext, ha
                     )}
 
                     {lesson.pdfUrl && (
-                        <div className="mb-12 p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between transition hover:shadow-md">
+                        <div className="mb-12 p-6 bg-cyan-50 dark:bg-slate-800/50 rounded-2xl border border-cyan-300 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between transition hover:shadow-md">
                             <div className="flex items-center mb-4 sm:mb-0">
                                 <div className="w-14 h-14 bg-red-100 dark:bg-red-900/30 rounded-2xl flex items-center justify-center mr-5 rtl:ml-5">
                                     <FileText className="w-7 h-7 text-red-500" />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-800 dark:text-white text-lg">Lesson Materials</h4>
+                                    <h4 className="font-bold text-[#1e3a5f] dark:text-white text-lg">Lesson Materials</h4>
                                     <p className="text-sm text-slate-500 dark:text-slate-400">Comprehensive guide and resources in PDF format</p>
                                 </div>
                             </div>
@@ -144,7 +144,7 @@ export default function LessonView({ lesson, onBack, onNext, onPrev, hasNext, ha
                                     alert(lang === 'ar' ? 'جاري تحميل الملف...' : 'Downloading file...');
                                     setFileOpened(true);
                                 }}
-                                className={`px-6 py-3 border rounded-xl font-semibold transition flex items-center shadow-sm whitespace-nowrap ${fileOpened ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800' : 'bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600'}`}
+                                className={`px-6 py-3 border rounded-xl font-semibold transition flex items-center shadow-sm whitespace-nowrap ${fileOpened ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800' : 'bg-[#e0fcfc] dark:bg-slate-700 border-cyan-300 dark:border-slate-600 text-[#2d507b] dark:text-slate-200 hover:bg-cyan-100 dark:hover:bg-slate-600'}`}
                             >
                                 {fileOpened ? <Check className="w-5 h-5 mr-2 rtl:ml-2" /> : <Download className="w-5 h-5 mr-2 rtl:ml-2" />} 
                                 {fileOpened ? (lang === 'ar' ? 'تم التحميل' : 'Downloaded') : texts.downloadPdf}
@@ -155,17 +155,17 @@ export default function LessonView({ lesson, onBack, onNext, onPrev, hasNext, ha
                     {/* External Platforms / Simulators */}
                     {(lesson.platforms && lesson.platforms.length > 0) && (
                         <div className="mb-12">
-                            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center">
+                            <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-6 flex items-center">
                                 <ExternalLink className="w-6 h-6 mr-3 rtl:ml-3 text-cyan-500" /> {lang === 'ar' ? 'منصات ومحاكيات' : 'Platforms & Simulators'}
                             </h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {lesson.platforms.map((platform, idx) => (
-                                    <a key={idx} href={platform.url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-cyan-500 transition-colors group shadow-sm">
+                                    <a key={idx} href={platform.url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-4 bg-[#e0fcfc] dark:bg-slate-800 border border-cyan-300 dark:border-slate-700 rounded-xl hover:border-cyan-500 transition-colors group shadow-sm">
                                         <div>
-                                            <h4 className="font-bold text-slate-800 dark:text-white group-hover:text-cyan-500 transition-colors">{platform.name}</h4>
+                                            <h4 className="font-bold text-[#1e3a5f] dark:text-white group-hover:text-cyan-500 transition-colors">{platform.name}</h4>
                                             <p className="text-sm text-slate-500 dark:text-slate-400">{platform.description}</p>
                                         </div>
-                                        <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center group-hover:bg-cyan-50 dark:group-hover:bg-cyan-900/30 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-cyan-50 dark:bg-slate-900 flex items-center justify-center group-hover:bg-cyan-50 dark:group-hover:bg-cyan-900/30 transition-colors">
                                             <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-cyan-500" />
                                         </div>
                                     </a>
@@ -176,14 +176,14 @@ export default function LessonView({ lesson, onBack, onNext, onPrev, hasNext, ha
 
                     {/* Assignment Upload Section */}
                     {lesson.assignment && (
-                        <div className="mb-12 p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl">
-                            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+                        <div className="mb-12 p-6 bg-cyan-50 dark:bg-slate-800 border border-cyan-300 dark:border-slate-700 rounded-2xl">
+                            <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-2 flex items-center gap-2">
                                 <FileText className="text-blue-500" /> {lang === 'ar' ? 'تمرين عملي / واجب' : 'Practical Assignment'}
                             </h3>
                             <p className="text-slate-600 dark:text-slate-400 mb-6">{lesson.assignment.description}</p>
                             
                             {assignmentStatus === 'pending_upload' && (
-                                <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 text-center hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
+                                <div className="border-2 border-dashed border-cyan-400 dark:border-slate-600 rounded-xl p-8 text-center hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
                                     <UploadCloud className="w-12 h-12 text-slate-400 mx-auto mb-4" />
                                     <p className="text-slate-600 dark:text-slate-300 font-medium mb-4">{lang === 'ar' ? 'اسحب الكود أو الملف هنا للرفع' : 'Drag code or file here to upload'}</p>
                                     <button 
@@ -224,8 +224,8 @@ export default function LessonView({ lesson, onBack, onNext, onPrev, hasNext, ha
                         </div>
                     )}
 
-                    <div className="flex justify-between items-center pt-8 border-t border-slate-200 dark:border-slate-700 mt-12">
-                        <button onClick={onPrev} disabled={!hasPrev} className={`px-6 py-3 rounded-xl font-medium flex items-center transition ${hasPrev ? 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700' : 'opacity-0 pointer-events-none'}`}>
+                    <div className="flex justify-between items-center pt-8 border-t border-cyan-300 dark:border-slate-700 mt-12">
+                        <button onClick={onPrev} disabled={!hasPrev} className={`px-6 py-3 rounded-xl font-medium flex items-center transition ${hasPrev ? 'text-slate-600 hover:bg-cyan-100 dark:text-slate-300 dark:hover:bg-slate-700' : 'opacity-0 pointer-events-none'}`}>
                             <ArrowLeft className="w-5 h-5 mr-2 rtl:ml-2 rtl:rotate-180" /> {texts.prev}
                         </button>
                         
@@ -238,7 +238,7 @@ export default function LessonView({ lesson, onBack, onNext, onPrev, hasNext, ha
                         <button 
                             onClick={onNext} 
                             disabled={!hasNext || !isLessonComplete} 
-                            className={`px-8 py-3 rounded-xl font-bold flex items-center transition ${hasNext && isLessonComplete ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-500/20' : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-600 cursor-not-allowed'}`}
+                            className={`px-8 py-3 rounded-xl font-bold flex items-center transition ${hasNext && isLessonComplete ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-500/20' : 'bg-cyan-100 text-slate-400 dark:bg-slate-800 dark:text-slate-600 cursor-not-allowed'}`}
                         >
                             {texts.next} {hasNext && <ArrowRight className="w-5 h-5 ml-2 rtl:mr-2 rtl:rotate-180" />}
                         </button>

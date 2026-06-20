@@ -80,7 +80,7 @@ const Team = () => {
                     {member.skills.map((skill) => (
                       <span 
                         key={skill}
-                        className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[9px] font-mono text-cyber-muted font-bold"
+                        className="px-2 py-0.5 rounded bg-[#e0fcfc]/5 border border-white/10 text-[9px] font-mono text-cyber-muted font-bold"
                       >
                         {skill}
                       </span>

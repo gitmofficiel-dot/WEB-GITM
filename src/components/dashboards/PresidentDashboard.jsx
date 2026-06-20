@@ -44,8 +44,8 @@ export default function PresidentDashboard() {
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-pink-500/20">
-            <h4 className="font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+          <div className="bg-cyan-50 dark:bg-slate-900/50 rounded-xl p-4 border border-pink-500/20">
+            <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-2 flex items-center gap-2">
               <TrendingUp size={16} className="text-emerald-500" /> Growth Prediction (Q3 2026)
             </h4>
             <p className="text-sm text-slate-500">
@@ -53,8 +53,8 @@ export default function PresidentDashboard() {
             </p>
           </div>
           
-          <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-pink-500/20">
-            <h4 className="font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+          <div className="bg-cyan-50 dark:bg-slate-900/50 rounded-xl p-4 border border-pink-500/20">
+            <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-2 flex items-center gap-2">
               <AlertTriangle size={16} className="text-amber-500" /> Risk Assessment
             </h4>
             <p className="text-sm text-slate-500">
@@ -91,7 +91,7 @@ export default function PresidentDashboard() {
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><Newspaper className="w-5 h-5" /> News Management</h3>
             <div className="space-y-3">
               {news.map(n => (
-                <div key={n.id} className="flex justify-between items-center p-3 bg-white/5 dark:bg-black/20 rounded">
+                <div key={n.id} className="flex justify-between items-center p-3 bg-[#e0fcfc]/5 dark:bg-black/20 rounded">
                   <div><p className="font-semibold">{n.title}</p><p className="text-xs opacity-70">{n.date}</p></div>
                   <button className="text-red-500 hover:text-red-600"><Trash2 className="w-4 h-4"/></button>
                 </div>

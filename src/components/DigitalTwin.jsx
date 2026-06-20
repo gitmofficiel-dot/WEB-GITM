@@ -62,7 +62,7 @@ const DigitalTwin = () => {
           <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#00E5FF]/10 text-[#00E5FF] border border-[#00E5FF]/20 uppercase tracking-wider mb-3 inline-block">
             {lang === 'ar' ? 'التوأم الرقمي للمدينة الذكية' : 'Smart City Digital Twin Module'}
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 dark:text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e3a5f] dark:text-white font-orbitron tracking-wide mb-4 uppercase">
             {lang === 'ar' ? 'مراقبة تقاطع الدار البيضاء الذكي' : 'Casablanca Smart Intersection Node'}
           </h2>
           <div className="w-20 h-1 bg-[#00E5FF] mx-auto mb-4"></div>
@@ -86,7 +86,7 @@ const DigitalTwin = () => {
             >
               {isPlaying ? <Pause size={18} /> : <Play size={18} />}
             </button>
-            <span className="text-xs font-mono text-slate-700 dark:text-cyber-muted">
+            <span className="text-xs font-mono text-[#2d507b] dark:text-cyber-muted">
               {lang === 'ar' 
                 ? (isPlaying ? 'البث الحي: نشط' : 'البث الحي: متوقف مؤقتاً') 
                 : (isPlaying ? 'LIVE STREAM: ACTIVE' : 'LIVE STREAM: PAUSED')}
@@ -165,8 +165,8 @@ const DigitalTwin = () => {
           <div className="lg:col-span-4 flex flex-col justify-between gap-6">
             
             {/* Box 1: KPI Statistics */}
-            <div className="p-6 rounded-2xl glass border border-[#3A506B]/20 bg-slate-50 dark:bg-black/20 space-y-4">
-              <h3 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider font-orbitron">
+            <div className="p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 space-y-4">
+              <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron">
                 {lang === 'ar' ? 'البيانات الحية الميدانية' : 'Live Intersection Telemetry'}
               </h3>
 
@@ -176,7 +176,7 @@ const DigitalTwin = () => {
                     {lang === 'ar' ? 'إجمالي المركبات المكتشفة' : 'Vehicles Detected'}
                   </span>
                   <div className="flex items-baseline space-x-2 rtl:space-x-reverse mt-1">
-                    <span className="text-3xl font-black text-slate-800 dark:text-white font-orbitron">{vehicleCount}</span>
+                    <span className="text-3xl font-black text-[#1e3a5f] dark:text-white font-orbitron">{vehicleCount}</span>
                     <span className="text-xs text-slate-400 dark:text-cyber-muted">cars/min</span>
                   </div>
                 </div>
@@ -204,9 +204,9 @@ const DigitalTwin = () => {
             </div>
 
             {/* Box 2: SVG Chart */}
-            <div className="p-6 rounded-2xl glass border border-[#3A506B]/20 bg-slate-50 dark:bg-black/20 flex flex-col justify-between">
+            <div className="p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 flex flex-col justify-between">
               <div>
-                <h3 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider font-orbitron mb-4 flex items-center gap-2">
+                <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron mb-4 flex items-center gap-2">
                   <BarChart2 size={16} className="text-[#00E5FF]" />
                   <span>{lang === 'ar' ? 'مخطط كفاءة التدفق' : 'Flow Density Index'}</span>
                 </h3>

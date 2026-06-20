@@ -26,7 +26,7 @@ export default function GalleryPage() {
   const filteredItems = MOCK_GALLERY.filter(item => filter === 'All' || item.category === filter);
 
   return (
-    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-slate-800 dark:text-slate-200 transition-colors duration-300">
+    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-[#1e3a5f] dark:text-slate-200 transition-colors duration-300">
       <div className="max-w-7xl mx-auto relative z-10">
         
         {/* Header */}
@@ -78,7 +78,7 @@ export default function GalleryPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.4, delay: (idx % 10) * 0.05 }}
-                className={`relative rounded-2xl overflow-hidden group cursor-pointer card-3d break-inside-avoid ${item.height} bg-slate-200 dark:bg-slate-800`}
+                className={`relative rounded-2xl overflow-hidden group cursor-pointer card-3d break-inside-avoid ${item.height} bg-cyan-200 dark:bg-slate-800`}
                 onClick={() => setSelectedItem(item)}
               >
                 <AdvancedImage 
@@ -88,7 +88,7 @@ export default function GalleryPage() {
 
                 {/* Overlay */}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-4">
-                  <div className="bg-white/20 backdrop-blur-md p-3 rounded-full mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                  <div className="bg-[#e0fcfc]/20 backdrop-blur-md p-3 rounded-full mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                     {item.type === 'video' ? <Play className="text-white ml-1" size={24} /> : <ZoomIn className="text-white" size={24} />}
                   </div>
                   <h3 className="text-white font-bold text-center font-orbitron translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
@@ -137,7 +137,7 @@ export default function GalleryPage() {
                   />
                 </div>
                 
-                <div className="p-6 md:p-8 bg-white dark:bg-slate-900">
+                <div className="p-6 md:p-8 bg-[#e0fcfc] dark:bg-slate-900">
                   <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                     <h2 className="text-2xl md:text-3xl font-orbitron font-bold gradient-text">
                       {selectedItem.title.en}

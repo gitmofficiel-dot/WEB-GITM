@@ -34,11 +34,11 @@ const ActiveMembers = ({ setView }) => {
   }
 
   return (
-    <section className="py-16 bg-white dark:bg-[#0B132B]">
+    <section className="py-16 bg-[#e0fcfc] dark:bg-[#0B132B]">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex justify-between items-end mb-10">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 dark:text-white mb-2 flex items-center gap-3">
+            <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-[#0B132B] dark:text-white mb-2 flex items-center gap-3">
               <Award className="text-amber-500" size={32} />
               {txt(lang, 'Most Active Members', 'الأعضاء الأكثر نشاطاً', 'Membres les plus actifs', '最活跃成员')}
             </h2>
@@ -60,7 +60,7 @@ const ActiveMembers = ({ setView }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="glass-card card-3d p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-md border border-slate-200 dark:border-slate-700 hover-lift text-center group"
+              className="glass-card card-3d p-6 rounded-2xl bg-cyan-50/50 dark:bg-slate-800/50 backdrop-blur-md border border-cyan-300 dark:border-slate-700 hover-lift text-center group"
             >
               <div className="relative w-24 h-24 mx-auto mb-4">
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
@@ -82,7 +82,7 @@ const ActiveMembers = ({ setView }) => {
                 )}
               </div>
               
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-amber-500 transition-colors">
+              <h3 className="text-lg font-bold text-[#0B132B] dark:text-white mb-1 group-hover:text-amber-500 transition-colors">
                 {member.name}
               </h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-3">
@@ -96,7 +96,7 @@ const ActiveMembers = ({ setView }) => {
                   </span>
                 ))}
                 {member.badges && member.badges.length > 3 && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-cyan-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300">
                     +{member.badges.length - 3}
                   </span>
                 )}
