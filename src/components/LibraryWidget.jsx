@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Loader, AlertCircle, ExternalLink, Bookmark } from 'lucide-react';
+import { BookOpen, Loader, AlertCircle, ExternalLink, Bookmark, X, Book } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const LibraryWidget = () => {
@@ -9,6 +9,7 @@ const LibraryWidget = () => {
   const [error, setError] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('programming');
+  const [selectedBook, setSelectedBook] = useState(null);
 
   const fetchBooks = async (query) => {
     setLoading(true);
@@ -35,18 +36,6 @@ const LibraryWidget = () => {
   }, []);
 
   const title = lang === 'ar' ? 'مكتبة البرمجة' : 'Programming Library';
-
-  if (loading) return (
-    <div className="glass-card p-6 rounded-2xl flex items-center justify-center min-h-[300px] border border-white/20 dark:border-gray-700/50">
-      <Loader className="animate-spin text-blue-500" />
-    </div>
-  );
-
-  if (error) return (
-    <div className="glass-card p-6 rounded-2xl flex items-center justify-center min-h-[300px] border border-red-200 dark:border-red-800 text-red-500">
-      <AlertCircle className="mr-2" /> {lang === 'ar' ? 'خطأ في جلب الكتب' : 'Error loading books'}
-    </div>
-  );
 
   return (
     <div className="glass-card p-6 rounded-2xl bg-white/40 dark:bg-gray-800/40 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg hover-lift transition-transform">
@@ -78,30 +67,27 @@ const LibraryWidget = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {books.map((book) => {
             const isSaved = savedItems?.books?.some(b => b.key === book.key);
+            const coverUrl = book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg` : null;
             return (
             <div 
               key={book.key} 
               className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors border border-slate-100 dark:border-slate-800 group relative"
             >
-              <a href={`https://openlibrary.org${book.key}`} target="_blank" rel="noopener noreferrer" className="shrink-0">
-                {book.cover_i ? (
-                  <img 
-                    src={`https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg`} 
-                    alt={book.title} 
-                    className="w-12 h-16 object-cover rounded shadow-sm"
-                  />
+              <button onClick={() => setSelectedBook(book)} className="shrink-0 text-left">
+                {coverUrl ? (
+                  <img src={coverUrl} alt={book.title} className="w-12 h-16 object-cover rounded shadow-sm" />
                 ) : (
-                <div className="w-12 h-16 bg-slate-200 dark:bg-slate-700 rounded flex items-center justify-center shadow-sm">
-                  <BookOpen size={20} className="text-slate-400" />
-                </div>
+                  <div className="w-12 h-16 bg-slate-200 dark:bg-slate-700 rounded flex items-center justify-center shadow-sm">
+                    <Book size={20} className="text-slate-400" />
+                  </div>
                 )}
-              </a>
+              </button>
               <div className="flex-1 min-w-0 pr-6">
-                <a href={`https://openlibrary.org${book.key}`} target="_blank" rel="noopener noreferrer" className="block">
+                <button onClick={() => setSelectedBook(book)} className="block text-left">
                   <h4 className="font-semibold text-sm text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
                     {book.title}
                   </h4>
-                </a>
+                </button>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">
                   {book.author_name?.[0] || 'Unknown Author'}
                 </p>
@@ -113,13 +99,37 @@ const LibraryWidget = () => {
                   >
                     <Bookmark size={14} className={isSaved ? 'fill-current' : ''} />
                   </button>
-                  <a href={`https://openlibrary.org${book.key}`} target="_blank" rel="noopener noreferrer" className="p-1 text-slate-400 hover:text-blue-500">
+                  <button onClick={() => setSelectedBook(book)} className="p-1 text-slate-400 hover:text-blue-500">
                     <ExternalLink size={14} />
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
           )})}
+        </div>
+      )}
+
+      {selectedBook && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200" onClick={() => setSelectedBook(null)}>
+          <div className="bg-white dark:bg-slate-900 w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+              <div className="flex items-center gap-3">
+                <BookOpen className="text-blue-500" size={24} />
+                <h3 className="font-bold text-lg text-slate-800 dark:text-white truncate pr-4">{selectedBook.title}</h3>
+              </div>
+              <button onClick={() => setSelectedBook(null)} className="p-2 text-slate-500 hover:text-red-500 dark:hover:text-red-400 rounded-xl transition-colors">
+                <X size={24} />
+              </button>
+            </div>
+            <div className="flex-1 bg-slate-100 dark:bg-slate-950 relative">
+              <iframe 
+                src={`https://openlibrary.org${selectedBook.key}`} 
+                className="absolute inset-0 w-full h-full border-0"
+                title={selectedBook.title}
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+              />
+            </div>
+          </div>
         </div>
       )}
     </div>

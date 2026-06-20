@@ -5,7 +5,7 @@ import ParticleBackground from './components/ParticleBackground';
 import AIChatBot from './components/AIChatBot';
 
 // Lazy loading all major components for better performance
-const Hero = lazy(() => import('./components/Hero'));
+const Home = lazy(() => import('./components/Home'));
 const NewsPage = lazy(() => import('./components/NewsPage'));
 const GalleryPage = lazy(() => import('./components/GalleryPage'));
 const EventsPage = lazy(() => import('./components/EventsPage'));
@@ -41,7 +41,7 @@ const LoadingFallback = () => (
 );
 
 const AppContent = () => {
-  const { view, activeDashboardRole } = useLanguage();
+  const { view, setView, activeDashboardRole } = useLanguage();
 
   const renderDashboard = () => {
     switch (activeDashboardRole) {
@@ -59,7 +59,7 @@ const AppContent = () => {
 
   const renderView = () => {
     switch (view) {
-      case 'home': return <Hero />;
+      case 'home': return <Home setView={setView} />;
       case 'news': return <NewsPage />;
       case 'gallery': return <GalleryPage />;
       case 'events': return <EventsPage />;
@@ -76,7 +76,7 @@ const AppContent = () => {
       case 'forgot-password': return <ForgotPassword />;
       case 'verify-certificate': return <VerifyCertificate />;
       case 'dashboard': return renderDashboard();
-      default: return <Hero />;
+      default: return <Home setView={setView} />;
     }
   };
 
