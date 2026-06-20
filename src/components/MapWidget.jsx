@@ -33,7 +33,7 @@ const MapWidget = () => {
         <MapContainer center={position} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
           <TileLayer
             attribution='&copy; <a href="https://www.tomtom.com/en_gb/routing-and-maps/">TomTom</a>'
-            url="https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=JomJmmGNX3vsDojUpaZHlqyMBvrVmXR7"
+            url="https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=cnwPNsQJpuQQ2VaAsHyPDtTXSnvtwr7k"
           />
           <Marker position={position}>
             <Popup>
