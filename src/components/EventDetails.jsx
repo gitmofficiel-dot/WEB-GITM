@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar as CalendarIcon, MapPin, Clock, Users, ArrowRight, PlayCircle, Megaphone, X, Mail, ChevronLeft, CheckCircle2, Trophy, Globe, ExternalLink } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, Clock, Users, ArrowRight, PlayCircle, Megaphone, X, Mail, ChevronLeft, CheckCircle2, Trophy, Globe, ExternalLink, FileText, Video } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -84,6 +84,48 @@ export default function EventDetails() {
                     </div>
                   </div>
                 )}
+
+                {/* Media & Resources Section */}
+                <div className="bg-cyan-50/50 dark:bg-slate-800/30 p-6 rounded-2xl border border-cyan-100 dark:border-slate-700/50 mt-6">
+                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                    <Video className="text-cyan-500" /> {txt(lang, 'Media & Resources', 'الوسائط والموارد', 'Médias et ressources', '媒体与资源')}
+                  </h3>
+                  
+                  {/* Video Placeholder */}
+                  <div className="mb-6 relative rounded-xl overflow-hidden aspect-video bg-slate-900 group cursor-pointer shadow-lg">
+                    <img src={viewDetailsEvent.image || IMAGES[1]} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" alt="Video cover" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-16 h-16 bg-cyan-500/80 backdrop-blur rounded-full flex items-center justify-center group-hover:bg-cyan-400 transition-colors">
+                        <PlayCircle size={32} className="text-white ml-1" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Documents List */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-red-100 dark:bg-red-900/20 text-red-500 rounded-lg"><FileText size={20} /></div>
+                        <div>
+                          <p className="font-bold text-sm text-[#1e3a5f] dark:text-slate-200">{txt(lang, 'Event Agenda', 'برنامج الفعالية', 'Programme', '日程安排')}.pdf</p>
+                          <p className="text-xs text-slate-500">2.4 MB</p>
+                        </div>
+                      </div>
+                      <button className="text-cyan-600 dark:text-cyan-400 text-sm font-bold hover:underline">{txt(lang, 'Download', 'تحميل', 'Télécharger', '下载')}</button>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-100 dark:bg-blue-900/20 text-blue-500 rounded-lg"><FileText size={20} /></div>
+                        <div>
+                          <p className="font-bold text-sm text-[#1e3a5f] dark:text-slate-200">{txt(lang, 'Guidelines & Rules', 'القواعد والإرشادات', 'Règlement', '指南与规则')}.docx</p>
+                          <p className="text-xs text-slate-500">1.1 MB</p>
+                        </div>
+                      </div>
+                      <button className="text-cyan-600 dark:text-cyan-400 text-sm font-bold hover:underline">{txt(lang, 'Download', 'تحميل', 'Télécharger', '下载')}</button>
+                    </div>
+                  </div>
+                </div>
               </div>
               
               <div className="space-y-6">
