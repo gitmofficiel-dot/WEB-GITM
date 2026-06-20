@@ -68,9 +68,13 @@ const AIChatBot = () => {
 
       if (lowerText.includes('gitm') || lowerText.includes('ما هي')) {
         aiResponse = lang === 'ar' ? 'GITM هي مجموعة الابتكار التكنولوجي المغربية، نركز على الأنظمة المدمجة، الذكاء الاصطناعي، وإنترنت الأشياء.' : 'GITM is the Moroccan Technology Innovation Group, focusing on embedded systems, AI, and IoT.';
+      } else if (lowerText.includes('مرحبا') || lowerText.includes('سلام') || lowerText.includes('hello') || lowerText.includes('hi')) {
+        aiResponse = lang === 'ar' ? 'أهلاً بك! وعليكم السلام. كيف يمكنني إفادتك اليوم؟' : 'Hello there! How can I help you today?';
+      } else if (lowerText.includes('مؤسس') || lowerText.includes('founder')) {
+        aiResponse = lang === 'ar' ? 'مؤسس GITM هو المهندس محمد غزاوني (Mohammed Rhzaouni)، ويهدف من خلال المجموعة إلى دفع عجلة الابتكار التكنولوجي في المغرب.' : 'The founder of GITM is engineer Mohammed Rhzaouni, aiming to drive technological innovation in Morocco.';
       } else if (lowerText.includes('academy') || lowerText.includes('أكاديمية') || lowerText.includes('course')) {
         aiResponse = lang === 'ar' ? 'نقدم 3 مسارات رئيسية: الذكاء الاصطناعي على الحافة، الروبوتات المستقلة، وأنظمة السحابة لإنترنت الأشياء.' : 'We offer 3 main tracks: Edge AI, Autonomous Robotics, and IoT Cloud Systems.';
-      } else if (lowerText.includes('contact') || lowerText.includes('اتصال')) {
+      } else if (lowerText.includes('contact') || lowerText.includes('اتصال') || lowerText.includes('تواصل')) {
         aiResponse = lang === 'ar' ? 'يمكنك التواصل معنا عبر contact@gitm.ma أو زيارة مختبرنا في الدار البيضاء.' : 'You can reach us at contact@gitm.ma or visit our lab in Casablanca.';
       } else if (lowerText.includes('dashboard') || lowerText.includes('لوحة')) {
         aiResponse = lang === 'ar' ? 'جاري توجيهك إلى لوحة التحكم الخاصة بك...' : 'Redirecting you to your dashboard...';
@@ -97,7 +101,7 @@ const AIChatBot = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-20 right-0 rtl:left-0 rtl:right-auto w-80 sm:w-96 h-[500px] glass-card flex flex-col overflow-hidden animate-fade-in-up shadow-2xl border border-white/10 origin-bottom-right rtl:origin-bottom-left">
+        <div className="absolute bottom-20 right-0 rtl:left-0 rtl:right-auto w-80 sm:w-96 h-[500px] bg-white dark:bg-slate-900 flex flex-col overflow-hidden animate-fade-in-up shadow-2xl border border-cyan-200 dark:border-slate-800 rounded-3xl origin-bottom-right rtl:origin-bottom-left">
           {/* Header */}
           <div className="px-5 py-4 bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-3">

@@ -59,12 +59,14 @@ const MOCK_NEWS = [
 
 const CATEGORIES = ['All', 'Technology', 'Events', 'Academy', 'Partners'];
 
+import { useNavigate } from 'react-router-dom';
+
 export default function NewsPage() {
+  const navigate = useNavigate();
   const { lang, news, savedItems, toggleSave } = useLanguage();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
   const [visibleCount, setVisibleCount] = useState(5);
-  const [selectedArticle, setSelectedArticle] = useState(null);
 
   const filteredNews = news.filter(item => {
     const matchCat = category === 'All' || item.category === category || item.category.toLowerCase() === category.toLowerCase();
@@ -179,7 +181,7 @@ export default function NewsPage() {
                       </div>
                       <span className="font-medium">{featuredNews.author}</span>
                     </div>
-                    <button onClick={() => setSelectedArticle(featuredNews)} className="btn-primary rounded-full px-6 py-2 flex items-center gap-2 group-hover:shadow-[0_0_20px_rgba(13,148,136,0.6)] dark:group-hover:shadow-[0_0_20px_rgba(0,229,255,0.6)] transition-all">
+                    <button onClick={() => navigate(`/news/${featuredNews.id}`)} className="btn-primary rounded-full px-6 py-2 flex items-center gap-2 group-hover:shadow-[0_0_20px_rgba(13,148,136,0.6)] dark:group-hover:shadow-[0_0_20px_rgba(0,229,255,0.6)] transition-all">
                       {txt(lang, 'Read More', 'اقرأ المزيد', 'Lire la suite', '阅读更多')} <ChevronRight size={18} className={`${lang === 'ar' ? 'rotate-180' : ''}`} />
                     </button>
                   </div>
@@ -232,7 +234,7 @@ export default function NewsPage() {
                   <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 flex-grow line-clamp-3">
                     {lang === 'ar' ? item.summary_ar : item.summary_en}
                   </p>
-                  <button onClick={() => setSelectedArticle(item)} className="text-teal-600 dark:text-cyan-400 font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all mt-auto self-start">
+                  <button onClick={() => navigate(`/news/${item.id}`)} className="text-teal-600 dark:text-cyan-400 font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all mt-auto self-start">
                     {txt(lang, 'Read Article', 'اقرأ المقال', 'Lire l\'article', '阅读文章')} <ChevronRight size={16} className={`${lang === 'ar' ? 'rotate-180' : ''}`} />
                   </button>
                 </div>
@@ -256,46 +258,6 @@ export default function NewsPage() {
         )}
 
       </div>
-
-      {/* Article Viewer Modal */}
-      <AnimatePresence>
-        {selectedArticle && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" 
-            onClick={() => setSelectedArticle(null)}
-          >
-            <motion.div 
-              initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-              className="bg-[#e0fcfc] dark:bg-slate-900 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-cyan-300 dark:border-slate-800" 
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between p-4 border-b border-cyan-300 dark:border-slate-800 bg-cyan-50 dark:bg-slate-900/50">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="text-teal-500" size={24} />
-                  <span className="font-bold text-[#1e3a5f] dark:text-slate-200">{txt(lang, 'Official News', 'خبر رسمي', 'Nouvelles officielles', '官方新闻')}</span>
-                </div>
-                <button onClick={() => setSelectedArticle(null)} className="p-2 text-slate-500 hover:text-red-500 dark:hover:text-red-400 rounded-xl transition-colors">
-                  <X size={24} />
-                </button>
-              </div>
-              <div className="flex-1 overflow-y-auto p-6 md:p-10 text-[#1e3a5f] dark:text-slate-200">
-                <div className="flex items-center gap-4 text-sm text-teal-600 dark:text-cyan-400 font-medium mb-4">
-                  <span className="flex items-center gap-1"><Calendar size={16}/> {selectedArticle.date}</span>
-                  <span className="flex items-center gap-1"><Tag size={16}/> {selectedArticle.category}</span>
-                  <span className="flex items-center gap-1"><User size={16}/> {selectedArticle.author}</span>
-                </div>
-                <h2 className="text-3xl md:text-4xl font-orbitron font-bold mb-6 text-[#0B132B] dark:text-white">
-                  {lang === 'ar' ? selectedArticle.title_ar : selectedArticle.title_en}
-                </h2>
-                <div className="prose dark:prose-invert max-w-none text-lg leading-relaxed">
-                  {lang === 'ar' ? (selectedArticle.content_ar || selectedArticle.summary_ar) : (selectedArticle.content_en || selectedArticle.summary_en)}
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

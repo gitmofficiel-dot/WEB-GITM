@@ -8,8 +8,10 @@ import AIChatBot from './components/AIChatBot';
 // Lazy loading all major components for better performance
 const Home = lazy(() => import('./components/Home'));
 const NewsPage = lazy(() => import('./components/NewsPage'));
+const NewsDetails = lazy(() => import('./components/NewsDetails'));
 const GalleryPage = lazy(() => import('./components/GalleryPage'));
 const EventsPage = lazy(() => import('./components/EventsPage'));
+const EventDetails = lazy(() => import('./components/EventDetails'));
 const TechProjectsPage = lazy(() => import('./components/TechProjectsPage'));
 const AIFeatures = lazy(() => import('./components/AIFeatures'));
 const Academy = lazy(() => import('./components/Academy'));
@@ -63,8 +65,10 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<Home setView={setView} />} />
         <Route path="/news" element={<NewsPage />} />
+        <Route path="/news/:id" element={<NewsDetails />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/events" element={<EventsPage />} />
+        <Route path="/events/:id" element={<EventDetails />} />
         <Route path="/projects" element={<TechProjectsPage />} />
         <Route path="/ai-features" element={<AIFeatures />} />
         <Route path="/academy" element={<Academy />} />

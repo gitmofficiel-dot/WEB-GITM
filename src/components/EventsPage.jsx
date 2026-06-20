@@ -52,7 +52,10 @@ const Countdown = ({ targetDate, lang }) => {
   );
 };
 
+import { useNavigate } from 'react-router-dom';
+
 export default function EventsPage() {
+  const navigate = useNavigate();
   const { lang, events, competitions, user, eventRegistrations, setEventRegistrations } = useLanguage();
   
   // Enriched Events with images and icons
@@ -68,7 +71,6 @@ export default function EventsPage() {
   
   // Modals State
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [viewDetailsEvent, setViewDetailsEvent] = useState(null);
   
   // Registration Form State
   const [isRegistering, setIsRegistering] = useState(false);
@@ -171,7 +173,7 @@ export default function EventsPage() {
                   <button onClick={() => setSelectedEvent(upcomingEvents[0])} className="btn-primary px-8 py-3 rounded-full font-bold shadow-lg shadow-teal-500/30 flex items-center gap-2">
                     {txt(lang, 'Register Now', 'سجل الآن', 'S\'inscrire maintenant', '现在注册')} <ArrowRight size={18} className={`${lang === 'ar' ? 'rotate-180' : ''}`} />
                   </button>
-                  <button onClick={() => setViewDetailsEvent(upcomingEvents[0])} className="btn-glass px-8 py-3 rounded-full font-bold flex items-center gap-2">
+                  <button onClick={() => navigate(`/events/${upcomingEvents[0].id}`)} className="btn-glass px-8 py-3 rounded-full font-bold flex items-center gap-2">
                     {txt(lang, 'View Details', 'عرض التفاصيل', 'Voir les détails', '查看详情')}
                   </button>
                 </div>
@@ -227,7 +229,7 @@ export default function EventsPage() {
                     <button onClick={() => setSelectedEvent(ev)} className="flex-1 py-3 rounded-xl border border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors font-bold text-sm flex justify-center items-center gap-2">
                       {txt(lang, 'RSVP', 'تأكيد الحضور', 'RSVP', '回复')}
                     </button>
-                    <button onClick={() => setViewDetailsEvent(ev)} className="flex-1 py-3 rounded-xl bg-cyan-100 dark:bg-slate-800 text-[#1e3a5f] dark:text-slate-300 hover:bg-cyan-200 dark:hover:bg-slate-700 transition-colors font-bold text-sm flex justify-center items-center">
+                    <button onClick={() => navigate(`/events/${ev.id}`)} className="flex-1 py-3 rounded-xl bg-cyan-100 dark:bg-slate-800 text-[#1e3a5f] dark:text-slate-300 hover:bg-cyan-200 dark:hover:bg-slate-700 transition-colors font-bold text-sm flex justify-center items-center">
                       {txt(lang, 'Details', 'التفاصيل', 'Détails', '详情')}
                     </button>
                   </div>
@@ -300,7 +302,7 @@ export default function EventsPage() {
                     </div>
                   </div>
                 </div>
-                <button onClick={() => setViewDetailsEvent(ev)} className="text-teal-600 dark:text-cyan-400 font-medium text-sm flex items-center gap-1 hover:underline whitespace-nowrap">
+                <button onClick={() => navigate(`/events/${ev.id}`)} className="text-teal-600 dark:text-cyan-400 font-medium text-sm flex items-center gap-1 hover:underline whitespace-nowrap">
                   {txt(lang, 'View Recap', 'عرض الملخص', 'Voir le résumé', '查看回顾')} <ArrowRight size={16} />
                 </button>
               </div>
@@ -414,111 +416,6 @@ export default function EventsPage() {
                       </button>
                     </div>
                   )}
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {viewDetailsEvent && (
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-              onClick={() => setViewDetailsEvent(null)}
-            >
-              <motion.div 
-                initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-                className="bg-[#e0fcfc] dark:bg-slate-900 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl border border-cyan-300 dark:border-slate-800"
-                onClick={e => e.stopPropagation()}
-              >
-                <div className="relative h-64 sm:h-80 w-full rounded-t-3xl overflow-hidden">
-                  <img src={viewDetailsEvent.image || IMAGES[0]} alt="Event Cover" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#e0fcfc] dark:from-slate-900 to-transparent" />
-                  <button onClick={() => setViewDetailsEvent(null)} className="absolute top-4 right-4 rtl:left-4 rtl:right-auto bg-black/50 text-white hover:bg-red-500 p-2 rounded-full backdrop-blur-md transition-colors">
-                    <X size={24} />
-                  </button>
-                  <div className="absolute bottom-6 left-6 rtl:right-6 rtl:left-auto">
-                    <span className="px-3 py-1 bg-cyan-500 text-white rounded-full text-xs font-bold uppercase shadow-lg">
-                      {viewDetailsEvent.type}
-                    </span>
-                    <h2 className="text-3xl md:text-4xl font-orbitron font-bold text-[#1e3a5f] dark:text-white mt-2 drop-shadow-lg">
-                      {lang === 'ar' ? viewDetailsEvent.title_ar : viewDetailsEvent.title_en}
-                    </h2>
-                  </div>
-                </div>
-
-                <div className="p-8">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="md:col-span-2 space-y-6">
-                      <div>
-                        <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                          <Megaphone className="text-cyan-500" /> {txt(lang, 'About The Event', 'حول الفعالية', 'À propos', '关于')}
-                        </h3>
-                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg">
-                          {lang === 'ar' ? viewDetailsEvent.description_ar : viewDetailsEvent.description_en}
-                        </p>
-                      </div>
-                      
-                      {viewDetailsEvent.status === 'completed' && (
-                        <div className="bg-slate-100 dark:bg-slate-800 p-6 rounded-2xl border border-cyan-200 dark:border-slate-700">
-                          <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                            <PlayCircle className="text-cyan-500" /> {txt(lang, 'Event Recap', 'ملخص الفعالية', 'Résumé', '回顾')}
-                          </h3>
-                          <div className="aspect-video bg-black/20 rounded-xl flex items-center justify-center relative overflow-hidden group cursor-pointer">
-                            <img src={viewDetailsEvent.image || IMAGES[1]} className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-30 transition-opacity" />
-                            <PlayCircle size={48} className="text-white z-10 group-hover:scale-110 transition-transform" />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-6">
-                      <div className="bg-cyan-50 dark:bg-slate-800/50 p-6 rounded-2xl border border-cyan-200 dark:border-slate-700 space-y-4">
-                        <div className="flex items-start gap-3">
-                          <CalendarIcon className="text-cyan-500 mt-1 shrink-0" />
-                          <div>
-                            <p className="text-sm text-slate-500">{txt(lang, 'Start Date', 'تاريخ البدء', 'Début', '开始')}</p>
-                            <p className="font-bold">{new Date(viewDetailsEvent.date).toLocaleDateString()} - {new Date(viewDetailsEvent.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                          </div>
-                        </div>
-                        {viewDetailsEvent.endDate && (
-                          <div className="flex items-start gap-3">
-                            <Clock className="text-amber-500 mt-1 shrink-0" />
-                            <div>
-                              <p className="text-sm text-slate-500">{txt(lang, 'End Date', 'تاريخ الانتهاء', 'Fin', '结束')}</p>
-                              <p className="font-bold">{new Date(viewDetailsEvent.endDate).toLocaleDateString()}</p>
-                            </div>
-                          </div>
-                        )}
-                        <div className="flex items-start gap-3">
-                          <MapPin className="text-indigo-500 mt-1 shrink-0" />
-                          <div>
-                            <p className="text-sm text-slate-500">{txt(lang, 'Location', 'الموقع', 'Lieu', '位置')}</p>
-                            <p className="font-bold">{viewDetailsEvent.location}</p>
-                          </div>
-                        </div>
-                        {viewDetailsEvent.contactDate && (
-                          <div className="flex items-start gap-3 border-t border-cyan-200 dark:border-slate-700 pt-4 mt-2">
-                            <Mail className="text-purple-500 mt-1 shrink-0" />
-                            <div>
-                              <p className="text-sm text-slate-500">{txt(lang, 'Results Announcement', 'تاريخ إعلان النتائج', 'Annonce', '公告')}</p>
-                              <p className="font-bold text-purple-600 dark:text-purple-400">{new Date(viewDetailsEvent.contactDate).toLocaleDateString()}</p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {viewDetailsEvent.status === 'upcoming' && (
-                        <button 
-                          onClick={() => { setViewDetailsEvent(null); setSelectedEvent(viewDetailsEvent); }} 
-                          className="w-full btn-primary py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-lg"
-                        >
-                          {txt(lang, 'Official Registration', 'تسجيل رسمي', 'Inscription', '注册')} <ArrowRight size={18} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
                 </div>
               </motion.div>
             </motion.div>
