@@ -5,6 +5,7 @@ import {
   BarChart, LineChart, ArrowRight, CheckCircle2 
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import AITranslator from './AITranslator';
 
 const AIFeatures = () => {
   const { language, isRTL } = useLanguage();
@@ -251,6 +252,16 @@ const AIFeatures = () => {
               </div>
             </div>
           </div>
+        </motion.div>
+
+        {/* Real Translator Widget */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-16"
+        >
+          <AITranslator />
         </motion.div>
       </div>
 
