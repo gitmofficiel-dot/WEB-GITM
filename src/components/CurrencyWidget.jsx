@@ -11,8 +11,8 @@ const CurrencyWidget = () => {
   useEffect(() => {
     const fetchRates = async () => {
       try {
-        // Fetch EUR and USD to MAD (Moroccan Dirham) using Frankfurter (free, no API key)
-        const res = await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,GBP');
+        // Fetch EUR and GBP using open.er-api.com which is CORS friendly
+        const res = await fetch('https://open.er-api.com/v6/latest/USD');
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
         setRates(data.rates);

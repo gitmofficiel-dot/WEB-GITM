@@ -5,11 +5,16 @@ import { onAuthStateChanged, signOut, updateProfile } from 'firebase/auth';
 import { db } from '../config/firebase';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
+import { useNavigate, useLocation } from 'react-router-dom';
+
 const LanguageContext = createContext();
 
 export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   // 1. Language State
   const [lang, setLang] = useState(() => localStorage.getItem('gitm_lang') || 'ar');
   const [isTranslating, setIsTranslating] = useState(false);
@@ -18,8 +23,19 @@ export const LanguageProvider = ({ children }) => {
   // 2. Theme State (Light / Dark)
   const [theme, setTheme] = useState(() => localStorage.getItem('gitm_theme') || 'dark');
 
-  // 3. Router View State
-  const [view, setView] = useState('home');
+  // 3. Router View State (Derived from URL)
+  const path = location.pathname.split('/')[1] || 'home';
+  const view = path === 'home' ? 'home' : path;
+  
+  const setView = (v) => {
+    if (v === 'home') navigate('/');
+    else if (v === 'dashboard') {
+      const secureHash = Math.random().toString(36).substring(2, 10);
+      navigate(`/dashboard/${secureHash}`);
+    }
+    else navigate('/' + v);
+  };
+
   const [selectedProfileId, setSelectedProfileId] = useState(null);
 
   // 4. Auth User State

@@ -14,6 +14,7 @@ const PROJECTS = [
     progress: 75,
     github: 'https://github.com/gitm/health-ai',
     tech: ['Python', 'TensorFlow', 'React', 'FastAPI'],
+    team: ['AM', 'SL'],
     color: 'from-blue-500 to-cyan-500',
     image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80'
   },
@@ -25,6 +26,7 @@ const PROJECTS = [
     progress: 100,
     github: 'https://github.com/gitm/agri-iot',
     tech: ['C++', 'Arduino', 'Node.js', 'MongoDB'],
+    team: ['KM', 'YM'],
     color: 'from-green-500 to-emerald-600',
     image: 'https://images.unsplash.com/photo-1628102491629-77858ab5721d?w=800&q=80'
   },
@@ -36,6 +38,7 @@ const PROJECTS = [
     progress: 40,
     github: 'https://github.com/gitm/educhain',
     tech: ['Solidity', 'Next.js', 'Ethers.js'],
+    team: ['OB', 'AK'],
     color: 'from-purple-500 to-indigo-600',
     image: 'https://images.unsplash.com/photo-1639762681485-074b7f4ec651?w=800&q=80'
   },
@@ -47,6 +50,7 @@ const PROJECTS = [
     progress: 100,
     github: 'https://github.com/gitm/govtech-portal',
     tech: ['React 19', 'Tailwind', 'Framer Motion'],
+    team: ['SB', 'ME'],
     color: 'from-rose-500 to-pink-600',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80'
   },
@@ -58,6 +62,7 @@ const PROJECTS = [
     progress: 90,
     github: 'https://github.com/gitm/atlas-drone',
     tech: ['Python', 'OpenCV', 'React Native'],
+    team: ['HM', 'ZB'],
     color: 'from-orange-500 to-amber-600',
     image: 'https://images.unsplash.com/photo-1527443195645-1133f7f28990?w=800&q=80'
   },
@@ -69,6 +74,7 @@ const PROJECTS = [
     progress: 100,
     github: 'https://github.com/gitm/fintech-api',
     tech: ['Go', 'PostgreSQL', 'Docker', 'Kubernetes'],
+    team: ['YB', 'RM'],
     color: 'from-teal-500 to-cyan-600',
     image: 'https://images.unsplash.com/photo-1616077168079-7e09a677fb2c?w=800&q=80'
   }

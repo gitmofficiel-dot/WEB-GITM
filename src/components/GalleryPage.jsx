@@ -127,7 +127,7 @@ export default function GalleryPage() {
                 initial={{ scale: 0.9, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.9, y: 20 }}
-                className="relative w-full max-w-5xl rounded-2xl overflow-hidden glass-card border border-white/10"
+                className="relative w-full max-w-3xl rounded-2xl overflow-hidden glass-card border border-white/10"
                 onClick={e => e.stopPropagation()}
               >
                 <div className={`w-full aspect-video bg-black flex items-center justify-center relative overflow-hidden`}>

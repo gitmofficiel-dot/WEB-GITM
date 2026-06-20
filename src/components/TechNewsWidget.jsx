@@ -94,7 +94,7 @@ const TechNewsWidget = () => {
           >
             <div>
               <div className="mb-3 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400 text-[10px] font-bold w-fit uppercase tracking-wider">
-                <Globe size={10} /> {item.isApi ? (lang === 'ar' ? 'أخبار عالمية (API)' : 'Global News (API)') : (lang === 'ar' ? 'أخبار محلية' : 'Local News')}
+                <Globe size={10} /> {item.isApi ? (lang === 'ar' ? 'أخبار عالمية' : 'Global News') : (lang === 'ar' ? 'أخبار محلية' : 'Local News')}
               </div>
               
               <button onClick={() => setSelectedNews(item)} className="text-left w-full">

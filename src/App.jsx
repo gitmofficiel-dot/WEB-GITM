@@ -1,4 +1,5 @@
 import React, { useEffect, Suspense, lazy } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import ParticleBackground from './components/ParticleBackground';
@@ -57,27 +58,29 @@ const AppContent = () => {
     }
   };
 
-  const renderView = () => {
-    switch (view) {
-      case 'home': return <Home setView={setView} />;
-      case 'news': return <NewsPage />;
-      case 'gallery': return <GalleryPage />;
-      case 'events': return <EventsPage />;
-      case 'projects': return <TechProjectsPage />;
-      case 'ai-features': return <AIFeatures />;
-      case 'academy': return <Academy />;
-      case 'about': return <MemberProfiles />;
-      case 'profile': return <PublicProfile />;
-      case 'project-details': return <ProjectDetails />;
-      case 'virtual-lab': return <VirtualLab />;
-      case 'collab-board': return <CollaborationBoard />;
-      case 'login': return <AuthForms initialMode="login" />;
-      case 'register': return <AuthForms initialMode="register" />;
-      case 'forgot-password': return <ForgotPassword />;
-      case 'verify-certificate': return <VerifyCertificate />;
-      case 'dashboard': return renderDashboard();
-      default: return <Home setView={setView} />;
-    }
+  const renderRoutes = () => {
+    return (
+      <Routes>
+        <Route path="/" element={<Home setView={setView} />} />
+        <Route path="/news" element={<NewsPage />} />
+        <Route path="/gallery" element={<GalleryPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/projects" element={<TechProjectsPage />} />
+        <Route path="/ai-features" element={<AIFeatures />} />
+        <Route path="/academy" element={<Academy />} />
+        <Route path="/about" element={<MemberProfiles />} />
+        <Route path="/profile" element={<PublicProfile />} />
+        <Route path="/project-details" element={<ProjectDetails />} />
+        <Route path="/virtual-lab" element={<VirtualLab />} />
+        <Route path="/collab-board" element={<CollaborationBoard />} />
+        <Route path="/login" element={<AuthForms initialMode="login" />} />
+        <Route path="/register" element={<AuthForms initialMode="register" />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-certificate" element={<VerifyCertificate />} />
+        <Route path="/dashboard/:hash" element={renderDashboard()} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    );
   };
 
   return (
@@ -100,7 +103,7 @@ const AppContent = () => {
         {/* Main Content Area */}
         <main className="flex-1 mt-20 p-4 md:p-6 pb-24 max-w-7xl mx-auto w-full">
           <Suspense fallback={<LoadingFallback />}>
-            {renderView()}
+            {renderRoutes()}
           </Suspense>
         </main>
       </div>

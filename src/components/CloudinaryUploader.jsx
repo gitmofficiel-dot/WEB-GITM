@@ -27,8 +27,8 @@ export default function CloudinaryUploader({ onUploadSuccess, buttonText, resour
         cloudinaryRef.current = window.cloudinary;
         widgetRef.current = cloudinaryRef.current.createUploadWidget(
           {
-            cloudName: 'dh25r9ztp',
-            uploadPreset: 'gitm_uploads', // The user must create this unsigned preset in their Cloudinary dashboard
+            cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dh25r9ztp',
+            uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'gitm_uploads', // Ensure this preset exists and is 'unsigned'
             sources: ['local', 'url', 'camera'],
             resourceType: resourceType, // 'auto' allows images, videos, raw files
             multiple: false,
