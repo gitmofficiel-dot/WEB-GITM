@@ -3,7 +3,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { 
   Menu, X, Sun, Moon, Globe, ChevronDown, User, LogIn, 
   LayoutDashboard, Home, Newspaper, Image, Calendar, Code2,
-  Users, BookOpen, Sparkles, FolderGit2
+  Users, BookOpen, Sparkles, FolderGit2, Activity
 } from 'lucide-react';
 
 const Navbar = () => {
