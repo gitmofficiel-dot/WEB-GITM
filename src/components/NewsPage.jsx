@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Calendar, User, Tag, ChevronRight, Pin } from 'lucide-react';
+import { Search, Calendar, User, Tag, ChevronRight, Pin, Bookmark, ShieldCheck } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import TechNewsWidget from './TechNewsWidget';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
@@ -59,16 +60,17 @@ const MOCK_NEWS = [
 const CATEGORIES = ['All', 'Technology', 'Events', 'Academy', 'Partners'];
 
 export default function NewsPage() {
-  const { lang } = useLanguage();
+  const { lang, news, savedItems, toggleSave } = useLanguage();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
   const [visibleCount, setVisibleCount] = useState(5);
 
-  const filteredNews = MOCK_NEWS.filter(news => {
-    const matchCat = category === 'All' || news.category === category;
-    const matchSearch = news.title.en.toLowerCase().includes(search.toLowerCase()) || 
-                        news.title.ar.includes(search) ||
-                        news.summary.en.toLowerCase().includes(search.toLowerCase());
+  const filteredNews = news.filter(item => {
+    const matchCat = category === 'All' || item.category === category || item.category.toLowerCase() === category.toLowerCase();
+    const matchSearch = 
+      (item.title_en && item.title_en.toLowerCase().includes(search.toLowerCase())) || 
+      (item.title_ar && item.title_ar.includes(search)) ||
+      (item.summary_en && item.summary_en.toLowerCase().includes(search.toLowerCase()));
     return matchCat && matchSearch;
   });
 
@@ -121,9 +123,16 @@ export default function NewsPage() {
           </div>
         </div>
 
+        {/* Global Tech News Widget */}
+        <div className="mb-12">
+          <TechNewsWidget />
+        </div>
+
         {/* Featured News */}
         <AnimatePresence mode="wait">
-          {featuredNews && category === 'All' && !search && (
+          {featuredNews && category === 'All' && !search && (() => {
+            const isSaved = savedItems?.news?.some(n => n.id === featuredNews.id);
+            return (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -131,7 +140,7 @@ export default function NewsPage() {
               className="mb-16 card-3d glass-card rounded-3xl overflow-hidden group"
             >
               <div className="flex flex-col lg:flex-row h-full">
-                <div className={`lg:w-1/2 h-64 lg:h-auto bg-gradient-to-br ${featuredNews.color} relative overflow-hidden flex items-center justify-center`}>
+                <div className={`lg:w-1/2 h-64 lg:h-auto bg-gradient-to-br from-teal-500 to-emerald-600 relative overflow-hidden flex items-center justify-center`}>
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
                   <Pin className="text-white w-20 h-20 opacity-50 drop-shadow-lg transform group-hover:scale-110 transition-transform duration-500" />
                   <div className="absolute top-4 left-4 glass px-4 py-1 rounded-full text-white font-bold text-sm flex items-center gap-2">
@@ -139,15 +148,28 @@ export default function NewsPage() {
                   </div>
                 </div>
                 <div className="lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center relative z-10">
-                  <div className="flex items-center gap-4 text-sm text-teal-600 dark:text-cyan-400 font-medium mb-4">
-                    <span className="flex items-center gap-1"><Calendar size={16}/> {featuredNews.date}</span>
-                    <span className="flex items-center gap-1"><Tag size={16}/> {featuredNews.category}</span>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4 text-sm text-teal-600 dark:text-cyan-400 font-medium">
+                      <span className="flex items-center gap-1"><Calendar size={16}/> {featuredNews.date}</span>
+                      <span className="flex items-center gap-1"><Tag size={16}/> {featuredNews.category}</span>
+                    </div>
+                    <button 
+                      onClick={() => toggleSave('news', featuredNews)}
+                      className={`p-2 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'bg-slate-100 text-slate-400 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700'}`}
+                    >
+                      <Bookmark size={20} className={isSaved ? 'fill-current' : ''} />
+                    </button>
                   </div>
+                  
+                  <div className="mb-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 text-xs font-bold w-fit">
+                    <ShieldCheck size={14} /> {txt(lang, 'Official GITM News', 'خبر رسمي - فريق GITM', 'Officiel GITM', '官方GITM新闻')}
+                  </div>
+                  
                   <h2 className="text-3xl md:text-4xl font-orbitron font-bold mb-6 group-hover:text-teal-600 dark:group-hover:text-cyan-400 transition-colors">
-                    {featuredNews.title[lang] || featuredNews.title.en}
+                    {lang === 'ar' ? featuredNews.title_ar : featuredNews.title_en}
                   </h2>
                   <p className="text-slate-600 dark:text-slate-300 text-lg mb-8 line-clamp-3">
-                    {featuredNews.summary[lang] || featuredNews.summary.en}
+                    {lang === 'ar' ? featuredNews.summary_ar : featuredNews.summary_en}
                   </p>
                   <div className="flex items-center justify-between mt-auto">
                     <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
@@ -163,45 +185,58 @@ export default function NewsPage() {
                 </div>
               </div>
             </motion.div>
-          )}
+          )})}
         </AnimatePresence>
 
         {/* News Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <AnimatePresence>
-            {regularNews.map((news, idx) => (
+            {regularNews.map((item, idx) => {
+              const isSaved = savedItems?.news?.some(n => n.id === item.id);
+              return (
               <motion.div
-                key={news.id}
+                key={item.id}
                 layout
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className="card-3d glass-card rounded-2xl overflow-hidden flex flex-col group"
+                className="card-3d glass-card rounded-2xl overflow-hidden flex flex-col group relative"
               >
-                <div className={`h-48 bg-gradient-to-tr ${news.color} relative overflow-hidden flex items-center justify-center`}>
+                <div className={`h-32 bg-gradient-to-tr from-blue-500 to-cyan-600 relative overflow-hidden flex items-center justify-center`}>
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-all duration-500" />
                   <div className="glass px-3 py-1 rounded-full absolute top-4 right-4 text-white text-xs font-bold tracking-wider">
-                    {news.category}
+                    {item.category}
+                  </div>
+                  <div className="glass px-3 py-1 rounded-full absolute top-4 left-4 text-white text-xs font-bold flex items-center gap-1">
+                    <ShieldCheck size={12} /> {txt(lang, 'Official', 'رسمي', 'Officiel', '官方')}
                   </div>
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
-                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-4">
-                    <span className="flex items-center gap-1"><Calendar size={14}/> {news.date}</span>
-                    <span className="flex items-center gap-1"><User size={14}/> {news.author}</span>
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-4">
+                      <span className="flex items-center gap-1"><Calendar size={14}/> {item.date}</span>
+                      <span className="flex items-center gap-1"><User size={14}/> {item.author}</span>
+                    </div>
+                    <button 
+                      onClick={() => toggleSave('news', item)}
+                      className={`p-1.5 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                    >
+                      <Bookmark size={16} className={isSaved ? 'fill-current' : ''} />
+                    </button>
                   </div>
                   <h3 className="text-xl font-orbitron font-bold mb-3 group-hover:text-teal-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-2">
-                    {news.title[lang] || news.title.en}
+                    {lang === 'ar' ? item.title_ar : item.title_en}
                   </h3>
                   <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 flex-grow line-clamp-3">
-                    {news.summary[lang] || news.summary.en}
+                    {lang === 'ar' ? item.summary_ar : item.summary_en}
                   </p>
                   <button className="text-teal-600 dark:text-cyan-400 font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all mt-auto self-start">
                     {txt(lang, 'Read Article', 'اقرأ المقال', 'Lire l\'article', '阅读文章')} <ChevronRight size={16} className={`${lang === 'ar' ? 'rotate-180' : ''}`} />
                   </button>
                 </div>
               </motion.div>
-            ))}
+            )})}
           </AnimatePresence>
         </div>
 

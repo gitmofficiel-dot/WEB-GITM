@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdminOrPresident() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'president' ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+    
+    function isTeacher() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      // Anyone can read user profiles (needed for roster)
+      allow read: if true;
+      // Users can update their own basic profile, Admins can update any profile (including roles)
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdminOrPresident();
+      allow delete: if isAdminOrPresident();
+    }
+
+    // GITM Global Data Collection (news, tasks, events, etc.)
+    match /gitm_data/{docId} {
+      // Everyone can read public data
+      allow read: if true;
+      
+      // Only President/Admins can write to most data
+      allow write: if isAdminOrPresident();
+      
+      // Teachers can write to courses/grades
+      allow write: if isTeacher() && (docId == 'courses' || docId == 'grades');
+    }
+    
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,11 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { Briefcase, CheckSquare, Target, Activity, Calendar, Bot, Code2 } from 'lucide-react';
+import { Briefcase, CheckSquare, Target, Activity, Calendar, Bot, Code2, Camera } from 'lucide-react';
+import CloudinaryUploader from '../CloudinaryUploader';
+import { auth } from '../../config/firebaseAuth';
+import { updateProfile } from 'firebase/auth';
+import { db } from '../../config/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
 export default function MemberDashboard() {
   const { lang, user, setView } = useLanguage();
+  const [showUploader, setShowUploader] = useState(false);
+
+  const handleAvatarUpload = async (fileData) => {
+    if (!auth.currentUser) return;
+    try {
+      // Update Firebase Auth
+      await updateProfile(auth.currentUser, { photoURL: fileData.url });
+      // Update Firestore
+      const userRef = doc(db, 'users', auth.currentUser.uid);
+      await updateDoc(userRef, { photoURL: fileData.url });
+      
+      // We rely on onAuthStateChanged in LanguageContext to pick up the change or we can manually reload the page/state
+      alert(lang === 'ar' ? 'تم تحديث الصورة بنجاح!' : 'Profile picture updated successfully!');
+      setShowUploader(false);
+      window.location.reload(); // Quick way to refresh context
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+      alert("Error updating profile picture.");
+    }
+  };
 
   const myTasks = [
     { id: 1, title: 'Code Review: Health AI', status: 'in-progress', deadline: 'Today' },
@@ -16,11 +41,40 @@ export default function MemberDashboard() {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold font-orbitron">{txt(lang, 'Member Dashboard', 'لوحة العضو', 'Tableau de bord membre', '成员仪表板')}</h2>
-        <span className="px-3 py-1 bg-purple-500/20 text-purple-500 rounded-full text-sm font-bold uppercase tracking-wider">
-          Member
-        </span>
+        <div className="flex items-center gap-4">
+          <div className="relative group cursor-pointer" onClick={() => setShowUploader(!showUploader)}>
+            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-teal-500/50 shadow-lg bg-slate-800 flex items-center justify-center">
+              {user?.photoURL ? (
+                <img src={user.photoURL} alt={user.name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-xl font-bold text-white">{user?.name?.[0]?.toUpperCase() || 'U'}</span>
+              )}
+            </div>
+            <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <Camera className="text-white w-6 h-6" />
+            </div>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold font-orbitron">
+              {txt(lang, 'Welcome, ', 'مرحباً، ', 'Bienvenue, ', '欢迎， ')}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">{user?.name}</span>
+            </h2>
+            <span className="px-3 py-1 bg-purple-500/20 text-purple-500 rounded-full text-xs font-bold uppercase tracking-wider mt-2 inline-block">
+              {txt(lang, 'Member Dashboard', 'لوحة العضو', 'Tableau de bord membre', '成员仪表板')}
+            </span>
+          </div>
+        </div>
       </div>
+
+      {showUploader && (
+        <div className="glass-card p-6 rounded-2xl border-teal-500/30 shadow-[0_0_20px_rgba(20,184,166,0.15)]">
+          <h3 className="font-bold mb-4">{lang === 'ar' ? 'تغيير الصورة الشخصية' : 'Change Profile Picture'}</h3>
+          <CloudinaryUploader onUploadSuccess={handleAvatarUpload} />
+          <button onClick={() => setShowUploader(false)} className="mt-4 text-sm text-red-500 hover:underline">
+            {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+          </button>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

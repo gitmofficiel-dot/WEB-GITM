@@ -2,22 +2,18 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play, Image as ImageIcon, Camera, ZoomIn, Layers } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { AdvancedImage } from '@cloudinary/react';
+import { cld } from '../config/cloudinary';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
 const MOCK_GALLERY = [
-  { id: 1, type: 'image', category: 'Events', title: { en: 'Annual Tech Summit 2025' }, date: '2025-11-12', color: 'from-blue-500 to-cyan-500', height: 'h-64' },
-  { id: 2, type: 'video', category: 'Workshops', title: { en: 'React 19 Masterclass' }, date: '2025-10-05', color: 'from-purple-500 to-pink-500', height: 'h-80' },
-  { id: 3, type: 'image', category: 'Meetings', title: { en: 'Board of Directors Meeting' }, date: '2025-09-20', color: 'from-emerald-500 to-teal-500', height: 'h-48' },
-  { id: 4, type: 'image', category: 'Project Milestones', title: { en: 'Smart City App Launch' }, date: '2025-08-15', color: 'from-orange-500 to-amber-500', height: 'h-96' },
-  { id: 5, type: 'video', category: 'Events', title: { en: 'Hackathon Highlights' }, date: '2025-07-22', color: 'from-red-500 to-rose-500', height: 'h-64' },
-  { id: 6, type: 'image', category: 'Workshops', title: { en: 'UI/UX Design Thinking' }, date: '2025-06-10', color: 'from-indigo-500 to-violet-500', height: 'h-72' },
-  { id: 7, type: 'image', category: 'Meetings', title: { en: 'Partnership Signing' }, date: '2025-05-05', color: 'from-cyan-500 to-blue-600', height: 'h-56' },
-  { id: 8, type: 'image', category: 'Project Milestones', title: { en: 'AI Lab Inauguration' }, date: '2025-04-18', color: 'from-fuchsia-500 to-purple-600', height: 'h-80' },
-  { id: 9, type: 'video', category: 'Workshops', title: { en: 'Cybersecurity 101' }, date: '2025-03-12', color: 'from-lime-500 to-green-600', height: 'h-64' },
-  { id: 10, type: 'image', category: 'Events', title: { en: 'End of Year Gala' }, date: '2024-12-30', color: 'from-yellow-400 to-orange-500', height: 'h-96' },
-  { id: 11, type: 'image', category: 'Project Milestones', title: { en: 'Drone Test Flight' }, date: '2024-11-15', color: 'from-sky-400 to-blue-500', height: 'h-48' },
-  { id: 12, type: 'image', category: 'Meetings', title: { en: 'Community Townhall' }, date: '2024-10-02', color: 'from-pink-400 to-rose-500', height: 'h-72' },
+  { id: 1, type: 'image', category: 'Events', title: { en: 'Annual Tech Summit 2025' }, date: '2025-11-12', cldId: 'cld-sample', height: 'h-64' },
+  { id: 2, type: 'image', category: 'Workshops', title: { en: 'React 19 Masterclass' }, date: '2025-10-05', cldId: 'cld-sample-2', height: 'h-80' },
+  { id: 3, type: 'image', category: 'Meetings', title: { en: 'Board of Directors Meeting' }, date: '2025-09-20', cldId: 'cld-sample-3', height: 'h-48' },
+  { id: 4, type: 'image', category: 'Project Milestones', title: { en: 'Smart City App Launch' }, date: '2025-08-15', cldId: 'cld-sample-4', height: 'h-96' },
+  { id: 5, type: 'image', category: 'Events', title: { en: 'Hackathon Highlights' }, date: '2025-07-22', cldId: 'cld-sample-5', height: 'h-64' },
+  { id: 6, type: 'image', category: 'Workshops', title: { en: 'UI/UX Design Thinking' }, date: '2025-06-10', cldId: 'sample', height: 'h-72' }
 ];
 
 const CATEGORIES = ['All', 'Meetings', 'Project Milestones', 'Events', 'Workshops'];
@@ -82,11 +78,16 @@ export default function GalleryPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.4, delay: (idx % 10) * 0.05 }}
-                className={`relative rounded-2xl overflow-hidden group cursor-pointer card-3d break-inside-avoid ${item.height} bg-gradient-to-br ${item.color}`}
+                className={`relative rounded-2xl overflow-hidden group cursor-pointer card-3d break-inside-avoid ${item.height} bg-slate-200 dark:bg-slate-800`}
                 onClick={() => setSelectedItem(item)}
               >
+                <AdvancedImage 
+                  cldImg={cld.image(item.cldId).format('auto').quality('auto')} 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+
                 {/* Overlay */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-4">
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-4">
                   <div className="bg-white/20 backdrop-blur-md p-3 rounded-full mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                     {item.type === 'video' ? <Play className="text-white ml-1" size={24} /> : <ZoomIn className="text-white" size={24} />}
                   </div>
@@ -129,14 +130,11 @@ export default function GalleryPage() {
                 className="relative w-full max-w-5xl rounded-2xl overflow-hidden glass-card border border-white/10"
                 onClick={e => e.stopPropagation()}
               >
-                <div className={`w-full aspect-video bg-gradient-to-br ${selectedItem.color} flex items-center justify-center relative`}>
-                  {selectedItem.type === 'video' ? (
-                    <div className="w-20 h-20 rounded-full glass flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
-                      <Play className="text-white ml-2" size={40} />
-                    </div>
-                  ) : (
-                    <ImageIcon className="text-white/50" size={100} />
-                  )}
+                <div className={`w-full aspect-video bg-black flex items-center justify-center relative overflow-hidden`}>
+                  <AdvancedImage 
+                    cldImg={cld.image(selectedItem.cldId).format('auto').quality('auto')} 
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 
                 <div className="p-6 md:p-8 bg-white dark:bg-slate-900">

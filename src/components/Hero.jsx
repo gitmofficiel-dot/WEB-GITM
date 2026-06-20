@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Activity, Users, Code } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import WeatherWidget from './WeatherWidget';
+import CurrencyWidget from './CurrencyWidget';
 
 const Hero = ({ setView }) => {
   const { lang, t } = useLanguage();
@@ -56,6 +58,20 @@ const Hero = ({ setView }) => {
             >
               {lang === 'ar' ? 'اتصل بنا' : 'Contact Us'}
             </button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="flex flex-col sm:flex-row justify-center items-stretch gap-6 mb-16 max-w-2xl mx-auto"
+          >
+            <div className="flex-1">
+              <WeatherWidget />
+            </div>
+            <div className="flex-1">
+              <CurrencyWidget />
+            </div>
           </motion.div>
           
           <motion.div 

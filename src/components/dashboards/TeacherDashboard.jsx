@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { BookOpen, Users, Star, Video, FileText, PlusCircle, CheckCircle, Edit, Sparkles, Wand2 } from 'lucide-react';
+import { BookOpen, Users, Star, Video, FileText, PlusCircle, CheckCircle, Edit, Sparkles, Wand2, Trash2 } from 'lucide-react';
 
 export default function TeacherDashboard() {
-  const { lang, t, courses } = useLanguage();
+  const { lang, t, courses, setCourses } = useLanguage();
   const [lessons, setLessons] = useState([
     { id: 1, title: 'Introduction to Leadership', order: 1, type: 'video' },
     { id: 2, title: 'Communication Skills', order: 2, type: 'pdf' }
@@ -41,18 +41,31 @@ export default function TeacherDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass-card p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold flex items-center gap-2"><BookOpen className="w-5 h-5" /> Lesson Management</h3>
-            <button className="btn-primary flex items-center gap-1 text-sm"><PlusCircle className="w-4 h-4" /> Add Lesson</button>
+            <h3 className="text-lg font-bold flex items-center gap-2"><BookOpen className="w-5 h-5" /> Course Management</h3>
+            <button 
+              onClick={() => {
+                const title = prompt(lang === 'ar' ? 'أدخل اسم الكورس الجديد:' : 'Enter new course title:');
+                if (title) {
+                  setCourses(prev => [...prev, { id: 'new_' + Date.now(), track: 'new', title, progress: 0, enrolled: false, mode: 'remote' }]);
+                }
+              }}
+              className="btn-primary flex items-center gap-1 text-sm"
+            >
+              <PlusCircle className="w-4 h-4" /> Add Course
+            </button>
           </div>
           <div className="space-y-3">
-            {lessons.map(l => (
-              <div key={l.id} className="flex justify-between items-center p-3 bg-white/5 dark:bg-black/20 rounded border-l-4 border-blue-500">
+            {courses.map((c, idx) => (
+              <div key={c.id} className="flex justify-between items-center p-3 bg-white/5 dark:bg-black/20 rounded border-l-4 border-blue-500">
                 <div className="flex items-center gap-3">
-                  <span className="font-bold opacity-50">{l.order}.</span>
-                  {l.type === 'video' ? <Video className="w-4 h-4 text-blue-400"/> : <FileText className="w-4 h-4 text-red-400"/>}
-                  <p className="font-medium">{l.title}</p>
+                  <span className="font-bold opacity-50">{idx + 1}.</span>
+                  <BookOpen className="w-4 h-4 text-blue-400"/>
+                  <p className="font-medium text-sm truncate max-w-[200px]">{c.title}</p>
                 </div>
-                <button className="text-gray-400 hover:text-white"><Edit className="w-4 h-4"/></button>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs bg-slate-800 text-slate-300 px-2 py-1 rounded">{c.mode}</span>
+                  <button onClick={() => setCourses(prev => prev.filter(course => course.id !== c.id))} className="text-red-400 hover:text-red-500"><Trash2 className="w-4 h-4"/></button>
+                </div>
               </div>
             ))}
           </div>

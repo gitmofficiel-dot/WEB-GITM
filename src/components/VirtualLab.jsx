@@ -6,7 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { Box, Activity, Cpu, Wifi } from 'lucide-react';
 
 // A simple 3D component representing an IoT/Edge AI Node
-function TechNode({ position, color, label, icon: Icon }) {
+function TechNode({ position, color, label, icon: Icon, testData }) {
   const meshRef = useRef();
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
@@ -42,15 +42,26 @@ function TechNode({ position, color, label, icon: Icon }) {
         {/* HTML Overlay attached to the 3D object */}
         {(hovered || active) && (
           <Html position={[0, 1.5, 0]} center>
-            <div className="bg-slate-900/80 backdrop-blur-md border border-cyan-500/30 text-white p-3 rounded-xl shadow-2xl w-48 animate-fade-in-up pointer-events-none">
-              <div className="flex items-center gap-2 mb-2 text-cyan-400">
-                <Icon size={16} />
-                <h4 className="font-bold text-sm font-orbitron">{label}</h4>
+              <div className="bg-slate-900/80 backdrop-blur-md border border-cyan-500/30 text-white p-3 rounded-xl shadow-2xl w-48 animate-fade-in-up pointer-events-none">
+                <div className="flex items-center gap-2 mb-2 text-cyan-400">
+                  <Icon size={16} />
+                  <h4 className="font-bold text-sm font-orbitron">{label}</h4>
+                </div>
+                {active && testData ? (
+                  <div className="text-xs text-slate-300 space-y-1">
+                    <p className="text-emerald-400 font-bold">Status: Active</p>
+                    <p>Simulated Sensor Data:</p>
+                    <p className="font-mono bg-slate-800 p-1 rounded border border-slate-700 mt-1 truncate">
+                      {testData.title}
+                    </p>
+                    <p className="text-[10px] text-slate-500">ID: {testData.id}</p>
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-300">
+                    Click to activate node and view data streams.
+                  </p>
+                )}
               </div>
-              <p className="text-xs text-slate-300">
-                {active ? 'Status: Active | Data streaming at 500kbps' : 'Click to activate node and view data streams.'}
-              </p>
-            </div>
           </Html>
         )}
       </Float>
@@ -62,6 +73,15 @@ const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : 
 
 export default function VirtualLab() {
   const { lang } = useLanguage();
+  const [testDataItems, setTestDataItems] = useState([]);
+
+  // Fetch test data from JSONPlaceholder API
+  React.useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/posts?_limit=3')
+      .then(res => res.json())
+      .then(data => setTestDataItems(data))
+      .catch(console.error);
+  }, []);
 
   return (
     <div className="animate-fade-in-up w-full h-full flex flex-col pt-8">
@@ -102,11 +122,11 @@ export default function VirtualLab() {
             <Environment preset="city" />
             
             {/* Main Center Node */}
-            <TechNode position={[0, 0, 0]} color="#1e293b" label="Core Processing Unit" icon={Cpu} />
+            <TechNode position={[0, 0, 0]} color="#1e293b" label="Core Processing Unit" icon={Cpu} testData={testDataItems[0]} />
             
             {/* Satellite Nodes */}
-            <TechNode position={[-3, 1, -2]} color="#334155" label="Sensor Array Alpha" icon={Activity} />
-            <TechNode position={[3, -1, 1]} color="#334155" label="Comms Module (5G)" icon={Wifi} />
+            <TechNode position={[-3, 1, -2]} color="#334155" label="Sensor Array Alpha" icon={Activity} testData={testDataItems[1]} />
+            <TechNode position={[3, -1, 1]} color="#334155" label="Comms Module (5G)" icon={Wifi} testData={testDataItems[2]} />
 
             {/* Connecting lines could go here in a more advanced setup */}
 

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Mail, Lock, User, LogIn, UserPlus, ArrowRight, Github, Link as LinkIcon, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { auth, googleProvider, githubProvider } from '../config/firebaseAuth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from 'firebase/auth';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
@@ -12,14 +14,37 @@ export default function AuthForms({ initialMode = 'login', setView }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (mode === 'login') {
-      // Simulate checking credentials
-      loginUser(email, 'member', '');
-    } else {
-      registerUser(email, name);
+    setError('');
+    setLoading(true);
+    try {
+      if (mode === 'login') {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        // The context will pick up the user via onAuthStateChanged
+        loginUser(userCredential.user.email, 'member', userCredential.user.displayName || '');
+      } else {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCredential.user, { displayName: name });
+        registerUser(userCredential.user.email, name);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProviderSignIn = async (provider) => {
+    setError('');
+    try {
+      const result = await signInWithPopup(auth, provider);
+      loginUser(result.user.email, 'member', result.user.displayName || '');
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -51,6 +76,11 @@ export default function AuthForms({ initialMode = 'login', setView }) {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs p-3 rounded-xl text-center">
+                {error}
+              </div>
+            )}
             {mode === 'register' && (
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -117,12 +147,13 @@ export default function AuthForms({ initialMode = 'login', setView }) {
 
             <button
               type="submit"
-              className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300"
+              disabled={loading}
+              className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300 disabled:opacity-50"
             >
-              {mode === 'login' 
+              {loading ? '...' : (mode === 'login' 
                 ? txt(lang, 'Sign In', 'تسجيل الدخول', 'Se connecter', '登录') 
-                : txt(lang, 'Sign Up', 'تسجيل حساب', 'S\'inscrire', '注册')}
-              <ArrowRight className="ml-2 rtl:mr-2 rtl:rotate-180 w-4 h-4" />
+                : txt(lang, 'Sign Up', 'تسجيل حساب', 'S\'inscrire', '注册'))}
+              {!loading && <ArrowRight className="ml-2 rtl:mr-2 rtl:rotate-180 w-4 h-4" />}
             </button>
           </form>
 
@@ -144,14 +175,28 @@ export default function AuthForms({ initialMode = 'login', setView }) {
             )}
             
             <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700 space-y-3">
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <button 
+                  type="button" 
+                  onClick={() => handleProviderSignIn(googleProvider)}
+                  className="flex items-center justify-center gap-2 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                >
+                  <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-4 h-4" />
+                  <span className="text-sm font-bold">Google</span>
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => handleProviderSignIn(githubProvider)}
+                  className="flex items-center justify-center gap-2 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                >
+                  <Github className="w-4 h-4" />
+                  <span className="text-sm font-bold">GitHub</span>
+                </button>
+              </div>
+
               <button onClick={() => setView('verify-certificate')} type="button" className="flex items-center justify-center w-full gap-2 text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-cyan-400 transition">
                 <CheckCircle className="w-4 h-4" />
                 <span>{lang === 'ar' ? 'التحقق من الشهادات' : 'Verify a Certificate'}</span>
-              </button>
-
-              <button type="button" className="flex items-center justify-center w-full gap-2 py-2 text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-cyan-400 transition">
-                <Github className="w-4 h-4" />
-                <span>{lang === 'ar' ? 'المتابعة عبر GitHub' : 'Continue with GitHub'}</span>
               </button>
 
               <button 

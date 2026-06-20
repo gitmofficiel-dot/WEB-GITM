@@ -4,6 +4,9 @@ import { useLanguage } from '../context/LanguageContext';
 import { BookOpen, MapPin, MonitorPlay, Code, Award, ChevronRight, PlayCircle, Star, Users, Clock, ArrowLeft, ArrowRight, Terminal } from 'lucide-react';
 import LessonView from './academy/LessonView';
 import CourseProgress from './academy/CourseProgress';
+import MapWidget from './MapWidget';
+import LibraryWidget from './LibraryWidget';
+import ScienceFactWidget from './ScienceFactWidget';
 
 // Translations
 const t = {
@@ -209,8 +212,8 @@ export default function Academy() {
                                                     <div>
                                                         <h4 className="font-bold text-slate-800 dark:text-white text-lg mb-1">Location Details</h4>
                                                         <p className="text-slate-600 dark:text-slate-400">{selectedCourse.location}</p>
-                                                        <div className="mt-4 w-full h-48 bg-slate-200 dark:bg-slate-700 rounded-xl flex items-center justify-center">
-                                                            <span className="text-slate-500 dark:text-slate-400 font-medium">Interactive Map Placeholder</span>
+                                                        <div className="mt-4 w-full rounded-xl flex items-center justify-center">
+                                                            <MapWidget />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -314,6 +317,9 @@ export default function Academy() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="md:col-span-2 lg:col-span-3 mb-4">
+                        <ScienceFactWidget />
+                    </div>
                     {MOCK_COURSES.map((course, index) => (
                         <motion.div
                             key={course.id}
@@ -352,6 +358,10 @@ export default function Academy() {
                             </div>
                         </motion.div>
                     ))}
+                </div>
+
+                <div className="mt-16">
+                    <LibraryWidget />
                 </div>
             </div>
         </div>

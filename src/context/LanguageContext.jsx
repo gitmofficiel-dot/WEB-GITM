@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { translations, languages } from '../translations/dictionary';
+import { auth } from '../config/firebaseAuth';
+import { onAuthStateChanged, signOut, updateProfile } from 'firebase/auth';
+import { db } from '../config/firebase';
+import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
 const LanguageContext = createContext();
 
@@ -135,6 +139,22 @@ export const LanguageProvider = ({ children }) => {
     };
   });
 
+  // 11. Saved/Bookmarked Items
+  const [savedItems, setSavedItems] = useState(() => {
+    const saved = localStorage.getItem('gitm_saved_items');
+    return saved ? JSON.parse(saved) : { news: [], books: [] };
+  });
+
+  const toggleSave = (type, item) => {
+    setSavedItems(prev => {
+      const isSaved = prev[type].some(i => i.id === item.id || i.key === item.key);
+      const updated = isSaved 
+        ? prev[type].filter(i => i.id !== item.id && i.key !== item.key)
+        : [...prev[type], item];
+      return { ...prev, [type]: updated };
+    });
+  };
+
   // Effect: Sync Language
   useEffect(() => {
     localStorage.setItem('gitm_lang', lang);
@@ -155,19 +175,103 @@ export const LanguageProvider = ({ children }) => {
     }
   }, [theme]);
 
-  // Effect: Save all data
-  useEffect(() => { localStorage.setItem('gitm_tasks', JSON.stringify(tasks)); }, [tasks]);
-  useEffect(() => { localStorage.setItem('gitm_courses', JSON.stringify(courses)); }, [courses]);
+  // Effect: Listen to Firebase Auth State & Sync with Firestore
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        // User is signed in
+        const userRef = doc(db, 'users', firebaseUser.uid);
+        const userSnap = await getDoc(userRef);
+        
+        let syncedUser;
+        if (userSnap.exists()) {
+          syncedUser = { ...userSnap.data(), uid: firebaseUser.uid };
+        } else {
+          // New User
+          const name = firebaseUser.displayName || firebaseUser.email.split('@')[0];
+          syncedUser = { 
+            uid: firebaseUser.uid,
+            email: firebaseUser.email, 
+            role: 'student', 
+            name, 
+            badges: [],
+            photoURL: firebaseUser.photoURL || null
+          };
+          await setDoc(userRef, syncedUser);
+          setUsers(prev => [...prev, { id: firebaseUser.uid, ...syncedUser }]);
+        }
+
+        // If they updated photo via Google, ensure we have it
+        if (firebaseUser.photoURL && syncedUser.photoURL !== firebaseUser.photoURL) {
+          syncedUser.photoURL = firebaseUser.photoURL;
+          await setDoc(userRef, { photoURL: firebaseUser.photoURL }, { merge: true });
+        }
+
+        setUser(syncedUser);
+        localStorage.setItem('gitm_user', JSON.stringify(syncedUser));
+        setActiveDashboardRole(syncedUser.role);
+      } else {
+        // User is signed out
+        setUser(null);
+        localStorage.removeItem('gitm_user');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Effect: Listen to Data from Firestore
+  useEffect(() => {
+    if (!user) return;
+    
+    const collections = [
+      { key: 'tasks', setter: setTasks },
+      { key: 'news', setter: setNews },
+      { key: 'gallery', setter: setGallery },
+      { key: 'events', setter: setEvents },
+      { key: 'courses', setter: setCourses }
+    ];
+
+    const unsubscribes = collections.map(({ key, setter }) => {
+      const docRef = doc(db, 'gitm_data', key);
+      return onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists() && docSnap.data().items) {
+          setter(docSnap.data().items);
+        }
+      });
+    });
+
+    return () => unsubscribes.forEach(unsub => unsub());
+  }, [user]);
+
+  // Generic Sync Helper
+  const syncToFirestore = (key, data) => {
+    if (user && data.length > 0) {
+      setDoc(doc(db, 'gitm_data', key), { items: data }, { merge: true });
+    }
+  };
+
+  // Sync tasks to Firestore when changed locally
+  useEffect(() => { syncToFirestore('tasks', tasks); }, [tasks, user]);
+  useEffect(() => { syncToFirestore('news', news); }, [news, user]);
+  useEffect(() => { syncToFirestore('gallery', gallery); }, [gallery, user]);
+  useEffect(() => { syncToFirestore('events', events); }, [events, user]);
+  useEffect(() => { syncToFirestore('courses', courses); }, [courses, user]);
+
+  // Effect: Save all data (Local Fallback for smaller data or non-migrated yet)
+  // localStorage.setItem('gitm_tasks', JSON.stringify(tasks)); - Moved to Firestore
+  // localStorage.setItem('gitm_news', JSON.stringify(news)); - Moved to Firestore
+  // localStorage.setItem('gitm_gallery', JSON.stringify(gallery)); - Moved to Firestore
+  // localStorage.setItem('gitm_events', JSON.stringify(events)); - Moved to Firestore
+  // localStorage.setItem('gitm_courses', JSON.stringify(courses)); - Moved to Firestore
   useEffect(() => { localStorage.setItem('gitm_grades', JSON.stringify(grades)); }, [grades]);
   useEffect(() => { localStorage.setItem('gitm_ai_jobs', JSON.stringify(aiJobs)); }, [aiJobs]);
   useEffect(() => { localStorage.setItem('gitm_internships', JSON.stringify(internships)); }, [internships]);
   useEffect(() => { localStorage.setItem('gitm_papers', JSON.stringify(papers)); }, [papers]);
   useEffect(() => { localStorage.setItem('gitm_users', JSON.stringify(users)); }, [users]);
-  useEffect(() => { localStorage.setItem('gitm_news', JSON.stringify(news)); }, [news]);
-  useEffect(() => { localStorage.setItem('gitm_gallery', JSON.stringify(gallery)); }, [gallery]);
-  useEffect(() => { localStorage.setItem('gitm_events', JSON.stringify(events)); }, [events]);
   useEffect(() => { localStorage.setItem('gitm_competitions', JSON.stringify(competitions)); }, [competitions]);
   useEffect(() => { localStorage.setItem('gitm_partners', JSON.stringify(partners)); }, [partners]);
+  useEffect(() => { localStorage.setItem('gitm_saved_items', JSON.stringify(savedItems)); }, [savedItems]);
 
   // Effect: Sync user role
   useEffect(() => {
@@ -225,10 +329,15 @@ export const LanguageProvider = ({ children }) => {
     setView('dashboard');
   };
 
-  const logoutUser = () => {
-    setUser(null);
-    localStorage.removeItem('gitm_user');
-    setView('home');
+  const logoutUser = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+      localStorage.removeItem('gitm_user');
+      setView('home');
+    } catch (error) {
+      console.error('Error signing out', error);
+    }
   };
 
   const t = (path) => {
@@ -303,6 +412,8 @@ export const LanguageProvider = ({ children }) => {
       setCompetitions,
       partners,
       setPartners,
+      savedItems,
+      toggleSave,
     }}>
       {children}
     </LanguageContext.Provider>

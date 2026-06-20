@@ -142,8 +142,12 @@ const Navbar = () => {
                     onClick={() => { setProfileDropdown(!profileDropdown); setLangDropdown(false); }}
                     className="flex items-center space-x-2 rtl:space-x-reverse px-3 py-1.5 rounded-xl bg-teal-500/10 dark:bg-[#00E5FF]/10 border border-teal-500/20 dark:border-[#00E5FF]/20 hover:border-teal-500/40 dark:hover:border-[#00E5FF]/40 transition-all"
                   >
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 dark:from-[#00E5FF] dark:to-[#00FF87] flex items-center justify-center">
-                      <span className="text-[10px] font-bold text-white dark:text-black">{user.name?.[0]?.toUpperCase() || 'U'}</span>
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 dark:from-[#00E5FF] dark:to-[#00FF87] flex items-center justify-center overflow-hidden">
+                      {user.photoURL ? (
+                        <img src={user.photoURL} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-[10px] font-bold text-white dark:text-black">{user.name?.[0]?.toUpperCase() || 'U'}</span>
+                      )}
                     </div>
                     <span className="text-xs font-bold text-slate-700 dark:text-white hidden sm:inline max-w-[80px] truncate">{user.name}</span>
                     <ChevronDown size={12} className="text-slate-400 dark:text-cyber-muted" />
