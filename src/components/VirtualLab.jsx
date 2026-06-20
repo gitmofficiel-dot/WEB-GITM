@@ -49,12 +49,15 @@ function TechNode({ position, color, label, icon: Icon, testData }) {
                 </div>
                 {active && testData ? (
                   <div className="text-xs text-slate-300 space-y-1">
-                    <p className="text-emerald-400 font-bold">Status: Active</p>
-                    <p>Simulated Sensor Data:</p>
-                    <p className="font-mono bg-slate-800 p-1 rounded border border-slate-700 mt-1 truncate">
-                      {testData.title}
-                    </p>
-                    <p className="text-[10px] text-slate-500">ID: {testData.id}</p>
+                    <p className="text-emerald-400 font-bold mb-2">Status: Active & Streaming</p>
+                    <div className="font-mono bg-slate-800 p-2 rounded border border-slate-700 text-[10px] break-words overflow-y-auto max-h-32 scrollbar-thin scrollbar-thumb-slate-600">
+                      <span className="text-pink-400">ID:</span> {testData.id} <br/>
+                      {testData.title && <><span className="text-purple-400">Title:</span> {testData.title}<br/></>}
+                      {testData.name && <><span className="text-blue-400">Name:</span> {testData.name}<br/></>}
+                      {testData.email && <><span className="text-amber-400">Email:</span> {testData.email}<br/></>}
+                      {testData.body && <><span className="text-teal-400">Data:</span> {testData.body.substring(0, 50)}...<br/></>}
+                      {testData.completed !== undefined && <><span className="text-orange-400">Status:</span> {testData.completed ? 'Pass' : 'Fail'}<br/></>}
+                    </div>
                   </div>
                 ) : (
                   <p className="text-xs text-slate-300">
@@ -74,13 +77,24 @@ const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : 
 export default function VirtualLab() {
   const { lang } = useLanguage();
   const [testDataItems, setTestDataItems] = useState([]);
+  const [dataType, setDataType] = useState('posts');
+  const [loading, setLoading] = useState(false);
 
-  // Fetch test data from JSONPlaceholder API
+  const fetchData = async (type) => {
+    setLoading(true);
+    setDataType(type);
+    try {
+      const res = await fetch(`https://jsonplaceholder.typicode.com/${type}?_limit=3`);
+      const data = await res.json();
+      setTestDataItems(data);
+    } catch (err) {
+      console.error(err);
+    }
+    setLoading(false);
+  };
+
   React.useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/posts?_limit=3')
-      .then(res => res.json())
-      .then(data => setTestDataItems(data))
-      .catch(console.error);
+    fetchData('posts');
   }, []);
 
   return (
@@ -143,8 +157,31 @@ export default function VirtualLab() {
         </Canvas>
 
         {/* Bottom controls overlay */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-slate-900/80 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
-          <p className="text-sm font-bold text-slate-300">Left Click: Rotate | Scroll: Zoom</p>
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 bg-slate-900/90 backdrop-blur-md px-8 py-4 rounded-3xl border border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.2)]">
+          <div className="flex gap-2">
+            <button 
+              onClick={() => fetchData('posts')}
+              disabled={loading}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'posts' ? 'bg-cyan-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)]' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'}`}
+            >
+              Fetch Sensor Data
+            </button>
+            <button 
+              onClick={() => fetchData('users')}
+              disabled={loading}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'users' ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'}`}
+            >
+              Fetch User Auth
+            </button>
+            <button 
+              onClick={() => fetchData('todos')}
+              disabled={loading}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'todos' ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'}`}
+            >
+              Fetch System Logs
+            </button>
+          </div>
+          <p className="text-xs font-medium text-slate-400">Left Click Node: View Data | Drag: Rotate | Scroll: Zoom</p>
         </div>
       </div>
     </div>

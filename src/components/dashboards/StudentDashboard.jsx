@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { BookOpen, Award, Clock, Star, PlayCircle, FileText, CheckCircle, Lightbulb, Compass, Loader, Bookmark, ExternalLink } from 'lucide-react';
+import { BookOpen, Award, Clock, Star, PlayCircle, FileText, CheckCircle, Lightbulb, Compass, Loader, Bookmark, ExternalLink, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { generateArticle } from '../../config/openrouter';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
@@ -10,6 +11,7 @@ export default function StudentDashboard() {
   const [textToAnalyze, setTextToAnalyze] = useState('');
   const [analysisResult, setAnalysisResult] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [selectedIframeUrl, setSelectedIframeUrl] = useState(null);
 
   const handleAnalyzeText = async () => {
     if (!textToAnalyze) return;
@@ -225,9 +227,9 @@ export default function StudentDashboard() {
                         <p className="text-xs text-slate-500">{book.author_name?.[0]}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <a href={`https://openlibrary.org${book.key}`} target="_blank" rel="noopener noreferrer" className="p-1.5 text-blue-500 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-full">
+                        <button onClick={() => setSelectedIframeUrl(`https://openlibrary.org${book.key}`)} className="p-1.5 text-blue-500 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-full">
                           <ExternalLink size={14} />
-                        </a>
+                        </button>
                         <button onClick={() => toggleSave('books', book)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-slate-700 rounded-full">
                           <Bookmark size={14} className="fill-current" />
                         </button>
@@ -253,9 +255,9 @@ export default function StudentDashboard() {
                       </div>
                       <div className="flex items-center gap-2">
                         {item.url && (
-                          <a href={item.url} target="_blank" rel="noopener noreferrer" className="p-1.5 text-blue-500 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-full">
+                          <button onClick={() => setSelectedIframeUrl(item.url)} className="p-1.5 text-blue-500 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-full">
                             <ExternalLink size={14} />
-                          </a>
+                          </button>
                         )}
                         <button onClick={() => toggleSave('news', item)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-slate-700 rounded-full">
                           <Bookmark size={14} className="fill-current" />
@@ -269,6 +271,40 @@ export default function StudentDashboard() {
           </div>
         )}
       </div>
+
+      {/* Internal Iframe Modal */}
+      <AnimatePresence>
+        {selectedIframeUrl && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" 
+            onClick={() => setSelectedIframeUrl(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
+              className="bg-white dark:bg-slate-900 w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800" 
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+                <span className="font-bold text-slate-800 dark:text-slate-200 text-sm truncate max-w-md">
+                  {selectedIframeUrl}
+                </span>
+                <button onClick={() => setSelectedIframeUrl(null)} className="p-2 text-slate-500 hover:text-red-500 dark:hover:text-red-400 rounded-xl transition-colors">
+                  <X size={24} />
+                </button>
+              </div>
+              <div className="flex-1 bg-slate-100 dark:bg-slate-950">
+                <iframe 
+                  src={selectedIframeUrl} 
+                  className="w-full h-full border-none"
+                  sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                  title="Content Viewer"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

@@ -1,15 +1,23 @@
-import React, { useRef } from 'react';
-import { Award, Download, Share2, CheckCircle2 } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Award, Mail, Share2, CheckCircle2, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function CertificateGenerator({ studentName, courseName, issueDate, onDownload }) {
   const certificateRef = useRef(null);
+  const [email, setEmail] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [isSent, setIsSent] = useState(false);
 
-  const handleDownload = () => {
-    // In a real app, this would use html2canvas or jsPDF. 
-    // Here we simulate the download process.
-    alert('Certificate downloaded successfully as PDF!');
-    if (onDownload) onDownload();
+  const handleSendEmail = (e) => {
+    e.preventDefault();
+    if (!email) return;
+    setIsSending(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsSending(false);
+      setIsSent(true);
+      if (onDownload) onDownload();
+    }, 1500);
   };
 
   return (
@@ -75,10 +83,30 @@ export default function CertificateGenerator({ studentName, courseName, issueDat
         </div>
       </div>
 
-      <div className="flex gap-4 mt-4">
-        <button onClick={handleDownload} className="btn-primary px-6 py-3 rounded-xl font-bold flex items-center gap-2">
-          <Download size={18} /> Download Certificate
-        </button>
+      <div className="flex flex-col sm:flex-row gap-4 mt-6 w-full max-w-xl">
+        {!isSent ? (
+          <form onSubmit={handleSendEmail} className="flex flex-col sm:flex-row gap-4 w-full">
+            <input 
+              type="email" 
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email to receive the certificate" 
+              className="flex-1 px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+            />
+            <button type="submit" disabled={isSending} className="btn-primary px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-50">
+              {isSending ? <Loader className="animate-spin w-5 h-5" /> : <Mail size={18} />} 
+              Send to Email
+            </button>
+          </form>
+        ) : (
+          <div className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-xl font-bold">
+            <CheckCircle2 size={20} /> Certificate successfully sent to your email!
+          </div>
+        )}
+      </div>
+      
+      <div className="flex gap-4 mt-2">
         <button className="btn-glass px-6 py-3 rounded-xl font-bold flex items-center gap-2 text-slate-700 dark:text-white">
           <Share2 size={18} /> Share to LinkedIn
         </button>

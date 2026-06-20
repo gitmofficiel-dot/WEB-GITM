@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar as CalendarIcon, MapPin, Clock, Users, ArrowRight, CheckCircle2, PlayCircle, Trophy, Megaphone, Globe, ExternalLink } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, Clock, Users, ArrowRight, CheckCircle2, PlayCircle, Trophy, Megaphone, Globe, ExternalLink, X, Mail, Loader } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
@@ -99,6 +99,28 @@ const Countdown = ({ targetDate, lang }) => {
 
 export default function EventsPage() {
   const { lang, competitions } = useLanguage();
+  
+  // Registration Modal State
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    if (!registerEmail) return;
+    setIsRegistering(true);
+    setTimeout(() => {
+      setIsRegistering(false);
+      setIsRegistered(true);
+    }, 1500);
+  };
+
+  const closeRegistration = () => {
+    setSelectedEvent(null);
+    setRegisterEmail('');
+    setIsRegistered(false);
+  };
 
   return (
     <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-slate-800 dark:text-slate-200 transition-colors duration-300">
@@ -155,7 +177,7 @@ export default function EventsPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-4">
-                  <button className="btn-primary px-8 py-3 rounded-full font-bold shadow-lg shadow-teal-500/30 flex items-center gap-2">
+                  <button onClick={() => setSelectedEvent(UPCOMING_EVENTS[0])} className="btn-primary px-8 py-3 rounded-full font-bold shadow-lg shadow-teal-500/30 flex items-center gap-2">
                     {txt(lang, 'Register Now', 'سجل الآن', 'S\'inscrire maintenant', '现在注册')} <ArrowRight size={18} className={`${lang === 'ar' ? 'rotate-180' : ''}`} />
                   </button>
                   <button className="btn-glass px-8 py-3 rounded-full font-bold flex items-center gap-2">
@@ -209,7 +231,7 @@ export default function EventsPage() {
                       <MapPin size={16}/> {ev.location}
                     </div>
                   </div>
-                  <button className="w-full py-3 rounded-xl border border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors font-bold text-sm flex justify-center items-center gap-2">
+                  <button onClick={() => setSelectedEvent(ev)} className="w-full py-3 rounded-xl border border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors font-bold text-sm flex justify-center items-center gap-2">
                     {txt(lang, 'RSVP', 'تأكيد الحضور', 'RSVP', '回复')}
                   </button>
                 </div>
@@ -250,7 +272,7 @@ export default function EventsPage() {
                 </div>
                 
                 {comp.status === 'open' && (
-                  <button className="flex items-center justify-center gap-2 w-full py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold transition-colors">
+                  <button onClick={() => setSelectedEvent(comp)} className="flex items-center justify-center gap-2 w-full py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold transition-colors">
                     {txt(lang, 'Register Team', 'سجل فريقك', 'Inscrire l\'équipe', '注册团队')} <ExternalLink size={18} />
                   </button>
                 )}
@@ -287,6 +309,74 @@ export default function EventsPage() {
             ))}
           </div>
         </div>
+
+        {/* Registration Modal */}
+        <AnimatePresence>
+          {selectedEvent && (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+              onClick={closeRegistration}
+            >
+              <motion.div 
+                initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
+                className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800"
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
+                  <h3 className="font-bold font-orbitron text-xl gradient-text">
+                    {txt(lang, 'Event Registration', 'التسجيل في الفعالية', 'Inscription', '活动注册')}
+                  </h3>
+                  <button onClick={closeRegistration} className="text-slate-400 hover:text-red-500 transition-colors">
+                    <X size={24} />
+                  </button>
+                </div>
+                
+                <div className="p-6 text-slate-800 dark:text-slate-200">
+                  <div className="mb-6">
+                    <p className="text-sm text-slate-500 mb-1">{txt(lang, 'Registering for:', 'التسجيل في:', 'S\'inscrire pour:', '注册用于：')}</p>
+                    <p className="font-bold text-lg">{selectedEvent.title?.[lang] || selectedEvent.title?.en || selectedEvent.title_en || selectedEvent.title_ar}</p>
+                  </div>
+
+                  {!isRegistered ? (
+                    <form onSubmit={handleRegister} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-bold mb-2">{txt(lang, 'Email Address', 'البريد الإلكتروني', 'Adresse e-mail', '电子邮件地址')}</label>
+                        <input 
+                          type="email" 
+                          required
+                          value={registerEmail}
+                          onChange={(e) => setRegisterEmail(e.target.value)}
+                          placeholder="student@gitm.ma" 
+                          className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:border-teal-500"
+                        />
+                      </div>
+                      <button type="submit" disabled={isRegistering} className="w-full btn-primary px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 mt-4">
+                        {isRegistering ? <Loader className="animate-spin w-5 h-5" /> : <CheckCircle2 size={18} />} 
+                        {txt(lang, 'Confirm Registration', 'تأكيد التسجيل', 'Confirmer', '确认注册')}
+                      </button>
+                    </form>
+                  ) : (
+                    <div className="text-center py-6">
+                      <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle2 size={32} />
+                      </div>
+                      <h4 className="font-bold text-xl mb-2 text-emerald-600 dark:text-emerald-400">
+                        {txt(lang, 'Registration Successful!', 'تم التسجيل بنجاح!', 'Inscription réussie!', '注册成功！')}
+                      </h4>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
+                        {txt(lang, 'Your digital ticket and event details have been sent to your email.', 'تم إرسال تذكرتك الرقمية وتفاصيل الفعالية إلى بريدك الإلكتروني.', 'Billet envoyé.', '门票已发送。')}
+                      </p>
+                      <button onClick={closeRegistration} className="px-6 py-2 bg-slate-200 dark:bg-slate-800 rounded-full font-bold hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                        {txt(lang, 'Close', 'إغلاق', 'Fermer', '关闭')}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </div>
     </div>
