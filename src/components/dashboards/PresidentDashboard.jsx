@@ -4,7 +4,7 @@ import {
   Users, BookOpen, Building, Newspaper, Activity, Shield, Award, 
   Edit, Trash2, Bot, TrendingUp, AlertTriangle, Plus, Mail, Video, 
   Megaphone, CheckCircle, XCircle, LayoutDashboard, Settings, BrainCircuit,
-  GraduationCap, Calendar, Database, Eye
+  GraduationCap, Calendar, Database, Eye, Image
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -64,6 +64,7 @@ export default function PresidentDashboard() {
     { id: 'academy', icon: GraduationCap, label: lang === 'ar' ? 'الأكاديمية والتداريب' : 'Academy & Training' },
     { id: 'events', icon: Calendar, label: lang === 'ar' ? 'الفعاليات والمشاريع' : 'Events & Projects' },
     { id: 'news', icon: Newspaper, label: lang === 'ar' ? 'إدارة الأخبار' : 'News & Media' },
+    { id: 'gallery', icon: Image, label: lang === 'ar' ? 'المعرض والصور' : 'Gallery & Media' },
     { id: 'ai', icon: BrainCircuit, label: lang === 'ar' ? 'إدارة الذكاء الاصطناعي' : 'AI Management' }
   ];
 
@@ -315,6 +316,37 @@ export default function PresidentDashboard() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* GALLERY TAB */}
+            {activeTab === 'gallery' && (
+              <div className="space-y-6">
+                <div className="glass-card rounded-3xl p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Image className="text-indigo-500" size={24}/> {lang === 'ar' ? 'إدارة المعرض والصور' : 'Gallery Management'}
+                    </h3>
+                    <button className="btn-primary px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2"><Plus size={16}/> {lang === 'ar' ? 'رفع صور جديدة' : 'Upload Media'}</button>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[1,2,3,4,5,6].map(img => (
+                      <div key={img} className="relative group rounded-xl overflow-hidden aspect-square bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 mix-blend-overlay"></div>
+                        <div className="absolute inset-0 flex items-center justify-center opacity-30 group-hover:scale-110 transition-transform duration-500">
+                          <Image size={48} className="text-slate-400" />
+                        </div>
+                        <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
+                          <button className="p-2 bg-white/10 hover:bg-blue-500 text-white rounded-lg transition-colors"><Edit size={16}/></button>
+                          <button className="p-2 bg-white/10 hover:bg-red-500 text-white rounded-lg transition-colors"><Trash2 size={16}/></button>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
+                          <p className="text-white text-xs font-bold truncate">IMG_2026_{img}.jpg</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
