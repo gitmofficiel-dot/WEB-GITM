@@ -8,7 +8,7 @@ const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : 
 export default function LibraryBookDetails() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { lang, savedItems, toggleSave } = useLanguage();
+  const { lang, savedItems, toggleSave, user } = useLanguage();
   
   const book = location.state?.book;
 
@@ -19,6 +19,37 @@ export default function LibraryBookDetails() {
         <button onClick={() => navigate('/library')} className="btn-primary px-6 py-2 rounded-full flex items-center gap-2">
           <ChevronLeft className={lang === 'ar' ? 'rotate-180' : ''} /> {txt(lang, 'Go Back', 'العودة', 'Retour', '返回')}
         </button>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen pt-32 pb-20 px-4 flex flex-col items-center justify-center grid-bg text-[#1e3a5f] dark:text-slate-200">
+        <div className="max-w-md w-full glass-card p-10 rounded-3xl text-center shadow-2xl border border-cyan-200 dark:border-slate-800 animate-fade-in-up">
+           <div className="w-24 h-24 bg-cyan-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
+             <svg className="w-12 h-12 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+             </svg>
+           </div>
+           <h2 className="text-3xl font-bold font-orbitron mb-4">
+             {txt(lang, 'Members Only', 'محتوى حصري للأعضاء', 'Membres Uniquement', '仅限会员')}
+           </h2>
+           <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+             {txt(lang, 'You must create a free account or log in to read full articles and access the library.', 'يجب عليك تسجيل الدخول أو إنشاء حساب مجاني لتتمكن من قراءة المقالات وتصفح المكتبة.', 'Vous devez créer un compte gratuit ou vous connecter pour lire.', '您必须创建一个免费帐户或登录。')}
+           </p>
+           <div className="flex flex-col gap-4">
+             <button onClick={() => navigate('/login')} className="btn-primary py-4 rounded-xl font-bold w-full text-lg shadow-lg hover:shadow-cyan-500/30 transition-all hover:-translate-y-1">
+               {txt(lang, 'Log In', 'تسجيل الدخول', 'Connexion', '登录')}
+             </button>
+             <button onClick={() => navigate('/register')} className="bg-white dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 border-2 border-cyan-200 dark:border-slate-700 py-4 rounded-xl font-bold w-full hover:bg-cyan-50 dark:hover:bg-slate-700 transition-all text-lg">
+               {txt(lang, 'Create Free Account', 'إنشاء حساب مجاني', 'Créer un compte', '创建免费帐户')}
+             </button>
+             <button onClick={() => navigate(-1)} className="mt-4 text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 text-sm font-medium transition-colors">
+               {txt(lang, 'Go Back', 'العودة', 'Retour', '返回')}
+             </button>
+           </div>
+        </div>
       </div>
     );
   }
