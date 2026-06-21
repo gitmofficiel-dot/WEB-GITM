@@ -77,7 +77,7 @@ const AppContent = () => {
         <Route path="/ai-features" element={<AIFeatures />} />
         <Route path="/academy" element={<Academy />} />
         <Route path="/about" element={<MemberProfiles />} />
-        <Route path="/profile" element={<PublicProfile />} />
+        <Route path="/profile/:id" element={<PublicProfile />} />
         <Route path="/project-details" element={<ProjectDetails />} />
         <Route path="/virtual-lab" element={<VirtualLab />} />
         <Route path="/collab-board" element={<CollaborationBoard />} />

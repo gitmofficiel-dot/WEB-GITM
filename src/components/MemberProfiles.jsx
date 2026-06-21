@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { Github, Linkedin, Twitter, Award, CheckCircle, ShieldCheck, Copy, Star } from 'lucide-react';
+import { Github, Linkedin, Twitter, Award, CheckCircle, ShieldCheck, Copy, Star, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 export default function MemberProfiles() {
   const { lang } = useLanguage();
@@ -144,21 +145,27 @@ export default function MemberProfiles() {
                   ))}
                 </div>
 
-                {/* Functional CV Copier */}
-                <button 
-                  onClick={() => handleCopyCV(member.id)}
-                  className={`w-full flex justify-center items-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all mb-4 ${
-                    copiedId === member.id 
-                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' 
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  {copiedId === member.id ? (
-                    <><CheckCircle size={16} /> {lang === 'ar' ? 'تم النسخ!' : 'Copied!'}</>
-                  ) : (
-                    <><Copy size={16} /> {lang === 'ar' ? 'نسخ السيرة الذاتية' : 'Copy CV Link'}</>
-                  )}
-                </button>
+                {/* Functional CV Copier & View Profile */}
+                <div className="w-full flex gap-2 mb-4">
+                  <Link 
+                    to={`/profile/${member.id}`}
+                    className="flex-1 flex justify-center items-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-cyan-500/30 hover:scale-105"
+                  >
+                    {lang === 'ar' ? 'عرض الملف' : 'View Profile'} <ExternalLink size={16} />
+                  </Link>
+
+                  <button 
+                    onClick={() => handleCopyCV(member.id)}
+                    className={`flex justify-center items-center p-2.5 rounded-xl transition-all ${
+                      copiedId === member.id 
+                      ? 'bg-emerald-500 text-white' 
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    }`}
+                    title={lang === 'ar' ? 'نسخ رابط السيرة' : 'Copy CV Link'}
+                  >
+                    {copiedId === member.id ? <CheckCircle size={18} /> : <Copy size={18} />}
+                  </button>
+                </div>
 
                 <div className="flex gap-4 pt-4 border-t border-slate-200 dark:border-slate-800 w-full justify-center">
                   {member.social.github && <a href={member.social.github} className="text-slate-400 hover:text-[#1e3a5f] dark:hover:text-white transition-colors"><Github size={18} /></a>}

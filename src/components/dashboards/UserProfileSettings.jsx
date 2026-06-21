@@ -144,23 +144,23 @@ export default function UserProfileSettings({ currentUser = { name: 'Student', r
       )}
 
       {activeSubTab === 'settings' && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="glass-card rounded-3xl p-6 md:col-span-2">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+          <div className="glass-card rounded-3xl p-6">
             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-              <Edit3 className="text-blue-500" size={24}/> {lang === 'ar' ? 'تعديل البيانات الأساسية' : 'Edit Personal Info'}
+              <Edit3 className="text-blue-500" size={24}/> {lang === 'ar' ? 'تعديل البيانات الأساسية والهوية الرقمية' : 'Edit Personal Info & Digital Identity'}
             </h3>
             
-            <div className="space-y-4">
+            <div className="space-y-8">
               {/* Functional Image Upload */}
-              <div className="flex items-center gap-4 mb-6">
+              <div className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
                 <div 
                   onClick={() => fileInputRef.current.click()}
-                  className="w-20 h-20 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center relative group overflow-hidden cursor-pointer border-2 border-dashed border-slate-400 hover:border-blue-500 transition-colors"
+                  className="w-24 h-24 rounded-2xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center relative group overflow-hidden cursor-pointer border-2 border-dashed border-slate-400 hover:border-blue-500 transition-colors shadow-lg"
                 >
                   {profileImage ? (
                     <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
-                    <span className="text-2xl font-bold text-slate-500 dark:text-slate-400">{currentUser.name.charAt(0)}</span>
+                    <span className="text-3xl font-bold text-slate-500 dark:text-slate-400">{currentUser.name.charAt(0)}</span>
                   )}
                   <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <Camera className="text-white" size={24} />
@@ -176,27 +176,64 @@ export default function UserProfileSettings({ currentUser = { name: 'Student', r
                   />
                   <button 
                     onClick={() => fileInputRef.current.click()}
-                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-sm font-bold transition-colors text-slate-800 dark:text-white"
+                    className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-sm font-bold transition-colors text-slate-800 dark:text-white"
                   >
                     {lang === 'ar' ? 'اختيار صورة جديدة' : 'Choose New Photo'}
                   </button>
+                  <p className="text-xs text-slate-500 mt-2">{lang === 'ar' ? 'يُفضل استخدام صورة احترافية مربعة (1:1)' : 'Preferably a professional square image (1:1)'}</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Basic Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'الاسم الكامل' : 'Full Name'}</label>
-                  <input type="text" defaultValue={currentUser.name} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                  <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الاسم الكامل' : 'Full Name'}</label>
+                  <input type="text" defaultValue={currentUser.name} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
                 </div>
                 <div>
-                  <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'البريد الإلكتروني' : 'Email'}</label>
-                  <input type="email" defaultValue={currentUser.email} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                  <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'البريد الإلكتروني' : 'Email'}</label>
+                  <input type="email" defaultValue={currentUser.email} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'نبذة تعريفية (Bio)' : 'Bio'}</label>
+                  <textarea rows="3" placeholder={lang === 'ar' ? 'تحدث عن شغفك ومجال تخصصك...' : 'Talk about your passion and expertise...'} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"></textarea>
                 </div>
               </div>
 
-              <div className="pt-4 flex justify-end">
-                <button className="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition-all">
-                  {lang === 'ar' ? 'حفظ التغييرات' : 'Save Changes'}
+              {/* Advanced Portfolio Data */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-slate-200 dark:border-slate-800 pt-8">
+                <div>
+                  <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Briefcase size={18} className="text-purple-500"/> {lang === 'ar' ? 'المهارات التقنية' : 'Technical Skills'}</h4>
+                  <input type="text" placeholder={lang === 'ar' ? 'مثال: Python, React, AI (افصل بينها بفاصلة)' : 'e.g. Python, React, AI (comma separated)'} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Globe size={18} className="text-rose-500"/> {lang === 'ar' ? 'الاهتمامات ومجالات البحث' : 'Interests & Research Fields'}</h4>
+                  <input type="text" placeholder={lang === 'ar' ? 'مثال: الروبوتيك، إنترنت الأشياء (افصل بينها بفاصلة)' : 'e.g. Robotics, IoT (comma separated)'} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                </div>
+              </div>
+
+              {/* Academic Path */}
+              <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
+                <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><GraduationCap size={18} className="text-blue-500"/> {lang === 'ar' ? 'المسار الأكاديمي' : 'Academic Path'}</h4>
+                <div className="flex gap-4">
+                  <input type="text" placeholder={lang === 'ar' ? 'السنة (مثال: 2023)' : 'Year (e.g. 2023)'} className="w-1/4 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white" />
+                  <input type="text" placeholder={lang === 'ar' ? 'التخصص أو الشهادة' : 'Degree or Major'} className="w-1/2 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white" />
+                  <button className="w-1/4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors">{lang === 'ar' ? 'إضافة' : 'Add'}</button>
+                </div>
+              </div>
+
+              {/* Social Links */}
+              <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
+                <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Globe size={18} className="text-cyan-500"/> {lang === 'ar' ? 'الروابط وحسابات التواصل' : 'Social & Portfolio Links'}</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <input type="url" placeholder="GitHub URL" className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white" />
+                  <input type="url" placeholder="LinkedIn URL" className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white" />
+                </div>
+              </div>
+
+              <div className="pt-8 flex justify-end">
+                <button className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-cyan-500/30 hover:scale-105 transition-all">
+                  {lang === 'ar' ? 'حفظ ونشر التغييرات' : 'Save & Publish Profile'}
                 </button>
               </div>
             </div>

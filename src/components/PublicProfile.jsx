@@ -1,220 +1,204 @@
 import React from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { ArrowLeft, Github, Linkedin, Mail, ExternalLink, Briefcase, Award, MapPin, Code, BookOpen, Star, Target } from 'lucide-react';
+import { 
+  Briefcase, GraduationCap, Github, Linkedin, Twitter, ExternalLink, 
+  MapPin, Mail, Calendar, Code, Zap, Award, BookOpen, Heart, Activity
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const PublicProfile = () => {
-  const { lang, t, users, selectedProfileId, setView } = useLanguage();
-  
-  const user = users.find(u => u.id === selectedProfileId);
-  
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <h2 className="text-2xl font-bold text-[#1e3a5f] dark:text-white">Profile Not Found</h2>
-        <button onClick={() => setView('about')} className="mt-4 text-cyan-500 hover:underline">Return to Members</button>
-      </div>
-    );
-  }
+export default function PublicProfile() {
+  const { id } = useParams();
+  const { lang } = useLanguage();
+
+  // Mock data for the specific user ID
+  // In a real app, you would fetch this using the `id` from the backend
+  const profile = {
+    id: id || 'GITM-PRE-001',
+    name: 'M. President',
+    title: lang === 'ar' ? 'الرئيس والمؤسس' : 'President & Founder',
+    email: 'president@gitm.ma',
+    location: lang === 'ar' ? 'الدار البيضاء، المغرب' : 'Casablanca, Morocco',
+    bio: lang === 'ar' 
+      ? 'مهندس ذكاء اصطناعي شغوف بتطوير الأنظمة المعقدة. مؤسس GITM ومهتم بنقل التكنولوجيا وبناء قدرات الشباب المغربي في مجالات البرمجة والروبوتيك.' 
+      : 'AI Engineer passionate about developing complex systems. Founder of GITM, dedicated to technology transfer and capacity building for Moroccan youth in programming and robotics.',
+    avatar: 'M',
+    badges: ['leadership', 'ai_visionary', 'legal'],
+    stats: {
+      projects: 15,
+      certifications: 8,
+      volunteerHours: 320
+    },
+    social: {
+      github: 'https://github.com/gitmofficiel-dot',
+      linkedin: 'https://linkedin.com',
+      twitter: 'https://twitter.com'
+    },
+    skills: ['Python', 'TensorFlow', 'React', 'Robotics', 'Embedded Systems', 'Leadership', 'System Architecture'],
+    interests: ['AI Ethics', 'Quantum Computing', 'Green Tech', 'Space Exploration'],
+    academicPath: [
+      { year: '2023 - Present', title: lang === 'ar' ? 'ماجستير في الذكاء الاصطناعي' : 'Master in AI', institution: 'UM5 Rabat' },
+      { year: '2019 - 2023', title: lang === 'ar' ? 'إجازة في علوم الحاسوب' : 'Bachelor in Computer Science', institution: 'FST Settat' }
+    ],
+    projects: [
+      { name: 'Smart Irrigation System', role: 'Lead Architect', type: 'IoT & AI' },
+      { name: 'GITM LMS Platform', role: 'Fullstack Dev', type: 'Web App' }
+    ]
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in-up pb-12">
-      <button onClick={() => setView('about')} className="flex items-center text-slate-500 hover:text-cyan-500 transition-colors font-medium">
-        <ArrowLeft className="w-5 h-5 mr-2 rtl:ml-2 rtl:rotate-180" /> {lang === 'ar' ? 'العودة' : 'Back to Members'}
-      </button>
-
-      {/* Hero Section */}
-      <div className="glass-card rounded-3xl p-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+    <div className="container-custom py-24 min-h-screen relative">
+      <div className="absolute top-20 right-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+      
+      <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-5xl mx-auto space-y-8">
         
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-8 relative z-10">
-          {/* Avatar */}
-          <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center shadow-lg shrink-0">
-            <span className="text-5xl font-black text-white">{user.name[0].toUpperCase()}</span>
-          </div>
-          
-          <div className="text-center md:text-left rtl:md:text-right flex-1">
-            <h1 className="text-4xl font-black text-[#1e3a5f] dark:text-white font-orbitron mb-2">
-              {user.name}
-            </h1>
-            <p className="text-xl text-cyan-600 dark:text-cyan-400 font-medium mb-4 flex justify-center md:justify-start items-center gap-2">
-              <Briefcase size={20} />
-              <span className="uppercase text-sm tracking-wider">{user.role}</span>
-            </p>
+        {/* Header Section */}
+        <motion.div variants={itemVariants} className="glass-card rounded-3xl p-8 relative overflow-hidden border-t-4 border-cyan-500">
+          <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
             
-            <p className="text-slate-600 dark:text-slate-300 max-w-2xl text-lg leading-relaxed mb-6">
-              {user.bio || 'GITM Team Member passionate about technology and innovation.'}
-            </p>
-            
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-              <a href={`mailto:${user.email}`} className="px-4 py-2 bg-cyan-100 dark:bg-[#e0fcfc]/5 rounded-xl flex items-center gap-2 text-sm font-bold text-[#2d507b] dark:text-slate-200 hover:bg-cyan-500 hover:text-white transition-all">
-                <Mail size={16} /> Contact
-              </a>
-              {user.github && (
-                <a href={`https://${user.github}`} target="_blank" rel="noreferrer" className="px-4 py-2 bg-cyan-100 dark:bg-[#e0fcfc]/5 rounded-xl flex items-center gap-2 text-sm font-bold text-[#2d507b] dark:text-slate-200 hover:bg-[#24292e] hover:text-white transition-all">
-                  <Github size={16} /> GitHub
-                </a>
-              )}
-              {user.linkedin && (
-                <a href={`https://${user.linkedin}`} target="_blank" rel="noreferrer" className="px-4 py-2 bg-cyan-100 dark:bg-[#e0fcfc]/5 rounded-xl flex items-center gap-2 text-sm font-bold text-[#2d507b] dark:text-slate-200 hover:bg-[#0077b5] hover:text-white transition-all">
-                  <Linkedin size={16} /> LinkedIn
-                </a>
-              )}
+            <div className="relative">
+              <div className="w-32 h-32 rounded-3xl bg-gradient-to-tr from-cyan-400 to-blue-600 p-1 shadow-2xl">
+                <div className="w-full h-full bg-white dark:bg-slate-900 rounded-2xl flex items-center justify-center text-5xl font-bold text-[#1e3a5f] dark:text-white">
+                  {profile.avatar}
+                </div>
+              </div>
+              <div className="absolute -bottom-3 -right-3 bg-emerald-500 text-white p-2 rounded-full border-4 border-white dark:border-slate-900 shadow-lg">
+                <Award size={20} />
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Badges Section */}
-        <div className="glass-card p-6 rounded-2xl h-fit">
-          <h3 className="text-lg font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 mb-6 border-b border-cyan-300 dark:border-white/10 pb-4">
-            <Award className="text-emerald-500" />
-            {lang === 'ar' ? 'شارات التميز' : 'Earned Badges'}
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {user.badges && user.badges.length > 0 ? (
-              user.badges.map((badge, idx) => (
-                <span key={idx} className="px-3 py-1.5 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  {badge}
-                </span>
-              ))
-            ) : (
-              <p className="text-sm text-slate-500">{lang === 'ar' ? 'لا توجد شارات بعد' : 'No badges earned yet.'}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Projects Section */}
-        <div className="md:col-span-2 glass-card p-6 rounded-2xl">
-          <h3 className="text-lg font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 mb-6 border-b border-cyan-300 dark:border-white/10 pb-4">
-            <Code className="text-cyan-500" size={20} />
-            {lang === 'ar' ? 'المشاريع والإنجازات' : 'Projects & Contributions'}
-          </h3>
-          
-          <div className="space-y-4">
-            {user.projects && user.projects.length > 0 ? (
-              user.projects.map((proj, idx) => (
-                <div key={idx} className="p-4 rounded-xl border border-cyan-300 dark:border-white/5 bg-cyan-50/50 dark:bg-[#e0fcfc]/[0.02] hover:bg-cyan-100 dark:hover:bg-[#e0fcfc]/[0.05] transition-colors group">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-bold text-[#1e3a5f] dark:text-white text-base group-hover:text-cyan-500 transition-colors">{proj}</h4>
-                      <p className="text-sm text-slate-500 dark:text-cyber-muted mt-1">
-                        {lang === 'ar' ? 'تمت المساهمة كجزء من فريق التطوير.' : 'Contributed as part of the core development team.'}
-                      </p>
-                    </div>
-                    <button className="p-2 text-slate-400 hover:text-cyan-500 bg-[#e0fcfc] dark:bg-[#e0fcfc]/5 rounded-lg shadow-sm">
-                      <ExternalLink size={16} />
-                    </button>
+            <div className="flex-1">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-bold text-[#1e3a5f] dark:text-white mb-2">{profile.name}</h1>
+                  <h2 className="text-xl text-cyan-600 dark:text-cyan-400 font-semibold mb-4">{profile.title}</h2>
+                  
+                  <div className="flex flex-wrap gap-4 text-sm text-slate-500 dark:text-slate-400 mb-6">
+                    <span className="flex items-center gap-1"><MapPin size={16}/> {profile.location}</span>
+                    <span className="flex items-center gap-1"><Mail size={16}/> {profile.email}</span>
                   </div>
                 </div>
-              ))
-            ) : (
-              <p className="text-sm text-slate-500">{lang === 'ar' ? 'لم يتم إضافة مشاريع بعد.' : 'No projects added yet.'}</p>
-            )}
-          </div>
-        </div>
-      </div>
+                
+                <div className="flex gap-2">
+                  {profile.social.github && <a href={profile.social.github} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"><Github size={20}/></a>}
+                  {profile.social.linkedin && <a href={profile.social.linkedin} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"><Linkedin size={20}/></a>}
+                  {profile.social.twitter && <a href={profile.social.twitter} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-900/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors"><Twitter size={20}/></a>}
+                </div>
+              </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-        {/* Learning Path */}
-        <div className="glass-card p-6 rounded-2xl">
-          <h3 className="text-lg font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 mb-6 border-b border-cyan-300 dark:border-white/10 pb-4">
-            <BookOpen className="text-blue-500" size={20} />
-            {lang === 'ar' ? 'المسار التعليمي' : 'Learning Path'}
-          </h3>
-          <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 rtl:before:mr-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 dark:before:via-slate-700 before:to-transparent">
-            {/* Timeline Item 1 */}
-            <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-slate-800 bg-emerald-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                <CheckCircle size={16} />
-              </div>
-              <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass p-4 rounded-xl shadow-sm border border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-900/10">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">Edge AI Architecture</span>
-                  <span className="text-xs text-slate-500">100%</span>
-                </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400">Completed on June 15, 2026</p>
-              </div>
-            </div>
-            
-            {/* Timeline Item 2 */}
-            <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-slate-800 bg-amber-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                <Target size={16} />
-              </div>
-              <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass p-4 rounded-xl shadow-sm border border-amber-500/20">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-[#1e3a5f] dark:text-white">IoT Cloud Integration</span>
-                  <span className="text-xs font-bold text-amber-500">40%</span>
-                </div>
-                <div className="w-full bg-cyan-200 dark:bg-slate-700 rounded-full h-1.5 mt-2">
-                  <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: '40%' }}></div>
-                </div>
-              </div>
-            </div>
-
-            {/* Timeline Item 3 */}
-            <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-slate-800 bg-cyan-300 dark:bg-slate-700 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                <div className="w-2 h-2 rounded-full bg-current"></div>
-              </div>
-              <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass p-4 rounded-xl shadow-sm border border-cyan-300 dark:border-slate-700 opacity-60">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-[#1e3a5f] dark:text-white">Industrial Robotics</span>
-                  <span className="text-xs text-slate-500">Not Started</span>
-                </div>
+              <div className="flex flex-wrap gap-2">
+                {profile.badges.map(b => (
+                  <span key={b} className={`badge badge-${b} px-3 py-1 text-xs uppercase tracking-wider font-bold`}>{b}</span>
+                ))}
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Interests & Radar Chart (Mock) */}
-        <div className="glass-card p-6 rounded-2xl flex flex-col">
-          <h3 className="text-lg font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 mb-6 border-b border-cyan-300 dark:border-white/10 pb-4">
-            <Star className="text-purple-500" size={20} />
-            {lang === 'ar' ? 'الاهتمامات والمهارات' : 'Interests & Skills'}
-          </h3>
+        {/* Stats Row */}
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="glass-card rounded-2xl p-6 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400"><Code size={24}/></div>
+            <div>
+              <p className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{profile.stats.projects}</p>
+              <p className="text-sm font-semibold text-slate-500 uppercase">{lang === 'ar' ? 'مشاريع مكتملة' : 'Projects Done'}</p>
+            </div>
+          </div>
+          <div className="glass-card rounded-2xl p-6 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400"><Award size={24}/></div>
+            <div>
+              <p className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{profile.stats.certifications}</p>
+              <p className="text-sm font-semibold text-slate-500 uppercase">{lang === 'ar' ? 'شهادات معتمدة' : 'Certifications'}</p>
+            </div>
+          </div>
+          <div className="glass-card rounded-2xl p-6 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-rose-600 dark:text-rose-400"><Heart size={24}/></div>
+            <div>
+              <p className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{profile.stats.volunteerHours}h</p>
+              <p className="text-sm font-semibold text-slate-500 uppercase">{lang === 'ar' ? 'ساعات تطوع' : 'Volunteer Hours'}</p>
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          <div className="mb-8">
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">{lang === 'ar' ? 'المجالات التقنية المفضلة:' : 'Core interests:'}</p>
-            <div className="flex flex-wrap gap-2">
-              {['Artificial Intelligence', 'Embedded Systems', 'Computer Vision', 'Cloud Computing', 'IoT'].map((tag, i) => (
-                <span key={i} className="px-3 py-1 bg-cyan-100 dark:bg-slate-800 text-[#2d507b] dark:text-slate-300 rounded-full text-xs font-medium border border-cyan-300 dark:border-slate-700">
-                  #{tag}
-                </span>
-              ))}
-            </div>
+          {/* Main Column */}
+          <div className="lg:col-span-2 space-y-8">
+            <motion.div variants={itemVariants} className="glass-card rounded-3xl p-8">
+              <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><BookOpen className="text-cyan-500"/> {lang === 'ar' ? 'نبذة تعريفية' : 'About Me'}</h3>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">{profile.bio}</p>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="glass-card rounded-3xl p-8">
+              <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-6 flex items-center gap-2"><GraduationCap className="text-blue-500"/> {lang === 'ar' ? 'المسار الأكاديمي' : 'Academic Path'}</h3>
+              <div className="space-y-6">
+                {profile.academicPath.map((edu, idx) => (
+                  <div key={idx} className="flex gap-4">
+                    <div className="flex flex-col items-center">
+                      <div className="w-4 h-4 rounded-full bg-blue-500 border-4 border-blue-100 dark:border-blue-900"></div>
+                      {idx !== profile.academicPath.length - 1 && <div className="w-0.5 h-full bg-blue-100 dark:bg-slate-800 my-1"></div>}
+                    </div>
+                    <div className="pb-6">
+                      <p className="text-sm font-bold text-blue-500 mb-1">{edu.year}</p>
+                      <h4 className="text-lg font-bold text-[#1e3a5f] dark:text-white">{edu.title}</h4>
+                      <p className="text-slate-500">{edu.institution}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="glass-card rounded-3xl p-8">
+              <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-6 flex items-center gap-2"><Briefcase className="text-purple-500"/> {lang === 'ar' ? 'المشاريع البارزة' : 'Featured Projects'}</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {profile.projects.map((proj, idx) => (
+                  <div key={idx} className="border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-1">{proj.name}</h4>
+                    <p className="text-sm text-slate-500 mb-3">{proj.role}</p>
+                    <span className="px-2 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-bold rounded-lg uppercase">{proj.type}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           </div>
 
-          <div className="flex-grow flex items-center justify-center bg-cyan-50 dark:bg-slate-800/50 rounded-xl border border-cyan-300 dark:border-slate-700 p-4">
-            <div className="text-center">
-              <div className="w-32 h-32 mx-auto rounded-full border-4 border-dashed border-purple-300 dark:border-purple-900/50 flex items-center justify-center mb-4 relative">
-                <div className="absolute inset-2 border-2 border-purple-400 dark:border-purple-700 rounded-full opacity-50"></div>
-                <div className="absolute inset-6 border border-purple-500 dark:border-purple-500 rounded-full opacity-25"></div>
-                <Award className="w-10 h-10 text-purple-500" />
+          {/* Sidebar */}
+          <div className="space-y-8">
+            <motion.div variants={itemVariants} className="glass-card rounded-3xl p-6">
+              <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-6 flex items-center gap-2"><Zap className="text-amber-500"/> {lang === 'ar' ? 'المهارات التقنية' : 'Technical Skills'}</h3>
+              <div className="flex flex-wrap gap-2">
+                {profile.skills.map((skill, idx) => (
+                  <span key={idx} className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-semibold border border-slate-200 dark:border-slate-700">
+                    {skill}
+                  </span>
+                ))}
               </div>
-              <p className="text-sm font-bold text-[#2d507b] dark:text-slate-300">Skill Graph</p>
-              <p className="text-xs text-slate-500">{lang === 'ar' ? 'رسم بياني يوضح توزع المهارات بناءً على الدورات والمشاريع.' : 'Visual skill distribution based on courses and projects.'}</p>
-            </div>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="glass-card rounded-3xl p-6">
+              <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-6 flex items-center gap-2"><Activity className="text-rose-500"/> {lang === 'ar' ? 'الاهتمامات' : 'Interests'}</h3>
+              <div className="flex flex-wrap gap-2">
+                {profile.interests.map((interest, idx) => (
+                  <span key={idx} className="px-3 py-1.5 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-lg text-sm font-semibold border border-rose-100 dark:border-rose-900/50">
+                    {interest}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
           </div>
+
         </div>
-      </div>
-      
-      {/* Footer Share Link */}
-      <div className="text-center mt-8">
-         <p className="text-sm text-slate-500 mb-2">{lang === 'ar' ? 'رابط الملف الشخصي للمشاركة:' : 'Shareable Profile Link:'}</p>
-         <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-100 dark:bg-[#e0fcfc]/5 rounded-lg border border-cyan-300 dark:border-white/10">
-            <span className="font-mono text-xs text-slate-600 dark:text-slate-300">https://gitm.ma/profile/{user.id}</span>
-            <button className="text-cyan-500 hover:text-cyan-400 font-bold text-xs uppercase" onClick={() => alert('Link copied!')}>Copy</button>
-         </div>
-      </div>
+      </motion.div>
     </div>
   );
-};
-
-// Also import Code, CheckCircle from lucide-react at the top
-import { CheckCircle } from 'lucide-react';
-
-export default PublicProfile;
+}
