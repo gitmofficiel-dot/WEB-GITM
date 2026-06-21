@@ -18,8 +18,9 @@ const TechNewsWidget = () => {
       try {
         const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
         // Wrap with CORS proxy to bypass browser restrictions
+        // corsproxy.io might return 403 for some APIs, so we use allorigins.win
         const baseUrl = `https://gnews.io/api/v4/top-headlines?category=technology&lang=${newsLang}&max=5&apikey=${apiKey}`;
-        const url = `https://corsproxy.io/?${encodeURIComponent(baseUrl)}`;
+        const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(baseUrl)}`;
         
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch');
