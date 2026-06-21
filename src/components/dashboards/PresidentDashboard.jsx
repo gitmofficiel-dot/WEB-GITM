@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import UserProfileSettings from './UserProfileSettings';
 import { useLanguage } from '../../context/LanguageContext';
 import { 
   Users, BookOpen, Building, Newspaper, Activity, Shield, Award, 
@@ -130,7 +131,8 @@ export default function PresidentDashboard() {
     { id: 'events', icon: Calendar, label: lang === 'ar' ? 'الفعاليات والمشاريع' : 'Events & Projects' },
     { id: 'news', icon: Newspaper, label: lang === 'ar' ? 'إدارة الأخبار' : 'News & Media' },
     { id: 'gallery', icon: Image, label: lang === 'ar' ? 'المعرض والصور' : 'Gallery & Media' },
-    { id: 'ai', icon: BrainCircuit, label: lang === 'ar' ? 'إدارة الذكاء الاصطناعي' : 'AI Management' }
+    { id: 'ai', icon: BrainCircuit, label: lang === 'ar' ? 'إدارة الذكاء الاصطناعي' : 'AI Management' },
+    { id: 'profile', icon: Settings, label: lang === 'ar' ? 'الملف الشخصي والإعدادات' : 'Profile & Settings' }
   ];
 
   // --- Modal Component ---
@@ -578,6 +580,11 @@ export default function PresidentDashboard() {
                   </div>
                 </div>
               </div>
+            )}
+
+            {/* PROFILE & SETTINGS TAB */}
+            {activeTab === 'profile' && (
+              <UserProfileSettings currentUser={{ name: 'Mourad', role: 'president', email: 'mourad@gitm.ma', badges: ['founder', 'developer'] }} />
             )}
 
           </motion.div>
