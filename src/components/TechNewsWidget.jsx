@@ -17,8 +17,9 @@ const TechNewsWidget = () => {
       setError(false);
       try {
         const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
-        // GNews uses 'ar', 'en', 'fr', 'zh' as language codes, same as our app
-        const url = `https://gnews.io/api/v4/top-headlines?category=technology&lang=${newsLang}&max=5&apikey=${apiKey}`;
+        // Wrap with CORS proxy to bypass browser restrictions
+        const baseUrl = `https://gnews.io/api/v4/top-headlines?category=technology&lang=${newsLang}&max=5&apikey=${apiKey}`;
+        const url = `https://corsproxy.io/?${encodeURIComponent(baseUrl)}`;
         
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch');
