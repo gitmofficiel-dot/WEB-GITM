@@ -107,6 +107,7 @@ const LibraryWidget = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {books.map((book) => {
             const coverUrl = book.cover_i || null;
+            const isSaved = savedItems?.books?.some(b => b.key === book.key);
             return (
             <div 
               key={book.key} 
