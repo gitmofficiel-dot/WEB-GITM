@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Loader, AlertCircle, ExternalLink, Bookmark, X, Book } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 
 const LibraryWidget = () => {
   const navigate = useNavigate();
