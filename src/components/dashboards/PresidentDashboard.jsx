@@ -5,7 +5,8 @@ import {
   Users, BookOpen, Building, Newspaper, Activity, Shield, Award, 
   Edit, Trash2, Bot, TrendingUp, AlertTriangle, Plus, Mail, Video, 
   Megaphone, CheckCircle, XCircle, LayoutDashboard, Settings, BrainCircuit,
-  GraduationCap, Calendar, Database, Eye, Image, X, Save, Target, MapPin
+  GraduationCap, Calendar, Database, Eye, Image, X, Save, Target, MapPin,
+  Link, UserPlus, Handshake
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -127,7 +128,8 @@ export default function PresidentDashboard() {
   const tabs = [
     { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
     { id: 'vision', icon: Target, label: lang === 'ar' ? 'الرؤية الاستراتيجية' : 'Strategic Vision' },
-    { id: 'members', icon: Shield, label: lang === 'ar' ? 'إدارة الأعضاء' : 'Members' },
+    { id: 'members', icon: Shield, label: lang === 'ar' ? 'إدارة التوظيف والصلاحيات' : 'Roles & Hiring' },
+    { id: 'partners', icon: Handshake, label: lang === 'ar' ? 'الشركات والجمعيات' : 'Partners & NGOs' },
     { id: 'academy', icon: GraduationCap, label: lang === 'ar' ? 'الأكاديمية والتداريب' : 'Academy & Training' },
     { id: 'events', icon: Calendar, label: lang === 'ar' ? 'الفعاليات والمشاريع' : 'Events & Projects' },
     { id: 'news', icon: Newspaper, label: lang === 'ar' ? 'إدارة الأخبار' : 'News & Media' },
@@ -369,69 +371,112 @@ export default function PresidentDashboard() {
               </div>
             )}
 
-            {/* MEMBERS TAB */}
+            {/* MEMBERS TAB (ROLE MANAGEMENT) */}
             {activeTab === 'members' && (
-              <div className="glass-card rounded-3xl p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                    <Shield className="text-blue-500" size={24}/> {lang === 'ar' ? 'إدارة الأعضاء والصلاحيات' : 'Member & Roles Management'}
-                  </h3>
-                  <div className="flex gap-2">
-                    <button onClick={() => openModal('member')} className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-cyan-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'عضو جديد' : 'New Member'}</button>
+              <div className="space-y-6">
+                <div className="glass-card rounded-3xl p-6 border-l-4 border-blue-500">
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white mb-1">
+                        <Shield className="text-blue-500" size={24}/> {lang === 'ar' ? 'إدارة التوظيف والترقيات' : 'Roles & Promotions Management'}
+                      </h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">
+                        {lang === 'ar' ? 'جميع المسجلين الجدد هم (طالب). لا أحد يرتقي إلا بتغيير صلاحياته من هنا، أو بإرسال رابط دعوة خاص.' : 'All new signups are Students. Upgrade their roles here or send a direct invite link.'}
+                      </p>
+                    </div>
+                    <button onClick={() => {
+                        alert(lang === 'ar' ? 'تم نسخ رابط الدعوة للفريق: https://gitm.ma/invite/XYZ-123' : 'Team Invite Link Copied: https://gitm.ma/invite/XYZ-123');
+                    }} className="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg hover:bg-slate-700 transition-colors">
+                      <Link size={16}/> {lang === 'ar' ? 'إنشاء رابط دعوة' : 'Generate Invite Link'}
+                    </button>
+                  </div>
+                  
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b-2 border-slate-200 dark:border-slate-800 text-slate-500 uppercase tracking-wider text-xs">
+                          <th className="p-3 font-bold">User</th>
+                          <th className="p-3 font-bold">Current Role</th>
+                          <th className="p-3 font-bold">Promote To</th>
+                          <th className="p-3 font-bold text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                        {members.map(m => (
+                          <tr key={m.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                            <td className="p-3">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 text-white flex items-center justify-center font-bold shadow-sm">{m.avatar}</div>
+                                <div>
+                                  <p className="font-bold text-[#1e3a5f] dark:text-white">{m.name}</p>
+                                  <p className="text-xs text-slate-500">{m.email}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-3">
+                              <span className={`px-2 py-1 text-[10px] rounded uppercase font-bold ${
+                                m.role === 'student' ? 'bg-slate-100 text-slate-600' : 'bg-blue-100 text-blue-600'
+                              }`}>{m.role}</span>
+                            </td>
+                            <td className="p-3">
+                              <select 
+                                value={m.role}
+                                onChange={(e) => {
+                                    if(window.confirm(lang==='ar' ? `هل أنت متأكد من ترقية هذا المستخدم إلى ${e.target.value}؟` : `Promote this user to ${e.target.value}?`)) {
+                                      const newMembers = [...members];
+                                      newMembers.find(mem => mem.id === m.id).role = e.target.value;
+                                      setMembers(newMembers);
+                                    }
+                                }}
+                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer">
+                                <option value="student">Student (Default)</option>
+                                <option value="member">Member</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="supervisor">Supervisor</option>
+                                <option value="content_manager">Content Manager</option>
+                                <option value="partner">Partner</option>
+                                <option value="university">University</option>
+                                <option value="president">President</option>
+                              </select>
+                            </td>
+                            <td className="p-3 text-right">
+                              <button onClick={() => handleDelete('member', m.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b-2 border-slate-200 dark:border-slate-800 text-slate-500 uppercase tracking-wider text-xs">
-                        <th className="p-3 font-bold">User</th>
-                        <th className="p-3 font-bold">Role</th>
-                        <th className="p-3 font-bold">Badges</th>
-                        <th className="p-3 font-bold text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                      {members.map(m => (
-                        <tr key={m.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                          <td className="p-3">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 text-white flex items-center justify-center font-bold shadow-sm">{m.avatar}</div>
-                              <div>
-                                <p className="font-bold text-[#1e3a5f] dark:text-white">{m.name}</p>
-                                <p className="text-xs text-slate-500">{m.email}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="p-3">
-                            <select 
-                              value={m.role}
-                              onChange={(e) => {
-                                  const newMembers = [...members];
-                                  newMembers.find(mem => mem.id === m.id).role = e.target.value;
-                                  setMembers(newMembers);
-                              }}
-                              className="bg-slate-100 dark:bg-slate-900 border border-transparent hover:border-cyan-300 dark:border-slate-700 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer">
-                              <option value="admin">admin</option>
-                              <option value="president">president</option>
-                              <option value="teacher">teacher</option>
-                              <option value="student">student</option>
-                              <option value="content_manager">content_manager</option>
-                            </select>
-                          </td>
-                          <td className="p-3">
-                            <div className="flex flex-wrap gap-1.5">
-                              {m.badges.map(b => <span key={b} className={`badge badge-${b} text-[10px]`}>{b}</span>)}
-                              <button className="w-6 h-6 rounded-full border border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center text-slate-400 hover:text-cyan-500 hover:border-cyan-500 transition-colors" title="Add Badge"><Plus size={12}/></button>
-                            </div>
-                          </td>
-                          <td className="p-3 text-right">
-                            <button onClick={() => openModal('member', m)} className="p-2 text-slate-400 hover:text-blue-500 transition-colors"><Edit size={16}/></button>
-                            <button onClick={() => handleDelete('member', m.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              </div>
+            )}
+
+            {/* PARTNERS & NGOs TAB */}
+            {activeTab === 'partners' && (
+              <div className="space-y-6">
+                <div className="glass-card rounded-3xl p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Handshake className="text-emerald-500" size={24}/> {lang === 'ar' ? 'إدارة الشراكات والجمعيات' : 'Partnerships & NGOs'}
+                    </h3>
+                    <button className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'إضافة شريك جديد' : 'Add Partner'}</button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-5 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/50 flex justify-between items-center">
+                      <div>
+                        <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">OCP Group</h4>
+                        <p className="text-sm text-slate-500 flex items-center gap-1"><CheckCircle size={14} className="text-emerald-500"/> Verified Corporate Partner</p>
+                      </div>
+                      <span className="px-3 py-1 bg-emerald-100 text-emerald-700 font-bold text-xs rounded-full">Active</span>
+                    </div>
+                    <div className="p-5 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/50 flex justify-between items-center">
+                      <div>
+                        <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">UM5 University</h4>
+                        <p className="text-sm text-slate-500 flex items-center gap-1"><CheckCircle size={14} className="text-emerald-500"/> Verified Academic Partner</p>
+                      </div>
+                      <span className="px-3 py-1 bg-emerald-100 text-emerald-700 font-bold text-xs rounded-full">Active</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

@@ -1,167 +1,110 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
-import { BookOpen, Users, Award, FlaskConical, LayoutDashboard, Settings, User, FileText, CheckCircle, Clock } from 'lucide-react';
+import { 
+  BookOpen, Users, ClipboardCheck, Video, Settings, Edit3, MessageCircle, FileText
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
 
 export default function TeacherDashboard() {
   const { lang } = useLanguage();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('courses');
 
-  const currentUser = {
-    name: lang === 'ar' ? 'د. يوسف' : 'Dr. Youssef',
-    role: 'Teacher',
-    email: 'youssef@gitm.ma',
-    badges: ['speaker', 'developer'],
-    membershipId: 'GITM-TCH-001'
-  };
-
-  const stats = [
-    { id: 1, title: lang === 'ar' ? 'الطلاب' : 'Total Students', value: '142', icon: Users, color: 'text-blue-500' },
-    { id: 2, title: lang === 'ar' ? 'الدورات' : 'Active Courses', value: '4', icon: BookOpen, color: 'text-emerald-500' },
-    { id: 3, title: lang === 'ar' ? 'التقييمات المعلقة' : 'Pending Grades', value: '28', icon: FileText, color: 'text-orange-500' },
-    { id: 4, title: lang === 'ar' ? 'المختبرات الافتراضية' : 'Virtual Labs', value: '12', icon: FlaskConical, color: 'text-purple-500' },
+  const assignedCourses = [
+    { id: 1, name: 'Advanced Robotics Lab', students: 45, pendingGrades: 12 },
+    { id: 2, name: 'AI Ethics', students: 120, pendingGrades: 0 }
   ];
 
-  const courses = [
-    { id: 1, name: 'AI & Machine Learning', students: 45, progress: 75 },
-    { id: 2, name: 'Advanced React Development', students: 38, progress: 60 },
-    { id: 3, name: 'Data Science Fundamentals', students: 59, progress: 90 },
+  const studentSubmissions = [
+    { id: 1, student: 'Aymane Benali', assignment: 'Neural Network Model', date: '2026-06-21', status: 'Needs Grading' },
+    { id: 2, student: 'Sara Khan', assignment: 'Robotics Kinematics', date: '2026-06-20', status: 'Needs Grading' }
   ];
 
-  const gradingTasks = [
-    { id: 1, student: 'Ahmed Alami', assignment: 'Neural Networks Lab', status: 'pending' },
-    { id: 2, student: 'Sara Benali', assignment: 'React Components Project', status: 'graded' },
-    { id: 3, student: 'Karim Tazi', assignment: 'Data Ethics Essay', status: 'pending' },
+  const tabs = [
+    { id: 'courses', icon: BookOpen, label: lang === 'ar' ? 'إدارة المقررات' : 'Course Management' },
+    { id: 'grading', icon: ClipboardCheck, label: lang === 'ar' ? 'نظام التقييم' : 'Grading System' },
+    { id: 'virtualLab', icon: Video, label: lang === 'ar' ? 'المختبر الافتراضي' : 'Virtual Labs' },
+    { id: 'profile', icon: Settings, label: lang === 'ar' ? 'الملف الشخصي' : 'Profile & Settings' }
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Navigation */}
-      <div className="flex flex-wrap gap-2 pb-4 border-b border-white/10">
-        {[
-          { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
-          { id: 'grading', icon: CheckCircle, label: lang === 'ar' ? 'التقييم' : 'Grading' },
-          { id: 'labs', icon: FlaskConical, label: lang === 'ar' ? 'المختبرات' : 'Virtual Labs' },
-          { id: 'profile', icon: User, label: lang === 'ar' ? 'الملف الشخصي' : 'Profile' }
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
-              activeTab === tab.id 
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
-                : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
-            }`}
-          >
-            <tab.icon size={18} />
-            <span className="font-orbitron">{tab.label}</span>
-          </button>
-        ))}
+    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative">
+      <div className="w-full md:w-64 shrink-0">
+        <div className="glass-card rounded-3xl p-4 sticky top-24 border border-blue-200 dark:border-blue-900/30 shadow-xl">
+          <div className="mb-6 px-2">
+            <h2 className="text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'بوابة المعلم' : 'Teacher Portal'}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Academic Instructor</p>
+          </div>
+          <nav className="space-y-2">
+            {tabs.map(tab => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
+                    activeTab === tab.id 
+                    ? 'bg-blue-600 text-white shadow-lg translate-x-2' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  <Icon size={18} /> {tab.label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
       </div>
 
-      {/* Content Area */}
-      <AnimatePresence mode="wait">
-        {activeTab === 'profile' ? (
-          <motion.div
-            key="profile"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <UserProfileSettings currentUser={currentUser} />
-          </motion.div>
-        ) : activeTab === 'overview' ? (
-          <motion.div
-            key="overview"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-6"
-          >
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {stats.map(stat => (
-                <div key={stat.id} className="glass-card p-6 card-3d hover-lift">
-                  <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-xl bg-white/5 ${stat.color}`}>
-                      <stat.icon size={24} />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400">{stat.title}</p>
-                      <h3 className="text-2xl font-orbitron font-bold text-white">{stat.value}</h3>
-                    </div>
-                  </div>
+      <div className="flex-1 w-full min-w-0">
+        <AnimatePresence mode="wait">
+          <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
+            
+            {activeTab === 'courses' && (
+              <div className="glass-card rounded-3xl p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2"><BookOpen className="text-blue-500"/> {lang==='ar'?'المقررات المكلف بها':'Assigned Courses'}</h3>
                 </div>
-              ))}
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {assignedCourses.map(course => (
+                    <div key={course.id} className="p-5 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/50">
+                      <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white mb-2">{course.name}</h4>
+                      <p className="text-sm text-slate-500 flex items-center gap-2 mb-1"><Users size={14}/> {course.students} Students Enrolled</p>
+                      <p className="text-sm text-amber-500 flex items-center gap-2"><ClipboardCheck size={14}/> {course.pendingGrades} Assignments to Grade</p>
+                      <button className="mt-4 w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Manage Syllabus</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="glass-card p-6">
-                <h3 className="text-xl font-orbitron text-white mb-4">
-                  {lang === 'ar' ? 'الدورات الحالية' : 'Active Courses'}
-                </h3>
+            {activeTab === 'grading' && (
+              <div className="glass-card rounded-3xl p-6">
+                <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 mb-6"><Edit3 className="text-amber-500"/> {lang==='ar'?'نظام التقييم':'Grading System'}</h3>
                 <div className="space-y-4">
-                  {courses.map(course => (
-                    <div key={course.id} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-white font-medium">{course.name}</span>
-                        <span className="text-emerald-400 text-sm">{course.progress}%</span>
+                  {studentSubmissions.map(sub => (
+                    <div key={sub.id} className="flex justify-between items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50">
+                      <div>
+                        <h4 className="font-bold text-[#1e3a5f] dark:text-white">{sub.student}</h4>
+                        <p className="text-sm text-slate-500 flex items-center gap-1"><FileText size={14}/> {sub.assignment}</p>
                       </div>
-                      <div className="w-full bg-white/10 rounded-full h-2">
-                        <div 
-                          className="bg-emerald-500 h-2 rounded-full transition-all duration-1000"
-                          style={{ width: `${course.progress}%` }}
-                        />
+                      <div className="flex items-center gap-4">
+                        <span className="px-3 py-1 bg-amber-100 text-amber-700 font-bold text-xs rounded-full">{sub.status}</span>
+                        <button className="text-blue-600 font-bold hover:underline text-sm">Review & Grade</button>
                       </div>
-                      <p className="text-sm text-gray-400 mt-2">{course.students} {lang === 'ar' ? 'طالب' : 'Students'}</p>
                     </div>
                   ))}
                 </div>
               </div>
+            )}
 
-              <div className="glass-card p-6">
-                <h3 className="text-xl font-orbitron text-white mb-4">
-                  {lang === 'ar' ? 'مهام التقييم' : 'Recent Grading Tasks'}
-                </h3>
-                <div className="space-y-3">
-                  {gradingTasks.map(task => (
-                    <div key={task.id} className="flex items-center justify-between p-4 rounded-xl bg-white/5">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${task.status === 'graded' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-orange-500/20 text-orange-400'}`}>
-                          {task.status === 'graded' ? <CheckCircle size={18} /> : <Clock size={18} />}
-                        </div>
-                        <div>
-                          <p className="text-white font-medium">{task.assignment}</p>
-                          <p className="text-sm text-gray-400">{task.student}</p>
-                        </div>
-                      </div>
-                      <button className="px-3 py-1 text-sm bg-white/10 hover:bg-emerald-500/20 hover:text-emerald-400 text-gray-300 rounded-lg transition-colors">
-                        {lang === 'ar' ? 'مراجعة' : 'Review'}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            {activeTab === 'profile' && (
+              <UserProfileSettings currentUser={{ name: 'Dr. Yassine', role: 'teacher', email: 'yassine@gitm.ma', badges: ['instructor', 'ai_expert'], membershipId: 'GITM-TCH-001' }} />
+            )}
+
           </motion.div>
-        ) : (
-          <motion.div
-            key="wip"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="glass-card p-12 text-center"
-          >
-            <FlaskConical size={48} className="mx-auto mb-4 text-emerald-500/50" />
-            <h2 className="text-2xl font-orbitron text-white mb-2">
-              {lang === 'ar' ? 'قريباً' : 'Coming Soon'}
-            </h2>
-            <p className="text-gray-400">
-              {lang === 'ar' ? 'هذه الوحدة قيد التطوير' : 'This module is under development.'}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

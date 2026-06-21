@@ -1,124 +1,115 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
-import { LayoutDashboard, GraduationCap, Microscope, User, Network, Globe, Library } from 'lucide-react';
+import { 
+  Library, GraduationCap, CheckCircle, Clock, FileText, Settings, Users, BookOpen
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
 
 export default function UniversityDashboard() {
   const { lang } = useLanguage();
-  const [activeTab, setActiveTab] = useState('overview');
-
-  const currentUser = {
-    name: 'Pr. Mohammed',
-    role: 'University Admin (UM5)',
-    email: 'admin@um5.ac.ma',
-    badges: ['writer', 'admin'],
-    membershipId: 'GITM-UNI-UM5'
-  };
+  const [activeTab, setActiveTab] = useState('programs');
 
   const jointPrograms = [
-    { name: 'MSc in Artificial Intelligence', students: 120, satisfaction: 94 },
-    { name: 'PhD Embedded Systems', students: 15, satisfaction: 98 }
+    { id: 1, name: 'AI & Data Science Master', enrolled: 120, status: 'Active' },
+    { id: 2, name: 'Robotics Engineering Diploma', enrolled: 45, status: 'Upcoming' }
   ];
 
-  const rdProjects = [
-    { title: 'NLP for Moroccan Darija', lead: 'Pr. Alaoui', status: 'Phase 2', funding: 'Secured' },
-    { title: 'Smart Water Management IoT', lead: 'Pr. Benjelloun', status: 'Prototyping', funding: 'Pending' }
+  const creditRequests = [
+    { id: 1, student: 'Aymane Benali', course: 'Edge AI Development', status: 'Pending Validation' },
+    { id: 2, student: 'Sara Khan', course: 'Python for Robotics', status: 'Validated' }
+  ];
+
+  const tabs = [
+    { id: 'programs', icon: BookOpen, label: lang === 'ar' ? 'البرامج المشتركة' : 'Joint Programs' },
+    { id: 'credits', icon: GraduationCap, label: lang === 'ar' ? 'معادلة الساعات' : 'Credit Transfer' },
+    { id: 'rnd', icon: FileText, label: lang === 'ar' ? 'البحث والتطوير' : 'R&D Projects' },
+    { id: 'profile', icon: Settings, label: lang === 'ar' ? 'ملف الجامعة' : 'University Profile' }
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Navigation */}
-      <div className="flex flex-wrap gap-2 pb-4 border-b border-white/10">
-        {[
-          { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
-          { id: 'joint-programs', icon: GraduationCap, label: lang === 'ar' ? 'برامج مشتركة' : 'Joint Programs' },
-          { id: 'rd-projects', icon: Microscope, label: lang === 'ar' ? 'مشاريع البحث' : 'R&D Projects' },
-          { id: 'profile', icon: User, label: lang === 'ar' ? 'الملف الشخصي' : 'Profile' }
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
-              activeTab === tab.id 
-                ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' 
-                : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
-            }`}
-          >
-            <tab.icon size={18} />
-            <span className="font-orbitron">{tab.label}</span>
-          </button>
-        ))}
+    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative">
+      <div className="w-full md:w-64 shrink-0">
+        <div className="glass-card rounded-3xl p-4 sticky top-24 border border-purple-200 dark:border-purple-900/30 shadow-xl">
+          <div className="mb-6 px-2">
+            <h2 className="text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'بوابة المؤسسة' : 'University Portal'}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Academic Partner Tier</p>
+          </div>
+          <nav className="space-y-2">
+            {tabs.map(tab => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
+                    activeTab === tab.id 
+                    ? 'bg-purple-600 text-white shadow-lg translate-x-2' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  <Icon size={18} /> {tab.label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        {activeTab === 'profile' ? (
-          <motion.div key="profile" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-            <UserProfileSettings currentUser={currentUser} />
-          </motion.div>
-        ) : activeTab === 'overview' ? (
-          <motion.div key="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
+      <div className="flex-1 w-full min-w-0">
+        <AnimatePresence mode="wait">
+          <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
             
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {[
-                { icon: Network, title: 'Network Partners', val: '12' },
-                { icon: Library, title: 'Shared Resources', val: '450+' },
-                { icon: Globe, title: 'International Reach', val: '8 Countries' },
-                { icon: GraduationCap, title: 'Alumni Match', val: '89%' }
-              ].map((stat, i) => (
-                <div key={i} className="glass-card p-5 flex items-center gap-4 hover-lift">
-                  <div className="p-3 bg-white/5 rounded-xl text-purple-400"><stat.icon size={24} /></div>
-                  <div>
-                    <h4 className="text-gray-400 text-xs">{stat.title}</h4>
-                    <p className="text-xl font-bold text-white">{stat.val}</p>
-                  </div>
+            {activeTab === 'programs' && (
+              <div className="glass-card rounded-3xl p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2"><BookOpen className="text-purple-500"/> {lang==='ar'?'إدارة البرامج المشتركة':'Joint Programs Management'}</h3>
+                  <button className="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:bg-purple-700 transition-colors">Propose New Program</button>
                 </div>
-              ))}
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {jointPrograms.map(prog => (
+                    <div key={prog.id} className="p-5 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/50">
+                      <div className="flex justify-between items-start mb-3">
+                        <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{prog.name}</h4>
+                        <span className={`px-2 py-1 text-[10px] rounded uppercase font-bold ${prog.status === 'Active' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'}`}>{prog.status}</span>
+                      </div>
+                      <p className="text-sm text-slate-500 flex items-center gap-2"><Users size={14}/> {prog.enrolled} Students Enrolled</p>
+                      <button className="mt-4 w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">View Syllabus</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="glass-card p-6">
-                <h3 className="text-xl font-orbitron text-white mb-4">{lang === 'ar' ? 'البرامج المشتركة' : 'Joint Programs Stats'}</h3>
+            {activeTab === 'credits' && (
+              <div className="glass-card rounded-3xl p-6">
+                <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 mb-6"><GraduationCap className="text-blue-500"/> {lang==='ar'?'معادلة واعتماد الساعات':'Credit Validation'}</h3>
                 <div className="space-y-4">
-                  {jointPrograms.map((prog, idx) => (
-                    <div key={idx} className="p-4 rounded-xl bg-gradient-to-r from-purple-500/10 to-transparent border border-purple-500/20 hover-lift">
-                      <h4 className="text-white font-medium mb-2">{prog.name}</h4>
-                      <div className="flex justify-between text-sm text-gray-300">
-                        <span>{prog.students} Enrolled</span>
-                        <span className="text-purple-400">{prog.satisfaction}% Satisfaction</span>
+                  {creditRequests.map(req => (
+                    <div key={req.id} className="flex justify-between items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50">
+                      <div>
+                        <h4 className="font-bold text-[#1e3a5f] dark:text-white">{req.student}</h4>
+                        <p className="text-sm text-slate-500">{req.course}</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${req.status === 'Validated' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>{req.status}</span>
+                        {req.status === 'Pending Validation' && (
+                          <button className="text-blue-600 font-bold hover:underline text-sm">Validate Credit</button>
+                        )}
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
+            )}
 
-              <div className="glass-card p-6">
-                <h3 className="text-xl font-orbitron text-white mb-4">{lang === 'ar' ? 'مشاريع البحث والتطوير' : 'R&D Projects'}</h3>
-                <div className="space-y-4">
-                  {rdProjects.map((proj, idx) => (
-                    <div key={idx} className="p-4 rounded-xl bg-white/5 border border-white/10 relative overflow-hidden group">
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-500 transform scale-y-0 group-hover:scale-y-100 transition-transform origin-bottom" />
-                      <h4 className="text-white font-medium">{proj.title}</h4>
-                      <p className="text-sm text-gray-400 my-1">Lead: {proj.lead}</p>
-                      <div className="flex justify-between items-center mt-3">
-                        <span className="text-xs px-2 py-1 bg-white/10 rounded text-gray-300">{proj.status}</span>
-                        <span className={`text-xs px-2 py-1 rounded ${proj.funding === 'Secured' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-orange-500/20 text-orange-400'}`}>{proj.funding}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            {activeTab === 'profile' && (
+              <UserProfileSettings currentUser={{ name: 'UM5 University', role: 'university', email: 'contact@um5.ac.ma', badges: ['academic_partner'], membershipId: 'GITM-UNI-001' }} />
+            )}
 
           </motion.div>
-        ) : (
-          <motion.div key="wip" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-12 text-center">
-            <Microscope size={48} className="mx-auto mb-4 text-purple-500/50" />
-            <h2 className="text-2xl font-orbitron text-white mb-2">{lang === 'ar' ? 'قريباً' : 'Coming Soon'}</h2>
-            <p className="text-gray-400">{lang === 'ar' ? 'هذه الوحدة قيد التطوير' : 'This module is under development.'}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

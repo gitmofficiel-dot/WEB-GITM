@@ -1,146 +1,142 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
-import { LayoutDashboard, Handshake, TrendingUp, Briefcase, User, Building2, Target, BarChart } from 'lucide-react';
+import { 
+  Building, TrendingUp, Users, Target, Briefcase, ChevronRight, CheckCircle, FileText, Settings
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
 
 export default function PartnerDashboard() {
   const { lang } = useLanguage();
   const [activeTab, setActiveTab] = useState('overview');
 
-  const currentUser = {
-    name: 'OCP Group Representative',
-    role: 'Partner',
-    email: 'contact@ocp.ma',
-    badges: ['political', 'designer'],
-    membershipId: 'GITM-PRT-OCP'
-  };
-
-  const sponsorships = [
-    { tier: 'Platinum', project: 'GITM AI Hackathon 2026', contribution: '150,000 MAD', status: 'Active' },
-    { tier: 'Gold', project: 'Smart Agriculture Lab', contribution: '80,000 MAD', status: 'Completed' }
+  const investments = [
+    { id: 1, project: 'Smart Irrigation AI', amount: '$50,000', status: 'Active', roi: '+15%' },
+    { id: 2, project: 'National Hackathon 2026', amount: '$10,000', status: 'Completed', roi: 'N/A' }
   ];
 
-  const internships = [
-    { title: 'Data Scientist Intern', department: 'Innovation Lab', applicants: 24, status: 'Open' },
-    { title: 'IoT Engineer', department: 'Smart Mining', applicants: 12, status: 'Reviewing' }
+  const internRequests = [
+    { id: 1, position: 'Junior Frontend Developer', candidates: 12, status: 'Reviewing' },
+    { id: 2, position: 'Data Scientist Intern', candidates: 5, status: 'Open' }
+  ];
+
+  const tabs = [
+    { id: 'overview', icon: TrendingUp, label: lang === 'ar' ? 'العائد على الاستثمار' : 'ROI & Overview' },
+    { id: 'recruitment', icon: Briefcase, label: lang === 'ar' ? 'التوظيف والمتدربين' : 'Recruitment' },
+    { id: 'projects', icon: Target, label: lang === 'ar' ? 'المشاريع المدعومة' : 'Funded Projects' },
+    { id: 'profile', icon: Settings, label: lang === 'ar' ? 'ملف الشركة' : 'Company Profile' }
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Navigation */}
-      <div className="flex flex-wrap gap-2 pb-4 border-b border-white/10">
-        {[
-          { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
-          { id: 'sponsorship', icon: Handshake, label: lang === 'ar' ? 'الرعاية' : 'Sponsorships' },
-          { id: 'roi', icon: TrendingUp, label: lang === 'ar' ? 'العائد على الاستثمار' : 'ROI Tracking' },
-          { id: 'internships', icon: Briefcase, label: lang === 'ar' ? 'التدريب' : 'Internship Offers' },
-          { id: 'profile', icon: User, label: lang === 'ar' ? 'الملف الشخصي' : 'Profile' }
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
-              activeTab === tab.id 
-                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
-                : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
-            }`}
-          >
-            <tab.icon size={18} />
-            <span className="font-orbitron">{tab.label}</span>
-          </button>
-        ))}
+    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative">
+      <div className="w-full md:w-64 shrink-0">
+        <div className="glass-card rounded-3xl p-4 sticky top-24 border border-emerald-200 dark:border-emerald-900/30 shadow-xl">
+          <div className="mb-6 px-2">
+            <h2 className="text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'بوابة الشريك الداعم' : 'Partner Portal'}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Corporate Sponsor Tier</p>
+          </div>
+          <nav className="space-y-2">
+            {tabs.map(tab => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
+                    activeTab === tab.id 
+                    ? 'bg-emerald-500 text-white shadow-lg translate-x-2' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  <Icon size={18} /> {tab.label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        {activeTab === 'profile' ? (
-          <motion.div key="profile" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-            <UserProfileSettings currentUser={currentUser} />
-          </motion.div>
-        ) : activeTab === 'overview' ? (
-          <motion.div key="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
+      <div className="flex-1 w-full min-w-0">
+        <AnimatePresence mode="wait">
+          <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="glass-card p-6 flex flex-col justify-between hover-lift">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="p-3 bg-blue-500/20 rounded-xl text-blue-400"><Building2 size={24}/></div>
-                  <span className="text-xs font-medium px-2 py-1 bg-white/10 rounded-full text-white">2026</span>
+            {activeTab === 'overview' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="glass-card rounded-3xl p-6 border-t-4 border-emerald-500">
+                    <p className="text-slate-500 text-sm font-bold mb-2">Total Investment</p>
+                    <h3 className="text-3xl font-bold text-[#1e3a5f] dark:text-white">$60,000</h3>
+                  </div>
+                  <div className="glass-card rounded-3xl p-6 border-t-4 border-blue-500">
+                    <p className="text-slate-500 text-sm font-bold mb-2">Projects Supported</p>
+                    <h3 className="text-3xl font-bold text-[#1e3a5f] dark:text-white">2</h3>
+                  </div>
+                  <div className="glass-card rounded-3xl p-6 border-t-4 border-purple-500">
+                    <p className="text-slate-500 text-sm font-bold mb-2">Talents Hired</p>
+                    <h3 className="text-3xl font-bold text-[#1e3a5f] dark:text-white">4</h3>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-gray-400 text-sm mb-1">{lang === 'ar' ? 'مساهمات الرعاية' : 'Total Sponsorships'}</h4>
-                  <p className="text-2xl font-bold text-white">230,000 MAD</p>
+
+                <div className="glass-card rounded-3xl p-6">
+                  <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 mb-6"><Target className="text-emerald-500"/> {lang==='ar'?'تقرير المشاريع المدعومة':'Funded Projects ROI'}</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b-2 border-slate-200 dark:border-slate-800 text-slate-500 uppercase tracking-wider text-xs">
+                          <th className="p-3 font-bold">Project</th>
+                          <th className="p-3 font-bold">Amount</th>
+                          <th className="p-3 font-bold">Status</th>
+                          <th className="p-3 font-bold">ROI / Impact</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                        {investments.map(inv => (
+                          <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                            <td className="p-3 font-bold text-[#1e3a5f] dark:text-white">{inv.project}</td>
+                            <td className="p-3 text-slate-600 dark:text-slate-300 font-mono">{inv.amount}</td>
+                            <td className="p-3">
+                              <span className={`px-2 py-1 text-[10px] rounded uppercase font-bold ${inv.status === 'Active' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600'}`}>{inv.status}</span>
+                            </td>
+                            <td className="p-3 font-bold text-emerald-500">{inv.roi}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
+            )}
 
-              <div className="glass-card p-6 flex flex-col justify-between hover-lift">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="p-3 bg-emerald-500/20 rounded-xl text-emerald-400"><Target size={24}/></div>
+            {activeTab === 'recruitment' && (
+              <div className="glass-card rounded-3xl p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2"><Briefcase className="text-blue-500"/> {lang==='ar'?'طلبات التوظيف والتدريب':'Recruitment & Internships'}</h3>
+                  <button className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:bg-blue-700 transition-colors">Post New Offer</button>
                 </div>
-                <div>
-                  <h4 className="text-gray-400 text-sm mb-1">{lang === 'ar' ? 'المشاريع المدعومة' : 'Supported Projects'}</h4>
-                  <p className="text-2xl font-bold text-white">2 Active</p>
-                </div>
-              </div>
-
-              <div className="glass-card p-6 flex flex-col justify-between hover-lift">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="p-3 bg-purple-500/20 rounded-xl text-purple-400"><BarChart size={24}/></div>
-                </div>
-                <div>
-                  <h4 className="text-gray-400 text-sm mb-1">{lang === 'ar' ? 'المتدربون المعينون' : 'Interns Hired'}</h4>
-                  <p className="text-2xl font-bold text-white">14 Students</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="glass-card p-6">
-                <h3 className="text-xl font-orbitron text-white mb-4">{lang === 'ar' ? 'سجلات الرعاية' : 'Sponsorship Tiers'}</h3>
                 <div className="space-y-4">
-                  {sponsorships.map((sponsor, idx) => (
-                    <div key={idx} className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                      <div className="flex justify-between mb-2">
-                        <span className="font-bold text-white">{sponsor.project}</span>
-                        <span className={`text-xs px-2 py-1 rounded-full ${sponsor.tier === 'Platinum' ? 'bg-slate-300 text-slate-800' : 'bg-yellow-500/20 text-yellow-400'}`}>{sponsor.tier}</span>
+                  {internRequests.map(req => (
+                    <div key={req.id} className="flex justify-between items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50">
+                      <div>
+                        <h4 className="font-bold text-[#1e3a5f] dark:text-white">{req.position}</h4>
+                        <p className="text-sm text-slate-500 flex items-center gap-1"><Users size={14}/> {req.candidates} Candidates Applied</p>
                       </div>
-                      <div className="flex justify-between text-sm text-gray-400">
-                        <span>{sponsor.contribution}</span>
-                        <span className="text-emerald-400">{sponsor.status}</span>
+                      <div className="flex items-center gap-4">
+                        <span className="px-3 py-1 bg-blue-100 text-blue-700 font-bold text-xs rounded-full">{req.status}</span>
+                        <button className="text-blue-600 font-bold hover:underline text-sm">View Profiles</button>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
+            )}
 
-              <div className="glass-card p-6">
-                <h3 className="text-xl font-orbitron text-white mb-4">{lang === 'ar' ? 'عروض التدريب' : 'Active Internships'}</h3>
-                <div className="space-y-4">
-                  {internships.map((job, idx) => (
-                    <div key={idx} className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-                      <h4 className="text-white font-medium">{job.title}</h4>
-                      <p className="text-sm text-gray-400 mb-3">{job.department}</p>
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-blue-400 bg-blue-400/10 px-2 py-1 rounded">{job.applicants} Applicants</span>
-                        <span className="text-gray-300">{job.status}</span>
-                      </div>
-                    </div>
-                  ))}
-                  <button className="w-full py-3 border border-dashed border-white/20 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                    + {lang === 'ar' ? 'أضف عرض تدريب' : 'Post New Offer'}
-                  </button>
-                </div>
-              </div>
-            </div>
+            {activeTab === 'profile' && (
+              <UserProfileSettings currentUser={{ name: 'OCP Group', role: 'partner', email: 'contact@ocp.ma', badges: ['corporate_sponsor'], membershipId: 'GITM-PRT-001' }} />
+            )}
 
           </motion.div>
-        ) : (
-          <motion.div key="wip" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-12 text-center">
-            <Target size={48} className="mx-auto mb-4 text-blue-500/50" />
-            <h2 className="text-2xl font-orbitron text-white mb-2">{lang === 'ar' ? 'قريباً' : 'Coming Soon'}</h2>
-            <p className="text-gray-400">{lang === 'ar' ? 'هذه الوحدة قيد التطوير' : 'This module is under development.'}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
