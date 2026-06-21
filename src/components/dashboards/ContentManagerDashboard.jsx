@@ -1,268 +1,257 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { FileEdit, Image as ImageIcon, MessageSquare, Plus, Edit2, Trash2, Bot, Sparkles, Video, FileText, Loader, UploadCloud } from 'lucide-react';
-import CloudinaryUploader from '../CloudinaryUploader';
-import { generateArticle } from '../../config/openrouter';
-
-const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
+import { 
+  FileText, Edit, Image as ImageIcon, Mail, 
+  BarChart2, Eye, TrendingUp, AlertCircle, 
+  PlusCircle, CheckSquare, Clock, Globe,
+  LayoutDashboard, Search, Trash2, Edit3, MessageSquare
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ContentManagerDashboard() {
-  const { lang, news, setNews, gallery, setGallery, user, events, setEvents } = useLanguage();
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [articlePrompt, setArticlePrompt] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [activeTab, setActiveTab] = useState('list'); // 'list' or 'create'
-  const [newPostType, setNewPostType] = useState('news'); // 'news', 'event', 'training'
-  const [isDragging, setIsDragging] = useState(false);
+  const { lang } = useLanguage();
+  const [activeTab, setActiveTab] = useState('overview');
 
-  const handleUploadSuccess = (info) => {
-    // info contains { secure_url, public_id, format, width, height, bytes, resource_type }
-    setUploadedFiles(prev => [info, ...prev]);
-    
-    // Add to global gallery which syncs to Firestore
-    setGallery(prev => [{
-      id: Date.now(),
-      title_ar: info.original_filename || 'صورة جديدة',
-      title_en: info.original_filename || 'New Image',
-      category: 'projects',
-      date: new Date().toISOString().split('T')[0],
-      type: info.resource_type === 'video' ? 'video' : 'image',
-      url: info.secure_url,
-      color: '#0d9488'
-    }, ...prev]);
-    
-    alert(lang === 'ar' ? 'تم الرفع والحفظ في المعرض!' : 'Uploaded and saved to Gallery!');
-  };
+  // Mock Data
+  const [articles, setArticles] = useState([
+    { id: 1, title: 'The Future of AI in Morocco', author: 'Sara Khan', date: '2026-06-20', status: 'Published', views: 1240 },
+    { id: 2, title: 'Hackathon 2026 Highlights', author: 'Ahmed Ali', date: '2026-06-18', status: 'Draft', views: 0 },
+    { id: 3, title: 'Quantum Computing for Beginners', author: 'Content Team', date: '2026-06-22', status: 'Pending Review', views: 0 }
+  ]);
 
-  const generateAIArticle = async () => {
-    if (!articlePrompt) return;
-    setIsGenerating(true);
-    try {
-      const generatedContent = await generateArticle(articlePrompt);
-      const newArticle = {
-        id: Date.now(),
-        title_ar: articlePrompt.slice(0, 50) + '...',
-        title_en: articlePrompt.slice(0, 50) + '...',
-        summary_ar: generatedContent,
-        summary_en: generatedContent,
-        category: 'technology',
-        date: new Date().toISOString().split('T')[0],
-        author: user?.name || 'AI Assistant',
-        pinned: false
-      };
-      setNews(prev => [newArticle, ...prev]);
-      setArticlePrompt('');
-      alert(lang === 'ar' ? 'تم توليد المقال ونشره بنجاح!' : 'Article generated and published successfully!');
-    } catch (error) {
-      alert(lang === 'ar' ? 'حدث خطأ أثناء توليد المقال.' : 'Error generating article.');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+  const [media, setMedia] = useState([
+    { id: 1, name: 'AI_Lab_Opening.jpg', type: 'Image', size: '2.4 MB', date: '2026-06-15' },
+    { id: 2, name: 'Hackathon_Promo.mp4', type: 'Video', size: '15.2 MB', date: '2026-06-10' }
+  ]);
 
-  const deleteNews = (id) => {
-    setNews(prev => prev.filter(n => n.id !== id));
-  };
+  const StatCard = ({ title, value, icon: Icon, color, trend }) => (
+    <motion.div whileHover={{ y: -5 }} className="glass-card p-6 rounded-2xl relative overflow-hidden group">
+      <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-10 bg-${color}-500 group-hover:scale-150 transition-transform duration-500`}></div>
+      <div className="flex justify-between items-start relative z-10">
+        <div>
+          <p className="text-slate-500 dark:text-slate-400 font-medium mb-1">{title}</p>
+          <h3 className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{value}</h3>
+          <p className={`text-sm mt-2 font-medium ${trend.startsWith('+') ? 'text-emerald-500' : 'text-amber-500'}`}>
+            {trend}
+          </p>
+        </div>
+        <div className={`p-3 rounded-xl bg-${color}-100 dark:bg-${color}-900/30 text-${color}-600 dark:text-${color}-400`}>
+          <Icon size={24} />
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  const tabs = [
+    { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
+    { id: 'articles', icon: FileText, label: lang === 'ar' ? 'المقالات والمحتوى' : 'Articles' },
+    { id: 'media', icon: ImageIcon, label: lang === 'ar' ? 'مكتبة الوسائط' : 'Media Library' },
+    { id: 'seo', icon: TrendingUp, label: lang === 'ar' ? 'تحسين محركات البحث' : 'SEO & Analytics' }
+  ];
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold font-orbitron">{txt(lang, 'Content Manager Dashboard', 'لوحة مدير المحتوى', 'Tableau de bord Gestionnaire de contenu', '内容管理器仪表板')}</h2>
-        <div className="flex gap-2">
-          <button onClick={() => setActiveTab('list')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${activeTab === 'list' ? 'bg-cyan-500 text-white' : 'glass-card text-slate-500 hover:text-cyan-500'}`}>
-            {txt(lang, 'Content List', 'قائمة المحتوى', 'Liste du contenu', '内容列表')}
-          </button>
-          <button onClick={() => setActiveTab('create')} className={`px-4 py-2 flex items-center gap-2 rounded-lg text-sm font-bold transition-colors ${activeTab === 'create' ? 'bg-cyan-500 text-white' : 'btn-primary'}`}>
-            <Plus size={16} /> {txt(lang, 'Create New Post', 'إنشاء منشور جديد', 'Nouveau poste', '创建新帖子')}
-          </button>
+    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen">
+      
+      {/* Sidebar Navigation */}
+      <div className="w-full md:w-64 shrink-0">
+        <div className="glass-card rounded-3xl p-4 sticky top-24 border border-purple-200 dark:border-slate-800">
+          <div className="mb-6 px-2">
+            <h2 className="text-xl font-orbitron font-bold gradient-text">{lang === 'ar' ? 'مدير المحتوى' : 'Content Manager'}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{lang === 'ar' ? 'إدارة النشر والإعلام' : 'Publishing & Media Control'}</p>
+          </div>
+          <nav className="space-y-2">
+            {tabs.map(tab => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
+                    isActive 
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg shadow-purple-500/30 translate-x-2' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-purple-50 dark:hover:bg-slate-800 hover:text-purple-600 dark:hover:text-purple-400'
+                  }`}
+                >
+                  <Icon size={18} className={isActive ? 'animate-pulse' : ''} />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </nav>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        {[
-          { label: 'Published News', val: news.length.toString(), icon: FileEdit, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-          { label: 'Gallery Items', val: gallery.length.toString(), icon: ImageIcon, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-          { label: 'Pending Comments', val: '12', icon: MessageSquare, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-        ].map((stat, i) => (
-          <div key={i} className="glass-card p-6 rounded-2xl flex items-center gap-4">
-            <div className={`p-4 rounded-xl ${stat.bg}`}>
-              <stat.icon className={stat.color} size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{stat.label}</p>
-              <p className="text-2xl font-bold font-orbitron">{stat.val}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content Area */}
-        <div className="lg:col-span-2 space-y-6">
-          {activeTab === 'list' ? (
-            <>
-              <div className="glass-card rounded-2xl p-6">
-                <h3 className="text-lg font-bold mb-6">Recent Content</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-cyan-300 dark:border-slate-700 text-sm font-bold text-slate-500">
-                    <th className="p-3">Title</th>
-                    <th className="p-3">Type</th>
-                    <th className="p-3">Status</th>
-                    <th className="p-3">Date</th>
-                    <th className="p-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {news.slice(0, 5).map((item) => (
-                    <tr key={item.id} className="border-b border-cyan-200 dark:border-slate-800 hover:bg-cyan-50 dark:hover:bg-slate-800/50">
-                      <td className="p-3 font-medium text-[#1e3a5f] dark:text-white max-w-[200px] truncate">
-                        {lang === 'ar' ? item.title_ar : item.title_en}
-                      </td>
-                      <td className="p-3 text-sm text-slate-500">{item.category}</td>
-                      <td className="p-3">
-                        <span className="px-2 py-1 text-[10px] uppercase font-bold rounded bg-emerald-100 text-emerald-600">Published</span>
-                      </td>
-                      <td className="p-3 text-sm text-slate-500">{item.date}</td>
-                      <td className="p-3 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"><Edit2 size={14}/></button>
-                          <button onClick={() => deleteNews(item.id)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"><Trash2 size={14}/></button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* AI Content Writer */}
-          <div className="glass-card rounded-2xl p-6 border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.15)] relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-6 opacity-5">
-              <FileEdit size={120} />
-            </div>
-            <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-purple-500">
-              <Bot className="w-5 h-5 text-purple-400" />
-              {txt(lang, 'AI Article Writer', 'الكاتب الذكي للمقالات AI', 'Rédacteur IA', 'AI文章撰写器')}
-            </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 max-w-2xl">
-              {txt(lang, 'Enter a brief sentence about an event, and the AI will draft a complete, professional news article ready for publishing.', 'أدخل جملة قصيرة عن حدث، وسيقوم الذكاء الاصطناعي بصياغة مقال إخباري احترافي كامل وجاهز للنشر.', 'Entrez une brève phrase...', '输入关于事件的简短句子...')}
-            </p>
+      {/* Main Content Area */}
+      <div className="flex-1 w-full min-w-0">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-6 w-full"
+          >
             
-            <div className="bg-cyan-50 dark:bg-slate-900/50 rounded-xl p-4 border border-purple-500/20">
-              <textarea 
-                value={articlePrompt}
-                onChange={(e) => setArticlePrompt(e.target.value)}
-                placeholder={txt(lang, 'e.g., "GITM team won 1st place in the national robotics hackathon yesterday."', 'مثال: "فريق GITM فاز بالمركز الأول في الهاكاثون الوطني للروبوتات أمس."', 'Ex: "L\'équipe GITM a gagné..."', '例如：“GITM团队昨天在全国机器人黑客马拉松中获得了第一名。”')}
-                className="w-full h-20 bg-transparent border border-cyan-400 dark:border-slate-700 rounded-lg p-3 outline-none text-sm resize-none focus:border-purple-500 mb-3 text-[#0B132B] dark:text-white"
-              ></textarea>
-              <div className="flex justify-end gap-2">
-                <button 
-                  onClick={generateAIArticle}
-                  disabled={isGenerating}
-                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 text-white rounded-lg text-sm font-bold shadow-lg shadow-purple-500/20 transition-all flex items-center gap-2"
-                >
-                  {isGenerating ? <Loader className="animate-spin w-4 h-4" /> : <Sparkles size={16} />}
-                  {txt(lang, 'Generate Article', 'توليد المقال', 'Générer', '生成文章')}
+            {/* OVERVIEW TAB */}
+            {activeTab === 'overview' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <StatCard title={lang === 'ar' ? 'المقالات المنشورة' : 'Published'} value="45" icon={FileText} color="blue" trend="+3 this week" />
+                  <StatCard title={lang === 'ar' ? 'مسودات قيد المراجعة' : 'Pending Drafts'} value="8" icon={Edit} color="amber" trend="-2 since yesterday" />
+                  <StatCard title={lang === 'ar' ? 'مشاهدات المعرض' : 'Gallery Views'} value="12.4K" icon={Eye} color="emerald" trend="+15% this month" />
+                  <StatCard title={lang === 'ar' ? 'مشتركي النشرة' : 'Subscribers'} value="3,250" icon={Mail} color="purple" trend="+120 new" />
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Recent Drafts */}
+                  <div className="glass-card rounded-3xl p-6 border border-slate-200 dark:border-slate-800">
+                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Clock className="text-amber-500" size={24}/> {lang === 'ar' ? 'أحدث المسودات' : 'Recent Drafts'}
+                    </h3>
+                    <div className="space-y-3">
+                      {articles.filter(a => a.status !== 'Published').map(article => (
+                        <div key={article.id} className="p-3 border border-slate-100 dark:border-slate-800 rounded-xl flex justify-between items-center bg-white dark:bg-slate-900/50 hover:border-purple-200 transition-colors">
+                          <div>
+                            <p className="font-bold text-[#1e3a5f] dark:text-white truncate max-w-[200px] sm:max-w-xs">{article.title}</p>
+                            <p className="text-xs text-slate-500">{article.author} - {article.status}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button className="text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 p-2 rounded-lg"><Edit3 size={16}/></button>
+                            <button className="text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 p-2 rounded-lg"><CheckSquare size={16}/></button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* SEO Alerts */}
+                  <div className="glass-card rounded-3xl p-6 border border-slate-200 dark:border-slate-800">
+                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <AlertCircle className="text-red-500" size={24}/> {lang === 'ar' ? 'تنبيهات السيو' : 'SEO Alerts'}
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="p-4 rounded-xl border bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 flex items-start gap-3">
+                        <AlertCircle size={20} className="text-amber-500 shrink-0"/>
+                        <div>
+                          <p className="font-bold text-amber-700 dark:text-amber-400">Missing Meta Descriptions</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">3 recently published articles are missing meta descriptions. This affects search ranking.</p>
+                        </div>
+                      </div>
+                      <div className="p-4 rounded-xl border bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 flex items-start gap-3">
+                        <Globe size={20} className="text-blue-500 shrink-0"/>
+                        <div>
+                          <p className="font-bold text-blue-700 dark:text-blue-400">Broken Links Detected</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">Found 2 dead links in the 'About Us' page footer. Please update them.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ARTICLES TAB */}
+            {activeTab === 'articles' && (
+              <div className="glass-card rounded-3xl p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                    <FileText className="text-blue-500" size={24}/> {lang === 'ar' ? 'إدارة المقالات' : 'Article Management'}
+                  </h3>
+                  <button className="btn-primary bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2"><PlusCircle size={16}/> {lang === 'ar' ? 'كتابة مقال' : 'New Article'}</button>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b-2 border-slate-200 dark:border-slate-800 text-slate-500 uppercase tracking-wider text-xs">
+                        <th className="p-3 font-bold">Title</th>
+                        <th className="p-3 font-bold">Author</th>
+                        <th className="p-3 font-bold">Status</th>
+                        <th className="p-3 font-bold">Views</th>
+                        <th className="p-3 font-bold text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                      {articles.map(article => (
+                        <tr key={article.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                          <td className="p-3 font-bold text-[#1e3a5f] dark:text-white">{article.title}</td>
+                          <td className="p-3 text-sm text-slate-500">{article.author}</td>
+                          <td className="p-3">
+                            <span className={`px-2 py-1 text-[10px] rounded uppercase font-bold ${
+                              article.status === 'Published' ? 'bg-emerald-100 text-emerald-600' :
+                              article.status === 'Draft' ? 'bg-slate-100 text-slate-600 dark:bg-slate-800' : 'bg-amber-100 text-amber-600'
+                            }`}>{article.status}</span>
+                          </td>
+                          <td className="p-3 text-sm font-semibold text-slate-600 dark:text-slate-400">{article.views}</td>
+                          <td className="p-3 text-right">
+                            <button className="p-2 text-slate-400 hover:text-blue-500 transition-colors"><Edit3 size={16}/></button>
+                            <button className="p-2 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* MEDIA TAB */}
+            {activeTab === 'media' && (
+              <div className="glass-card rounded-3xl p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                    <ImageIcon className="text-pink-500" size={24}/> {lang === 'ar' ? 'مكتبة الوسائط' : 'Media Library'}
+                  </h3>
+                  <button className="bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
+                    <PlusCircle size={16}/> {lang === 'ar' ? 'رفع ملف' : 'Upload Files'}
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {media.map(item => (
+                    <div key={item.id} className="relative group rounded-xl overflow-hidden aspect-square bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center p-4">
+                      {item.type === 'Image' ? <ImageIcon size={40} className="text-slate-400 mb-2"/> : <Globe size={40} className="text-slate-400 mb-2"/>}
+                      <p className="text-xs font-bold text-center text-slate-600 dark:text-slate-300 truncate w-full">{item.name}</p>
+                      <p className="text-[10px] text-slate-400">{item.size}</p>
+                      
+                      <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm">
+                        <button className="p-2 bg-white/20 hover:bg-blue-500 text-white rounded-lg transition-colors" title="View"><Eye size={16}/></button>
+                        <button className="p-2 bg-white/20 hover:bg-red-500 text-white rounded-lg transition-colors" title="Delete"><Trash2 size={16}/></button>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Upload placeholder */}
+                  <div className="rounded-xl aspect-square border-2 border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center cursor-pointer hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
+                    <PlusCircle size={32} className="text-slate-400 mb-2" />
+                    <p className="text-sm font-bold text-slate-500">Quick Upload</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* SEO TAB */}
+            {activeTab === 'seo' && (
+              <div className="glass-card rounded-3xl p-6 flex flex-col items-center justify-center text-center py-20">
+                <div className="w-20 h-20 bg-purple-100 dark:bg-purple-900/30 text-purple-500 rounded-full flex items-center justify-center mb-4">
+                  <BarChart2 size={40} />
+                </div>
+                <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white mb-2">
+                  {lang === 'ar' ? 'تحليلات الأداء المتقدمة' : 'Advanced Analytics Dashboard'}
+                </h3>
+                <p className="text-slate-500 mb-6 max-w-md">
+                  {lang === 'ar' ? 'تتبع أداء المقالات، الكلمات المفتاحية، وزيارات الموقع بالتفصيل.' : 'Track article performance, keywords, and website traffic in detail.'}
+                </p>
+                <button className="btn-primary bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-xl font-bold flex items-center gap-2">
+                  <Globe size={18} /> {lang === 'ar' ? 'ربط Google Analytics' : 'Connect Google Analytics'}
                 </button>
               </div>
-            </div>
-          </div>
-            </>
-          ) : (
-            <div className="glass-card rounded-2xl p-6 border-cyan-500/30">
-              <h3 className="text-xl font-bold mb-6 font-orbitron">{txt(lang, 'Content Builder', 'منشئ المحتوى', 'Créateur de contenu', '内容生成器')}</h3>
-              
-              <div className="flex gap-4 mb-6">
-                {['news', 'event', 'training'].map(type => (
-                  <button 
-                    key={type}
-                    onClick={() => setNewPostType(type)}
-                    className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${newPostType === type ? 'bg-cyan-500 text-white shadow-lg' : 'bg-cyan-50 text-cyan-600 dark:bg-slate-800 dark:text-cyan-400'}`}
-                  >
-                    {type === 'news' ? txt(lang, 'News Article', 'مقال إخباري', 'Article de presse', '新闻报道') :
-                     type === 'event' ? txt(lang, 'Event/Competition', 'فعالية / مسابقة', 'Événement', '事件') :
-                     txt(lang, 'Academy Training', 'تدريب أكاديمي', 'Formation', '培训')}
-                  </button>
-                ))}
-              </div>
+            )}
 
-              <div className="space-y-4">
-                <input type="text" placeholder={txt(lang, 'Post Title', 'عنوان المنشور', 'Titre', '标题')} className="w-full bg-white dark:bg-slate-900 border border-cyan-200 dark:border-slate-700 rounded-xl p-3 outline-none focus:border-cyan-500" />
-                <textarea placeholder={txt(lang, 'Content / Description', 'المحتوى / الوصف', 'Contenu', '内容')} className="w-full h-32 bg-white dark:bg-slate-900 border border-cyan-200 dark:border-slate-700 rounded-xl p-3 outline-none focus:border-cyan-500 resize-none"></textarea>
-                
-                {/* Drag and Drop Zone */}
-                <div 
-                  className={`w-full p-8 border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all ${isDragging ? 'border-cyan-500 bg-cyan-500/10 scale-[1.02]' : 'border-cyan-300 dark:border-slate-600 hover:border-cyan-500 hover:bg-cyan-50 dark:hover:bg-slate-800/50'}`}
-                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                  onDragLeave={() => setIsDragging(false)}
-                  onDrop={(e) => { e.preventDefault(); setIsDragging(false); alert('Drag and drop simulated! Click Upload to sync to Cloudinary.'); }}
-                >
-                  <UploadCloud size={48} className={`mb-4 ${isDragging ? 'text-cyan-500' : 'text-slate-400'}`} />
-                  <p className="font-bold text-[#1e3a5f] dark:text-white mb-2 text-center">
-                    {txt(lang, 'Drag and Drop Media Here', 'اسحب وأفلت الوسائط هنا', 'Glisser-déposer des médias', '拖放媒体到这里')}
-                  </p>
-                  <p className="text-xs text-slate-500 text-center max-w-xs mb-4">
-                    {txt(lang, 'Supports Images (JPG, PNG), Videos (MP4), and Documents (PDF, DOCX)', 'يدعم الصور، الفيديوهات، والمستندات', 'Supporte Images, Vidéos et Documents', '支持图片，视频和文档')}
-                  </p>
-                  
-                  {/* Reuse CloudinaryUploader as the actual upload trigger */}
-                  <div className="w-full max-w-xs">
-                    <CloudinaryUploader onUploadSuccess={handleUploadSuccess} buttonText={txt(lang, 'Or Click to Browse', 'أو انقر لتصفح الملفات', 'Ou cliquez pour naviguer', '或点击浏览')} />
-                  </div>
-                </div>
-
-                <div className="flex justify-end gap-3 mt-6">
-                  <button onClick={() => setActiveTab('list')} className="px-6 py-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold transition-colors">
-                    {txt(lang, 'Cancel', 'إلغاء', 'Annuler', '取消')}
-                  </button>
-                  <button onClick={() => { alert('Post created successfully!'); setActiveTab('list'); }} className="btn-primary px-8 py-2 rounded-xl font-bold">
-                    {txt(lang, 'Publish Post', 'نشر المحتوى', 'Publier', '发布')}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      
-    {/* Sidebar Area */}
-      <div className="space-y-6">
-        {/* Cloudinary Media Management */}
-        <div className="glass-card rounded-2xl p-6 border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.15)] relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-6 opacity-5">
-            <ImageIcon size={120} />
-          </div>
-          <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-cyan-500">
-            <Sparkles className="w-5 h-5 text-cyan-400" />
-            {txt(lang, 'Media Upload (Cloudinary)', 'رفع الوسائط (Cloudinary)', 'Médias Cloudinary', '媒体上传')}
-          </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-            {txt(lang, 'Upload images, videos, or PDFs. AI will automatically optimize size and format.', 'ارفع الصور، الفيديوهات، أو الملفات. سيقوم الذكاء الاصطناعي بضغطها وتحسينها أوتوماتيكياً.', 'Téléchargez des images...', '上传图片...')}
-          </p>
-
-          <CloudinaryUploader onUploadSuccess={handleUploadSuccess} buttonText={txt(lang, 'Upload File', 'رفع ملف', 'Télécharger', '上传文件')} />
-
-          {uploadedFiles.length > 0 && (
-            <div className="mt-6 space-y-3">
-              <h4 className="text-sm font-bold text-slate-400">{txt(lang, 'Recently Uploaded:', 'المرفوعات الأخيرة:', 'Récemment:', '最近上传：')}</h4>
-              {uploadedFiles.slice(0, 3).map((file, idx) => (
-                <div key={idx} className="bg-cyan-50 dark:bg-slate-900/50 p-3 rounded-lg border border-cyan-500/20 flex items-center gap-3">
-                  {file.resource_type === 'image' ? <ImageIcon size={16} className="text-cyan-500"/> : 
-                   file.resource_type === 'video' ? <Video size={16} className="text-purple-500"/> : 
-                   <FileText size={16} className="text-amber-500"/>}
-                  <div className="flex-1 truncate">
-                    <p className="text-xs font-bold text-[#1e3a5f] dark:text-white truncate">{file.original_filename}</p>
-                    <p className="text-[10px] text-slate-500">{(file.bytes / 1024).toFixed(1)} KB • {file.format}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
+
     </div>
-  </div>
   );
 }
