@@ -5,7 +5,7 @@ import {
   Users, BookOpen, Building, Newspaper, Activity, Shield, Award, 
   Edit, Trash2, Bot, TrendingUp, AlertTriangle, Plus, Mail, Video, 
   Megaphone, CheckCircle, XCircle, LayoutDashboard, Settings, BrainCircuit,
-  GraduationCap, Calendar, Database, Eye, Image, X, Save
+  GraduationCap, Calendar, Database, Eye, Image, X, Save, Target, MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -126,6 +126,7 @@ export default function PresidentDashboard() {
 
   const tabs = [
     { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
+    { id: 'vision', icon: Target, label: lang === 'ar' ? 'الرؤية الاستراتيجية' : 'Strategic Vision' },
     { id: 'members', icon: Shield, label: lang === 'ar' ? 'إدارة الأعضاء' : 'Members' },
     { id: 'academy', icon: GraduationCap, label: lang === 'ar' ? 'الأكاديمية والتداريب' : 'Academy & Training' },
     { id: 'events', icon: Calendar, label: lang === 'ar' ? 'الفعاليات والمشاريع' : 'Events & Projects' },
@@ -311,6 +312,57 @@ export default function PresidentDashboard() {
                     <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-2xl p-6 border border-pink-200 dark:border-pink-900/50">
                       <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-3 flex items-center gap-2 text-sm"><AlertTriangle size={16} className="text-amber-500" /> {lang === 'ar' ? 'تحليل تفاعل الأعضاء' : 'Member Engagement'}</h4>
                       <p className="text-sm text-slate-600 dark:text-slate-300">Engagement in 'Cybersecurity 101' dropped by 15%. Consider sending a motivational email campaign.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* STRATEGIC VISION TAB */}
+            {activeTab === 'vision' && (
+              <div className="space-y-6">
+                <div className="glass-card rounded-3xl p-8 border-t-4 border-cyan-500">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-2xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Target className="text-cyan-500" size={28}/> {lang === 'ar' ? 'الأهداف الاستراتيجية لـ GITM' : 'GITM Strategic Goals'}
+                    </h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                      <div className="flex justify-between items-start mb-4">
+                        <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'تدريب الكفاءات المغربية' : 'Train Moroccan Talents'}</h4>
+                        <span className="text-cyan-600 font-bold">60%</span>
+                      </div>
+                      <p className="text-sm text-slate-500 mb-4">{lang === 'ar' ? 'الهدف: تدريب 10,000 طالب في مجالات الذكاء الاصطناعي والتكنولوجيا المتقدمة بحلول 2028.' : 'Goal: Train 10,000 students in AI and advanced tech by 2028.'}</p>
+                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
+                        <div className="bg-gradient-to-r from-cyan-400 to-blue-500 h-3 rounded-full" style={{ width: '60%' }}></div>
+                      </div>
+                      <p className="text-right text-xs mt-2 font-bold text-slate-500">6,000 / 10,000</p>
+                    </div>
+
+                    <div className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                      <div className="flex justify-between items-start mb-4">
+                        <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'التوسع الإقليمي' : 'Regional Expansion'}</h4>
+                        <span className="text-purple-600 font-bold">40%</span>
+                      </div>
+                      <p className="text-sm text-slate-500 mb-4">{lang === 'ar' ? 'الهدف: افتتاح مختبرات GITM في 5 مدن مغربية رئيسية (الدار البيضاء، الرباط، طنجة، مراكش، أكادير).' : 'Goal: Open GITM labs in 5 major Moroccan cities.'}</p>
+                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
+                        <div className="bg-gradient-to-r from-purple-400 to-pink-500 h-3 rounded-full" style={{ width: '40%' }}></div>
+                      </div>
+                      <p className="text-right text-xs mt-2 font-bold text-slate-500 flex items-center justify-end gap-1"><MapPin size={12}/> 2 / 5 Cities</p>
+                    </div>
+                    
+                    <div className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 md:col-span-2">
+                      <div className="flex justify-between items-start mb-4">
+                        <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'البحث والتطوير (R&D)' : 'Research & Development'}</h4>
+                        <span className="text-emerald-600 font-bold">85%</span>
+                      </div>
+                      <p className="text-sm text-slate-500 mb-4">{lang === 'ar' ? 'الهدف: إطلاق نظام ذكاء اصطناعي مغربي 100% للشركات الناشئة.' : 'Goal: Launch a 100% Moroccan AI system for startups.'}</p>
+                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
+                        <div className="bg-gradient-to-r from-emerald-400 to-teal-500 h-3 rounded-full" style={{ width: '85%' }}></div>
+                      </div>
+                      <p className="text-right text-xs mt-2 font-bold text-slate-500">Beta Testing Phase</p>
                     </div>
                   </div>
                 </div>

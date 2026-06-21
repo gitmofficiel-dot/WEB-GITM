@@ -1,64 +1,87 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { 
-  User, Settings, Download, Edit3, Camera, Bell, Lock, Globe, Moon, Sun, Monitor, ShieldCheck, Mail, Briefcase, GraduationCap
+  User, Settings, Copy, Edit3, Camera, Bell, Lock, Globe, Moon, Sun, Monitor, ShieldCheck, Mail, Briefcase, GraduationCap, CheckCircle, AlertCircle
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export default function UserProfileSettings({ currentUser = { name: 'Mourad', role: 'admin', email: 'mourad@gitm.ma', badges: ['founder', 'developer'] } }) {
+export default function UserProfileSettings({ currentUser = { name: 'Mourad', role: 'admin', email: 'mourad@gitm.ma', badges: ['founder', 'developer'], membershipId: 'GITM-2026-M001' } }) {
   const { lang, setLang } = useLanguage();
   const [activeSubTab, setActiveSubTab] = useState('profile');
+  const [copyStatus, setCopyStatus] = useState(''); // 'success' | 'error' | ''
 
-  // Print CV function
-  const handlePrintCV = () => {
-    window.print();
+  // Copy CV Link function
+  const handleCopyCVLink = () => {
+    if (!currentUser.membershipId) {
+      setCopyStatus('error');
+      setTimeout(() => setCopyStatus(''), 3000);
+      return;
+    }
+    
+    const cvLink = `https://gitm.ma/cv/${currentUser.membershipId}`;
+    navigator.clipboard.writeText(cvLink).then(() => {
+      setCopyStatus('success');
+      setTimeout(() => setCopyStatus(''), 3000);
+    });
   };
 
   const CVPreview = () => (
-    <div className="bg-white text-slate-800 p-8 rounded-2xl shadow-lg border border-slate-200 mt-6 print:shadow-none print:border-none print:m-0 print:p-0">
-      <div className="flex flex-col md:flex-row gap-6 items-start border-b border-slate-200 pb-6">
+    <div className="bg-white dark:bg-slate-900/50 text-slate-800 dark:text-slate-200 p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 mt-6 relative overflow-hidden">
+      <div className="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl"></div>
+      
+      <div className="flex flex-col md:flex-row gap-6 items-start border-b border-slate-200 dark:border-slate-800 pb-6 relative z-10">
         <div className="w-24 h-24 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-white flex items-center justify-center text-4xl font-bold shadow-xl">
           {currentUser.name.charAt(0)}
         </div>
-        <div>
-          <h2 className="text-3xl font-bold text-[#1e3a5f]">{currentUser.name}</h2>
-          <p className="text-blue-600 font-semibold text-lg uppercase tracking-wider">{currentUser.role} @ GITM</p>
-          <div className="flex gap-4 mt-2 text-slate-500 text-sm">
+        <div className="flex-1">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{currentUser.name}</h2>
+              <p className="text-blue-600 dark:text-cyan-400 font-semibold text-lg uppercase tracking-wider">{currentUser.role} @ GITM</p>
+            </div>
+            {currentUser.membershipId && (
+              <div className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700">
+                <p className="text-[10px] text-slate-400 font-bold uppercase">{lang === 'ar' ? 'رقم العضوية' : 'Membership ID'}</p>
+                <p className="font-mono text-sm font-bold text-[#1e3a5f] dark:text-white">{currentUser.membershipId}</p>
+              </div>
+            )}
+          </div>
+          <div className="flex gap-4 mt-3 text-slate-500 dark:text-slate-400 text-sm">
             <span className="flex items-center gap-1"><Mail size={16}/> {currentUser.email}</span>
             <span className="flex items-center gap-1"><Globe size={16}/> Casablanca, Morocco</span>
           </div>
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 relative z-10">
         <div>
-          <h3 className="text-xl font-bold text-[#1e3a5f] mb-4 flex items-center gap-2"><Briefcase size={20} className="text-cyan-500"/> {lang === 'ar' ? 'المهارات والشارات' : 'Skills & Badges'}</h3>
+          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Briefcase size={20} className="text-cyan-500"/> {lang === 'ar' ? 'المهارات والشارات' : 'Skills & Badges'}</h3>
           <div className="flex flex-wrap gap-2">
             {currentUser.badges.map(b => (
-              <span key={b} className="px-3 py-1 bg-cyan-50 text-cyan-700 font-bold rounded-lg text-sm uppercase tracking-wide border border-cyan-100">
+              <span key={b} className="px-3 py-1 bg-cyan-50 dark:bg-cyan-900/20 text-cyan-700 dark:text-cyan-400 font-bold rounded-lg text-sm uppercase tracking-wide border border-cyan-100 dark:border-cyan-800">
                 {b}
               </span>
             ))}
-            <span className="px-3 py-1 bg-slate-100 text-slate-600 font-bold rounded-lg text-sm border border-slate-200">React.js</span>
-            <span className="px-3 py-1 bg-slate-100 text-slate-600 font-bold rounded-lg text-sm border border-slate-200">Leadership</span>
+            <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold rounded-lg text-sm border border-slate-200 dark:border-slate-700">React.js</span>
+            <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold rounded-lg text-sm border border-slate-200 dark:border-slate-700">Leadership</span>
           </div>
         </div>
         
         <div>
-          <h3 className="text-xl font-bold text-[#1e3a5f] mb-4 flex items-center gap-2"><GraduationCap size={20} className="text-purple-500"/> {lang === 'ar' ? 'المسار الأكاديمي' : 'Academy Track'}</h3>
+          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><GraduationCap size={20} className="text-purple-500"/> {lang === 'ar' ? 'المسار الأكاديمي' : 'Academy Track'}</h3>
           <ul className="space-y-3">
             <li className="flex items-start gap-2">
               <div className="w-2 h-2 rounded-full bg-purple-500 mt-2"></div>
               <div>
-                <p className="font-bold text-slate-700">Edge AI Development</p>
-                <p className="text-xs text-slate-500">GITM Academy - 2025</p>
+                <p className="font-bold text-slate-700 dark:text-slate-300">Edge AI Development</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">GITM Academy - 2025</p>
               </div>
             </li>
             <li className="flex items-start gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2"></div>
               <div>
-                <p className="font-bold text-slate-700">IoT Cloud Infrastructure</p>
-                <p className="text-xs text-slate-500">In Progress (80%)</p>
+                <p className="font-bold text-slate-700 dark:text-slate-300">IoT Cloud Infrastructure</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">In Progress (80%)</p>
               </div>
             </li>
           </ul>
@@ -71,7 +94,7 @@ export default function UserProfileSettings({ currentUser = { name: 'Mourad', ro
     <div className="space-y-6">
       
       {/* Sub Tabs */}
-      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-2 print:hidden">
+      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-2">
         <button 
           onClick={() => setActiveSubTab('profile')}
           className={`flex items-center gap-2 px-4 py-2 font-bold transition-all border-b-2 ${activeSubTab === 'profile' ? 'border-cyan-500 text-cyan-500 dark:text-cyan-400' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'}`}
@@ -88,26 +111,42 @@ export default function UserProfileSettings({ currentUser = { name: 'Mourad', ro
 
       {activeSubTab === 'profile' && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-3xl p-6">
-          <div className="flex justify-between items-center mb-6 print:hidden">
-            <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-              <User className="text-cyan-500" size={24}/> {lang === 'ar' ? 'تجهيز السيرة الذاتية (CV)' : 'CV Builder'}
-            </h3>
-            <button onClick={handlePrintCV} className="btn-primary px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg hover:scale-105 transition-transform">
-              <Download size={16}/> {lang === 'ar' ? 'تصدير PDF' : 'Export PDF'}
-            </button>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <div>
+              <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white mb-2">
+                <User className="text-cyan-500" size={24}/> {lang === 'ar' ? 'معاينة السيرة الذاتية (CV)' : 'CV Preview'}
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {lang === 'ar' 
+                  ? 'سيرتك الذاتية لا يمكن طباعتها، بل تتم مشاركتها عبر رابطك الموثق برقم العضوية.' 
+                  : 'Your CV cannot be printed directly. Share it securely using your Membership ID link.'}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <AnimatePresence>
+                {copyStatus === 'success' && (
+                  <motion.span initial={{opacity:0, x:10}} animate={{opacity:1, x:0}} exit={{opacity:0, x:10}} className="text-emerald-500 text-sm font-bold flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 rounded-lg">
+                    <CheckCircle size={16}/> {lang === 'ar' ? 'تم النسخ!' : 'Copied!'}
+                  </motion.span>
+                )}
+                {copyStatus === 'error' && (
+                  <motion.span initial={{opacity:0, x:10}} animate={{opacity:1, x:0}} exit={{opacity:0, x:10}} className="text-amber-500 text-sm font-bold flex items-center gap-1 bg-amber-50 dark:bg-amber-900/30 px-3 py-1.5 rounded-lg">
+                    <AlertCircle size={16}/> {lang === 'ar' ? 'لا يوجد رقم عضوية' : 'No Membership ID'}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+              <button onClick={handleCopyCVLink} className="btn-primary px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg hover:scale-105 transition-transform">
+                <Copy size={16}/> {lang === 'ar' ? 'نسخ رابط الـ CV' : 'Copy CV Link'}
+              </button>
+            </div>
           </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 print:hidden">
-            {lang === 'ar' 
-              ? 'سيرتك الذاتية يتم إنشاؤها تلقائياً بناءً على نشاطاتك والشارات التي كسبتها في أكاديمية ومشاريع GITM.' 
-              : 'Your CV is automatically generated based on your activities and badges earned in GITM Academy and projects.'}
-          </p>
           
           <CVPreview />
         </motion.div>
       )}
 
       {activeSubTab === 'settings' && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-3 gap-6 print:hidden">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
           <div className="glass-card rounded-3xl p-6 md:col-span-2">
             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
