@@ -17,6 +17,25 @@ export default function AuthForms({ initialMode = 'login', setView }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const formatAuthError = (err) => {
+    const code = err.code || err.message;
+    if (code.includes('auth/unauthorized-domain')) {
+      return txt(lang, 
+        'This domain is not authorized for OAuth operations for your Firebase project. Edit the list of authorized domains from the Firebase console.',
+        'هذا النطاق (Domain) غير مصرح له بتسجيل الدخول في مشروع Firebase الخاص بك. يرجى الذهاب إلى لوحة تحكم Firebase > Authentication > Settings > Authorized domains وإضافة النطاق الحالي.',
+        'Ce domaine n\'est pas autorisé pour les opérations OAuth. Modifiez la liste dans la console Firebase.',
+        '此域未获授权进行 OAuth 操作。请从 Firebase 控制台编辑授权域列表。'
+      );
+    }
+    if (code.includes('auth/invalid-credential')) {
+      return txt(lang, 'Invalid email or password.', 'البريد الإلكتروني أو كلمة المرور غير صحيحة.', 'Email ou mot de passe invalide.', '无效的电子邮件或密码。');
+    }
+    if (code.includes('auth/email-already-in-use')) {
+      return txt(lang, 'Email already in use.', 'هذا البريد الإلكتروني مستخدم بالفعل.', 'Cet e-mail est déjà utilisé.', '电子邮件已被使用。');
+    }
+    return err.message;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -32,7 +51,7 @@ export default function AuthForms({ initialMode = 'login', setView }) {
         registerUser(userCredential.user.email, name);
       }
     } catch (err) {
-      setError(err.message);
+      setError(formatAuthError(err));
     } finally {
       setLoading(false);
     }
@@ -44,7 +63,7 @@ export default function AuthForms({ initialMode = 'login', setView }) {
       const result = await signInWithPopup(auth, provider);
       loginUser(result.user.email, 'member', result.user.displayName || '');
     } catch (err) {
-      setError(err.message);
+      setError(formatAuthError(err));
     }
   };
 

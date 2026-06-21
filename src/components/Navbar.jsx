@@ -32,7 +32,6 @@ const Navbar = () => {
     { id: 'news', icon: Newspaper, label: { ar: 'الأخبار', en: 'News', fr: 'Actualités', zh: '新闻' } },
     { id: 'academy', icon: BookOpen, label: { ar: 'الأكاديمية', en: 'Academy', fr: 'Académie', zh: '学院' } },
     { id: 'projects', icon: FolderGit2, label: { ar: 'المشاريع', en: 'Projects', fr: 'Projets', zh: '项目' } },
-    { id: 'virtual-lab', icon: Activity, label: { ar: 'المختبر 3D', en: 'Virtual Lab (3D)', fr: 'Labo 3D', zh: '3D实验室' } },
     { id: 'gallery', icon: Image, label: { ar: 'المعرض', en: 'Gallery', fr: 'Galerie', zh: '画廊' } },
     { id: 'events', icon: Calendar, label: { ar: 'الفعاليات', en: 'Events', fr: 'Événements', zh: '活动' } },
     { id: 'about', icon: Users, label: { ar: 'من نحن', en: 'About Us', fr: 'À propos', zh: '关于我们' } },

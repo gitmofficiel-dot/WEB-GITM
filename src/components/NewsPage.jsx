@@ -6,57 +6,6 @@ import TechNewsWidget from './TechNewsWidget';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
-const MOCK_NEWS = [
-  {
-    id: 1,
-    title: { en: 'GITM Launches New Tech Hub in Casablanca', ar: 'المجموعة تطلق مركزاً تقنياً جديداً في الدار البيضاء', fr: 'Le GITM lance un nouveau hub technologique à Casablanca', zh: 'GITM在卡萨布兰卡启动新科技中心' },
-    summary: { en: 'A state-of-the-art facility to foster innovation and support local startups in the heart of Morocco.', ar: 'منشأة حديثة لتعزيز الابتكار ودعم الشركات الناشئة المحلية في قلب المغرب.', fr: 'Une installation ultramoderne pour favoriser l\'innovation.', zh: '在摩洛哥中心培育创新并支持本地初创企业的最先进设施。' },
-    date: '2026-06-18', category: 'Technology', author: 'Dr. Youssef', featured: true, color: 'from-teal-500 to-emerald-600 dark:from-cyan-500 dark:to-blue-600'
-  },
-  {
-    id: 2,
-    title: { en: 'Annual Hackathon Winners Announced', ar: 'الإعلان عن الفائزين في الهاكاثون السنوي', fr: 'Annonce des gagnants du Hackathon annuel', zh: '年度黑客马拉松获奖者揭晓' },
-    summary: { en: 'Over 500 developers competed in the 48-hour coding marathon. Meet the teams that built the future.', ar: 'تنافس أكثر من 500 مطور في ماراثون البرمجة. تعرف على الفرق.', fr: 'Plus de 500 développeurs ont concouru. Découvrez les équipes.', zh: '超过500名开发者参加了48小时的编程马拉松。' },
-    date: '2026-06-10', category: 'Events', author: 'Amina', featured: false, color: 'from-purple-500 to-indigo-600'
-  },
-  {
-    id: 3,
-    title: { en: 'AI Academy Fall Intake Opens', ar: 'افتتاح التسجيل الخريفي لأكاديمية الذكاء الاصطناعي', fr: 'Ouverture des inscriptions d\'automne pour l\'Académie IA', zh: 'AI学院秋季招生开始' },
-    summary: { en: 'Join our comprehensive 12-week AI training program. Scholarships available for exceptional talents.', ar: 'انضم إلى برنامجنا التدريبي الشامل لمدة 12 أسبوعًا.', fr: 'Rejoignez notre programme de formation complet de 12 semaines en IA.', zh: '加入我们全面的12周人工智能培训计划。' },
-    date: '2026-06-05', category: 'Academy', author: 'Prof. Hassan', featured: false, color: 'from-orange-500 to-red-600'
-  },
-  {
-    id: 4,
-    title: { en: 'Partnership with Global Tech Giants', ar: 'شراكة مع عمالقة التكنولوجيا العالميين', fr: 'Partenariat avec les géants mondiaux de la technologie', zh: '与全球科技巨头的合作伙伴关系' },
-    summary: { en: 'GITM secures strategic partnerships to provide advanced cloud infrastructure to our members.', ar: 'المجموعة تبرم شراكات استراتيجية لتوفير بنية تحتية سحابية متقدمة.', fr: 'Le GITM sécurise des partenariats stratégiques.', zh: 'GITM确保战略合作伙伴关系，为我们的成员提供先进的云基础设施。' },
-    date: '2026-05-28', category: 'Partners', author: 'Admin', featured: false, color: 'from-pink-500 to-rose-600'
-  },
-  {
-    id: 5,
-    title: { en: 'Web3 and Blockchain Seminar Highlights', ar: 'أبرز محطات ندوة الويب 3 والبلوكتشين', fr: 'Faits saillants du séminaire Web3 et Blockchain', zh: 'Web3和区块链研讨会亮点' },
-    summary: { en: 'Key takeaways from our latest seminar on decentralized applications and the future of finance.', ar: 'أهم النقاط المستخلصة من ندوتنا الأخيرة حول التطبيقات اللامركزية.', fr: 'Principaux points à retenir de notre dernier séminaire.', zh: '我们最新关于去中心化应用研讨会的主要收获。' },
-    date: '2026-05-20', category: 'Events', author: 'Omar', featured: false, color: 'from-amber-500 to-yellow-600'
-  },
-  {
-    id: 6,
-    title: { en: 'New Open Source Contribution Guidelines', ar: 'إرشادات جديدة للمساهمة في المصادر المفتوحة', fr: 'Nouvelles directives de contribution Open Source', zh: '新开源贡献指南' },
-    summary: { en: 'We have updated our guidelines to make it easier for developers to contribute to GITM projects.', ar: 'لقد قمنا بتحديث إرشاداتنا لتسهيل مساهمة المطورين.', fr: 'Nous avons mis à jour nos directives pour faciliter les contributions.', zh: '我们更新了指南，使开发者更容易参与GITM项目。' },
-    date: '2026-05-15', category: 'Technology', author: 'Dev Team', featured: false, color: 'from-emerald-500 to-green-600'
-  },
-  {
-    id: 7,
-    title: { en: 'Empowering Women in Tech Initiative', ar: 'مبادرة تمكين المرأة في مجال التكنولوجيا', fr: 'Initiative pour l\'autonomisation des femmes dans la tech', zh: '赋能科技女性倡议' },
-    summary: { en: 'Announcing a new mentorship program aimed at supporting women developers and engineers.', ar: 'الإعلان عن برنامج توجيهي جديد يهدف إلى دعم المطورات والمهندسات.', fr: 'Annonce d\'un nouveau programme de mentorat pour les femmes.', zh: '宣布一项旨在支持女性开发者和工程师的新指导计划。' },
-    date: '2026-05-10', category: 'Academy', author: 'Sara', featured: false, color: 'from-fuchsia-500 to-purple-600'
-  },
-  {
-    id: 8,
-    title: { en: 'Cloud Computing Workshop Success', ar: 'نجاح ورشة عمل الحوسبة السحابية', fr: 'Succès de l\'atelier sur le Cloud Computing', zh: '云计算研讨会取得成功' },
-    summary: { en: 'A huge thank you to all participants who made our recent cloud computing workshop a massive success.', ar: 'شكر كبير لجميع المشاركين الذين جعلوا ورشة العمل نجاحاً هائلاً.', fr: 'Un grand merci à tous les participants de notre récent atelier.', zh: '非常感谢所有参与者，是你们让我们最近的研讨会取得了巨大成功。' },
-    date: '2026-05-02', category: 'Events', author: 'Dr. Youssef', featured: false, color: 'from-cyan-500 to-sky-600'
-  }
-];
-
 const CATEGORIES = ['All', 'Technology', 'Events', 'Academy', 'Partners'];
 
 import { useNavigate } from 'react-router-dom';
@@ -77,8 +26,8 @@ export default function NewsPage() {
     return matchCat && matchSearch;
   });
 
-  const featuredNews = filteredNews.find(n => n.featured);
-  const regularNews = filteredNews.filter(n => !n.featured).slice(0, visibleCount);
+  const featuredNews = filteredNews.find(n => n.pinned || n.featured);
+  const regularNews = filteredNews.filter(n => !(n.pinned || n.featured)).slice(0, visibleCount);
 
   return (
     <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-[#1e3a5f] dark:text-slate-200 transition-colors duration-300">

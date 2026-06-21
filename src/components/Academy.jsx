@@ -164,25 +164,25 @@ export default function Academy() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2">
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[#e0fcfc] dark:bg-slate-800 rounded-3xl shadow-sm border border-cyan-300 dark:border-slate-700 p-8 mb-8 relative overflow-hidden">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-slate-800 rounded-3xl shadow-lg shadow-cyan-500/10 border border-cyan-100 dark:border-slate-700 p-8 mb-8 relative overflow-hidden">
                                 <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-br ${selectedCourse.color} opacity-10 rounded-full blur-3xl -mr-20 -mt-20`}></div>
                                 
                                 <div className="flex items-center mb-6 relative z-10">
-                                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${selectedCourse.color} flex items-center justify-center mr-6 rtl:ml-6 shadow-lg`}>
+                                    <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${selectedCourse.color} flex items-center justify-center mr-6 rtl:ml-6 shadow-xl`}>
                                         {selectedCourse.icon}
                                     </div>
                                     <div>
-                                        <div className="flex items-center space-x-3 rtl:space-x-reverse mb-2">
-                                            <span className="px-3 py-1 bg-cyan-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold uppercase tracking-wider">
+                                        <div className="flex items-center space-x-3 rtl:space-x-reverse mb-3">
+                                            <span className="px-4 py-1.5 bg-cyan-50 dark:bg-slate-700 text-teal-600 dark:text-cyan-400 rounded-full text-xs font-bold uppercase tracking-wider">
                                                 {selectedCourse.mode === 'remote' ? texts.remote : texts.inPerson}
                                             </span>
                                         </div>
-                                        <h1 className="text-3xl md:text-4xl font-bold text-[#1e3a5f] dark:text-white">
+                                        <h1 className="text-3xl md:text-5xl font-black text-[#1e3a5f] dark:text-white tracking-tight">
                                             {getLoc(selectedCourse, 'title', lang)}
                                         </h1>
                                     </div>
                                 </div>
-                                <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed relative z-10">
+                                <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed relative z-10 mt-6 pt-6 border-t border-cyan-100 dark:border-slate-700">
                                     {getLoc(selectedCourse, 'description', lang)}
                                 </p>
                             </motion.div>
@@ -203,7 +203,7 @@ export default function Academy() {
                             <AnimatePresence mode="wait">
                                 <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
                                     {activeTab === 'overview' && (
-                                        <div className="bg-[#e0fcfc] dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-cyan-300 dark:border-slate-700">
+                                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-lg shadow-cyan-500/10 border border-cyan-100 dark:border-slate-700">
                                             <h3 className="text-2xl font-bold mb-6 text-[#1e3a5f] dark:text-white">Course Overview</h3>
                                             
                                             {selectedCourse.mode === 'in-person' && (
@@ -235,7 +235,7 @@ export default function Academy() {
                                             {selectedCourse.lessons.map((lesson, idx) => {
                                                 const isCompleted = courseCompleted.includes(lesson.id);
                                                 return (
-                                                    <div key={lesson.id} onClick={() => handleLessonSelect(lesson.id)} className="bg-[#e0fcfc] dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-cyan-300 dark:border-slate-700 flex items-center justify-between cursor-pointer hover:border-emerald-400 dark:hover:border-emerald-500 transition group">
+                                                    <div key={lesson.id} onClick={() => handleLessonSelect(lesson.id)} className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-md border border-cyan-100 dark:border-slate-700 flex items-center justify-between cursor-pointer hover:border-emerald-400 dark:hover:border-emerald-500 hover:shadow-xl transition-all duration-300 group">
                                                         <div className="flex items-center">
                                                             <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-5 rtl:ml-5 font-bold text-lg ${isCompleted ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-cyan-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'}`}>
                                                                 {idx + 1}

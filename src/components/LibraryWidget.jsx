@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Loader, AlertCircle, ExternalLink, Bookmark, X, Book } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 
 const LibraryWidget = () => {
+  const navigate = useNavigate();
   const { lang, savedItems, toggleSave } = useLanguage();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,28 +11,37 @@ const LibraryWidget = () => {
 
   const [searchQuery, setSearchQuery] = useState('programming');
   const [searchLang, setSearchLang] = useState('');
-  const [selectedBook, setSelectedBook] = useState(null);
 
   const fetchBooks = async (query, langFilter = '') => {
     setLoading(true);
     setError(false);
     try {
-      // Add User-Agent as per Open Library guidelines
-      const headers = {
-        'User-Agent': 'GITM-Academy-App (gitm.officiel@gmail.com)'
-      };
+      const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
       
-      let url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=4`;
-      if (langFilter) {
-        url += `&language=${langFilter}`;
+      let url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=4&key=${apiKey}`;
+      if (langFilter && langFilter !== 'all') {
+        url += `&langRestrict=${langFilter}`;
       }
       
-      const res = await fetch(url, { headers });
+      const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-      setBooks(data.docs || []);
+      
+      const formattedBooks = (data.items || []).map(item => ({
+        key: item.id,
+        title: item.volumeInfo.title,
+        author_name: item.volumeInfo.authors || ['Unknown Author'],
+        cover_i: item.volumeInfo.imageLinks?.thumbnail ? item.volumeInfo.imageLinks.thumbnail.replace('http:', 'https:') : null,
+        first_publish_year: item.volumeInfo.publishedDate ? item.volumeInfo.publishedDate.substring(0, 4) : 'Unknown Year',
+        publisher: item.volumeInfo.publisher ? [item.volumeInfo.publisher] : null,
+        subject: item.volumeInfo.categories || null,
+        previewLink: item.volumeInfo.previewLink
+      }));
+      
+      setBooks(formattedBooks);
       setLoading(false);
     } catch (err) {
+      console.error("Google Books Error:", err);
       setError(true);
       setLoading(false);
     }
@@ -59,11 +69,11 @@ const LibraryWidget = () => {
             className="px-3 py-1 rounded-lg border border-cyan-400 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm outline-none focus:border-blue-500 text-[#1e3a5f] dark:text-white"
           >
             <option value="">{lang === 'ar' ? 'كل اللغات' : 'All Langs'}</option>
-            <option value="ara">{lang === 'ar' ? 'العربية' : 'Arabic'}</option>
-            <option value="eng">{lang === 'ar' ? 'الإنجليزية' : 'English'}</option>
-            <option value="fre">{lang === 'ar' ? 'الفرنسية' : 'French'}</option>
-            <option value="chi">{lang === 'ar' ? 'الصينية' : 'Chinese'}</option>
-            <option value="spa">{lang === 'ar' ? 'الإسبانية' : 'Spanish'}</option>
+            <option value="ar">{lang === 'ar' ? 'العربية' : 'Arabic'}</option>
+            <option value="en">{lang === 'ar' ? 'الإنجليزية' : 'English'}</option>
+            <option value="fr">{lang === 'ar' ? 'الفرنسية' : 'French'}</option>
+            <option value="zh">{lang === 'ar' ? 'الصينية' : 'Chinese'}</option>
+            <option value="es">{lang === 'ar' ? 'الإسبانية' : 'Spanish'}</option>
           </select>
           <input 
             type="text" 
@@ -87,14 +97,13 @@ const LibraryWidget = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {books.map((book) => {
-            const isSaved = savedItems?.books?.some(b => b.key === book.key);
-            const coverUrl = book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg` : null;
+            const coverUrl = book.cover_i || null;
             return (
             <div 
               key={book.key} 
               className="flex items-start gap-3 p-3 rounded-xl bg-cyan-50 dark:bg-slate-900/50 hover:bg-cyan-100 dark:hover:bg-slate-800/80 transition-colors border border-cyan-200 dark:border-slate-800 group relative"
             >
-              <button onClick={() => setSelectedBook(book)} className="shrink-0 text-left">
+              <button onClick={() => navigate('/library/book', { state: { book } })} className="shrink-0 text-left">
                 {coverUrl ? (
                   <img src={coverUrl} alt={book.title} className="w-12 h-16 object-cover rounded shadow-sm" />
                 ) : (
@@ -104,7 +113,7 @@ const LibraryWidget = () => {
                 )}
               </button>
               <div className="flex-1 min-w-0 pr-6">
-                <button onClick={() => setSelectedBook(book)} className="block text-left">
+                <button onClick={() => navigate('/library/book', { state: { book } })} className="block text-left">
                   <h4 className="font-semibold text-sm text-[#1e3a5f] dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
                     {book.title}
                   </h4>
@@ -120,37 +129,13 @@ const LibraryWidget = () => {
                   >
                     <Bookmark size={14} className={isSaved ? 'fill-current' : ''} />
                   </button>
-                  <button onClick={() => setSelectedBook(book)} className="p-1 text-slate-400 hover:text-blue-500">
+                  <button onClick={() => navigate('/library/book', { state: { book } })} className="p-1 text-slate-400 hover:text-blue-500">
                     <ExternalLink size={14} />
                   </button>
                 </div>
               </div>
             </div>
           )})}
-        </div>
-      )}
-
-      {selectedBook && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200" onClick={() => setSelectedBook(null)}>
-          <div className="bg-[#e0fcfc] dark:bg-slate-900 w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-cyan-300 dark:border-slate-800" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-4 border-b border-cyan-300 dark:border-slate-800 bg-cyan-50 dark:bg-slate-900/50">
-              <div className="flex items-center gap-3">
-                <BookOpen className="text-blue-500" size={24} />
-                <h3 className="font-bold text-lg text-[#1e3a5f] dark:text-white truncate pr-4">{selectedBook.title}</h3>
-              </div>
-              <button onClick={() => setSelectedBook(null)} className="p-2 text-slate-500 hover:text-red-500 dark:hover:text-red-400 rounded-xl transition-colors">
-                <X size={24} />
-              </button>
-            </div>
-            <div className="flex-1 bg-cyan-100 dark:bg-slate-950 relative">
-              <iframe 
-                src={`https://openlibrary.org${selectedBook.key}`} 
-                className="absolute inset-0 w-full h-full border-0"
-                title={selectedBook.title}
-                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-              />
-            </div>
-          </div>
         </div>
       )}
     </div>

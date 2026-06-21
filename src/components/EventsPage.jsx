@@ -83,36 +83,10 @@ export default function EventsPage() {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    if (!user) return alert(txt(lang, 'Please login first to register', 'الرجاء تسجيل الدخول أولاً', 'Veuillez vous connecter', '请先登录'));
-    
-    setIsRegistering(true);
-    setTimeout(() => {
-      // Mock File Upload & Registration Save
-      const newRegistration = {
-        id: Date.now(),
-        eventId: selectedEvent.id,
-        eventTitle: lang === 'ar' ? selectedEvent.title_ar : selectedEvent.title_en,
-        userId: user.email,
-        userName: user.name,
-        projectName: projectName,
-        teamMembers: teamMembers,
-        hasFile: fileAttached,
-        status: 'pending',
-        dateSubmitted: new Date().toISOString()
-      };
-      setEventRegistrations(prev => [newRegistration, ...prev]);
-      
-      setIsRegistering(false);
-      setIsRegistered(true);
-    }, 1500);
   };
 
   const closeRegistration = () => {
-    setSelectedEvent(null);
-    setIsRegistered(false);
-    setProjectName('');
-    setTeamMembers('');
-    setFileAttached(false);
+    // legacy function kept for backwards compatibility
   };
 
   return (
@@ -170,7 +144,7 @@ export default function EventsPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-4">
-                  <button onClick={() => setSelectedEvent(upcomingEvents[0])} className="btn-primary px-8 py-3 rounded-full font-bold shadow-lg shadow-teal-500/30 flex items-center gap-2">
+                  <button onClick={() => navigate(`/events/${upcomingEvents[0].id}`)} className="btn-primary px-8 py-3 rounded-full font-bold shadow-lg shadow-teal-500/30 flex items-center gap-2">
                     {txt(lang, 'Register Now', 'سجل الآن', 'S\'inscrire maintenant', '现在注册')} <ArrowRight size={18} className={`${lang === 'ar' ? 'rotate-180' : ''}`} />
                   </button>
                   <button onClick={() => navigate(`/events/${upcomingEvents[0].id}`)} className="btn-glass px-8 py-3 rounded-full font-bold flex items-center gap-2">
@@ -226,7 +200,7 @@ export default function EventsPage() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => setSelectedEvent(ev)} className="flex-1 py-3 rounded-xl border border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors font-bold text-sm flex justify-center items-center gap-2">
+                    <button onClick={() => navigate(`/events/${ev.id}`)} className="flex-1 py-3 rounded-xl border border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors font-bold text-sm flex justify-center items-center gap-2">
                       {txt(lang, 'RSVP', 'تأكيد الحضور', 'RSVP', '回复')}
                     </button>
                     <button onClick={() => navigate(`/events/${ev.id}`)} className="flex-1 py-3 rounded-xl bg-cyan-100 dark:bg-slate-800 text-[#1e3a5f] dark:text-slate-300 hover:bg-cyan-200 dark:hover:bg-slate-700 transition-colors font-bold text-sm flex justify-center items-center">
@@ -272,7 +246,7 @@ export default function EventsPage() {
                 </div>
                 
                 {comp.status === 'open' && (
-                  <button onClick={() => setSelectedEvent(comp)} className="flex items-center justify-center gap-2 w-full py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold transition-colors">
+                  <button onClick={() => navigate(`/events/${comp.id}`)} className="flex items-center justify-center gap-2 w-full py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold transition-colors">
                     {txt(lang, 'Register Team', 'سجل فريقك', 'Inscrire l\'équipe', '注册团队')} <ExternalLink size={18} />
                   </button>
                 )}
@@ -310,118 +284,7 @@ export default function EventsPage() {
           </div>
         </div>
 
-        {/* Registration Modal */}
-        <AnimatePresence>
-          {selectedEvent && (
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-              onClick={closeRegistration}
-            >
-              <motion.div 
-                initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-                className="bg-[#e0fcfc] dark:bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-cyan-300 dark:border-slate-800"
-                onClick={e => e.stopPropagation()}
-              >
-                <div className="flex items-center justify-between p-6 border-b border-cyan-200 dark:border-slate-800">
-                  <h3 className="font-bold font-orbitron text-xl gradient-text">
-                    {txt(lang, 'Event Registration', 'التسجيل في الفعالية', 'Inscription', '活动注册')}
-                  </h3>
-                  <button onClick={closeRegistration} className="text-slate-400 hover:text-red-500 transition-colors">
-                    <X size={24} />
-                  </button>
-                </div>
-                
-                <div className="p-6 text-[#1e3a5f] dark:text-slate-200">
-                  <div className="mb-6">
-                    <p className="text-sm text-slate-500 mb-1">{txt(lang, 'Registering for:', 'التسجيل في:', 'S\'inscrire pour:', '注册用于：')}</p>
-                    <p className="font-bold text-lg">{selectedEvent.title_ar ? (lang === 'ar' ? selectedEvent.title_ar : selectedEvent.title_en) : (selectedEvent.title?.en || '')}</p>
-                  </div>
-
-                  {!isRegistered ? (
-                    <form onSubmit={handleRegister} className="space-y-4">
-                      {user ? (
-                        <div className="bg-cyan-50 dark:bg-slate-800/50 p-4 rounded-xl border border-cyan-200 dark:border-slate-700 flex items-center gap-4 mb-4">
-                          <div className="w-10 h-10 rounded-full bg-cyan-200 dark:bg-slate-700 flex items-center justify-center text-[#1e3a5f] dark:text-white font-bold uppercase">
-                            {user.name?.[0]}
-                          </div>
-                          <div>
-                            <p className="font-bold text-sm">{user.name}</p>
-                            <p className="text-xs text-slate-500">{user.email}</p>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-800/30 text-sm">
-                          {txt(lang, 'You must be logged in to register for an official event.', 'يجب أن تكون مسجلاً الدخول للتسجيل في الفعاليات الرسمية.', 'Connectez-vous.', '登录')}
-                        </div>
-                      )}
-                      
-                      {selectedEvent.requirements?.needsProjectName && (
-                        <div>
-                          <label className="block text-sm font-bold mb-2">{txt(lang, 'Project Name', 'اسم المشروع', 'Nom du projet', '项目名称')}</label>
-                          <input 
-                            type="text" 
-                            required
-                            value={projectName}
-                            onChange={(e) => setProjectName(e.target.value)}
-                            placeholder={txt(lang, 'My awesome project', 'مشروعي الرائع', '', '')} 
-                            className="w-full px-4 py-3 rounded-xl border border-cyan-400 dark:border-slate-700 bg-cyan-50 dark:bg-slate-800 text-[#0B132B] dark:text-white outline-none focus:border-teal-500"
-                          />
-                        </div>
-                      )}
-
-                      {selectedEvent.requirements?.teamMax > 1 && (
-                        <div>
-                          <label className="block text-sm font-bold mb-2">{txt(lang, `Team Members (Max ${selectedEvent.requirements.teamMax})`, `أعضاء الفريق (الحد الأقصى ${selectedEvent.requirements.teamMax})`, '', '')}</label>
-                          <textarea 
-                            required
-                            value={teamMembers}
-                            onChange={(e) => setTeamMembers(e.target.value)}
-                            placeholder={txt(lang, 'List team members names, separated by comma', 'اكتب أسماء أعضاء الفريق، مفصولة بفاصلة', '', '')} 
-                            className="w-full px-4 py-3 rounded-xl border border-cyan-400 dark:border-slate-700 bg-cyan-50 dark:bg-slate-800 text-[#0B132B] dark:text-white outline-none focus:border-teal-500 resize-none h-24"
-                          ></textarea>
-                        </div>
-                      )}
-
-                      {selectedEvent.requirements?.needsFileUpload && (
-                        <div>
-                          <label className="block text-sm font-bold mb-2">{txt(lang, 'Upload Project Pitch (PDF/Images)', 'رفع ملفات المشروع (PDF/صور)', '', '')}</label>
-                          <div className="w-full px-4 py-6 rounded-xl border-2 border-dashed border-cyan-400 dark:border-slate-700 bg-cyan-50 dark:bg-slate-800 flex flex-col items-center justify-center cursor-pointer hover:bg-cyan-100 dark:hover:bg-slate-700/50 transition-colors" onClick={() => setFileAttached(true)}>
-                            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${fileAttached ? 'bg-emerald-100 text-emerald-500' : 'bg-slate-200 dark:bg-slate-900 text-slate-400'}`}>
-                              {fileAttached ? <CheckCircle2 /> : <Users />}
-                            </div>
-                            <span className="text-sm text-slate-500 font-bold">{fileAttached ? txt(lang, 'Files Attached', 'تم الرفع', '', '') : txt(lang, 'Click to Attach Files (Mock)', 'انقر لرفع الملفات (محاكاة)', '', '')}</span>
-                          </div>
-                        </div>
-                      )}
-
-                      <button type="submit" disabled={isRegistering || !user} className={`w-full px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 mt-4 ${user ? 'btn-primary' : 'bg-slate-300 dark:bg-slate-800 text-slate-500 cursor-not-allowed'}`}>
-                        {isRegistering ? <Loader className="animate-spin w-5 h-5" /> : <CheckCircle2 size={18} />} 
-                        {txt(lang, 'Confirm Official Registration', 'تأكيد التسجيل الرسمي', 'Confirmer', '确认注册')}
-                      </button>
-                    </form>
-                  ) : (
-                    <div className="text-center py-6">
-                      <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <CheckCircle2 size={32} />
-                      </div>
-                      <h4 className="font-bold text-xl mb-2 text-emerald-600 dark:text-emerald-400">
-                        {txt(lang, 'Registration Successful!', 'تم التسجيل بنجاح!', 'Inscription réussie!', '注册成功！')}
-                      </h4>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
-                        {txt(lang, 'Your digital ticket and event details have been sent to your email.', 'تم إرسال تذكرتك الرقمية وتفاصيل الفعالية إلى بريدك الإلكتروني.', 'Billet envoyé.', '门票已发送。')}
-                      </p>
-                      <button onClick={closeRegistration} className="px-6 py-2 bg-cyan-200 dark:bg-slate-800 rounded-full font-bold hover:bg-cyan-300 dark:hover:bg-slate-700 transition-colors">
-                        {txt(lang, 'Close', 'إغلاق', 'Fermer', '关闭')}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
+        {/* Registration Modal Removed - Redirects to Dedicated Details Page Now */}
       </div>
     </div>
   );

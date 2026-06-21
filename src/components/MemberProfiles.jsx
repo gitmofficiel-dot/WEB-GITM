@@ -106,6 +106,30 @@ export default function MemberProfiles() {
 
   const isAdmin = user?.role === 'president'; // Example admin check
 
+  if (!user) {
+    return (
+      <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden flex items-center justify-center">
+        <div className="glass-card max-w-md w-full p-8 text-center rounded-3xl border border-cyan-300 dark:border-slate-700 shadow-2xl relative z-10">
+          <div className="w-20 h-20 bg-gradient-to-tr from-rose-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-rose-500/30">
+            <Shield className="text-white w-10 h-10" />
+          </div>
+          <h2 className="text-2xl font-bold font-orbitron text-[#1e3a5f] dark:text-white mb-4">
+            {txt(lang, 'Members Directory Restricted', 'سجل الأعضاء مقفل', 'Annuaire des membres restreint', '会员目录受限')}
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mb-8">
+            {txt(lang, 'You must be a registered member to view the GITM team profiles.', 'يجب أن تكون عضواً مسجلاً لعرض ملفات فريق GITM.', 'Vous devez être un membre inscrit pour voir les profils de l\'équipe GITM.', '您必须是注册会员才能查看 GITM 团队资料。')}
+          </p>
+          <button 
+            onClick={() => setView('login')}
+            className="w-full py-3 bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold rounded-xl shadow-lg hover:shadow-cyan-500/50 hover:-translate-y-1 transition-all"
+          >
+            {txt(lang, 'Login or Register', 'تسجيل الدخول أو التسجيل', 'Se connecter ou s\'inscrire', '登录或注册')}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const filteredMembers = MOCK_MEMBERS.filter(m => {
     const matchSearch = m.name.toLowerCase().includes(search.toLowerCase());
     const matchBadge = filterBadge === 'all' || m.badges.includes(filterBadge);

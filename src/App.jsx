@@ -4,6 +4,7 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import ParticleBackground from './components/ParticleBackground';
 import AIChatBot from './components/AIChatBot';
+import Footer from './components/Footer';
 
 // Lazy loading all major components for better performance
 const Home = lazy(() => import('./components/Home'));
@@ -24,6 +25,7 @@ const VerifyCertificate = lazy(() => import('./components/VerifyCertificate'));
 const ProjectDetails = lazy(() => import('./components/ProjectDetails'));
 const VirtualLab = lazy(() => import('./components/VirtualLab'));
 const CollaborationBoard = lazy(() => import('./components/CollaborationBoard'));
+const LibraryBookDetails = lazy(() => import('./components/LibraryBookDetails'));
 
 // Dashboards
 const PresidentDashboard = lazy(() => import('./components/dashboards/PresidentDashboard'));
@@ -67,7 +69,7 @@ const AppContent = () => {
         <Route path="/" element={<Home setView={setView} />} />
         <Route path="/news" element={<NewsPage />} />
         <Route path="/news/:id" element={<NewsDetails />} />
-        <Route path="/news/global/:id" element={<GlobalNewsDetails />} />
+        <Route path="/news/global/article" element={<GlobalNewsDetails />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/events/:id" element={<EventDetails />} />
@@ -83,6 +85,7 @@ const AppContent = () => {
         <Route path="/register" element={<AuthForms initialMode="register" />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-certificate" element={<VerifyCertificate />} />
+        <Route path="/library/book" element={<LibraryBookDetails />} />
         <Route path="/dashboard/:hash" element={renderDashboard()} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -112,6 +115,8 @@ const AppContent = () => {
             {renderRoutes()}
           </Suspense>
         </main>
+        
+        <Footer />
       </div>
 
       {/* Global AI Assistant */}

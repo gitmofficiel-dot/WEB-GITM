@@ -1,67 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Globe, ChevronLeft, ExternalLink, Loader } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
 export default function GlobalNewsDetails() {
-  const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
-  const { lang, news: localNews } = useLanguage();
-  const [newsItem, setNewsItem] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchItem = async () => {
-      setLoading(true);
-      // Check if it's local first
-      const local = localNews.find(n => n.id.toString() === id);
-      if (local) {
-        setNewsItem({ ...local, isApi: false });
-        setLoading(false);
-        return;
-      }
-      
-      // If not local, fetch from Hacker News
-      try {
-        const res = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`);
-        const data = await res.json();
-        
-        let translatedTitle = data.title;
-        // Basic translation if requested lang is ar or fr
-        if (lang === 'ar' || lang === 'fr') {
-          try {
-            const trRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(data.title)}&langpair=en|${lang}`);
-            const trData = await trRes.json();
-            if (trData.responseData && trData.responseData.translatedText) {
-              translatedTitle = trData.responseData.translatedText;
-            }
-          } catch(e) {}
-        }
-        
-        setNewsItem({
-          id: data.id,
-          title: translatedTitle,
-          by: data.by,
-          url: data.url,
-          isApi: true
-        });
-      } catch (err) {
-        console.error(err);
-      }
-      setLoading(false);
-    };
-    fetchItem();
-  }, [id, lang, localNews]);
-
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader className="animate-spin text-cyan-500 w-12 h-12" />
-      </div>
-    );
-  }
+  const { lang } = useLanguage();
+  
+  const newsItem = location.state?.newsItem;
 
   if (!newsItem) {
     return (
@@ -96,21 +45,58 @@ export default function GlobalNewsDetails() {
               </a>
             )}
           </div>
-          <div className="flex-1 bg-white dark:bg-slate-950 relative flex items-center justify-center">
-            {newsItem.isApi && newsItem.url ? (
-              <iframe 
-                src={newsItem.url} 
-                className="absolute inset-0 w-full h-full border-0 bg-white"
-                title={newsItem.title}
-                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-              />
+          <div className="flex-1 bg-white dark:bg-slate-950 relative flex items-center justify-center p-6">
+            {newsItem.isApi ? (
+              <div className="max-w-3xl w-full flex flex-col items-center text-center space-y-6">
+                <div className="w-20 h-20 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/30 mb-4">
+                  <Globe className="text-white w-10 h-10" />
+                </div>
+                <h2 className="text-2xl md:text-4xl font-bold text-[#1e3a5f] dark:text-white leading-tight">
+                  {newsItem.title}
+                </h2>
+                <div className="flex items-center gap-4 text-sm font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full">
+                  <span>Source: {newsItem.by || newsItem.author || 'Global Tech News'}</span>
+                </div>
+                <div className="p-6 bg-cyan-50 dark:bg-slate-900 rounded-2xl border border-cyan-200 dark:border-slate-800 w-full shadow-inner mt-4">
+                  <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+                    {lang === 'ar' ? 'هذا المقال الإخباري من مصدر خارجي عالمي. يمكنك قراءة المقال الكامل باللغة الأصلية أو استخدام أداة المترجم الذكي لدينا لترجمته.' :
+                     lang === 'fr' ? 'Cet article provient d\'une source externe. Lisez-le dans la langue d\'origine ou utilisez notre traducteur IA.' :
+                     lang === 'zh' ? '这篇新闻文章来自全球外部来源。您可以用原始语言阅读整篇文章，或使用我们的AI翻译工具。' :
+                     'This news article is from an external global source. You can read the full article in its original language or use our AI Translator tool.'}
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a 
+                      href={newsItem.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl shadow-lg hover:shadow-cyan-500/50 hover:-translate-y-1 transition-all flex items-center gap-2 w-full sm:w-auto justify-center text-lg"
+                    >
+                      <span>{txt(lang, 'Read Full Article', 'قراءة المقال الكامل', 'Lire l\'article complet', '阅读全文')}</span>
+                      <ExternalLink size={20} />
+                    </a>
+                    {newsItem.url && (
+                      <a 
+                        href={`https://translate.google.com/translate?sl=auto&tl=${lang}&u=${encodeURIComponent(newsItem.url)}`}
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="px-8 py-4 bg-slate-200 dark:bg-slate-800 text-[#1e3a5f] dark:text-white font-bold rounded-xl shadow-md hover:bg-slate-300 dark:hover:bg-slate-700 hover:-translate-y-1 transition-all flex items-center gap-2 w-full sm:w-auto justify-center text-lg border border-slate-300 dark:border-slate-700"
+                      >
+                        <Globe size={20} className="text-cyan-600 dark:text-cyan-400" />
+                        <span>{txt(lang, 'Google Translate', 'ترجمة عبر جوجل', 'Traduire via Google', '谷歌翻译')}</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="max-w-2xl text-center p-8">
-                <h2 className="text-2xl font-bold text-[#1e3a5f] dark:text-white mb-4">{newsItem.title}</h2>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg">
-                  {newsItem.isApi ? 'No readable content provided by the API.' : (lang === 'ar' ? newsItem.summary_ar : newsItem.summary_en)}
+                <h2 className="text-3xl font-bold text-[#1e3a5f] dark:text-white mb-6">{newsItem.title}</h2>
+                <div className="prose dark:prose-invert text-slate-600 dark:text-slate-300 leading-relaxed text-lg mx-auto">
+                  {lang === 'ar' ? newsItem.summary_ar : newsItem.summary_en || newsItem.summary_fr || newsItem.summary_ar}
+                </div>
+                <p className="mt-8 text-sm text-slate-400 font-bold bg-slate-100 dark:bg-slate-800 w-fit mx-auto px-4 py-2 rounded-full">
+                  Source: GITM Official • {newsItem.author}
                 </p>
-                <p className="mt-8 text-sm text-slate-400 font-bold">Source: {newsItem.by || newsItem.author}</p>
               </div>
             )}
           </div>

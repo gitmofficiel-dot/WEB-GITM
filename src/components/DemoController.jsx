@@ -13,6 +13,8 @@ const DemoController = () => {
     { id: 'student', label: t('auth.roles.student'), email: 'student@gitm.ma' },
     { id: 'partner', label: t('auth.roles.partner'), email: 'sponsor@cnrst.ma' },
     { id: 'university', label: t('auth.roles.university'), email: 'partner.uni@um6p.ma' },
+    { id: 'content_manager', label: t('auth.roles.contentManager'), email: 'content@gitm.ma' },
+    { id: 'supervisor', label: t('auth.roles.supervisor'), email: 'supervisor@gitm.ma' },
   ];
 
   const handleRoleSwitch = (roleId, email, name) => {

@@ -93,13 +93,15 @@ export default function CourseProgress({ course, lessons = [], completedLessonId
                 })}
             </div>
 
+            {percentage === 100 && (
                 <div className="mt-8">
                     <CertificateGenerator 
                         studentName={studentName} 
-                        courseName={course.title} 
+                        courseName={course?.title || course?.title_en || "Course"} 
                         issueDate={new Date().toLocaleDateString(lang === 'ar' ? 'ar-MA' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })} 
                     />
                 </div>
+            )}
         </div>
     );
 }

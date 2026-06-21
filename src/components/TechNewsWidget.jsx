@@ -16,44 +16,32 @@ const TechNewsWidget = () => {
       setLoading(true);
       setError(false);
       try {
-        // Fetch top stories from Hacker News API (Public API)
-        const topStoriesRes = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
-        if (!topStoriesRes.ok) throw new Error('Failed to fetch');
-        const storyIds = await topStoriesRes.json();
+        const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
+        // GNews uses 'ar', 'en', 'fr', 'zh' as language codes, same as our app
+        const url = `https://gnews.io/api/v4/top-headlines?category=technology&lang=${newsLang}&max=5&apikey=${apiKey}`;
         
-        // Fetch details for top 5 stories
-        const storyPromises = storyIds.slice(0, 5).map(id => 
-          fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r => r.json())
-        );
-        const stories = await Promise.all(storyPromises);
-
-        // Translate titles if needed
-        const translatedStories = await Promise.all(stories.map(async (s) => {
-          let translatedTitle = s.title;
-          if (newsLang !== 'en') {
-            try {
-              const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(s.title)}&langpair=en|${newsLang}`);
-              const data = await res.json();
-              if (data.responseData && data.responseData.translatedText) {
-                translatedTitle = data.responseData.translatedText;
-              }
-            } catch (e) {
-              console.error('Translation failed', e);
-            }
-          }
-          return {
-            id: s.id,
-            title: translatedTitle,
-            score: s.score,
-            by: s.by,
-            url: s.url,
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Failed to fetch');
+        
+        const data = await res.json();
+        
+        if (data.articles) {
+          const stories = data.articles.map(article => ({
+            id: article.url, // using URL as unique ID
+            title: article.title,
+            originalTitle: article.title,
+            by: article.source.name,
+            url: article.url,
+            image: article.image,
             isApi: true
-          };
-        }));
-
-        setNews(translatedStories);
+          }));
+          setNews(stories);
+        } else {
+          setNews([]);
+        }
         setLoading(false);
       } catch (err) {
+        console.error("GNews Error:", err);
         setError(true);
         setLoading(false);
       }
@@ -89,6 +77,7 @@ const TechNewsWidget = () => {
           <option value="ar">{lang === 'ar' ? 'العربية' : 'Arabic'}</option>
           <option value="en">{lang === 'ar' ? 'الإنجليزية' : 'English'}</option>
           <option value="fr">{lang === 'ar' ? 'الفرنسية' : 'French'}</option>
+          <option value="zh">{lang === 'ar' ? 'الصينية' : 'Chinese'}</option>
         </select>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -104,33 +93,31 @@ const TechNewsWidget = () => {
                 <Globe size={10} /> {item.isApi ? (lang === 'ar' ? 'أخبار عالمية' : 'Global News') : (lang === 'ar' ? 'أخبار محلية' : 'Local News')}
               </div>
               
-              <button onClick={() => navigate(`/news/global/${item.id}`)} className="text-left w-full">
+              <button onClick={() => navigate('/news/global/article', { state: { newsItem: item } })} className="text-left w-full">
                 <h4 className="font-semibold text-sm text-[#1e3a5f] dark:text-slate-200 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-3 leading-snug">
                   {item.title}
                 </h4>
               </button>
             </div>
             <div className="flex items-center justify-between mt-3">
-              <span className="text-xs text-slate-500 dark:text-slate-400">
-                {item.isApi ? `${item.score} points • ${item.by}` : `GITM Official • ${item.by}`}
+              <span className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[120px]">
+                {item.isApi ? `Source: ${item.by}` : `GITM • ${item.by}`}
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 <button 
                   onClick={() => toggleSave('news', item)}
-                  className={`p-1 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'text-slate-400 hover:bg-cyan-200 dark:hover:bg-slate-700'}`}
+                  className={`p-1.5 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'text-slate-400 hover:bg-cyan-200 dark:hover:bg-slate-700'}`}
                   title={isSaved ? 'Unsave' : 'Save'}
                 >
                   <Bookmark size={14} className={isSaved ? 'fill-current' : ''} />
                 </button>
-                <button onClick={() => navigate(`/news/global/${item.id}`)} className="p-1 text-slate-400 hover:text-cyan-500">
+                <button onClick={() => navigate('/news/global/article', { state: { newsItem: item } })} className="p-1.5 text-slate-400 hover:text-cyan-500 bg-slate-100 dark:bg-slate-800 rounded-full">
                   <ExternalLink size={14} />
                 </button>
               </div>
             </div>
           </div>
         )})}
-      </div>
-
       </div>
     </div>
   );
