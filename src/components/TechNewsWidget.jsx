@@ -10,6 +10,14 @@ const TechNewsWidget = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  
+  const MOCK_NEWS = [
+    { id: 'm1', title: 'GITM Launches New AI Research Lab', by: 'GITM Official', isApi: false, url: '#' },
+    { id: 'm2', title: 'The Future of Quantum Computing in Morocco', by: 'Tech Review', isApi: true, url: '#' },
+    { id: 'm3', title: 'Global Tech Summit 2026 Announced', by: 'GITM Events', isApi: false, url: '#' },
+    { id: 'm4', title: 'Breakthrough in Renewable Energy Tech', by: 'Science Daily', isApi: true, url: '#' },
+    { id: 'm5', title: 'New Cybersecurity Standards Released', by: 'Cyber News', isApi: true, url: '#' }
+  ];
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -17,19 +25,16 @@ const TechNewsWidget = () => {
       setError(false);
       try {
         const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
-        // Wrap with CORS proxy to bypass browser restrictions
-        // corsproxy.io might return 403 for some APIs, so we use allorigins.win
-        const baseUrl = `https://gnews.io/api/v4/top-headlines?category=technology&lang=${newsLang}&max=5&apikey=${apiKey}`;
-        const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(baseUrl)}`;
+        const url = `https://gnews.io/api/v4/top-headlines?category=technology&lang=${newsLang}&max=5&apikey=${apiKey}`;
         
         const res = await fetch(url);
-        if (!res.ok) throw new Error('Failed to fetch');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         
         const data = await res.json();
         
-        if (data.articles) {
+        if (data.articles && data.articles.length > 0) {
           const stories = data.articles.map(article => ({
-            id: article.url, // using URL as unique ID
+            id: article.url,
             title: article.title,
             originalTitle: article.title,
             by: article.source.name,
@@ -39,12 +44,12 @@ const TechNewsWidget = () => {
           }));
           setNews(stories);
         } else {
-          setNews([]);
+          setNews(MOCK_NEWS);
         }
         setLoading(false);
       } catch (err) {
-        console.error("GNews Error:", err);
-        setError(true);
+        console.warn("GNews Error (falling back to mock data):", err);
+        setNews(MOCK_NEWS);
         setLoading(false);
       }
     };
