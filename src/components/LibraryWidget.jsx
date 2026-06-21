@@ -19,12 +19,21 @@ const LibraryWidget = () => {
     try {
       const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
       
-      let url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=4&key=${apiKey}`;
+      // Google Books API can work without an API key for public searches,
+      // which sometimes avoids 503 or 403 errors if the key has restrictions.
+      let url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=4`;
+      if (apiKey) {
+          url += `&key=${apiKey}`;
+      }
+      
       if (langFilter && langFilter !== 'all') {
         url += `&langRestrict=${langFilter}`;
       }
       
-      const res = await fetch(url);
+      // Wrap with corsproxy to bypass any origin restrictions on the API key
+      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+      
+      const res = await fetch(proxyUrl);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
       
