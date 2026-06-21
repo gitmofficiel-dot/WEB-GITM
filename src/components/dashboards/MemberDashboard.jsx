@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
-import { LayoutDashboard, Calendar, Award, User, Code, Zap, Heart } from 'lucide-react';
+import { LayoutDashboard, Calendar, Award, User, Code, Zap, Heart, UserPlus, Search } from 'lucide-react';
 import UserProfileSettings from './UserProfileSettings';
 
 export default function MemberDashboard() {
@@ -27,6 +27,7 @@ export default function MemberDashboard() {
       <div className="flex flex-wrap gap-2 pb-4 border-b border-white/10">
         {[
           { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
+          { id: 'projects', icon: Code, label: lang === 'ar' ? 'مشاريعي' : 'My Projects' },
           { id: 'events', icon: Calendar, label: lang === 'ar' ? 'الأحداث' : 'Events' },
           { id: 'certificates', icon: Award, label: lang === 'ar' ? 'الشهادات' : 'Certificates' },
           { id: 'profile', icon: User, label: lang === 'ar' ? 'الملف الشخصي' : 'Profile' }
@@ -103,6 +104,54 @@ export default function MemberDashboard() {
               </div>
             </div>
 
+          </motion.div>
+        ) : activeTab === 'projects' ? (
+          <motion.div key="projects" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
+            <div className="glass-card p-6">
+              <h3 className="text-xl font-orbitron text-white mb-6 flex items-center gap-2">
+                <Code className="text-cyan-400" />
+                {lang === 'ar' ? 'مشاريعي وفرق العمل' : 'My Projects & Teams'}
+              </h3>
+
+              {/* Project Card with Creator Logic */}
+              <div className="bg-white/5 dark:bg-slate-900/40 p-6 rounded-2xl border border-white/10 dark:border-slate-800">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h4 className="font-bold text-xl text-white">Smart Irrigation System</h4>
+                    <span className="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-2 py-1 rounded-full mt-2 inline-block">Active Project</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-rose-400 font-bold">{lang === 'ar' ? 'أنت منشئ هذا المشروع' : 'You are the Creator'}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 mt-4 mb-6 text-sm text-gray-400">
+                  <span><User size={14} className="inline mr-1"/> 4 Team Members</span>
+                  <span><Zap size={14} className="inline mr-1"/> Frontend Dev Role</span>
+                </div>
+
+                {/* PROJECT CREATOR EXCLUSIVE UI */}
+                <div className="border-t border-white/10 pt-6">
+                  <h5 className="font-bold text-gray-300 mb-3 flex items-center gap-2"><UserPlus size={18} className="text-rose-400"/> {lang === 'ar' ? 'إضافة مسجلين لفريقك' : 'Add Registered Users to Team'}</h5>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18}/>
+                      <input 
+                        type="text" 
+                        placeholder={lang === 'ar' ? 'ابحث عن طلاب مسجلين...' : 'Search registered students...'}
+                        className="w-full bg-black/20 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-rose-500"
+                      />
+                    </div>
+                    <button className="bg-rose-500 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-rose-600 transition-colors">
+                      {lang === 'ar' ? 'إضافة العضو' : 'Add Member'}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-3">
+                    {lang === 'ar' ? '* كمنشئ المشروع، يمكنك فقط رؤية هذه الخاصية.' : '* As the project creator, only you can see this feature.'}
+                  </p>
+                </div>
+              </div>
+            </div>
           </motion.div>
         ) : (
           <motion.div key="wip" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-12 text-center">

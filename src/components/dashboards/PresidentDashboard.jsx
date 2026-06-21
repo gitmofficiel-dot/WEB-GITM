@@ -6,7 +6,7 @@ import {
   Edit, Trash2, Bot, TrendingUp, AlertTriangle, Plus, Mail, Video, 
   Megaphone, CheckCircle, XCircle, LayoutDashboard, Settings, BrainCircuit,
   GraduationCap, Calendar, Database, Eye, Image, X, Save, Target, MapPin,
-  Link, UserPlus, Handshake
+  Link, UserPlus, Handshake, Info, Search
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -128,6 +128,7 @@ export default function PresidentDashboard() {
   const tabs = [
     { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
     { id: 'vision', icon: Target, label: lang === 'ar' ? 'الرؤية الاستراتيجية' : 'Strategic Vision' },
+    { id: 'about_cms', icon: Info, label: lang === 'ar' ? 'إدارة صفحة من نحن' : 'About Us CMS' },
     { id: 'members', icon: Shield, label: lang === 'ar' ? 'إدارة التوظيف والصلاحيات' : 'Roles & Hiring' },
     { id: 'partners', icon: Handshake, label: lang === 'ar' ? 'الشركات والجمعيات' : 'Partners & NGOs' },
     { id: 'academy', icon: GraduationCap, label: lang === 'ar' ? 'الأكاديمية والتداريب' : 'Academy & Training' },
@@ -371,6 +372,54 @@ export default function PresidentDashboard() {
               </div>
             )}
 
+            {/* ABOUT US CMS TAB */}
+            {activeTab === 'about_cms' && (
+              <div className="space-y-6">
+                <div className="glass-card rounded-3xl p-6 border-t-4 border-cyan-500">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Info className="text-cyan-500" size={24}/> {lang === 'ar' ? 'نظام إدارة محتوى (من نحن)' : 'About Us Content Management'}
+                    </h3>
+                    <button className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-lg hover:shadow-cyan-500/30 transition-shadow">
+                      {lang === 'ar' ? 'حفظ التغييرات ونشر' : 'Save & Publish'}
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">
+                        {lang === 'ar' ? 'رؤية المجموعة (Vision)' : 'Our Vision'}
+                      </label>
+                      <textarea 
+                        className="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[#1e3a5f] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all h-24"
+                        defaultValue={lang === 'ar' ? 'الريادة في تطوير الذكاء الاصطناعي المغربي وتصديره للعالم.' : 'Leading the development of Moroccan AI and exporting it to the world.'}
+                      ></textarea>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">
+                        {lang === 'ar' ? 'رسالتنا (Mission)' : 'Our Mission'}
+                      </label>
+                      <textarea 
+                        className="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[#1e3a5f] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all h-24"
+                        defaultValue={lang === 'ar' ? 'توفير بيئة بحثية متقدمة للمواهب المغربية، وتمكينهم من بناء أنظمة ذكية تحل مشاكل واقعية.' : 'Providing an advanced research environment for Moroccan talents to build smart systems.'}
+                      ></textarea>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">
+                        {lang === 'ar' ? 'تاريخ وإنجازات المجموعة (History & Milestones)' : 'Group History & Milestones'}
+                      </label>
+                      <textarea 
+                        className="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[#1e3a5f] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all h-32"
+                        defaultValue={lang === 'ar' ? 'تأسست GITM في عام 2024 لتوحيد جهود المهندسين المغاربة. قمنا بتدريب المئات وشاركنا في الهاكاثونات الوطنية والدولية بنجاح مبهر.' : 'Founded in 2024, GITM unites Moroccan engineers. We have trained hundreds and successfully participated in national and international hackathons.'}
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* MEMBERS TAB (ROLE MANAGEMENT) */}
             {activeTab === 'members' && (
               <div className="space-y-6">
@@ -513,8 +562,51 @@ export default function PresidentDashboard() {
               </div>
             )}
 
-            {/* EVENTS TAB */}
+            {/* EVENTS & PROJECTS TAB (PROJECT CREATOR LOGIC INCLUDED HERE FOR ADMIN) */}
             {activeTab === 'events' && (
+              <div className="space-y-6">
+                <div className="glass-card rounded-3xl p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Zap className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة المشاريع وفرق العمل' : 'Projects & Teams Management'}
+                    </h3>
+                  </div>
+
+                  <div className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h4 className="font-bold text-xl text-[#1e3a5f] dark:text-white">Smart Irrigation System</h4>
+                        <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-full mt-2 inline-block">Active Project</span>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-slate-500">{lang === 'ar' ? 'أنت منشئ هذا المشروع' : 'You are the Creator'}</p>
+                      </div>
+                    </div>
+
+                    {/* PROJECT CREATOR EXCLUSIVE UI */}
+                    <div className="mt-6 border-t border-slate-200 dark:border-slate-700 pt-6">
+                      <h5 className="font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2"><UserPlus size={18}/> {lang === 'ar' ? 'إضافة أعضاء لفريق مشروعك' : 'Add Team Members to Your Project'}</h5>
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18}/>
+                          <input 
+                            type="text" 
+                            placeholder={lang === 'ar' ? 'ابحث بالاسم أو رقم العضوية...' : 'Search registered members by name or ID...'}
+                            className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          />
+                        </div>
+                        <button className="bg-slate-800 dark:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-900 dark:hover:bg-slate-600 transition-colors">
+                          {lang === 'ar' ? 'إضافة' : 'Add Member'}
+                        </button>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-2">
+                        {lang === 'ar' ? '* هذه الخاصية تظهر فقط لمنشئ المشروع.' : '* This feature is exclusive to the project creator.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
               <div className="space-y-6">
                 <div className="glass-card rounded-3xl p-6">
                   <div className="flex justify-between items-center mb-6">

@@ -1,211 +1,132 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Calendar, User, Tag, ChevronRight, Pin, Bookmark, ShieldCheck, X } from 'lucide-react';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Newspaper, Calendar, ChevronRight, User, Hash } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import TechNewsWidget from './TechNewsWidget';
 
-const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
-
-const CATEGORIES = ['All', 'Technology', 'Events', 'Academy', 'Partners'];
-
-import { useNavigate } from 'react-router-dom';
+const MOCK_NEWS = [
+  {
+    id: 1,
+    title: { en: 'GITM Partners with OCP for AI Solutions', fr: 'GITM en partenariat avec OCP pour des solutions IA', ar: 'GITM تتعاون مع OCP لحلول الذكاء الاصطناعي' },
+    summary: { 
+      en: 'Groupe Innovation Technologique Maroc signs a strategic MOU with OCP Group to develop sustainable AI models for agriculture.', 
+      fr: 'Le Groupe Innovation Technologique Maroc signe un protocole d\'accord stratégique avec le Groupe OCP pour développer des modèles d\'IA durables pour l\'agriculture.', 
+      ar: 'مجموعة الابتكار التكنولوجي المغرب توقع مذكرة تفاهم استراتيجية مع مجموعة OCP لتطوير نماذج ذكاء اصطناعي مستدامة للزراعة.' 
+    },
+    date: '2026-06-15',
+    author: 'Amine B.',
+    category: 'Partnership',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80'
+  },
+  {
+    id: 2,
+    title: { en: 'UM5 Hackathon Winners Announced', fr: 'Annonce des gagnants du Hackathon UM5', ar: 'الإعلان عن الفائزين في هاكاثون جامعة محمد الخامس' },
+    summary: { 
+      en: 'Our GITM members successfully secured the first prize at the recent UM5 AI & Web3 Hackathon with their decentralized voting app.', 
+      fr: 'Nos membres GITM ont remporté le premier prix lors du récent Hackathon IA & Web3 de l\'UM5 avec leur application de vote décentralisée.', 
+      ar: 'نجح أعضاء GITM في الحصول على الجائزة الأولى في هاكاثون الذكاء الاصطناعي و Web3 الأخير لجامعة محمد الخامس من خلال تطبيق التصويت اللامركزي.' 
+    },
+    date: '2026-05-28',
+    author: 'Sara M.',
+    category: 'Achievement',
+    image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80'
+  },
+  {
+    id: 3,
+    title: { en: 'Launch of Darija NLP Model', fr: 'Lancement du modèle NLP Darija', ar: 'إطلاق نموذج NLP للدارجة' },
+    summary: { 
+      en: 'GITM unveils a new open-source NLP model trained specifically on Moroccan Darija, achieving state-of-the-art accuracy.', 
+      fr: 'Le GITM dévoile un nouveau modèle NLP open-source formé spécifiquement sur la Darija marocaine, atteignant une précision de pointe.', 
+      ar: 'GITM تكشف عن نموذج NLP جديد مفتوح المصدر مدرب خصيصًا على الدارجة المغربية، محققًا دقة غير مسبوقة.' 
+    },
+    date: '2026-04-10',
+    author: 'Youssef K.',
+    category: 'Release',
+    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&q=80'
+  }
+];
 
 export default function NewsPage() {
-  const navigate = useNavigate();
-  const { lang, news, savedItems, toggleSave } = useLanguage();
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('All');
-  const [visibleCount, setVisibleCount] = useState(5);
-
-  const filteredNews = news.filter(item => {
-    const matchCat = category === 'All' || item.category === category || item.category.toLowerCase() === category.toLowerCase();
-    const matchSearch = 
-      (item.title_en && item.title_en.toLowerCase().includes(search.toLowerCase())) || 
-      (item.title_ar && item.title_ar.includes(search)) ||
-      (item.summary_en && item.summary_en.toLowerCase().includes(search.toLowerCase()));
-    return matchCat && matchSearch;
-  });
-
-  const featuredNews = filteredNews.find(n => n.pinned || n.featured);
-  const regularNews = filteredNews.filter(n => !(n.pinned || n.featured)).slice(0, visibleCount);
+  const { lang } = useLanguage();
 
   return (
-    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-[#1e3a5f] dark:text-slate-200 transition-colors duration-300">
+    <div className="min-h-screen grid-bg py-24 px-6 md:px-12 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto relative z-10">
         
-        {/* Header Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
-        >
-          <h1 className="text-4xl md:text-6xl font-orbitron font-bold gradient-text mb-6">
-            {txt(lang, 'Latest News', 'آخر الأخبار', 'Dernières Nouvelles', '最新新闻')}
-          </h1>
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            {txt(lang, 'Stay updated with the latest innovations, events, and milestones from GITM.', 'ابق على اطلاع بأحدث الابتكارات والأحداث والإنجازات من المجموعة.', 'Restez au courant des dernières innovations, événements et étapes du GITM.', '随时了解GITM的最新创新、活动和里程碑。')}
-          </p>
-        </motion.div>
-
-        {/* Filters and Search */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
-          <div className="flex flex-wrap justify-center gap-2">
-            {CATEGORIES.map((cat, idx) => (
-              <motion.button
-                key={cat}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => { setCategory(cat); setVisibleCount(5); }}
-                className={`px-5 py-2 rounded-full font-medium transition-all duration-300 ${category === cat ? 'bg-teal-600 dark:bg-cyan-500 text-white shadow-[0_0_15px_rgba(0,229,255,0.4)]' : 'glass-card hover-lift'}`}
-              >
-                {cat}
-              </motion.button>
-            ))}
-          </div>
-          
-          <div className="relative w-full md:w-80">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={txt(lang, 'Search news...', 'ابحث في الأخبار...', 'Rechercher...', '搜索新闻...')}
-              className="w-full glass-card py-3 px-12 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-cyan-500 text-[#1e3a5f] dark:text-white"
-            />
-            <Search className={`absolute top-3 ${lang === 'ar' ? 'right-4' : 'left-4'} text-slate-400`} size={20} />
-          </div>
+        {/* Header */}
+        <div className="text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-card border border-teal-500/30 mb-6"
+          >
+            <Newspaper className="w-5 h-5 text-teal-400" />
+            <span className="font-orbitron text-teal-300 font-medium tracking-wide">
+              {lang === 'ar' ? 'الأخبار والتحديثات' : lang === 'fr' ? 'Actualités' : 'News & Updates'}
+            </span>
+          </motion.div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-6xl font-bold mb-6 font-orbitron gradient-text"
+          >
+            {lang === 'ar' ? 'أحدث الإعلانات' : lang === 'fr' ? 'Dernières Annonces' : 'Latest Announcements'}
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-slate-400 max-w-2xl mx-auto text-lg"
+          >
+            {lang === 'ar' ? 'ابق على اطلاع بآخر أخبار التكنولوجيا والشراكات وإنجازات فريقنا في المغرب.' : 
+             lang === 'fr' ? 'Restez informé de nos dernières actualités technologiques, partenariats et réalisations au Maroc.' : 
+             'Stay updated with our latest tech news, partnerships, and achievements in Morocco.'}
+          </motion.p>
         </div>
 
-        {/* Global Tech News Widget */}
-        <div className="mb-12">
-          <TechNewsWidget />
-        </div>
-
-        {/* Featured News */}
-        <AnimatePresence mode="wait">
-          {featuredNews && category === 'All' && !search && (() => {
-            const isSaved = savedItems?.news?.some(n => n.id === featuredNews.id);
-            return (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="mb-16 card-3d glass-card rounded-3xl overflow-hidden group"
+        {/* News Feed */}
+        <div className="grid gap-8 max-w-5xl mx-auto">
+          {MOCK_NEWS.map((news, index) => (
+            <motion.div 
+              key={news.id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="glass-card hover-lift card-3d p-1 rounded-2xl overflow-hidden group border border-slate-700/50 hover:border-teal-500/50 transition-colors"
             >
-              <div className="flex flex-col lg:flex-row h-full">
-                <div className={`lg:w-1/2 h-64 lg:h-auto bg-gradient-to-br from-teal-500 to-emerald-600 relative overflow-hidden flex items-center justify-center`}>
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
-                  <Pin className="text-white w-20 h-20 opacity-50 drop-shadow-lg transform group-hover:scale-110 transition-transform duration-500" />
-                  <div className="absolute top-4 left-4 glass px-4 py-1 rounded-full text-white font-bold text-sm flex items-center gap-2">
-                    <Pin size={14} /> {txt(lang, 'Featured', 'مميز', 'En vedette', '精选')}
+              <div className="flex flex-col md:flex-row gap-6 p-6 rounded-xl bg-slate-900/50">
+                <div className="w-full md:w-1/3 h-48 md:h-auto rounded-xl overflow-hidden relative">
+                  <img src={news.image} alt="news" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur px-3 py-1 rounded-full border border-teal-500/30 flex items-center gap-1">
+                    <Hash className="w-3 h-3 text-teal-400" />
+                    <span className="text-xs font-medium text-teal-300">{news.category}</span>
                   </div>
                 </div>
-                <div className="lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center relative z-10">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4 text-sm text-teal-600 dark:text-cyan-400 font-medium">
-                      <span className="flex items-center gap-1"><Calendar size={16}/> {featuredNews.date}</span>
-                      <span className="flex items-center gap-1"><Tag size={16}/> {featuredNews.category}</span>
-                    </div>
-                    <button 
-                      onClick={() => toggleSave('news', featuredNews)}
-                      className={`p-2 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'bg-cyan-100 text-slate-400 hover:bg-cyan-200 dark:bg-slate-800 dark:hover:bg-slate-700'}`}
-                    >
-                      <Bookmark size={20} className={isSaved ? 'fill-current' : ''} />
-                    </button>
+                <div className="w-full md:w-2/3 flex flex-col justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-3 font-orbitron group-hover:text-teal-300 transition-colors">
+                      {news.title[lang] || news.title.en}
+                    </h2>
+                    <p className="text-slate-400 mb-6 line-clamp-3">
+                      {news.summary[lang] || news.summary.en}
+                    </p>
                   </div>
-                  
-                  <div className="mb-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 text-xs font-bold w-fit">
-                    <ShieldCheck size={14} /> {txt(lang, 'Official GITM News', 'خبر رسمي - فريق GITM', 'Officiel GITM', '官方GITM新闻')}
-                  </div>
-                  
-                  <h2 className="text-3xl md:text-4xl font-orbitron font-bold mb-6 group-hover:text-teal-600 dark:group-hover:text-cyan-400 transition-colors">
-                    {lang === 'ar' ? featuredNews.title_ar : featuredNews.title_en}
-                  </h2>
-                  <p className="text-slate-600 dark:text-slate-300 text-lg mb-8 line-clamp-3">
-                    {lang === 'ar' ? featuredNews.summary_ar : featuredNews.summary_en}
-                  </p>
-                  <div className="flex items-center justify-between mt-auto">
-                    <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                      <div className="w-10 h-10 rounded-full bg-cyan-200 dark:bg-slate-700 flex items-center justify-center">
-                        <User size={20} />
-                      </div>
-                      <span className="font-medium">{featuredNews.author}</span>
+                  <div className="flex flex-wrap items-center justify-between gap-4 mt-auto border-t border-slate-700/50 pt-4">
+                    <div className="flex items-center gap-4 text-sm text-slate-400">
+                      <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-teal-500"/> {news.date}</span>
+                      <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-teal-500"/> {news.author}</span>
                     </div>
-                    <button onClick={() => navigate(`/news/${featuredNews.id}`)} className="btn-primary rounded-full px-6 py-2 flex items-center gap-2 group-hover:shadow-[0_0_20px_rgba(13,148,136,0.6)] dark:group-hover:shadow-[0_0_20px_rgba(0,229,255,0.6)] transition-all">
-                      {txt(lang, 'Read More', 'اقرأ المزيد', 'Lire la suite', '阅读更多')} <ChevronRight size={18} className={`${lang === 'ar' ? 'rotate-180' : ''}`} />
+                    <button className="flex items-center gap-2 text-teal-400 hover:text-teal-300 font-medium transition-colors">
+                      {lang === 'ar' ? 'اقرأ المزيد' : lang === 'fr' ? 'Lire la suite' : 'Read Article'}
+                      <ChevronRight className={`w-4 h-4 ${lang === 'ar' ? 'rotate-180' : ''}`} />
                     </button>
                   </div>
                 </div>
               </div>
             </motion.div>
-          )})}
-        </AnimatePresence>
-
-        {/* News Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <AnimatePresence>
-            {regularNews.map((item, idx) => {
-              const isSaved = savedItems?.news?.some(n => n.id === item.id);
-              return (
-              <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className="card-3d glass-card rounded-2xl overflow-hidden flex flex-col group relative"
-              >
-                <div className={`h-32 bg-gradient-to-tr from-blue-500 to-cyan-600 relative overflow-hidden flex items-center justify-center`}>
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-all duration-500" />
-                  <div className="glass px-3 py-1 rounded-full absolute top-4 right-4 text-white text-xs font-bold tracking-wider">
-                    {item.category}
-                  </div>
-                  <div className="glass px-3 py-1 rounded-full absolute top-4 left-4 text-white text-xs font-bold flex items-center gap-1">
-                    <ShieldCheck size={12} /> {txt(lang, 'Official', 'رسمي', 'Officiel', '官方')}
-                  </div>
-                </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-4">
-                      <span className="flex items-center gap-1"><Calendar size={14}/> {item.date}</span>
-                      <span className="flex items-center gap-1"><User size={14}/> {item.author}</span>
-                    </div>
-                    <button 
-                      onClick={() => toggleSave('news', item)}
-                      className={`p-1.5 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'text-slate-400 hover:bg-cyan-200 dark:hover:bg-slate-700'}`}
-                    >
-                      <Bookmark size={16} className={isSaved ? 'fill-current' : ''} />
-                    </button>
-                  </div>
-                  <h3 className="text-xl font-orbitron font-bold mb-3 group-hover:text-teal-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-2">
-                    {lang === 'ar' ? item.title_ar : item.title_en}
-                  </h3>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 flex-grow line-clamp-3">
-                    {lang === 'ar' ? item.summary_ar : item.summary_en}
-                  </p>
-                  <button onClick={() => navigate(`/news/${item.id}`)} className="text-teal-600 dark:text-cyan-400 font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all mt-auto self-start">
-                    {txt(lang, 'Read Article', 'اقرأ المقال', 'Lire l\'article', '阅读文章')} <ChevronRight size={16} className={`${lang === 'ar' ? 'rotate-180' : ''}`} />
-                  </button>
-                </div>
-              </motion.div>
-            )})}
-          </AnimatePresence>
+          ))}
         </div>
-
-        {/* Load More */}
-        {regularNews.length < filteredNews.filter(n => !n.featured).length && (
-          <div className="mt-16 text-center">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setVisibleCount(prev => prev + 3)}
-              className="btn-glass px-8 py-3 rounded-full font-orbitron tracking-widest text-sm uppercase"
-            >
-              {txt(lang, 'Load More', 'تحميل المزيد', 'Charger plus', '加载更多')}
-            </motion.button>
-          </div>
-        )}
-
       </div>
     </div>
   );

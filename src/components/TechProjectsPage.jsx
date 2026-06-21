@@ -1,175 +1,136 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Github, ExternalLink, Code2, Play, CheckCircle, Clock, ChevronDown, Layers, FileDown, Users } from 'lucide-react';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Code, Github, ExternalLink, Cpu, Database, Layers } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
-
-const PROJECTS = [
+const MOCK_PROJECTS = [
   {
     id: 1,
-    name: 'Maroc AI Health Diagnostix',
-    desc: { en: 'An AI-powered diagnostic tool helping local clinics analyze medical imaging faster.', ar: 'أداة تشخيص مدعومة بالذكاء الاصطناعي تساعد العيادات المحلية على تحليل الصور الطبية بشكل أسرع.' },
-    status: 'in-progress',
-    progress: 75,
-    github: 'https://github.com/gitm/health-ai',
-    tech: ['Python', 'TensorFlow', 'React', 'FastAPI'],
-    team: ['AM', 'SL'],
-    color: 'from-blue-500 to-cyan-500',
-    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80'
+    title: { en: 'Moroccan Darija NLP', fr: 'NLP Darija Marocaine', ar: 'معالجة اللغات الطبيعية للدارجة' },
+    description: { 
+      en: 'An open-source transformer model fine-tuned to understand and generate Moroccan Darija text.',
+      fr: 'Un modèle transformer open-source affiné pour comprendre et générer du texte en Darija marocaine.',
+      ar: 'نموذج محول مفتوح المصدر تم تحسينه لفهم وإنشاء النصوص بالدارجة المغربية.'
+    },
+    tech: ['Python', 'PyTorch', 'HuggingFace'],
+    icon: <Database className="w-8 h-8 text-teal-400" />,
+    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&q=80',
+    github: '#'
   },
   {
     id: 2,
-    name: 'Smart Agri-IoT Network',
-    desc: { en: 'IoT sensor network for optimizing water usage in Moroccan agriculture.', ar: 'شبكة مستشعرات إنترنت الأشياء لتحسين استخدام المياه في الزراعة المغربية.' },
-    status: 'completed',
-    progress: 100,
-    github: 'https://github.com/gitm/agri-iot',
-    tech: ['C++', 'Arduino', 'Node.js', 'MongoDB'],
-    team: ['KM', 'YM'],
-    color: 'from-green-500 to-emerald-600',
-    image: 'https://images.unsplash.com/photo-1628102491629-77858ab5721d?w=800&q=80'
+    title: { en: 'Smart Agri-Sense', fr: 'Smart Agri-Sense', ar: 'الاستشعار الزراعي الذكي' },
+    description: { 
+      en: 'IoT-based soil monitoring system using ESP32 and ML predictions for optimal irrigation in Moroccan farms.',
+      fr: 'Système de surveillance du sol basé sur l\'IoT utilisant l\'ESP32 et des prédictions ML pour une irrigation optimale dans les fermes marocaines.',
+      ar: 'نظام مراقبة التربة القائم على إنترنت الأشياء باستخدام ESP32 وتوقعات التعلم الآلي للري الأمثل في المزارع المغربية.'
+    },
+    tech: ['C++', 'React', 'TensorFlow Lite'],
+    icon: <Cpu className="w-8 h-8 text-teal-400" />,
+    image: 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?w=800&q=80',
+    github: '#'
   },
   {
     id: 3,
-    name: 'EduChain Credentials',
-    desc: { en: 'Blockchain-based system for issuing and verifying academic credentials natively.', ar: 'نظام قائم على البلوكتشين لإصدار والتحقق من الشهادات الأكاديمية.' },
-    status: 'in-progress',
-    progress: 40,
-    github: 'https://github.com/gitm/educhain',
-    tech: ['Solidity', 'Next.js', 'Ethers.js'],
-    team: ['OB', 'AK'],
-    color: 'from-purple-500 to-indigo-600',
-    image: 'https://images.unsplash.com/photo-1639762681485-074b7f4ec651?w=800&q=80'
-  },
-  {
-    id: 4,
-    name: 'GovTech Portal v2',
-    desc: { en: 'Redesigning public administration interfaces with modern accessibility standards.', ar: 'إعادة تصميم واجهات الإدارة العامة بمعايير الوصول الحديثة.' },
-    status: 'completed',
-    progress: 100,
-    github: 'https://github.com/gitm/govtech-portal',
-    tech: ['React 19', 'Tailwind', 'Framer Motion'],
-    team: ['SB', 'ME'],
-    color: 'from-rose-500 to-pink-600',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80'
-  },
-  {
-    id: 5,
-    name: 'Atlas Drone Mapping',
-    desc: { en: 'Automated drone mapping software for difficult terrains in the Atlas mountains.', ar: 'برنامج رسم خرائط الطائرات بدون طيار الآلي للتضاريس الصعبة في جبال الأطلس.' },
-    status: 'in-progress',
-    progress: 90,
-    github: 'https://github.com/gitm/atlas-drone',
-    tech: ['Python', 'OpenCV', 'React Native'],
-    team: ['HM', 'ZB'],
-    color: 'from-orange-500 to-amber-600',
-    image: 'https://images.unsplash.com/photo-1527443195645-1133f7f28990?w=800&q=80'
-  },
-  {
-    id: 6,
-    name: 'Fintech Micro-Lending API',
-    desc: { en: 'Open banking API tailored for micro-lending institutions in North Africa.', ar: 'واجهة برمجة تطبيقات مصرفية مفتوحة مصممة لمؤسسات الإقراض الصغير في شمال إفريقيا.' },
-    status: 'completed',
-    progress: 100,
-    github: 'https://github.com/gitm/fintech-api',
-    tech: ['Go', 'PostgreSQL', 'Docker', 'Kubernetes'],
-    team: ['YB', 'RM'],
-    color: 'from-teal-500 to-cyan-600',
-    image: 'https://images.unsplash.com/photo-1616077168079-7e09a677fb2c?w=800&q=80'
+    title: { en: 'Supply Chain Blockchain', fr: 'Blockchain de la Chaîne d\'Approvisionnement', ar: 'بلوكتشين سلسلة التوريد' },
+    description: { 
+      en: 'A decentralized application ensuring transparency in the supply chain of Moroccan artisanal goods.',
+      fr: 'Une application décentralisée garantissant la transparence dans la chaîne d\'approvisionnement des produits artisanaux marocains.',
+      ar: 'تطبيق لامركزي يضمن الشفافية في سلسلة توريد السلع الحرفية المغربية.'
+    },
+    tech: ['Solidity', 'Next.js', 'Web3.js'],
+    icon: <Layers className="w-8 h-8 text-teal-400" />,
+    image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&q=80',
+    github: '#'
   }
 ];
 
 export default function TechProjectsPage() {
-  const { lang, setView } = useLanguage();
-  const [filter, setFilter] = useState('all');
-
-  const filteredProjects = PROJECTS.filter(p => filter === 'all' || p.status === filter);
+  const { lang } = useLanguage();
 
   return (
-    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-[#1e3a5f] dark:text-slate-200 transition-colors duration-300">
+    <div className="min-h-screen grid-bg py-24 px-6 md:px-12 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto relative z-10">
         
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
-        >
-          <div className="inline-flex items-center justify-center p-4 glass-card rounded-full mb-6">
-            <Code2 size={40} className="text-teal-600 dark:text-cyan-400" />
-          </div>
-          <h1 className="text-4xl md:text-6xl font-orbitron font-bold gradient-text mb-6">
-            {txt(lang, 'Technical Projects', 'المشاريع التقنية', 'Projets Techniques', '技术项目')}
-          </h1>
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            {txt(lang, 'Discover the open-source tools and platforms built by the GITM community to drive technological advancement.', 'اكتشف الأدوات والمنصات مفتوحة المصدر التي بناها مجتمعنا.', 'Découvrez les outils open source.', '发现由GITM社区构建的开源工具和平台。')}
-          </p>
-        </motion.div>
-
-        {/* Filters */}
-        <div className="flex justify-center gap-4 mb-12">
-          {[
-            { id: 'all', label: txt(lang, 'All Projects', 'كل المشاريع', 'Tous', '所有项目') },
-            { id: 'in-progress', label: txt(lang, 'In Progress', 'قيد الإنجاز', 'En cours', '进行中') },
-            { id: 'completed', label: txt(lang, 'Completed', 'مكتمل', 'Terminé', '已完成') }
-          ].map(f => (
-            <button
-              key={f.id}
-              onClick={() => setFilter(f.id)}
-              className={`px-6 py-2 rounded-full font-bold transition-all duration-300 ${filter === f.id ? 'bg-teal-600 dark:bg-cyan-500 text-white shadow-lg shadow-teal-500/30' : 'glass-card hover-lift'}`}
-            >
-              {f.label}
-            </button>
-          ))}
+        {/* Header */}
+        <div className="text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-card border border-teal-500/30 mb-6"
+          >
+            <Code className="w-5 h-5 text-teal-400" />
+            <span className="font-orbitron text-teal-300 font-medium tracking-wide">
+              {lang === 'ar' ? 'مشاريعنا التقنية' : lang === 'fr' ? 'Nos Projets Tech' : 'Our Tech Projects'}
+            </span>
+          </motion.div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-6xl font-bold mb-6 font-orbitron gradient-text"
+          >
+            {lang === 'ar' ? 'ابتكارات تقود المستقبل' : lang === 'fr' ? 'Des Innovations pour l\'Avenir' : 'Innovations Driving the Future'}
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-slate-400 max-w-2xl mx-auto text-lg"
+          >
+            {lang === 'ar' ? 'استكشف المشاريع المفتوحة المصدر والمبادرات التقنية التي يطورها أعضاء مجتمعنا.' : 
+             lang === 'fr' ? 'Explorez les projets open-source et les initiatives technologiques développées par les membres de notre communauté.' : 
+             'Explore open-source projects and tech initiatives developed by our community members.'}
+          </motion.p>
         </div>
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <AnimatePresence>
-            {filteredProjects.map(proj => (
-              <motion.div
-                key={proj.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-[#e0fcfc] dark:bg-slate-800 rounded-3xl overflow-hidden shadow-lg border border-cyan-300 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group flex flex-col"
-                onClick={() => setView('project-details')}
-              >
-                <div className="h-48 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
-                  <img src={proj.image} alt={proj.name} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
-                  <div className="absolute top-4 right-4 z-20 flex gap-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold text-white shadow-md ${proj.status === 'completed' ? 'bg-green-500' : 'bg-amber-500'}`}>
-                      {proj.status === 'completed' ? txt(lang, 'Completed', 'مكتمل', 'Terminé', '已完成') : txt(lang, 'In Progress', 'قيد الإنجاز', 'En cours', '进行中')}
-                    </span>
+          {MOCK_PROJECTS.map((proj, index) => (
+            <motion.div
+              key={proj.id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="glass-card card-3d hover-lift rounded-2xl overflow-hidden flex flex-col border border-slate-700/50 hover:border-teal-500/50 group"
+            >
+              <div className="h-48 relative overflow-hidden">
+                <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="flex gap-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                    <a href={proj.github} className="p-3 bg-slate-800 rounded-full hover:bg-teal-500 text-white transition-colors">
+                      <Github className="w-6 h-6" />
+                    </a>
+                    <a href="#" className="p-3 bg-slate-800 rounded-full hover:bg-teal-500 text-white transition-colors">
+                      <ExternalLink className="w-6 h-6" />
+                    </a>
                   </div>
                 </div>
-
-                <div className="p-6 flex-grow flex flex-col">
-                  <h2 className="text-xl font-bold mb-3 text-[#1e3a5f] dark:text-white group-hover:text-teal-600 dark:group-hover:text-cyan-400 transition-colors">{proj.name}</h2>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 mb-4 flex-grow">
-                    {proj.desc[lang] || proj.desc.en}
-                  </p>
-
-                  <div className="pt-4 border-t border-cyan-200 dark:border-slate-700 flex items-center justify-between mt-auto">
-                    <div className="flex -space-x-2">
-                      {proj.team.map((member, i) => (
-                        <div key={i} className="w-8 h-8 rounded-full bg-cyan-200 dark:bg-slate-700 border-2 border-white dark:border-slate-800 flex items-center justify-center text-xs font-bold text-[#2d507b] dark:text-slate-300 z-10">
-                          {member}
-                        </div>
-                      ))}
-                    </div>
-                    <span className="text-teal-600 dark:text-cyan-400 text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
-                      {txt(lang, 'View Details', 'عرض التفاصيل', 'Voir les détails', '查看详情')} &rarr;
-                    </span>
-                  </div>
+                <img src={proj.image} alt="Project" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <div className="absolute top-4 left-4 z-0 bg-slate-900/90 p-2 rounded-xl border border-slate-700 shadow-lg">
+                  {proj.icon}
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+              </div>
+
+              <div className="p-6 flex flex-col flex-grow bg-slate-900/50">
+                <h3 className="text-xl font-bold text-white mb-3 font-orbitron group-hover:text-teal-300 transition-colors">
+                  {proj.title[lang] || proj.title.en}
+                </h3>
+                <p className="text-slate-400 mb-6 text-sm leading-relaxed flex-grow">
+                  {proj.description[lang] || proj.description.en}
+                </p>
+                
+                <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-slate-700/50">
+                  {proj.tech.map((t, i) => (
+                    <span key={i} className="px-2.5 py-1 text-xs font-medium text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-md">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
-
       </div>
     </div>
   );
