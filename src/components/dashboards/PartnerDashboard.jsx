@@ -1,112 +1,146 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
-import { Handshake, TrendingUp, Users, Presentation, Building2, ExternalLink, Bot, Sparkles, ArrowRight } from 'lucide-react';
-
-const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
+import { LayoutDashboard, Handshake, TrendingUp, Briefcase, User, Building2, Target, BarChart } from 'lucide-react';
+import UserProfileSettings from './UserProfileSettings';
 
 export default function PartnerDashboard() {
   const { lang } = useLanguage();
+  const [activeTab, setActiveTab] = useState('overview');
+
+  const currentUser = {
+    name: 'OCP Group Representative',
+    role: 'Partner',
+    email: 'contact@ocp.ma',
+    badges: ['political', 'designer'],
+    membershipId: 'GITM-PRT-OCP'
+  };
+
+  const sponsorships = [
+    { tier: 'Platinum', project: 'GITM AI Hackathon 2026', contribution: '150,000 MAD', status: 'Active' },
+    { tier: 'Gold', project: 'Smart Agriculture Lab', contribution: '80,000 MAD', status: 'Completed' }
+  ];
+
+  const internships = [
+    { title: 'Data Scientist Intern', department: 'Innovation Lab', applicants: 24, status: 'Open' },
+    { title: 'IoT Engineer', department: 'Smart Mining', applicants: 12, status: 'Reviewing' }
+  ];
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold font-orbitron">{txt(lang, 'Partner Dashboard', 'لوحة الشريك', 'Tableau de bord partenaire', '合作伙伴仪表板')}</h2>
-        <span className="px-3 py-1 bg-amber-500/20 text-amber-500 rounded-full text-sm font-bold uppercase tracking-wider">
-          Partner Organization
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="space-y-6">
+      {/* Navigation */}
+      <div className="flex flex-wrap gap-2 pb-4 border-b border-white/10">
         {[
-          { label: 'Joint Projects', val: '4', icon: Handshake, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-          { label: 'Sponsored Trainees', val: '25', icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-          { label: 'Workshops Hosted', val: '2', icon: Presentation, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-          { label: 'Impact Score', val: '92%', icon: TrendingUp, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-        ].map((stat, i) => (
-          <div key={i} className="glass-card p-6 rounded-2xl flex items-center gap-4">
-            <div className={`p-4 rounded-xl ${stat.bg}`}>
-              <stat.icon className={stat.color} size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{stat.label}</p>
-              <p className="text-2xl font-bold font-orbitron">{stat.val}</p>
-            </div>
-          </div>
+          { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
+          { id: 'sponsorship', icon: Handshake, label: lang === 'ar' ? 'الرعاية' : 'Sponsorships' },
+          { id: 'roi', icon: TrendingUp, label: lang === 'ar' ? 'العائد على الاستثمار' : 'ROI Tracking' },
+          { id: 'internships', icon: Briefcase, label: lang === 'ar' ? 'التدريب' : 'Internship Offers' },
+          { id: 'profile', icon: User, label: lang === 'ar' ? 'الملف الشخصي' : 'Profile' }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
+              activeTab === tab.id 
+                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
+                : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+            }`}
+          >
+            <tab.icon size={18} />
+            <span className="font-orbitron">{tab.label}</span>
+          </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="glass-card rounded-2xl p-6">
-          <h3 className="text-lg font-bold flex items-center gap-2 mb-6">
-            <Building2 className="text-blue-500" size={20} />
-            Collaboration Metrics
-          </h3>
-          <div className="flex justify-center items-center h-64 border-2 border-dashed border-cyan-300 dark:border-slate-700 rounded-xl">
-            <p className="text-slate-500">Interactive charts will be rendered here.</p>
-          </div>
-        </div>
+      <AnimatePresence mode="wait">
+        {activeTab === 'profile' ? (
+          <motion.div key="profile" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+            <UserProfileSettings currentUser={currentUser} />
+          </motion.div>
+        ) : activeTab === 'overview' ? (
+          <motion.div key="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="glass-card p-6 flex flex-col justify-between hover-lift">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-3 bg-blue-500/20 rounded-xl text-blue-400"><Building2 size={24}/></div>
+                  <span className="text-xs font-medium px-2 py-1 bg-white/10 rounded-full text-white">2026</span>
+                </div>
+                <div>
+                  <h4 className="text-gray-400 text-sm mb-1">{lang === 'ar' ? 'مساهمات الرعاية' : 'Total Sponsorships'}</h4>
+                  <p className="text-2xl font-bold text-white">230,000 MAD</p>
+                </div>
+              </div>
 
-        <div className="glass-card rounded-2xl p-6">
-          <h3 className="text-lg font-bold flex items-center gap-2 mb-6">
-            <Handshake className="text-emerald-500" size={20} />
-            Active Initiatives
-          </h3>
-          <div className="space-y-4">
-            {[1, 2].map((_, i) => (
-              <div key={i} className="p-4 rounded-xl bg-cyan-50 dark:bg-slate-800/50 border border-cyan-300 dark:border-slate-700">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-bold text-[#1e3a5f] dark:text-white">Summer Internship Program 2026</h4>
-                    <p className="text-sm text-slate-500 mt-1">Hosting 10 GITM students for embedded systems roles.</p>
-                  </div>
-                  <button className="p-2 bg-[#e0fcfc] dark:bg-slate-800 rounded shadow-sm border border-cyan-300 dark:border-slate-700 text-teal-500 hover:text-teal-600 transition-colors">
-                    <ExternalLink size={16} />
+              <div className="glass-card p-6 flex flex-col justify-between hover-lift">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-3 bg-emerald-500/20 rounded-xl text-emerald-400"><Target size={24}/></div>
+                </div>
+                <div>
+                  <h4 className="text-gray-400 text-sm mb-1">{lang === 'ar' ? 'المشاريع المدعومة' : 'Supported Projects'}</h4>
+                  <p className="text-2xl font-bold text-white">2 Active</p>
+                </div>
+              </div>
+
+              <div className="glass-card p-6 flex flex-col justify-between hover-lift">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-3 bg-purple-500/20 rounded-xl text-purple-400"><BarChart size={24}/></div>
+                </div>
+                <div>
+                  <h4 className="text-gray-400 text-sm mb-1">{lang === 'ar' ? 'المتدربون المعينون' : 'Interns Hired'}</h4>
+                  <p className="text-2xl font-bold text-white">14 Students</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="glass-card p-6">
+                <h3 className="text-xl font-orbitron text-white mb-4">{lang === 'ar' ? 'سجلات الرعاية' : 'Sponsorship Tiers'}</h3>
+                <div className="space-y-4">
+                  {sponsorships.map((sponsor, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                      <div className="flex justify-between mb-2">
+                        <span className="font-bold text-white">{sponsor.project}</span>
+                        <span className={`text-xs px-2 py-1 rounded-full ${sponsor.tier === 'Platinum' ? 'bg-slate-300 text-slate-800' : 'bg-yellow-500/20 text-yellow-400'}`}>{sponsor.tier}</span>
+                      </div>
+                      <div className="flex justify-between text-sm text-gray-400">
+                        <span>{sponsor.contribution}</span>
+                        <span className="text-emerald-400">{sponsor.status}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="glass-card p-6">
+                <h3 className="text-xl font-orbitron text-white mb-4">{lang === 'ar' ? 'عروض التدريب' : 'Active Internships'}</h3>
+                <div className="space-y-4">
+                  {internships.map((job, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                      <h4 className="text-white font-medium">{job.title}</h4>
+                      <p className="text-sm text-gray-400 mb-3">{job.department}</p>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-blue-400 bg-blue-400/10 px-2 py-1 rounded">{job.applicants} Applicants</span>
+                        <span className="text-gray-300">{job.status}</span>
+                      </div>
+                    </div>
+                  ))}
+                  <button className="w-full py-3 border border-dashed border-white/20 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                    + {lang === 'ar' ? 'أضف عرض تدريب' : 'Post New Offer'}
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* AI Matchmaking */}
-        <div className="lg:col-span-2 glass-card rounded-2xl p-6 border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.15)] relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-6 opacity-5">
-            <Users size={120} />
-          </div>
-          <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-emerald-500">
-            <Bot className="w-5 h-5 text-emerald-400" />
-            {txt(lang, 'AI Talent Matchmaking', 'مطابقة المواهب بالذكاء الاصطناعي', 'Recrutement IA', 'AI人才匹配')}
-          </h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-2xl">
-            {txt(lang, 'Our AI analyzed your recent request for "Embedded Systems Interns" and matched you with the top 3 students currently enrolled in the GITM Academy.', 'قام الذكاء الاصطناعي بتحليل طلبك الأخير لـ "متدربين في الأنظمة المدمجة" وطابقك مع أفضل 3 طلاب في الأكاديمية.', 'Notre IA a analysé...', '我们的AI分析了...')}
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { name: 'Omar Tazi', match: '98%', skills: ['C++', 'FreeRTOS', 'IoT'] },
-              { name: 'Sara El Fassi', match: '94%', skills: ['Python', 'Raspberry Pi', 'Edge AI'] },
-              { name: 'Youssef M.', match: '91%', skills: ['C', 'STM32', 'Robotics'] },
-            ].map((student, i) => (
-              <div key={i} className="bg-cyan-50 dark:bg-slate-800/50 p-4 rounded-xl border border-emerald-500/20">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-[#1e3a5f] dark:text-white">{student.name}</h4>
-                  <span className="bg-emerald-500/10 text-emerald-500 font-bold px-2 py-1 rounded text-xs">Match: {student.match}</span>
-                </div>
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {student.skills.map((skill, j) => (
-                    <span key={j} className="text-[10px] bg-cyan-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-                <button className="w-full py-1.5 flex justify-center items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded text-xs font-bold transition">
-                  {txt(lang, 'View Profile', 'عرض الملف', 'Voir le profil', '查看个人资料')} <ArrowRight size={12} className="rtl:rotate-180"/>
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+          </motion.div>
+        ) : (
+          <motion.div key="wip" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-12 text-center">
+            <Target size={48} className="mx-auto mb-4 text-blue-500/50" />
+            <h2 className="text-2xl font-orbitron text-white mb-2">{lang === 'ar' ? 'قريباً' : 'Coming Soon'}</h2>
+            <p className="text-gray-400">{lang === 'ar' ? 'هذه الوحدة قيد التطوير' : 'This module is under development.'}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

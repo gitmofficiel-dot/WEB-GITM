@@ -1,129 +1,117 @@
 import React, { useState } from 'react';
-import { useLanguage } from '../../context/LanguageContext';
-import { 
-  Users, Briefcase, MessageCircle, Star, Target, Zap, Settings, Share2
-} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../../context/LanguageContext';
+import { LayoutDashboard, Calendar, Award, User, Code, Zap, Heart } from 'lucide-react';
 import UserProfileSettings from './UserProfileSettings';
 
 export default function MemberDashboard() {
   const { lang } = useLanguage();
-  const [activeTab, setActiveTab] = useState('community');
+  const [activeTab, setActiveTab] = useState('overview');
 
-  const projects = [
-    { id: 1, title: 'Smart Irrigation System', role: 'Frontend Dev', status: 'In Progress', team: 4 },
-    { id: 2, title: 'GITM Website Refactor', role: 'UI Designer', status: 'Completed', team: 2 }
-  ];
+  const currentUser = {
+    name: 'Yassine Dev',
+    role: 'Member',
+    email: 'yassine@example.com',
+    badges: ['developer'],
+    membershipId: 'GITM-MEM-1024'
+  };
 
-  const networkRequests = [
-    { id: 1, name: 'Sara Khan', role: 'AI Researcher', avatar: 'SK' },
-    { id: 2, name: 'Youssef Alaoui', role: 'Robotics Lead', avatar: 'YA' }
-  ];
-
-  const tabs = [
-    { id: 'community', icon: Users, label: lang === 'ar' ? 'المجتمع والتواصل' : 'Community Hub' },
-    { id: 'projects', icon: Zap, label: lang === 'ar' ? 'مشاريعي' : 'My Projects' },
-    { id: 'profile', icon: Settings, label: lang === 'ar' ? 'الملف الشخصي' : 'Profile & Settings' }
+  const upcomingEvents = [
+    { title: 'React 19 Workshop', date: 'Next Friday', type: 'Technical' },
+    { title: 'Morocco AI Summit', date: 'Nov 12', type: 'Conference' }
   ];
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative">
-      <div className="w-full md:w-64 shrink-0">
-        <div className="glass-card rounded-3xl p-4 sticky top-24 border border-indigo-200 dark:border-slate-800 shadow-xl">
-          <div className="mb-6 px-2">
-            <h2 className="text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'بوابة العضو' : 'Member Portal'}</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Ahmed Ali</p>
-          </div>
-          <nav className="space-y-2">
-            {tabs.map(tab => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
-                    activeTab === tab.id 
-                    ? 'bg-indigo-500 text-white shadow-lg translate-x-2' 
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-                  }`}
-                >
-                  <Icon size={18} /> {tab.label}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
+    <div className="space-y-6">
+      {/* Navigation */}
+      <div className="flex flex-wrap gap-2 pb-4 border-b border-white/10">
+        {[
+          { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
+          { id: 'events', icon: Calendar, label: lang === 'ar' ? 'الأحداث' : 'Events' },
+          { id: 'certificates', icon: Award, label: lang === 'ar' ? 'الشهادات' : 'Certificates' },
+          { id: 'profile', icon: User, label: lang === 'ar' ? 'الملف الشخصي' : 'Profile' }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
+              activeTab === tab.id 
+                ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' 
+                : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+            }`}
+          >
+            <tab.icon size={18} />
+            <span className="font-orbitron">{tab.label}</span>
+          </button>
+        ))}
       </div>
 
-      <div className="flex-1 w-full min-w-0">
-        <AnimatePresence mode="wait">
-          <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
+      <AnimatePresence mode="wait">
+        {activeTab === 'profile' ? (
+          <motion.div key="profile" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+            <UserProfileSettings currentUser={currentUser} />
+          </motion.div>
+        ) : activeTab === 'overview' ? (
+          <motion.div key="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
             
-            {activeTab === 'community' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="glass-card rounded-3xl p-6 border-t-4 border-indigo-500">
-                  <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 mb-6"><Users className="text-indigo-500"/> {lang==='ar'?'طلبات التواصل':'Network Requests'}</h3>
-                  <div className="space-y-4">
-                    {networkRequests.map(req => (
-                      <div key={req.id} className="flex justify-between items-center p-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">{req.avatar}</div>
-                          <div>
-                            <p className="font-bold text-[#1e3a5f] dark:text-white text-sm">{req.name}</p>
-                            <p className="text-xs text-slate-500">{req.role}</p>
-                          </div>
-                        </div>
-                        <button className="text-indigo-600 text-sm font-bold bg-indigo-50 px-3 py-1 rounded-lg hover:bg-indigo-100 transition-colors">Accept</button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="glass-card p-6 bg-gradient-to-br from-rose-500/10 to-transparent border-t-2 border-rose-500 hover-lift">
+                <Code size={32} className="text-rose-400 mb-4" />
+                <h4 className="text-gray-400">{lang === 'ar' ? 'المشاريع' : 'Projects Contributed'}</h4>
+                <p className="text-3xl font-bold text-white mt-2">12</p>
+              </div>
+              <div className="glass-card p-6 bg-gradient-to-br from-emerald-500/10 to-transparent border-t-2 border-emerald-500 hover-lift">
+                <Zap size={32} className="text-emerald-400 mb-4" />
+                <h4 className="text-gray-400">{lang === 'ar' ? 'النقاط' : 'Activity Points'}</h4>
+                <p className="text-3xl font-bold text-white mt-2">1,450</p>
+              </div>
+              <div className="glass-card p-6 bg-gradient-to-br from-blue-500/10 to-transparent border-t-2 border-blue-500 hover-lift">
+                <Heart size={32} className="text-blue-400 mb-4" />
+                <h4 className="text-gray-400">{lang === 'ar' ? 'العمل التطوعي' : 'Volunteer Hours'}</h4>
+                <p className="text-3xl font-bold text-white mt-2">48h</p>
+              </div>
+            </div>
 
-                <div className="glass-card rounded-3xl p-6 border-t-4 border-emerald-500">
-                  <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 mb-6"><Target className="text-emerald-500"/> {lang==='ar'?'تحديات الأسبوع':'Weekly Challenges'}</h3>
-                  <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800">
-                    <h4 className="font-bold text-emerald-800 dark:text-emerald-400">Contribute to Open Source</h4>
-                    <p className="text-sm text-emerald-600 dark:text-emerald-500 mt-1 mb-3">Push 5 commits to GITM repositories this week.</p>
-                    <div className="w-full bg-emerald-200 dark:bg-emerald-900 rounded-full h-2">
-                        <div className="bg-emerald-500 h-2 rounded-full" style={{width: '60%'}}></div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="glass-card p-6">
+                <h3 className="text-xl font-orbitron text-white mb-4 flex items-center gap-2">
+                  <Calendar className="text-rose-400" />
+                  {lang === 'ar' ? 'الأحداث القادمة' : 'Upcoming Events'}
+                </h3>
+                <div className="space-y-4">
+                  {upcomingEvents.map((evt, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors flex justify-between items-center">
+                      <div>
+                        <h4 className="text-white font-medium">{evt.title}</h4>
+                        <p className="text-sm text-rose-400">{evt.date}</p>
+                      </div>
+                      <span className="text-xs px-2 py-1 bg-white/10 text-gray-300 rounded">{evt.type}</span>
                     </div>
-                    <p className="text-right text-xs font-bold text-emerald-700 dark:text-emerald-400 mt-2">3 / 5 Commits</p>
-                  </div>
+                  ))}
                 </div>
               </div>
-            )}
 
-            {activeTab === 'projects' && (
-               <div className="glass-card rounded-3xl p-6">
-                 <div className="flex justify-between items-center mb-6">
-                   <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2"><Zap className="text-amber-500"/> {lang==='ar'?'المشاريع الحالية':'Active Projects'}</h3>
-                   <button className="btn-primary px-4 py-2 rounded-xl text-sm font-bold">Propose Project</button>
-                 </div>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {projects.map(proj => (
-                      <div key={proj.id} className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-900/50 hover:shadow-lg transition-all hover:-translate-y-1">
-                        <div className="flex justify-between items-start mb-3">
-                          <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{proj.title}</h4>
-                          <span className={`px-2 py-1 text-[10px] rounded uppercase font-bold ${proj.status === 'Completed' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'}`}>{proj.status}</span>
-                        </div>
-                        <p className="text-sm text-slate-500 mb-4 flex items-center gap-2"><Briefcase size={14}/> Role: {proj.role}</p>
-                        <div className="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800">
-                          <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1"><Users size={14}/> {proj.team} Team Members</span>
-                          <button className="text-indigo-600 dark:text-indigo-400 text-sm font-bold hover:underline">Workspace</button>
-                        </div>
-                      </div>
-                    ))}
-                 </div>
-               </div>
-            )}
-
-            {activeTab === 'profile' && (
-              <UserProfileSettings currentUser={{ name: 'Ahmed Ali', role: 'member', email: 'ahmed@gitm.ma', badges: ['speaker', 'developer'] }} />
-            )}
+              <div className="glass-card p-6 flex flex-col items-center justify-center text-center">
+                <Award size={48} className="text-yellow-400 mb-4" />
+                <h3 className="text-xl font-orbitron text-white mb-2">{lang === 'ar' ? 'احصل على شهاداتك' : 'Claim Your Certificates'}</h3>
+                <p className="text-gray-400 mb-6">
+                  {lang === 'ar' ? 'لديك شهادات جديدة متاحة للتحميل من ورشة العمل الأخيرة.' : 'You have new certificates available for download from the recent workshop.'}
+                </p>
+                <button className="px-6 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl transition-colors font-medium">
+                  {lang === 'ar' ? 'عرض الشهادات' : 'View Certificates'}
+                </button>
+              </div>
+            </div>
 
           </motion.div>
-        </AnimatePresence>
-      </div>
+        ) : (
+          <motion.div key="wip" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-12 text-center">
+            <LayoutDashboard size={48} className="mx-auto mb-4 text-rose-500/50" />
+            <h2 className="text-2xl font-orbitron text-white mb-2">{lang === 'ar' ? 'قريباً' : 'Coming Soon'}</h2>
+            <p className="text-gray-400">{lang === 'ar' ? 'هذه الوحدة قيد التطوير' : 'This module is under development.'}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
