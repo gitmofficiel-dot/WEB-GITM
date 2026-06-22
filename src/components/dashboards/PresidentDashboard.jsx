@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { collection, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../config/firebase';
 import UserProfileSettings from './UserProfileSettings';
 import { useLanguage } from '../../context/LanguageContext';
 import { 
@@ -14,13 +16,38 @@ export default function PresidentDashboard() {
   const { lang, t, user, eventRegistrations, setEventRegistrations } = useLanguage();
   const [activeTab, setActiveTab] = useState('overview');
 
-  // --- Real(ish) GITM Data State ---
-  const [members, setMembers] = useState([
-    { id: 1, name: 'Mourad', email: 'mourad@gitm.ma', role: 'president', badges: ['founder', 'developer'], avatar: 'M' },
-    { id: 2, name: 'Youssef Alaoui', email: 'y.alaoui@gitm.ma', role: 'admin', badges: ['speaker', 'political'], avatar: 'YA' },
-    { id: 3, name: 'Khadija Mansouri', email: 'k.mansouri@gitm.ma', role: 'teacher', badges: ['writer', 'designer'], avatar: 'KM' },
-    { id: 4, name: 'Aymane Benali', email: 'a.benali@gitm.ma', role: 'student', badges: ['developer'], avatar: 'AB' }
-  ]);
+  // --- Firebase User Data State ---
+  const [firebaseUsers, setFirebaseUsers] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
+      const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setFirebaseUsers(usersData);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleRoleChange = async (userId, newRole) => {
+    if(window.confirm(lang==='ar' ? `هل أنت متأكد من تغيير صلاحية المستخدم إلى ${newRole}؟` : `Change this user role to ${newRole}?`)) {
+      try {
+        const userRef = doc(db, 'users', userId);
+        const updates = { role: newRole };
+        
+        // Auto-assign membership ID if promoted to member and doesn't have one
+        if (newRole === 'member') {
+          const user = firebaseUsers.find(u => u.id === userId);
+          if (!user.membershipId) {
+            updates.membershipId = `GITM-MBR-${Math.floor(Math.random() * 10000)}`;
+          }
+        }
+        
+        await updateDoc(userRef, updates);
+      } catch (err) {
+        console.error("Error updating role", err);
+        alert(lang === 'ar' ? "فشل في تحديث الصلاحية" : "Failed to update role");
+      }
+    }
+  };
 
   const [news, setNews] = useState([
     { id: 1, title: 'شراكة جديدة مع وزارة الانتقال الرقمي', date: '2026-07-01', status: 'Published' },
@@ -86,9 +113,7 @@ export default function PresidentDashboard() {
         setGallery([...gallery, { id: Date.now(), type: 'image', ...formData }]);
       }
     } else if (modalState.type === 'member') {
-        if(isEdit) {
-            setMembers(members.map(m => m.id === modalState.data.id ? { ...m, ...formData } : m));
-        }
+        // Handled via Firebase now
     }
     closeModal();
   };
@@ -99,7 +124,10 @@ export default function PresidentDashboard() {
       if (type === 'course') setCourses(courses.filter(c => c.id !== id));
       if (type === 'news') setNews(news.filter(n => n.id !== id));
       if (type === 'gallery') setGallery(gallery.filter(g => g.id !== id));
-      if (type === 'member') setMembers(members.filter(m => m.id !== id));
+      if (type === 'member') {
+        // Suspend user instead of deleting
+        handleRoleChange(id, 'suspended');
+      }
     }
   };
 
@@ -291,7 +319,7 @@ export default function PresidentDashboard() {
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <StatCard title={lang === 'ar' ? 'إجمالي الأعضاء' : 'Total Members'} value={members.length.toString()} icon={Users} color="blue" trend="+12%" />
+                  <StatCard title={lang === 'ar' ? 'إجمالي الأعضاء والطلاب' : 'Total Registered'} value={firebaseUsers.length.toString()} icon={Users} color="blue" trend="+12%" />
                   <StatCard title={lang === 'ar' ? 'المشاريع والفعاليات' : 'Events & Projects'} value={events.length.toString()} icon={Activity} color="emerald" trend="+5%" />
                   <StatCard title={lang === 'ar' ? 'الدورات التدريبية' : 'Courses'} value={courses.length.toString()} icon={BookOpen} color="purple" trend="+18%" />
                   <StatCard title={lang === 'ar' ? 'المقالات والأخبار' : 'News Articles'} value={news.length.toString()} icon={Newspaper} color="pink" trend="+2%" />
@@ -451,32 +479,32 @@ export default function PresidentDashboard() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {members.map(m => (
-                          <tr key={m.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        {firebaseUsers.map(m => (
+                          <tr key={m.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${m.role === 'suspended' ? 'opacity-50' : ''}`}>
                             <td className="p-3">
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 text-white flex items-center justify-center font-bold shadow-sm">{m.avatar}</div>
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 text-white flex items-center justify-center font-bold shadow-sm">
+                                  {m.name ? m.name.charAt(0).toUpperCase() : '?'}
+                                </div>
                                 <div>
-                                  <p className="font-bold text-[#1e3a5f] dark:text-white">{m.name}</p>
+                                  <p className="font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+                                    {m.name} 
+                                    {m.membershipId && <span className="text-[10px] bg-amber-100 text-amber-700 px-2 rounded-full border border-amber-200">{m.membershipId}</span>}
+                                  </p>
                                   <p className="text-xs text-slate-500">{m.email}</p>
                                 </div>
                               </div>
                             </td>
                             <td className="p-3">
                               <span className={`px-2 py-1 text-[10px] rounded uppercase font-bold ${
-                                m.role === 'student' ? 'bg-slate-100 text-slate-600' : 'bg-blue-100 text-blue-600'
+                                m.role === 'student' ? 'bg-slate-100 text-slate-600' : 
+                                m.role === 'suspended' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
                               }`}>{m.role}</span>
                             </td>
                             <td className="p-3">
                               <select 
                                 value={m.role}
-                                onChange={(e) => {
-                                    if(window.confirm(lang==='ar' ? `هل أنت متأكد من ترقية هذا المستخدم إلى ${e.target.value}؟` : `Promote this user to ${e.target.value}?`)) {
-                                      const newMembers = [...members];
-                                      newMembers.find(mem => mem.id === m.id).role = e.target.value;
-                                      setMembers(newMembers);
-                                    }
-                                }}
+                                onChange={(e) => handleRoleChange(m.id, e.target.value)}
                                 className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer">
                                 <option value="student">Student (Default)</option>
                                 <option value="member">Member</option>
@@ -486,6 +514,7 @@ export default function PresidentDashboard() {
                                 <option value="partner">Partner</option>
                                 <option value="university">University</option>
                                 <option value="president">President</option>
+                                <option value="suspended" className="text-red-500 font-bold">Suspend Account</option>
                               </select>
                             </td>
                             <td className="p-3 text-right">
