@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
 
 export default function StudentDashboard() {
-  const { lang } = useLanguage();
+  const { lang, setView } = useLanguage();
   const [activeTab, setActiveTab] = useState('courses');
 
   const enrolledCourses = [
@@ -79,7 +79,9 @@ export default function StudentDashboard() {
                         {course.grade && <span className="text-emerald-500">Grade: {course.grade}</span>}
                       </div>
 
-                      <button className={`w-full py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors ${course.progress === 100 ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' : 'bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400'}`}>
+                      <button 
+                        onClick={() => setView('academy')}
+                        className={`w-full py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors ${course.progress === 100 ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' : 'bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400'}`}>
                         <PlayCircle size={16}/> {course.progress === 100 ? (lang==='ar'?'مراجعة الدورة':'Review Course') : (lang==='ar'?'متابعة التعلم':'Continue Learning')}
                       </button>
                     </div>
