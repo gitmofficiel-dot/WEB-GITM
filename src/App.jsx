@@ -1,6 +1,7 @@
 import React, { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import ParticleBackground from './components/ParticleBackground';
 import AIChatBot from './components/AIChatBot';
@@ -47,10 +48,13 @@ const LoadingFallback = () => (
 );
 
 const AppContent = () => {
-  const { view, setView, activeDashboardRole } = useLanguage();
+  const { view, setView } = useLanguage();
+  const { currentUser } = useAuth();
 
   const renderDashboard = () => {
-    switch (activeDashboardRole) {
+    if (!currentUser) return <Navigate to="/login" replace />;
+    
+    switch (currentUser.role) {
       case 'president': return <PresidentDashboard />;
       case 'teacher': return <TeacherDashboard />;
       case 'student': return <StudentDashboard />;

@@ -3,12 +3,14 @@ import { useLanguage } from '../context/LanguageContext';
 import { Mail, Lock, User, LogIn, UserPlus, ArrowRight, Github, Link as LinkIcon, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { auth, googleProvider, githubProvider } from '../config/firebaseAuth';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from 'firebase/auth';
+import { signInWithPopup, updateProfile } from 'firebase/auth';
+import { useAuth } from '../context/AuthContext';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
 export default function AuthForms({ initialMode = 'login', setView }) {
   const { lang, loginUser, registerUser } = useLanguage();
+  const { login, signup } = useAuth();
   const [mode, setMode] = useState(initialMode); // 'login' or 'register'
   
   const [email, setEmail] = useState('');
@@ -42,13 +44,10 @@ export default function AuthForms({ initialMode = 'login', setView }) {
     setLoading(true);
     try {
       if (mode === 'login') {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        // The context will pick up the user via onAuthStateChanged
-        loginUser(userCredential.user.email, 'member', userCredential.user.displayName || '');
+        await login(email, password);
+        // User logged in, context handles the state
       } else {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(userCredential.user, { displayName: name });
-        registerUser(userCredential.user.email, name);
+        await signup(email, password, name);
       }
     } catch (err) {
       setError(formatAuthError(err));
