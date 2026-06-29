@@ -3,7 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Calendar as CalendarIcon, MapPin, Clock, Users, ArrowRight, PlayCircle, Megaphone, X, Mail, ChevronLeft, CheckCircle2, Trophy, Globe, ExternalLink, FileText, Video } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import { useAuth } from '../context/AuthContext';
+import { toast } from '../utils/toast';
+import { db } from '../config/firebase';
+import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
 const IMAGES = [
@@ -17,6 +20,8 @@ export default function EventDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { lang, events, competitions } = useLanguage();
+  const { currentUser } = useAuth();
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const allEventsAndComps = [...events, ...competitions];
   const ev = allEventsAndComps.find(e => e.id.toString() === id);
@@ -36,6 +41,44 @@ export default function EventDetails() {
   const viewDetailsEvent = {
     ...ev,
     image: ev.image || IMAGES[parseInt(id) % IMAGES.length]
+  };
+
+  const handleRegister = async () => {
+    if (!currentUser) {
+      toast.info(txt(lang, 'Please log in to register.', 'يرجى تسجيل الدخول أولاً للتسجيل.', 'Veuillez vous connecter.', '请先登录。'));
+      navigate('/login');
+      return;
+    }
+
+    try {
+      setIsRegistering(true);
+      const q = query(
+        collection(db, 'event_registrations'), 
+        where('eventId', '==', id), 
+        where('userEmail', '==', currentUser.email)
+      );
+      const snapshot = await getDocs(q);
+      
+      if (!snapshot.empty) {
+        toast.warning(txt(lang, 'You are already registered!', 'أنت مسجل بالفعل في هذه الفعالية!', 'Vous êtes déjà inscrit!', '您已注册！'));
+        return;
+      }
+
+      await addDoc(collection(db, 'event_registrations'), {
+        eventId: id,
+        eventTitle: ev.title_en || ev.title_ar || 'Event',
+        userEmail: currentUser.email,
+        userName: currentUser.name || '',
+        registeredAt: serverTimestamp()
+      });
+
+      toast.success(txt(lang, 'Registered successfully! 🎉', 'تم تسجيلك بنجاح! 🎉', 'Inscription réussie ! 🎉', '注册成功！🎉'));
+    } catch (err) {
+      console.error(err);
+      toast.error(txt(lang, 'Registration failed.', 'فشل التسجيل. حاول مرة أخرى.', 'Échec.', '失败。'));
+    } finally {
+      setIsRegistering(false);
+    }
   };
 
   return (
@@ -166,10 +209,11 @@ export default function EventDetails() {
 
                 {(viewDetailsEvent.status === 'upcoming' || viewDetailsEvent.status === 'open') && (
                   <button 
-                    onClick={() => { /* Real logic would go here or navigate to a dedicated registration page */ alert('Registration functionality will be linked to Firebase.'); }} 
-                    className="w-full btn-primary py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:shadow-[0_0_30px_rgba(0,229,255,0.6)] transition-all"
+                    onClick={handleRegister} 
+                    disabled={isRegistering}
+                    className="w-full btn-primary py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:shadow-[0_0_30px_rgba(0,229,255,0.6)] transition-all disabled:opacity-50"
                   >
-                    {txt(lang, 'Official Registration', 'تسجيل رسمي', 'Inscription', '注册')} <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''} />
+                    {isRegistering ? '...' : txt(lang, 'Official Registration', 'تسجيل رسمي', 'Inscription', '注册')} {!isRegistering && <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''} />}
                   </button>
                 )}
               </div>

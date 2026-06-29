@@ -218,8 +218,11 @@ export default function AuthForms({ initialMode = 'login', setView }) {
               </button>
 
               <button 
-                type="button" 
-                onClick={() => alert('Web3 Wallet Connection simulated!')}
+                onClick={() => {
+                  import('../utils/toast').then(({ toast }) => {
+                    toast.info(lang === 'ar' ? 'ميزة ربط المحفظة ستتوفر قريباً!' : 'Web3 Wallet Connection coming soon!');
+                  });
+                }}
                 className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-purple-500/30 text-purple-600 dark:text-purple-400 text-sm font-bold hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all"
               >
                 <LinkIcon className="w-4 h-4" />

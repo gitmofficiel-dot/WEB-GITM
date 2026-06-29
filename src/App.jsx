@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import ParticleBackground from './components/ParticleBackground';
 import AIChatBot from './components/AIChatBot';
 import Footer from './components/Footer';
+import ToastContainer from './components/ui/ToastContainer';
 
 // Lazy loading all major components for better performance
 const Home = lazy(() => import('./components/Home'));
@@ -125,6 +126,9 @@ const AppContent = () => {
 
       {/* Global AI Assistant */}
       <AIChatBot />
+
+      {/* Global Toast Notifications */}
+      <ToastContainer />
     </div>
   );
 };
