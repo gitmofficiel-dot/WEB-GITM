@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, Bot, User, Sparkles, Mic, MicOff } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Sparkles, Mic, MicOff } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-
+import { toast } from '../utils/toast';
 const AIChatBot = () => {
   const { lang, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +16,7 @@ const AIChatBot = () => {
 
   const startListening = () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert(lang === 'ar' ? 'متصفحك لا يدعم التعرف على الصوت.' : 'Your browser does not support speech recognition.');
+      toast.error(lang === 'ar' ? 'متصفحك لا يدعم التعرف على الصوت.' : 'Your browser does not support speech recognition.');
       return;
     }
 

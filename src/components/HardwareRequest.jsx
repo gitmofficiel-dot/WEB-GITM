@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Package, Search, Calendar, CheckCircle2, AlertTriangle, Scan, Camera } from 'lucide-react';
+import { toast } from '../utils/toast';
+import { db } from '../config/firebase';
+import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
 
 const HardwareRequest = () => {
   const { lang } = useLanguage();
@@ -9,10 +12,26 @@ const HardwareRequest = () => {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scannerProgress, setScannerProgress] = useState(0);
   const [formData, setFormData] = useState({ name: '', email: '', itemCode: '', duration: '7' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [borrowRequests, setBorrowRequests] = useState([
     { id: 1, name: 'STM32 Nucleo F401RE', code: 'MCU-F401-01', requester: 'Yassine', returnDate: '2026-06-25', status: 'APPROVED' },
     { id: 2, name: 'Rigol DS1054Z Oscilloscope', code: 'OSC-RGL-02', requester: 'Sara', returnDate: '2026-06-21', status: 'PENDING' }
   ]);
+
+  useEffect(() => {
+    // Listen for latest requests
+    const q = query(collection(db, 'hardware_requests'), orderBy('createdAt', 'desc'), limit(10));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const reqs = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setBorrowRequests(reqs);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const inventory = [
     { id: 'mcu-stm32', name: 'STM32 Nucleo F401RE', desc: 'ARM Cortex-M4 development board for firmware design.', code: 'MCU-F401-01', total: 10, available: 6, category: 'MCU' },
@@ -50,29 +69,37 @@ const HardwareRequest = () => {
     }, 150);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.itemCode) {
-      alert(lang === 'ar' ? 'الرجاء ملء جميع الحقول المطلوبة!' : 'Please fill all required fields!');
+      toast.warning(lang === 'ar' ? 'الرجاء ملء جميع الحقول المطلوبة!' : 'Please fill all required fields!');
       return;
     }
 
     const matchedItem = inventory.find(i => i.code === formData.itemCode);
     const itemName = matchedItem ? matchedItem.name : 'Unknown Device';
 
-    const newRequest = {
-      id: Date.now(),
-      name: itemName,
-      code: formData.itemCode,
-      requester: formData.name,
-      returnDate: new Date(Date.now() + parseInt(formData.duration) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      status: 'PENDING'
-    };
+    try {
+      setIsSubmitting(true);
+      await addDoc(collection(db, 'hardware_requests'), {
+        name: itemName,
+        code: formData.itemCode,
+        requester: formData.name,
+        email: formData.email,
+        returnDate: new Date(Date.now() + parseInt(formData.duration) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        status: 'PENDING',
+        createdAt: serverTimestamp()
+      });
 
-    setBorrowRequests(prev => [newRequest, ...prev]);
-    setFormData({ name: '', email: '', itemCode: '', duration: '7' });
-    setSelectedItem(null);
-    alert(lang === 'ar' ? 'تم تسجيل طلب الإعارة العتادية وهو في انتظار مراجعة أمين المخزن.' : 'Hardware loan request submitted and is pending storekeeper review.');
+      setFormData({ name: '', email: '', itemCode: '', duration: '7' });
+      setSelectedItem(null);
+      toast.success(lang === 'ar' ? 'تم تسجيل طلب الإعارة العتادية وهو في انتظار المراجعة.' : 'Hardware loan request submitted successfully.');
+    } catch (error) {
+      console.error(error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الإرسال.' : 'Error submitting request.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -263,9 +290,10 @@ const HardwareRequest = () => {
 
               <button
                 type="submit"
-                className="w-full py-3 mt-2 rounded-lg bg-gradient-to-r from-[#00FF87] to-emerald-500 text-black font-black uppercase tracking-wider hover:shadow-glow-emerald transition-all text-center"
+                disabled={isSubmitting}
+                className="w-full py-3 mt-2 rounded-lg bg-gradient-to-r from-[#00FF87] to-emerald-500 text-black font-black uppercase tracking-wider hover:shadow-glow-emerald transition-all text-center disabled:opacity-50"
               >
-                {lang === 'ar' ? 'إرسال طلب الإعارة العتادية' : 'Submit Loan Request'}
+                {isSubmitting ? '...' : (lang === 'ar' ? 'إرسال طلب الإعارة العتادية' : 'Submit Loan Request')}
               </button>
             </form>
           </div>

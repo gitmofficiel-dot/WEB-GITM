@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BookOpen, Globe, ChevronLeft, ExternalLink, Bookmark, Book } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { toast } from '../utils/toast';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
@@ -131,7 +132,7 @@ export default function LibraryBookDetails() {
                 {/* Actions */}
                 <div className="flex flex-col sm:flex-row gap-4 mt-auto">
                   <button 
-                    onClick={() => alert(lang === 'ar' ? 'جاري تحضير ملف PDF للتحميل...' : 'Preparing PDF file for download...')}
+                    onClick={() => toast.info(lang === 'ar' ? 'جاري تحضير ملف PDF للتحميل...' : 'Preparing PDF file for download...')}
                     className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white py-4 px-8 rounded-xl font-bold text-lg shadow-lg hover:shadow-cyan-500/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>

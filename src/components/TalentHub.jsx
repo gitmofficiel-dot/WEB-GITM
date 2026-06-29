@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Award, Briefcase, GraduationCap, Search, Star, ExternalLink, Mail } from 'lucide-react';
+import { toast } from '../utils/toast';
 
 const TalentHub = () => {
   const { lang } = useLanguage();
@@ -204,7 +205,7 @@ const TalentHub = () => {
                   </div>
 
                   <button
-                    onClick={() => alert(lang === 'ar' ? `فتح الشهادة الرقمية للمترشح... الرمز: ${selectedStudent.certHash}` : `Opening verifiable document for student... ID: ${selectedStudent.certHash}`)}
+                    onClick={() => toast.info(lang === 'ar' ? `فتح الشهادة الرقمية للمترشح... الرمز: ${selectedStudent.certHash}` : `Opening verifiable document for student... ID: ${selectedStudent.certHash}`)}
                     className="w-full py-2 bg-slate-900 border border-[#00E5FF]/20 hover:border-[#00E5FF]/60 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 rtl:space-x-reverse transition-all"
                   >
                     <ExternalLink size={12} className="text-[#00E5FF]" />
@@ -214,7 +215,7 @@ const TalentHub = () => {
 
                 {/* Contact button */}
                 <button
-                  onClick={() => alert(lang === 'ar' ? `تم إرسال طلب تواصل للمترشح ${selectedStudent.name}.` : `Interview request sent to ${selectedStudent.name}.`)}
+                  onClick={() => toast.success(lang === 'ar' ? `تم إرسال طلب تواصل للمترشح ${selectedStudent.name}.` : `Interview request sent to ${selectedStudent.name}.`)}
                   className="w-full py-3 rounded-xl bg-gradient-to-r from-[#00E5FF] to-cyan-500 text-black font-black uppercase tracking-wider hover:shadow-glow-cyan transition-all text-center text-xs"
                 >
                   <span className="flex items-center justify-center gap-2">

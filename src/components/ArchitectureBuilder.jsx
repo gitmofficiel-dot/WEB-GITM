@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Layout, Play, Plus, Trash2, ArrowRight, Save, Download } from 'lucide-react';
+import { toast } from '../utils/toast';
 
 const ArchitectureBuilder = () => {
   const { lang } = useLanguage();
@@ -163,14 +164,14 @@ const ArchitectureBuilder = () => {
 
           <div className="flex items-center space-x-3 rtl:space-x-reverse">
             <button
-              onClick={() => alert(lang === 'ar' ? 'تم حفظ التخطيط بنجاح في ملفات المشروع!' : 'Architecture layout saved to project files successfully!')}
+              onClick={() => toast.success(lang === 'ar' ? 'تم حفظ التخطيط بنجاح في ملفات المشروع!' : 'Architecture layout saved to project files successfully!')}
               className="px-3 py-1.5 rounded-lg bg-[#3A506B]/20 border border-[#3A506B]/30 text-white hover:border-[#00E5FF]/40 transition-all text-xs font-bold flex items-center space-x-1.5"
             >
               <Save size={14} className="text-[#00E5FF]" />
               <span>{lang === 'ar' ? 'حفظ المخطط' : 'Save Spec'}</span>
             </button>
             <button
-              onClick={() => alert(lang === 'ar' ? 'جاري تصدير المخطط بصيغة صورة PNG...' : 'Exporting diagram to PNG image...')}
+              onClick={() => toast.success(lang === 'ar' ? 'جاري تصدير المخطط بصيغة صورة PNG...' : 'Exporting diagram to PNG image...')}
               className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#00E5FF] to-cyan-500 text-black font-black transition-all text-xs flex items-center space-x-1.5"
             >
               <Download size={14} />

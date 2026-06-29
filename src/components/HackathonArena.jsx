@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Trophy, Clock, Users, Code, Award, Send } from 'lucide-react';
-
+import { useAuth } from '../context/AuthContext';
+import { toast } from '../utils/toast';
+import { db } from '../config/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 const HackathonArena = () => {
   const { lang } = useLanguage();
+  const { currentUser } = useAuth();
   const [timeLeft, setTimeLeft] = useState(86400 - 3600); // ~23 hours
   const [activeTab, setActiveTab] = useState('challenges'); // 'challenges' | 'leaderboard' | 'register'
   const [teamName, setTeamName] = useState('');
   const [members, setMembers] = useState('');
   const [codeSolution, setCodeSolution] = useState('');
   const [selectedChallenge, setSelectedChallenge] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -62,26 +67,65 @@ const HackathonArena = () => {
     { rank: 4, team: 'STM32 Hackers', score: 550, solved: 1, members: 'Khalid, Amine' }
   ];
 
-  const handleRegisterTeam = (e) => {
+  const handleRegisterTeam = async (e) => {
     e.preventDefault();
-    if (!teamName || !members) {
-      alert(lang === 'ar' ? 'يرجى ملء جميع الحقول لتسجيل الفريق!' : 'Please fill all fields to register your team!');
+    if (!currentUser) {
+      toast.warning(lang === 'ar' ? 'يرجى تسجيل الدخول أولاً!' : 'Please log in first!');
       return;
     }
-    alert(lang === 'ar' ? `تم تسجيل فريق "${teamName}" بنجاح في تحدي هاكاثون الابتكار!` : `Team "${teamName}" registered successfully for the innovation hackathon!`);
-    setTeamName('');
-    setMembers('');
+    if (!teamName || !members) {
+      toast.warning(lang === 'ar' ? 'يرجى ملء جميع الحقول لتسجيل الفريق!' : 'Please fill all fields to register your team!');
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      await addDoc(collection(db, 'hackathon_teams'), {
+        teamName,
+        members,
+        leaderEmail: currentUser.email,
+        createdAt: serverTimestamp()
+      });
+      toast.success(lang === 'ar' ? `تم تسجيل فريق "${teamName}" بنجاح في تحدي هاكاثون الابتكار!` : `Team "${teamName}" registered successfully!`);
+      setTeamName('');
+      setMembers('');
+    } catch (error) {
+      console.error(error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء التسجيل.' : 'Error during registration.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleSubmitSolution = (e) => {
+  const handleSubmitSolution = async (e) => {
     e.preventDefault();
-    if (!selectedChallenge || !codeSolution) {
-      alert(lang === 'ar' ? 'الرجاء اختيار التحدي وكتابة كود الحل أولاً.' : 'Please select a challenge and input your solution code.');
+    if (!currentUser) {
+      toast.warning(lang === 'ar' ? 'يرجى تسجيل الدخول أولاً!' : 'Please log in first!');
       return;
     }
-    alert(lang === 'ar' ? 'تم إرسال الكود لخوادم التقييم التلقائي (Auto-Grader)... النتيجة ستظهر في لوحة الصدارة بعد ثوانٍ.' : 'Solution pushed to Auto-Grader. Scoreboard ranks will refresh upon validation.');
-    setCodeSolution('');
-    setSelectedChallenge(null);
+    if (!selectedChallenge || !codeSolution) {
+      toast.warning(lang === 'ar' ? 'الرجاء اختيار التحدي وكتابة كود الحل أولاً.' : 'Please select a challenge and input your solution code.');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await addDoc(collection(db, 'hackathon_submissions'), {
+        challengeId: selectedChallenge.id,
+        challengeTitle: selectedChallenge.title,
+        solution: codeSolution,
+        userEmail: currentUser.email,
+        submittedAt: serverTimestamp()
+      });
+      toast.success(lang === 'ar' ? 'تم إرسال الكود لخوادم التقييم التلقائي بنجاح!' : 'Solution pushed to Auto-Grader successfully!');
+      setCodeSolution('');
+      setSelectedChallenge(null);
+    } catch (error) {
+      console.error(error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الإرسال.' : 'Error during submission.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -214,10 +258,11 @@ const HackathonArena = () => {
 
                     <button
                       type="submit"
-                      className="w-full py-2.5 rounded-lg bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold uppercase tracking-wider hover:shadow-lg transition-all flex items-center justify-center space-x-1.5 rtl:space-x-reverse"
+                      disabled={isSubmitting}
+                      className="w-full py-2.5 rounded-lg bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold uppercase tracking-wider hover:shadow-lg transition-all flex items-center justify-center space-x-1.5 rtl:space-x-reverse disabled:opacity-50"
                     >
                       <Send size={14} />
-                      <span>{lang === 'ar' ? 'إرسال الشفرة للاختبار' : 'Upload Solution'}</span>
+                      <span>{isSubmitting ? '...' : (lang === 'ar' ? 'إرسال الشفرة للاختبار' : 'Upload Solution')}</span>
                     </button>
                   </form>
                 ) : (
@@ -304,9 +349,10 @@ const HackathonArena = () => {
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-lg bg-gradient-to-r from-red-500 to-orange-500 text-white font-black uppercase tracking-wider hover:shadow-lg transition-all text-center"
+                  disabled={isSubmitting}
+                  className="w-full py-3 rounded-lg bg-gradient-to-r from-red-500 to-orange-500 text-white font-black uppercase tracking-wider hover:shadow-lg transition-all text-center disabled:opacity-50"
                 >
-                  {lang === 'ar' ? 'تأكيد التسجيل والمشاركة' : 'Register Swarm Team'}
+                  {isSubmitting ? '...' : (lang === 'ar' ? 'تأكيد التسجيل والمشاركة' : 'Register Swarm Team')}
                 </button>
               </form>
             </div>

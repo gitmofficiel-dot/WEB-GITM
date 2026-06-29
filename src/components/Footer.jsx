@@ -1,10 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Facebook, Twitter, Youtube, MapPin, Mail, Phone, ArrowRight, ShieldCheck, Github } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from '../utils/toast';
+import { db } from '../config/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function Footer() {
   const { lang, view, setView } = useLanguage();
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+
+    try {
+      setIsSubmitting(true);
+      await addDoc(collection(db, 'newsletter_subscribers'), {
+        email,
+        subscribedAt: serverTimestamp()
+      });
+      toast.success(lang === 'ar' ? 'تم الاشتراك بنجاح! شكراً لك.' : 'Subscribed successfully! Thank you.');
+      setEmail('');
+    } catch (error) {
+      console.error(error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الاشتراك.' : 'Subscription failed.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <footer className="relative mt-24 pt-16 pb-8 border-t border-cyan-500/20 bg-[#0B132B]/80 dark:bg-[#0B132B]/80 backdrop-blur-xl overflow-hidden z-20">
@@ -95,18 +120,21 @@ export default function Footer() {
             <p className="text-slate-400 text-sm mb-4">
               {lang === 'ar' ? 'اشترك ليصلك أحدث مشاريعنا وابتكاراتنا.' : 'Subscribe to receive our latest projects and innovations.'}
             </p>
-            <form className="relative" onSubmit={(e) => { e.preventDefault(); alert('Subscribed!'); }}>
+            <form className="relative" onSubmit={handleSubscribe}>
               <input 
                 type="email" 
                 placeholder={lang === 'ar' ? 'بريدك الإلكتروني' : 'Your email'}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-slate-800/50 border border-slate-700 rounded-lg py-2.5 px-4 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors placeholder:text-slate-500"
                 required
               />
               <button 
                 type="submit"
-                className="absolute right-1 rtl:right-auto rtl:left-1 top-1 bottom-1 bg-cyan-500 hover:bg-cyan-400 text-[#0B132B] px-4 rounded-md font-bold text-xs transition-colors"
+                disabled={isSubmitting}
+                className="absolute right-1 rtl:right-auto rtl:left-1 top-1 bottom-1 bg-cyan-500 hover:bg-cyan-400 text-[#0B132B] px-4 rounded-md font-bold text-xs transition-colors disabled:opacity-50"
               >
-                {lang === 'ar' ? 'اشترك' : 'Subscribe'}
+                {isSubmitting ? '...' : (lang === 'ar' ? 'اشترك' : 'Subscribe')}
               </button>
             </form>
           </div>

@@ -11,7 +11,7 @@ import {
   Link, UserPlus, Handshake, Info, Search
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import { toast } from '../../utils/toast';
 export default function PresidentDashboard() {
   const { lang, t, user, eventRegistrations, setEventRegistrations } = useLanguage();
   const [activeTab, setActiveTab] = useState('overview');
@@ -44,7 +44,7 @@ export default function PresidentDashboard() {
         await updateDoc(userRef, updates);
       } catch (err) {
         console.error("Error updating role", err);
-        alert(lang === 'ar' ? "فشل في تحديث الصلاحية" : "Failed to update role");
+        toast.error(lang === 'ar' ? "فشل في تحديث الصلاحية" : "Failed to update role");
       }
     }
   };
@@ -462,7 +462,7 @@ export default function PresidentDashboard() {
                       </p>
                     </div>
                     <button onClick={() => {
-                        alert(lang === 'ar' ? 'تم نسخ رابط الدعوة للفريق: https://gitm.ma/invite/XYZ-123' : 'Team Invite Link Copied: https://gitm.ma/invite/XYZ-123');
+                        toast.success(lang === 'ar' ? 'تم نسخ رابط الدعوة للفريق: https://gitm.ma/invite/XYZ-123' : 'Team Invite Link Copied: https://gitm.ma/invite/XYZ-123');
                     }} className="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg hover:bg-slate-700 transition-colors">
                       <Link size={16}/> {lang === 'ar' ? 'إنشاء رابط دعوة' : 'Generate Invite Link'}
                     </button>

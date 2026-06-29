@@ -1,29 +1,35 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Mail, Lock, User, Key, KeyRound, CheckCircle, ArrowRight } from 'lucide-react';
-
+import { toast } from '../utils/toast';
+import { auth } from '../config/firebase';
+import { sendPasswordResetEmail } from 'firebase/auth';
 const Auth = () => {
-  const { t, loginUser, registerUser, view, setView } = useLanguage();
+  const { t, lang, loginUser, registerUser, view, setView } = useLanguage();
   const [mode, setMode] = useState('login'); // login, register, forgot
   const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'student' });
   const [error, setError] = useState('');
 
-  const handleAction = (e) => {
+  const handleAction = async (e) => {
     e.preventDefault();
     if (!formData.email || (mode !== 'forgot' && !formData.password)) {
-      setError('Please fill in all required fields.');
+      setError(lang === 'ar' ? 'يرجى ملء جميع الحقول المطلوبة.' : 'Please fill in all required fields.');
       return;
     }
     
     if (mode === 'register') {
       registerUser(formData.email, formData.name);
     } else if (mode === 'login') {
-      // Find default role based on email keyword or just use student as default,
-      // but they can choose from demo button below easily.
       loginUser(formData.email, 'student', formData.email.split('@')[0]);
     } else {
-      alert('Password reset link sent to your professional email.');
-      setMode('login');
+      try {
+        await sendPasswordResetEmail(auth, formData.email);
+        toast.success(lang === 'ar' ? 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك المهني.' : 'Password reset link sent to your professional email.');
+        setMode('login');
+      } catch (err) {
+        console.error(err);
+        toast.error(lang === 'ar' ? 'حدث خطأ. تأكد من صحة البريد الإلكتروني.' : 'Error sending password reset link.');
+      }
     }
   };
 

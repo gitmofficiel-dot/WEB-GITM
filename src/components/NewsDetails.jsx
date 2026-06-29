@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Calendar, User, Tag, ShieldCheck, ChevronLeft, Share2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { toast } from '../utils/toast';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
@@ -69,7 +70,7 @@ export default function NewsDetails() {
               <ShieldCheck className="text-teal-500" size={24} />
               <span className="font-bold text-[#1e3a5f] dark:text-slate-200">{txt(lang, 'Official News', 'خبر رسمي', 'Nouvelles officielles', '官方新闻')}</span>
             </div>
-            <button onClick={() => navigator.clipboard.writeText(window.location.href).then(() => alert(lang === 'ar' ? 'تم نسخ الرابط' : 'Link copied'))} className="p-2 text-slate-500 hover:text-cyan-500 dark:hover:text-cyan-400 rounded-xl transition-colors bg-cyan-100 dark:bg-slate-800">
+            <button onClick={() => navigator.clipboard.writeText(window.location.href).then(() => toast.success(lang === 'ar' ? 'تم نسخ الرابط' : 'Link copied'))} className="p-2 text-slate-500 hover:text-cyan-500 dark:hover:text-cyan-400 rounded-xl transition-colors bg-cyan-100 dark:bg-slate-800">
               <Share2 size={20} />
             </button>
           </div>

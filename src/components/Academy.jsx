@@ -6,6 +6,7 @@ import LessonView from './academy/LessonView';
 import QuizEngine from './academy/QuizEngine';
 import { db } from '../config/firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import { toast } from '../utils/toast';
 
 export default function Academy({ setView }) {
   const { lang } = useLanguage();
@@ -37,7 +38,7 @@ export default function Academy({ setView }) {
 
   const startCourse = (course) => {
     if (!course.modules || course.modules.length === 0) {
-      alert(lang === 'ar' ? 'هذا المقرر لا يحتوي على دروس بعد.' : 'This course has no lessons yet.');
+      toast.info(lang === 'ar' ? 'هذا المقرر لا يحتوي على دروس بعد.' : 'This course has no lessons yet.');
       return;
     }
     setActiveCourse(course);
@@ -72,7 +73,7 @@ export default function Academy({ setView }) {
 
   const generateCertificate = () => {
     // In a real app, this would hit an API to mint the cert
-    alert(lang === 'ar' ? 'تم إصدار شهادتك بنجاح! رقم: GITM-CERT-9092' : 'Certificate issued successfully! ID: GITM-CERT-9092');
+    toast.success(lang === 'ar' ? 'تم إصدار شهادتك بنجاح! رقم: GITM-CERT-9092' : 'Certificate issued successfully! ID: GITM-CERT-9092');
     closeCourse();
   };
 

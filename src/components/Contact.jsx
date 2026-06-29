@@ -1,22 +1,32 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Send, Calendar, Mail, MapPin, CheckCircle, RefreshCw } from 'lucide-react';
-
+import { toast } from '../utils/toast';
+import { db } from '../config/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 const Contact = () => {
   const { t } = useLanguage();
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState('idle'); // idle, sending, success
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
     
-    setStatus('sending');
-    setTimeout(() => {
+    try {
+      setStatus('sending');
+      await addDoc(collection(db, 'contact_messages'), {
+        ...formData,
+        submittedAt: serverTimestamp()
+      });
       setStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
       setTimeout(() => setStatus('idle'), 5000);
-    }, 2000);
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      toast.error('Failed to send message. Please try again later.');
+      setStatus('idle');
+    }
   };
 
   return (
@@ -72,7 +82,10 @@ const Contact = () => {
             {/* Direct Meeting Scheduler CTA */}
             <div className="border-t border-white/5 pt-6 mt-8">
               <button 
-                onClick={() => alert('Redirecting to secure scheduling portal (Cal.com/GITM)...')}
+                onClick={() => {
+                  toast.info('Redirecting to scheduling portal...');
+                  window.open('https://cal.com', '_blank');
+                }}
                 className="w-full py-4 px-6 rounded-xl bg-[#e0fcfc]/5 border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center space-x-3 rtl:space-x-reverse hover:shadow-glow-cyan"
               >
                 <Calendar size={16} className="animate-float" />

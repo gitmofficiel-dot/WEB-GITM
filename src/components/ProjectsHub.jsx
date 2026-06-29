@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { GitBranch, GitCommit, GitPullRequest, AlertCircle, ExternalLink, Plus } from 'lucide-react';
+import { toast } from '../utils/toast';
 
 const ProjectsHub = () => {
   const { t, lang } = useLanguage();
@@ -136,7 +137,10 @@ const ProjectsHub = () => {
                     <GitBranch size={14} className="text-[#0d9488] dark:text-emerald-400" />
                     <span className="font-bold flex-1 text-left">{proj.repo}</span>
                     <button 
-                      onClick={() => alert(`Redirecting to https://github.com/${proj.repo}`)}
+                      onClick={() => {
+                        toast.info(`Redirecting to https://github.com/${proj.repo}`);
+                        window.open(`https://github.com/${proj.repo}`, '_blank');
+                      }}
                       className="text-slate-400 hover:text-white"
                     >
                       <ExternalLink size={12} />
