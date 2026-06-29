@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import { LayoutDashboard, Calendar, Award, User, Code, Zap, Heart, UserPlus, Search } from 'lucide-react';
 import UserProfileSettings from './UserProfileSettings';
 
 export default function MemberDashboard() {
   const { lang } = useLanguage();
+  const { currentUser: authUser } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
-  const currentUser = {
-    name: 'Yassine Dev',
-    role: 'Member',
-    email: 'yassine@example.com',
+  const currentUser = authUser || {
+    name: 'Member',
+    role: 'member',
+    email: 'member@gitm.ma',
     badges: ['developer'],
-    membershipId: 'GITM-MEM-1024'
+    membershipId: ''
   };
 
   const upcomingEvents = [

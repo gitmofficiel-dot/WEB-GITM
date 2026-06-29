@@ -1,72 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
-import { BookOpen, Award, PlayCircle, Lock, CheckCircle, ChevronRight, X } from 'lucide-react';
+import { BookOpen, Award, PlayCircle, Lock, CheckCircle, ChevronRight, X, Loader2 } from 'lucide-react';
 import LessonView from './academy/LessonView';
 import QuizEngine from './academy/QuizEngine';
-
-// Mock Course Data
-const EDGE_AI_COURSE = {
-  id: 'c1',
-  title_ar: 'هندسة الذكاء الاصطناعي الطرفي (Edge AI)',
-  title_en: 'Edge AI Architecture',
-  description_ar: 'تعلم كيفية تصميم ونشر نماذج الذكاء الاصطناعي على الأجهزة المدمجة لتطبيقات الزمن الحقيقي.',
-  description_en: 'Learn how to design and deploy AI models on embedded devices for real-time applications.',
-  modules: [
-    {
-      id: 'm1',
-      type: 'lesson',
-      title_ar: 'مقدمة في الحوسبة الطرفية',
-      title_en: 'Introduction to Edge Computing',
-      videoUrl: null, // Placeholder will show
-      content_ar: 'في هذا الدرس، سنتعرف على أساسيات الحوسبة الطرفية والفرق بينها وبين الحوسبة السحابية وكيف تسهم في تقليل وقت الاستجابة.',
-      content_en: 'In this lesson, we will cover the basics of Edge Computing, the difference from Cloud Computing, and how it reduces latency.'
-    },
-    {
-      id: 'm2',
-      type: 'lesson',
-      title_ar: 'تحسين نماذج التعلم العميق',
-      title_en: 'Deep Learning Model Optimization',
-      videoUrl: null,
-      content_ar: 'سنتعلم تقنيات ضغط النماذج مثل Quantization و Pruning لتناسب الذاكرة المحدودة للأجهزة المدمجة.',
-      content_en: 'We will learn model compression techniques like Quantization and Pruning to fit limited memory of embedded devices.'
-    },
-    {
-      id: 'm3',
-      type: 'quiz',
-      title_ar: 'الاختبار النهائي (يجب الحصول على 70%)',
-      title_en: 'Final Assessment (70% Required)',
-      questions: [
-        {
-          question_ar: 'ما هو الهدف الرئيسي من استخدام Quantization؟',
-          question_en: 'What is the main goal of using Quantization?',
-          options: [
-            { id: 'a', text_ar: 'زيادة حجم النموذج', text_en: 'Increase model size', isCorrect: false },
-            { id: 'b', text_ar: 'تقليل حجم النموذج وتسريع الاستدلال', text_en: 'Reduce model size and speed up inference', isCorrect: true },
-            { id: 'c', text_ar: 'تدريب النموذج من الصفر', text_en: 'Train the model from scratch', isCorrect: false }
-          ]
-        },
-        {
-          question_ar: 'أيهما أسرع في الاستجابة؟',
-          question_en: 'Which has faster response time?',
-          options: [
-            { id: 'a', text_ar: 'الحوسبة السحابية (Cloud)', text_en: 'Cloud Computing', isCorrect: false },
-            { id: 'b', text_ar: 'الحوسبة الطرفية (Edge)', text_en: 'Edge Computing', isCorrect: true }
-          ]
-        }
-      ]
-    }
-  ]
-};
+import { db } from '../config/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 export default function Academy({ setView }) {
   const { lang } = useLanguage();
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [activeCourse, setActiveCourse] = useState(null);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [unlockedModules, setUnlockedModules] = useState([0]); // Index 0 is unlocked by default
   const [courseCompleted, setCourseCompleted] = useState(false);
 
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'courses'));
+        const coursesData = [];
+        querySnapshot.forEach((doc) => {
+          coursesData.push({ id: doc.id, ...doc.data() });
+        });
+        setCourses(coursesData);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
+
   const startCourse = (course) => {
+    if (!course.modules || course.modules.length === 0) {
+      alert(lang === 'ar' ? 'هذا المقرر لا يحتوي على دروس بعد.' : 'This course has no lessons yet.');
+      return;
+    }
     setActiveCourse(course);
     setCurrentModuleIndex(0);
     setUnlockedModules([0]);
@@ -84,6 +57,8 @@ export default function Academy({ setView }) {
         setUnlockedModules([...unlockedModules, nextIndex]);
       }
       setCurrentModuleIndex(nextIndex);
+    } else {
+      setCourseCompleted(true);
     }
   };
 
@@ -104,7 +79,7 @@ export default function Academy({ setView }) {
   // --- CATALOG VIEW ---
   if (!activeCourse) {
     return (
-      <div className="container-custom py-24 min-h-screen relative">
+      <div className="container-custom py-24 min-h-screen relative flex flex-col">
         <div className="absolute top-20 right-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-[100px] -z-10"></div>
         
         <div className="text-center mb-16">
@@ -116,38 +91,61 @@ export default function Academy({ setView }) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {/* Edge AI Course Card */}
-          <div className="glass-card rounded-3xl p-8 border border-slate-200 dark:border-slate-800 hover:border-cyan-500 transition-colors group">
-            <div className="w-16 h-16 rounded-2xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 mb-6">
-              <BookOpen size={32} />
-            </div>
-            <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white mb-4">{lang === 'ar' ? EDGE_AI_COURSE.title_ar : EDGE_AI_COURSE.title_en}</h3>
-            <p className="text-slate-500 dark:text-slate-400 mb-8 h-20 line-clamp-3">
-              {lang === 'ar' ? EDGE_AI_COURSE.description_ar : EDGE_AI_COURSE.description_en}
-            </p>
-            <button 
-              onClick={() => startCourse(EDGE_AI_COURSE)}
-              className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-3 rounded-xl font-bold flex items-center justify-center gap-2 group-hover:bg-cyan-500 group-hover:text-white transition-all"
-            >
-              <PlayCircle size={20} /> {lang === 'ar' ? 'ابدأ المسار' : 'Start Track'}
-            </button>
+        {loading ? (
+          <div className="flex-1 flex flex-col items-center justify-center">
+            <Loader2 size={48} className="text-cyan-500 animate-spin mb-4" />
+            <p className="text-slate-500 font-bold">{lang === 'ar' ? 'جاري تحميل المقررات...' : 'Loading courses...'}</p>
           </div>
+        ) : courses.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-center">
+            <BookOpen size={48} className="text-slate-400 mb-4" />
+            <p className="text-slate-500 text-lg font-bold">
+              {lang === 'ar' ? 'لا توجد مقررات متاحة حالياً.' : 'No courses available right now.'}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto w-full">
+            {courses.map((course) => (
+              <div key={course.id} className="glass-card rounded-3xl p-8 border border-slate-200 dark:border-slate-800 hover:border-cyan-500 transition-colors group flex flex-col">
+                {course.thumbnailUrl ? (
+                  <div className="w-full h-40 rounded-2xl mb-6 bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0">
+                    <img src={course.thumbnailUrl} alt={lang === 'ar' ? course.title_ar : course.title_en} className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 rounded-2xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 mb-6 shrink-0">
+                    <BookOpen size={32} />
+                  </div>
+                )}
+                <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white mb-4 line-clamp-2">
+                  {lang === 'ar' ? course.title_ar : course.title_en}
+                </h3>
+                <p className="text-slate-500 dark:text-slate-400 mb-8 h-20 line-clamp-3 flex-1">
+                  {lang === 'ar' ? course.description_ar : course.description_en}
+                </p>
+                <button 
+                  onClick={() => startCourse(course)}
+                  className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-3 rounded-xl font-bold flex items-center justify-center gap-2 group-hover:bg-cyan-500 group-hover:text-white transition-all mt-auto"
+                >
+                  <PlayCircle size={20} /> {lang === 'ar' ? 'ابدأ المسار' : 'Start Track'}
+                </button>
+              </div>
+            ))}
 
-          {/* Locked Course Example */}
-          <div className="glass-card rounded-3xl p-8 border border-slate-200 dark:border-slate-800 opacity-60">
-            <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-6">
-              <Lock size={32} />
+            {/* Locked Course Example - visually appealing padding */}
+            <div className="glass-card rounded-3xl p-8 border border-slate-200 dark:border-slate-800 opacity-60 flex flex-col">
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-6 shrink-0">
+                <Lock size={32} />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-400 mb-4">{lang === 'ar' ? 'الروبوتيك المتقدم' : 'Advanced Robotics'}</h3>
+              <p className="text-slate-500 mb-8 h-20 flex-1">
+                {lang === 'ar' ? 'قريباً: تعلم برمجة الروبوتات باستخدام ROS2.' : 'Coming soon: Learn robot programming with ROS2.'}
+              </p>
+              <button disabled className="w-full bg-slate-200 dark:bg-slate-800 text-slate-400 py-3 rounded-xl font-bold flex items-center justify-center gap-2 cursor-not-allowed mt-auto">
+                {lang === 'ar' ? 'غير متاح حالياً' : 'Currently Unavailable'}
+              </button>
             </div>
-            <h3 className="text-2xl font-bold text-slate-400 mb-4">{lang === 'ar' ? 'الروبوتيك المتقدم' : 'Advanced Robotics'}</h3>
-            <p className="text-slate-500 mb-8 h-20">
-              {lang === 'ar' ? 'قريباً: تعلم برمجة الروبوتات باستخدام ROS2.' : 'Coming soon: Learn robot programming with ROS2.'}
-            </p>
-            <button disabled className="w-full bg-slate-200 dark:bg-slate-800 text-slate-400 py-3 rounded-xl font-bold flex items-center justify-center gap-2 cursor-not-allowed">
-              {lang === 'ar' ? 'غير متاح حالياً' : 'Currently Unavailable'}
-            </button>
           </div>
-        </div>
+        )}
       </div>
     );
   }
@@ -161,7 +159,9 @@ export default function Academy({ setView }) {
       {/* Sidebar */}
       <div className="w-full md:w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-[calc(100vh-80px)] md:sticky md:top-20 shrink-0">
         <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-          <h2 className="font-bold text-[#1e3a5f] dark:text-white line-clamp-1">{lang === 'ar' ? activeCourse.title_ar : activeCourse.title_en}</h2>
+          <h2 className="font-bold text-[#1e3a5f] dark:text-white line-clamp-1" title={lang === 'ar' ? activeCourse.title_ar : activeCourse.title_en}>
+            {lang === 'ar' ? activeCourse.title_ar : activeCourse.title_en}
+          </h2>
           <button onClick={closeCourse} className="text-slate-400 hover:text-rose-500 transition-colors"><X size={20}/></button>
         </div>
         
@@ -222,7 +222,7 @@ export default function Academy({ setView }) {
                   lesson={{
                     title: lang === 'ar' ? currentModule.title_ar : currentModule.title_en,
                     content: lang === 'ar' ? currentModule.content_ar : currentModule.content_en,
-                    videoUrl: currentModule.videoUrl
+                    videoUrl: currentModule.fileUrl || currentModule.videoUrl // fileUrl from new format
                   }} 
                   lang={lang} 
                   onComplete={handleLessonComplete} 

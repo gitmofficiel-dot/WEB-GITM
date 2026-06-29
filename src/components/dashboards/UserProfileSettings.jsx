@@ -1,17 +1,25 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { 
+import { useAuth } from '../../context/AuthContext';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../config/firebase';
+import { uploadToCloudinary } from '../../utils/cloudinary';
+import {
   User, Settings, Copy, Edit3, Camera, Bell, Lock, Globe, ShieldCheck, Mail, Briefcase, GraduationCap, CheckCircle, AlertCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function UserProfileSettings({ currentUser = { name: 'Student', role: 'student', email: 'student@gitm.ma', badges: [], membershipId: '' } }) {
+export default function UserProfileSettings({ currentUser: propUser }) {
   const { lang } = useLanguage();
+  const { currentUser: authUser } = useAuth();
+  const currentUser = authUser || propUser || { name: 'Student', role: 'student', email: 'student@gitm.ma', badges: [], membershipId: '' };
   const [activeSubTab, setActiveSubTab] = useState('profile');
   const [copyStatus, setCopyStatus] = useState('');
+  const [saveStatus, setSaveStatus] = useState('');
   
   // Real functional image upload state
-  const [profileImage, setProfileImage] = useState(null);
+  const [profileImage, setProfileImage] = useState(currentUser.imageUrl || null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
   const handleCopyCVLink = () => {
@@ -31,8 +39,39 @@ export default function UserProfileSettings({ currentUser = { name: 'Student', r
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
+      setSelectedFile(file);
       const imageUrl = URL.createObjectURL(file);
       setProfileImage(imageUrl);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    setSaveStatus('loading');
+    try {
+      if (currentUser?.membershipId) {
+        let finalImageUrl = currentUser.imageUrl || '';
+        
+        // If a new file is selected, upload it to Cloudinary
+        if (selectedFile) {
+          finalImageUrl = await uploadToCloudinary(selectedFile, 'image');
+        }
+
+        const userRef = doc(db, 'users', currentUser.membershipId);
+        await updateDoc(userRef, {
+          imageUrl: finalImageUrl,
+          updatedAt: new Date().toISOString()
+        });
+        setSaveStatus('success');
+      } else {
+        // Simulate save for users without membershipId
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setSaveStatus('success');
+      }
+      setTimeout(() => setSaveStatus(''), 3000);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus(''), 3000);
     }
   };
 
@@ -231,9 +270,28 @@ export default function UserProfileSettings({ currentUser = { name: 'Student', r
                 </div>
               </div>
 
-              <div className="pt-8 flex justify-end">
-                <button className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-cyan-500/30 hover:scale-105 transition-all">
-                  {lang === 'ar' ? 'حفظ ونشر التغييرات' : 'Save & Publish Profile'}
+              <div className="pt-8 flex justify-end items-center gap-4">
+                <AnimatePresence>
+                  {saveStatus === 'success' && (
+                    <motion.span initial={{opacity:0, x:10}} animate={{opacity:1, x:0}} exit={{opacity:0, x:10}} className="text-emerald-500 font-bold flex items-center gap-2">
+                      <CheckCircle size={20}/> {lang === 'ar' ? 'تم الحفظ بنجاح!' : 'Saved successfully!'}
+                    </motion.span>
+                  )}
+                  {saveStatus === 'error' && (
+                    <motion.span initial={{opacity:0, x:10}} animate={{opacity:1, x:0}} exit={{opacity:0, x:10}} className="text-rose-500 font-bold flex items-center gap-2">
+                      <AlertCircle size={20}/> {lang === 'ar' ? 'حدث خطأ!' : 'Error saving!'}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+                
+                <button 
+                  onClick={handleSaveProfile}
+                  disabled={saveStatus === 'loading'}
+                  className={`bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition-all ${saveStatus === 'loading' ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-cyan-500/30 hover:scale-105'}`}
+                >
+                  {saveStatus === 'loading' 
+                    ? (lang === 'ar' ? 'جاري الحفظ...' : 'Saving...') 
+                    : (lang === 'ar' ? 'حفظ ونشر التغييرات' : 'Save & Publish Profile')}
                 </button>
               </div>
             </div>

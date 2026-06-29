@@ -1,52 +1,61 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Code, Github, ExternalLink, Cpu, Database, Layers } from 'lucide-react';
+import { Code, Github, ExternalLink, Cpu, Database, Layers, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { db } from '../config/firebase';
+import { collection, getDocs, query } from 'firebase/firestore';
 
-const MOCK_PROJECTS = [
-  {
-    id: 1,
-    title: { en: 'Moroccan Darija NLP', fr: 'NLP Darija Marocaine', ar: 'معالجة اللغات الطبيعية للدارجة' },
-    description: { 
-      en: 'An open-source transformer model fine-tuned to understand and generate Moroccan Darija text.',
-      fr: 'Un modèle transformer open-source affiné pour comprendre et générer du texte en Darija marocaine.',
-      ar: 'نموذج محول مفتوح المصدر تم تحسينه لفهم وإنشاء النصوص بالدارجة المغربية.'
-    },
-    tech: ['Python', 'PyTorch', 'HuggingFace'],
-    icon: <Database className="w-8 h-8 text-teal-400" />,
-    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&q=80',
-    github: '#'
-  },
-  {
-    id: 2,
-    title: { en: 'Smart Agri-Sense', fr: 'Smart Agri-Sense', ar: 'الاستشعار الزراعي الذكي' },
-    description: { 
-      en: 'IoT-based soil monitoring system using ESP32 and ML predictions for optimal irrigation in Moroccan farms.',
-      fr: 'Système de surveillance du sol basé sur l\'IoT utilisant l\'ESP32 et des prédictions ML pour une irrigation optimale dans les fermes marocaines.',
-      ar: 'نظام مراقبة التربة القائم على إنترنت الأشياء باستخدام ESP32 وتوقعات التعلم الآلي للري الأمثل في المزارع المغربية.'
-    },
-    tech: ['C++', 'React', 'TensorFlow Lite'],
-    icon: <Cpu className="w-8 h-8 text-teal-400" />,
-    image: 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?w=800&q=80',
-    github: '#'
-  },
-  {
-    id: 3,
-    title: { en: 'Supply Chain Blockchain', fr: 'Blockchain de la Chaîne d\'Approvisionnement', ar: 'بلوكتشين سلسلة التوريد' },
-    description: { 
-      en: 'A decentralized application ensuring transparency in the supply chain of Moroccan artisanal goods.',
-      fr: 'Une application décentralisée garantissant la transparence dans la chaîne d\'approvisionnement des produits artisanaux marocains.',
-      ar: 'تطبيق لامركزي يضمن الشفافية في سلسلة توريد السلع الحرفية المغربية.'
-    },
-    tech: ['Solidity', 'Next.js', 'Web3.js'],
-    icon: <Layers className="w-8 h-8 text-teal-400" />,
-    image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&q=80',
-    github: '#'
-  }
-];
+const ICON_MAP = {
+  Database,
+  Cpu,
+  Layers,
+  Code
+};
 
 export default function TechProjectsPage() {
   const { lang } = useLanguage();
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const q = query(collection(db, 'projects'));
+        const querySnapshot = await getDocs(q);
+        const fetchedProjects = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setProjects(fetchedProjects);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  const getLocalized = (obj, field, l) => {
+    if (!obj) return '';
+    if (obj[`${field}_${l}`]) return obj[`${field}_${l}`];
+    if (obj[field] && typeof obj[field] === 'object') return obj[field][l] || obj[field].en || '';
+    return obj[field] || '';
+  };
+
+  const getIcon = (iconName) => {
+    if (typeof iconName === 'string') {
+      const IconComp = ICON_MAP[iconName] || Code;
+      return <IconComp className="w-8 h-8 text-teal-400" />;
+    }
+    return iconName || <Code className="w-8 h-8 text-teal-400" />;
+  };
+
+  const emptyMessage = {
+    en: 'No tech projects available at the moment.',
+    fr: 'Aucun projet tech disponible pour le moment.',
+    ar: 'لا توجد مشاريع تقنية متاحة في الوقت الحالي.'
+  };
 
   return (
     <div className="min-h-screen grid-bg py-24 px-6 md:px-12 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
@@ -84,53 +93,71 @@ export default function TechProjectsPage() {
           </motion.p>
         </div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {MOCK_PROJECTS.map((proj, index) => (
-            <motion.div
-              key={proj.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="glass-card card-3d hover-lift rounded-2xl overflow-hidden flex flex-col border border-slate-700/50 hover:border-teal-500/50 group"
-            >
-              <div className="h-48 relative overflow-hidden">
-                <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="flex gap-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                    <a href={proj.github} className="p-3 bg-slate-800 rounded-full hover:bg-teal-500 text-white transition-colors">
-                      <Github className="w-6 h-6" />
-                    </a>
-                    <a href="#" className="p-3 bg-slate-800 rounded-full hover:bg-teal-500 text-white transition-colors">
-                      <ExternalLink className="w-6 h-6" />
-                    </a>
+        {/* Content */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-12 h-12 text-teal-400 animate-spin mb-4" />
+            <p className="text-teal-300 font-orbitron animate-pulse">
+              {lang === 'ar' ? 'جاري التحميل...' : lang === 'fr' ? 'Chargement...' : 'Loading...'}
+            </p>
+          </div>
+        ) : projects.length === 0 ? (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-card max-w-2xl mx-auto p-12 text-center rounded-2xl border border-teal-500/30"
+          >
+            <Code className="w-16 h-16 text-slate-500 mx-auto mb-6 opacity-50" />
+            <h3 className="text-2xl font-orbitron text-white mb-2">{emptyMessage[lang] || emptyMessage.en}</h3>
+          </motion.div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {projects.map((proj, index) => (
+              <motion.div
+                key={proj.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="glass-card card-3d hover-lift rounded-2xl overflow-hidden flex flex-col border border-slate-700/50 hover:border-teal-500/50 group"
+              >
+                <div className="h-48 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="flex gap-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      <a href={proj.github || '#'} className="p-3 bg-slate-800 rounded-full hover:bg-teal-500 text-white transition-colors">
+                        <Github className="w-6 h-6" />
+                      </a>
+                      <a href={proj.link || '#'} className="p-3 bg-slate-800 rounded-full hover:bg-teal-500 text-white transition-colors">
+                        <ExternalLink className="w-6 h-6" />
+                      </a>
+                    </div>
+                  </div>
+                  <img src={proj.imageUrl || proj.image} alt="Project" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute top-4 left-4 z-0 bg-slate-900/90 p-2 rounded-xl border border-slate-700 shadow-lg">
+                    {getIcon(proj.icon)}
                   </div>
                 </div>
-                <img src={proj.image} alt="Project" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                <div className="absolute top-4 left-4 z-0 bg-slate-900/90 p-2 rounded-xl border border-slate-700 shadow-lg">
-                  {proj.icon}
-                </div>
-              </div>
 
-              <div className="p-6 flex flex-col flex-grow bg-slate-900/50">
-                <h3 className="text-xl font-bold text-white mb-3 font-orbitron group-hover:text-teal-300 transition-colors">
-                  {proj.title[lang] || proj.title.en}
-                </h3>
-                <p className="text-slate-400 mb-6 text-sm leading-relaxed flex-grow">
-                  {proj.description[lang] || proj.description.en}
-                </p>
-                
-                <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-slate-700/50">
-                  {proj.tech.map((t, i) => (
-                    <span key={i} className="px-2.5 py-1 text-xs font-medium text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-md">
-                      {t}
-                    </span>
-                  ))}
+                <div className="p-6 flex flex-col flex-grow bg-slate-900/50">
+                  <h3 className="text-xl font-bold text-white mb-3 font-orbitron group-hover:text-teal-300 transition-colors">
+                    {getLocalized(proj, 'title', lang)}
+                  </h3>
+                  <p className="text-slate-400 mb-6 text-sm leading-relaxed flex-grow">
+                    {getLocalized(proj, 'description', lang)}
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-slate-700/50">
+                    {proj.tech && proj.tech.map((t, i) => (
+                      <span key={i} className="px-2.5 py-1 text-xs font-medium text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-md">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

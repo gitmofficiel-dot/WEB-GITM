@@ -1,63 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, X, ZoomIn, MapPin, Calendar } from 'lucide-react';
+import { Camera, X, ZoomIn, MapPin, Calendar, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-
-const MOCK_GALLERY = [
-  {
-    id: 1,
-    url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
-    title: { en: 'UM5 AI Bootcamp 2026', fr: 'Bootcamp IA UM5 2026', ar: 'معسكر الذكاء الاصطناعي بجامعة محمد الخامس 2026' },
-    location: { en: 'Rabat, Morocco', fr: 'Rabat, Maroc', ar: 'الرباط، المغرب' },
-    date: '2026-03-15',
-    category: 'hackathon'
-  },
-  {
-    id: 2,
-    url: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&q=80',
-    title: { en: 'GITEX Africa Delegation', fr: 'Délégation GITEX Africa', ar: 'وفد جيتكس أفريقيا' },
-    location: { en: 'Marrakech, Morocco', fr: 'Marrakech, Maroc', ar: 'مراكش، المغرب' },
-    date: '2026-05-20',
-    category: 'conference'
-  },
-  {
-    id: 3,
-    url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80',
-    title: { en: 'ENSIAS Workshop', fr: 'Atelier ENSIAS', ar: 'ورشة عمل ENSIAS' },
-    location: { en: 'Rabat, Morocco', fr: 'Rabat, Maroc', ar: 'الرباط، المغرب' },
-    date: '2026-02-10',
-    category: 'workshop'
-  },
-  {
-    id: 4,
-    url: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&q=80',
-    title: { en: 'OCP Tech Partnership', fr: 'Partenariat Tech OCP', ar: 'شراكة OCP التقنية' },
-    location: { en: 'Casablanca, Morocco', fr: 'Casablanca, Maroc', ar: 'الدار البيضاء، المغرب' },
-    date: '2026-01-25',
-    category: 'event'
-  },
-  {
-    id: 5,
-    url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80',
-    title: { en: 'Coding Night', fr: 'Nuit du Code', ar: 'ليلة البرمجة' },
-    location: { en: 'Tangier, Morocco', fr: 'Tanger, Maroc', ar: 'طنجة، المغرب' },
-    date: '2025-11-05',
-    category: 'hackathon'
-  },
-  {
-    id: 6,
-    url: 'https://images.unsplash.com/photo-1558002038-1055907df827?w=800&q=80',
-    title: { en: 'Smart Agri Tour', fr: 'Tournée Agri Tech', ar: 'جولة التكنولوجيا الزراعية' },
-    location: { en: 'Agadir, Morocco', fr: 'Agadir, Maroc', ar: 'أكادير، المغرب' },
-    date: '2025-12-12',
-    category: 'event'
-  }
-];
+import { db } from '../config/firebase';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 export default function GalleryPage() {
   const { lang } = useLanguage();
   const [selectedImg, setSelectedImg] = useState(null);
   const [filter, setFilter] = useState('all');
+  const [gallery, setGallery] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const q = query(collection(db, 'gallery'), orderBy('date', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const fetchedGallery = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setGallery(fetchedGallery);
+      } catch (error) {
+        console.error('Error fetching gallery:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGallery();
+  }, []);
 
   const filters = [
     { id: 'all', label: { en: 'All', fr: 'Tout', ar: 'الكل' } },
@@ -67,7 +39,20 @@ export default function GalleryPage() {
     { id: 'event', label: { en: 'Events', fr: 'Événements', ar: 'أحداث' } }
   ];
 
-  const filteredGallery = filter === 'all' ? MOCK_GALLERY : MOCK_GALLERY.filter(item => item.category === filter);
+  const filteredGallery = filter === 'all' ? gallery : gallery.filter(item => item.category === filter);
+
+  const getLocalized = (obj, field, l) => {
+    if (!obj) return '';
+    if (obj[`${field}_${l}`]) return obj[`${field}_${l}`];
+    if (obj[field] && typeof obj[field] === 'object') return obj[field][l] || obj[field].en || '';
+    return obj[field] || '';
+  };
+
+  const emptyMessage = {
+    en: 'No images available at the moment.',
+    fr: 'Aucune image disponible pour le moment.',
+    ar: 'لا توجد صور متاحة في الوقت الحالي.'
+  };
 
   return (
     <div className="min-h-screen grid-bg py-24 px-6 md:px-12 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
@@ -128,40 +113,58 @@ export default function GalleryPage() {
         </motion.div>
 
         {/* Gallery Grid */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence>
-            {filteredGallery.map((item) => (
-              <motion.div
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-                key={item.id}
-                className="group relative rounded-2xl overflow-hidden glass-card card-3d cursor-pointer h-72"
-                onClick={() => setSelectedImg(item)}
-              >
-                <img 
-                  src={item.url} 
-                  alt={item.title[lang] || item.title.en} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                  <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                    <h3 className="text-xl font-bold text-white mb-2 font-orbitron">{item.title[lang] || item.title.en}</h3>
-                    <div className="flex items-center gap-4 text-sm text-slate-300">
-                      <span className="flex items-center gap-1"><MapPin className="w-4 h-4 text-teal-400"/> {item.location[lang] || item.location.en}</span>
-                      <span className="flex items-center gap-1"><Calendar className="w-4 h-4 text-teal-400"/> {item.date}</span>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-12 h-12 text-teal-400 animate-spin mb-4" />
+            <p className="text-teal-300 font-orbitron animate-pulse">
+              {lang === 'ar' ? 'جاري التحميل...' : lang === 'fr' ? 'Chargement...' : 'Loading...'}
+            </p>
+          </div>
+        ) : gallery.length === 0 ? (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-card max-w-2xl mx-auto p-12 text-center rounded-2xl border border-teal-500/30"
+          >
+            <Camera className="w-16 h-16 text-slate-500 mx-auto mb-6 opacity-50" />
+            <h3 className="text-2xl font-orbitron text-white mb-2">{emptyMessage[lang] || emptyMessage.en}</h3>
+          </motion.div>
+        ) : (
+          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {filteredGallery.map((item) => (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                  key={item.id}
+                  className="group relative rounded-2xl overflow-hidden glass-card card-3d cursor-pointer h-72"
+                  onClick={() => setSelectedImg(item)}
+                >
+                  <img 
+                    src={item.imageUrl || item.url || item.image} 
+                    alt={getLocalized(item, 'title', lang)} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                    <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      <h3 className="text-xl font-bold text-white mb-2 font-orbitron">{getLocalized(item, 'title', lang)}</h3>
+                      <div className="flex items-center gap-4 text-sm text-slate-300">
+                        <span className="flex items-center gap-1"><MapPin className="w-4 h-4 text-teal-400"/> {getLocalized(item, 'location', lang)}</span>
+                        <span className="flex items-center gap-1"><Calendar className="w-4 h-4 text-teal-400"/> {item.date}</span>
+                      </div>
+                    </div>
+                    <div className="absolute top-4 right-4 bg-teal-500/20 p-2 rounded-full backdrop-blur-md border border-teal-500/30">
+                      <ZoomIn className="w-5 h-5 text-teal-300" />
                     </div>
                   </div>
-                  <div className="absolute top-4 right-4 bg-teal-500/20 p-2 rounded-full backdrop-blur-md border border-teal-500/30">
-                    <ZoomIn className="w-5 h-5 text-teal-300" />
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )}
 
         {/* Lightbox */}
         <AnimatePresence>
@@ -187,14 +190,14 @@ export default function GalleryPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <img 
-                  src={selectedImg.url} 
-                  alt={selectedImg.title[lang] || selectedImg.title.en}
+                  src={selectedImg.imageUrl || selectedImg.url || selectedImg.image} 
+                  alt={getLocalized(selectedImg, 'title', lang)}
                   className="w-full max-h-[80vh] object-contain bg-slate-900/50"
                 />
                 <div className="p-6 bg-slate-900/80 backdrop-blur-md border-t border-teal-500/20">
-                  <h3 className="text-2xl font-bold text-white mb-2 font-orbitron">{selectedImg.title[lang] || selectedImg.title.en}</h3>
+                  <h3 className="text-2xl font-bold text-white mb-2 font-orbitron">{getLocalized(selectedImg, 'title', lang)}</h3>
                   <div className="flex items-center gap-6 text-slate-300">
-                    <span className="flex items-center gap-2"><MapPin className="w-5 h-5 text-teal-400"/> {selectedImg.location[lang] || selectedImg.location.en}</span>
+                    <span className="flex items-center gap-2"><MapPin className="w-5 h-5 text-teal-400"/> {getLocalized(selectedImg, 'location', lang)}</span>
                     <span className="flex items-center gap-2"><Calendar className="w-5 h-5 text-teal-400"/> {selectedImg.date}</span>
                   </div>
                 </div>

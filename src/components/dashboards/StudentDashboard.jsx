@@ -1,40 +1,82 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { 
-  BookOpen, Video, FileText, CheckCircle, Clock, Award, Star, Settings, MessageSquare, PlayCircle, Download
+import { useAuth } from '../../context/AuthContext';
+import {
+  BookOpen, FileText, CheckCircle, Clock, Award, Star, Settings, PlayCircle,
+  Download, Share2, Eye, BarChart3, Target, TrendingUp, Zap, Brain,
+  Calendar, Medal, GraduationCap, Flame, Copy, ExternalLink
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
 
 export default function StudentDashboard() {
   const { lang, setView } = useLanguage();
+  const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState('courses');
+  const [copiedLink, setCopiedLink] = useState(null);
+
+  const studentName = currentUser?.name || (lang === 'ar' ? 'أيمن بنعلي' : 'Aymane Benali');
+  const studentEmail = currentUser?.email || 'a.benali@gitm.ma';
 
   const enrolledCourses = [
-    { id: 1, title: 'Edge AI Development', progress: 65, nextLesson: 'Neural Networks Basics', status: 'In Progress' },
-    { id: 2, title: 'Python for Robotics', progress: 100, nextLesson: '-', status: 'Completed', grade: 'A+' },
-    { id: 3, title: 'IoT Cloud Architecture', progress: 15, nextLesson: 'AWS IoT Core Setup', status: 'In Progress' }
+    { id: 1, title: 'Edge AI Development', titleAr: 'تطوير الذكاء الاصطناعي الحافي', progress: 65, nextLesson: 'Neural Networks Basics', nextLessonAr: 'أساسيات الشبكات العصبية', status: 'In Progress', color: 'from-blue-500 to-cyan-500' },
+    { id: 2, title: 'Python for Robotics', titleAr: 'بايثون للروبوتات', progress: 100, nextLesson: '-', nextLessonAr: '-', status: 'Completed', grade: 'A+', color: 'from-emerald-500 to-teal-500' },
+    { id: 3, title: 'IoT Cloud Architecture', titleAr: 'بنية سحابة إنترنت الأشياء', progress: 15, nextLesson: 'AWS IoT Core Setup', nextLessonAr: 'إعداد AWS IoT Core', status: 'In Progress', color: 'from-purple-500 to-indigo-500' },
+    { id: 4, title: 'Cybersecurity Fundamentals', titleAr: 'أساسيات الأمن السيبراني', progress: 42, nextLesson: 'Network Scanning', nextLessonAr: 'مسح الشبكات', status: 'In Progress', color: 'from-rose-500 to-pink-500' },
   ];
 
   const assignments = [
-    { id: 1, course: 'Edge AI Development', title: 'Train CNN Model', dueDate: '2026-06-25', status: 'Pending' },
-    { id: 2, course: 'Python for Robotics', title: 'Pathfinding Algorithm', dueDate: '2026-05-10', status: 'Graded (95/100)' }
+    { id: 1, course: 'Edge AI Development', courseAr: 'تطوير الذكاء الاصطناعي', title: 'Train CNN Model', titleAr: 'تدريب نموذج CNN', dueDate: '2026-06-25', status: 'Pending', priority: 'high' },
+    { id: 2, course: 'Python for Robotics', courseAr: 'بايثون للروبوتات', title: 'Pathfinding Algorithm', titleAr: 'خوارزمية البحث عن المسار', dueDate: '2026-05-10', status: 'Graded (95/100)', priority: 'done' },
+    { id: 3, course: 'IoT Cloud Architecture', courseAr: 'بنية سحابة إنترنت الأشياء', title: 'AWS Lambda Setup', titleAr: 'إعداد AWS Lambda', dueDate: '2026-07-01', status: 'Pending', priority: 'medium' },
+    { id: 4, course: 'Cybersecurity Fundamentals', courseAr: 'أساسيات الأمن السيبراني', title: 'Vulnerability Assessment Report', titleAr: 'تقرير تقييم الثغرات', dueDate: '2026-06-28', status: 'In Progress', priority: 'high' },
   ];
+
+  const certificates = [
+    { id: 'CERT-GITM-2026-0042', course: 'Python for Robotics', courseAr: 'بايثون للروبوتات', issueDate: '2026-05-15', grade: 'A+', instructor: 'Dr. Amine', color: 'from-emerald-500 to-teal-500' },
+    { id: 'CERT-GITM-2026-0089', course: 'Data Structures & Algorithms', courseAr: 'هياكل البيانات والخوارزميات', issueDate: '2026-03-20', grade: 'A', instructor: 'Dr. Fatima', color: 'from-blue-500 to-indigo-500' },
+    { id: 'CERT-GITM-2025-0312', course: 'Introduction to AI', courseAr: 'مقدمة في الذكاء الاصطناعي', issueDate: '2025-12-10', grade: 'A+', instructor: 'Dr. Yassine', color: 'from-purple-500 to-violet-500' },
+  ];
+
+  const learningStats = {
+    studyHoursThisWeek: 12,
+    coursesCompleted: 2,
+    quizAverage: 87,
+    streak: 14,
+    totalPoints: 2450,
+    rank: 3,
+    weeklyGoal: 15,
+    weeklyData: [1.5, 2, 1, 2.5, 1.5, 2, 1.5],
+  };
+
+  const handleShareCert = (certId) => {
+    const link = `https://gitm.ma/verify/${certId}`;
+    navigator.clipboard.writeText(link);
+    setCopiedLink(certId);
+    setTimeout(() => setCopiedLink(null), 2000);
+  };
 
   const tabs = [
     { id: 'courses', icon: BookOpen, label: lang === 'ar' ? 'دوراتي' : 'My Courses' },
     { id: 'assignments', icon: FileText, label: lang === 'ar' ? 'الواجبات' : 'Assignments' },
     { id: 'certificates', icon: Award, label: lang === 'ar' ? 'الشهادات' : 'Certificates' },
-    { id: 'profile', icon: Settings, label: lang === 'ar' ? 'الملف الشخصي' : 'Profile & Settings' }
+    { id: 'stats', icon: BarChart3, label: lang === 'ar' ? 'إحصائيات التعلم' : 'Learning Stats' },
+    { id: 'profile', icon: Settings, label: lang === 'ar' ? 'الملف الشخصي' : 'Profile & Settings' },
   ];
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.4, ease: 'easeOut' } }),
+  };
+
   return (
-    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative">
+    <div className={`flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative ${lang === 'ar' ? 'md:flex-row-reverse' : ''}`}>
+      {/* Sidebar */}
       <div className="w-full md:w-64 shrink-0">
         <div className="glass-card rounded-3xl p-4 sticky top-24 border border-cyan-200 dark:border-slate-800 shadow-xl">
           <div className="mb-6 px-2">
             <h2 className="text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'لوحة الطالب' : 'Student Panel'}</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Aymane Benali</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{studentName}</p>
           </div>
           <nav className="space-y-2">
             {tabs.map(tab => {
@@ -44,8 +86,8 @@ export default function StudentDashboard() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
-                    activeTab === tab.id 
-                    ? 'bg-blue-500 text-white shadow-lg translate-x-2' 
+                    activeTab === tab.id
+                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/20'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
@@ -57,61 +99,333 @@ export default function StudentDashboard() {
         </div>
       </div>
 
+      {/* Main Content */}
       <div className="flex-1 w-full min-w-0">
         <AnimatePresence mode="wait">
-          <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
-            
+          <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }} className="space-y-6">
+
+            {/* ═══════════════ COURSES TAB ═══════════════ */}
             {activeTab === 'courses' && (
               <div className="space-y-6">
-                <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2"><BookOpen className="text-blue-500"/> {lang==='ar'?'التقدم الأكاديمي':'Academic Progress'}</h3>
+                <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+                  <BookOpen className="text-blue-500"/> {lang === 'ar' ? 'التقدم الأكاديمي' : 'Academic Progress'}
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {enrolledCourses.map(course => (
-                    <div key={course.id} className="glass-card rounded-2xl p-6 relative overflow-hidden group">
-                      {course.status === 'Completed' && <div className="absolute top-0 right-0 p-4"><CheckCircle className="text-emerald-500" size={32}/></div>}
-                      <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white mb-2 pr-10">{course.title}</h4>
-                      <p className="text-sm text-slate-500 mb-4">{course.status === 'Completed' ? (lang==='ar'?'مكتملة':'Completed') : (lang==='ar'?'الدرس القادم: ':'Next: ') + course.nextLesson}</p>
-                      
+                  {enrolledCourses.map((course, i) => (
+                    <motion.div key={course.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
+                      className="glass-card rounded-2xl p-6 relative overflow-hidden group border border-slate-200/50 dark:border-slate-800"
+                    >
+                      {course.status === 'Completed' && (
+                        <div className={`absolute top-0 ${lang === 'ar' ? 'left-0' : 'right-0'} p-4`}>
+                          <CheckCircle className="text-emerald-500" size={32}/>
+                        </div>
+                      )}
+                      <div className={`absolute top-0 ${lang === 'ar' ? 'right-0' : 'left-0'} w-1 h-full bg-gradient-to-b ${course.color}`} />
+
+                      <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white mb-2 pr-10">
+                        {lang === 'ar' ? course.titleAr : course.title}
+                      </h4>
+                      <p className="text-sm text-slate-500 mb-4">
+                        {course.status === 'Completed'
+                          ? (lang === 'ar' ? 'مكتملة' : 'Completed')
+                          : (lang === 'ar' ? 'الدرس القادم: ' : 'Next: ') + (lang === 'ar' ? course.nextLessonAr : course.nextLesson)}
+                      </p>
+
                       <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 mb-2">
-                        <div className={`h-2.5 rounded-full ${course.progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`} style={{ width: `${course.progress}%` }}></div>
+                        <motion.div
+                          initial={{ width: 0 }} animate={{ width: `${course.progress}%` }}
+                          transition={{ delay: 0.3 + i * 0.1, duration: 0.8 }}
+                          className={`h-2.5 rounded-full bg-gradient-to-r ${course.color}`}
+                        />
                       </div>
                       <div className="flex justify-between items-center text-xs font-bold text-slate-600 dark:text-slate-400 mb-4">
                         <span>{course.progress}%</span>
-                        {course.grade && <span className="text-emerald-500">Grade: {course.grade}</span>}
+                        {course.grade && <span className="text-emerald-500">{lang === 'ar' ? 'الدرجة: ' : 'Grade: '}{course.grade}</span>}
                       </div>
 
-                      <button 
+                      <button
                         onClick={() => setView('academy')}
-                        className={`w-full py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors ${course.progress === 100 ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' : 'bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400'}`}>
-                        <PlayCircle size={16}/> {course.progress === 100 ? (lang==='ar'?'مراجعة الدورة':'Review Course') : (lang==='ar'?'متابعة التعلم':'Continue Learning')}
+                        className={`w-full py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] ${
+                          course.progress === 100
+                            ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                            : `bg-gradient-to-r ${course.color} text-white hover:shadow-lg`
+                        }`}
+                      >
+                        <PlayCircle size={16}/>
+                        {course.progress === 100
+                          ? (lang === 'ar' ? 'مراجعة الدورة' : 'Review Course')
+                          : (lang === 'ar' ? 'متابعة التعلم' : 'Continue Learning')}
                       </button>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
             )}
 
+            {/* ═══════════════ ASSIGNMENTS TAB ═══════════════ */}
             {activeTab === 'assignments' && (
-              <div className="glass-card rounded-3xl p-6">
-                 <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 mb-6"><FileText className="text-amber-500"/> {lang==='ar'?'الواجبات والمهام':'Assignments & Tasks'}</h3>
-                 <div className="space-y-4">
-                    {assignments.map(task => (
-                      <div key={task.id} className="flex justify-between items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow">
-                        <div>
-                          <h4 className="font-bold text-[#1e3a5f] dark:text-white">{task.title}</h4>
-                          <p className="text-sm text-slate-500">{task.course}</p>
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+                  <FileText className="text-amber-500"/> {lang === 'ar' ? 'الواجبات والمهام' : 'Assignments & Tasks'}
+                </h3>
+
+                {/* Quick Stats */}
+                <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { label: lang === 'ar' ? 'بانتظار التسليم' : 'Pending', value: assignments.filter(a => a.status === 'Pending').length, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+                    { label: lang === 'ar' ? 'قيد العمل' : 'In Progress', value: assignments.filter(a => a.status === 'In Progress').length, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+                    { label: lang === 'ar' ? 'تم التقييم' : 'Graded', value: assignments.filter(a => a.status.includes('Graded')).length, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+                  ].map((stat, i) => (
+                    <motion.div key={i} custom={i} variants={cardVariants} initial="hidden" animate="visible"
+                      className={`glass-card rounded-2xl p-4 text-center ${stat.bg}`}
+                    >
+                      <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                      <p className="text-xs text-slate-500 font-semibold mt-1">{stat.label}</p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="glass-card rounded-2xl p-6">
+                  <div className="space-y-4">
+                    {assignments.map((task, i) => (
+                      <motion.div key={task.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
+                        className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow gap-3"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`w-2 h-12 rounded-full ${
+                            task.priority === 'high' ? 'bg-red-500' : task.priority === 'done' ? 'bg-emerald-500' : 'bg-amber-500'
+                          }`} />
+                          <div>
+                            <h4 className="font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? task.titleAr : task.title}</h4>
+                            <p className="text-sm text-slate-500">{lang === 'ar' ? task.courseAr : task.course}</p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className={`text-xs font-bold px-3 py-1 rounded-full mb-2 inline-block ${task.status.includes('Graded') ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>{task.status}</p>
-                          <p className="text-xs text-slate-500 flex items-center gap-1 justify-end"><Clock size={12}/> Due: {task.dueDate}</p>
+                        <div className={`flex flex-col items-end gap-1 ${lang === 'ar' ? 'items-start' : 'items-end'}`}>
+                          <span className={`text-xs font-bold px-3 py-1 rounded-full inline-block ${
+                            task.status.includes('Graded') ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                            : task.status === 'In Progress' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                            : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                          }`}>{task.status}</span>
+                          <p className="text-xs text-slate-500 flex items-center gap-1"><Clock size={12}/> {lang === 'ar' ? 'الموعد: ' : 'Due: '}{task.dueDate}</p>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
-                 </div>
+                  </div>
+                </div>
               </div>
             )}
 
+            {/* ═══════════════ CERTIFICATES TAB ═══════════════ */}
+            {activeTab === 'certificates' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+                    <Award className="text-amber-500"/> {lang === 'ar' ? 'شهاداتي' : 'My Certificates'}
+                  </h3>
+                  <span className="px-4 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full text-sm font-bold">
+                    {certificates.length} {lang === 'ar' ? 'شهادات' : 'Earned'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 gap-5">
+                  {certificates.map((cert, i) => (
+                    <motion.div key={cert.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
+                      className="glass-card rounded-2xl overflow-hidden border border-slate-200/50 dark:border-slate-800"
+                    >
+                      {/* Certificate Header Gradient */}
+                      <div className={`bg-gradient-to-r ${cert.color} p-5 relative`}>
+                        <div className="absolute inset-0 bg-black/10" />
+                        <div className="relative z-10 flex justify-between items-start">
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <Medal className="text-white/90" size={24}/>
+                              <h4 className="font-bold text-lg text-white">{lang === 'ar' ? cert.courseAr : cert.course}</h4>
+                            </div>
+                            <p className="text-white/70 text-sm">{lang === 'ar' ? 'المدرب: ' : 'Instructor: '}{cert.instructor}</p>
+                          </div>
+                          <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-sm font-bold">
+                            {lang === 'ar' ? 'الدرجة: ' : 'Grade: '}{cert.grade}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Certificate Details */}
+                      <div className="p-5">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                          <div>
+                            <p className="text-xs text-slate-400 font-semibold mb-1">{lang === 'ar' ? 'رقم الشهادة' : 'Certificate ID'}</p>
+                            <p className="font-mono text-sm font-bold text-[#1e3a5f] dark:text-white">{cert.id}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-400 font-semibold mb-1">{lang === 'ar' ? 'تاريخ الإصدار' : 'Issue Date'}</p>
+                            <p className="text-sm font-bold text-[#1e3a5f] dark:text-white flex items-center gap-1"><Calendar size={12}/> {cert.issueDate}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-400 font-semibold mb-1">{lang === 'ar' ? 'الحالة' : 'Status'}</p>
+                            <p className="text-sm font-bold text-emerald-500 flex items-center gap-1"><CheckCircle size={12}/> {lang === 'ar' ? 'تم التحقق' : 'Verified'}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-3">
+                          <button className="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-[#1e3a5f] dark:text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                            <Eye size={16}/> {lang === 'ar' ? 'عرض الشهادة' : 'View Certificate'}
+                          </button>
+                          <button
+                            onClick={() => handleShareCert(cert.id)}
+                            className="flex-1 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg transition-all hover:scale-[1.02]"
+                          >
+                            {copiedLink === cert.id ? (
+                              <><CheckCircle size={16}/> {lang === 'ar' ? 'تم النسخ!' : 'Copied!'}</>
+                            ) : (
+                              <><Share2 size={16}/> {lang === 'ar' ? 'مشاركة الرابط' : 'Share Link'}</>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ═══════════════ LEARNING STATS TAB ═══════════════ */}
+            {activeTab === 'stats' && (
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+                  <BarChart3 className="text-indigo-500"/> {lang === 'ar' ? 'إحصائيات التعلم' : 'Learning Statistics'}
+                </h3>
+
+                {/* Main KPIs */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { label: lang === 'ar' ? 'ساعات الدراسة هذا الأسبوع' : 'Study Hours This Week', value: `${learningStats.studyHoursThisWeek}h`, icon: Clock, gradient: 'from-blue-500 to-cyan-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+                    { label: lang === 'ar' ? 'الدورات المكتملة' : 'Courses Completed', value: learningStats.coursesCompleted, icon: CheckCircle, gradient: 'from-emerald-500 to-teal-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+                    { label: lang === 'ar' ? 'متوسط الاختبارات' : 'Quiz Average', value: `${learningStats.quizAverage}%`, icon: Target, gradient: 'from-purple-500 to-indigo-500', bg: 'bg-purple-50 dark:bg-purple-900/20' },
+                    { label: lang === 'ar' ? 'سلسلة الأيام' : 'Day Streak', value: `${learningStats.streak} 🔥`, icon: Flame, gradient: 'from-orange-500 to-red-500', bg: 'bg-orange-50 dark:bg-orange-900/20' },
+                  ].map((kpi, i) => (
+                    <motion.div key={i} custom={i} variants={cardVariants} initial="hidden" animate="visible"
+                      className={`glass-card rounded-2xl p-5 ${kpi.bg} border border-slate-200/50 dark:border-slate-800`}
+                    >
+                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${kpi.gradient} flex items-center justify-center mb-3`}>
+                        <kpi.icon size={20} className="text-white"/>
+                      </div>
+                      <p className="text-2xl font-bold text-[#1e3a5f] dark:text-white">{kpi.value}</p>
+                      <p className="text-xs text-slate-500 font-semibold mt-1">{kpi.label}</p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Weekly Study Chart */}
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                    className="glass-card rounded-2xl p-6"
+                  >
+                    <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2">
+                      <TrendingUp size={18} className="text-blue-500"/> {lang === 'ar' ? 'ساعات الدراسة اليومية' : 'Daily Study Hours'}
+                    </h4>
+                    <div className="flex items-end gap-3 h-36">
+                      {learningStats.weeklyData.map((hours, i) => (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                          <motion.div
+                            initial={{ height: 0 }} animate={{ height: `${(hours / 3) * 100}%` }}
+                            transition={{ delay: 0.3 + i * 0.05, duration: 0.5 }}
+                            className="w-full bg-gradient-to-t from-blue-500 to-cyan-400 rounded-t-lg relative group cursor-pointer hover:from-blue-600 hover:to-cyan-500 transition-all min-h-[4px]"
+                          >
+                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                              {hours}h
+                            </div>
+                          </motion.div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between mt-2 text-[10px] text-slate-400 font-bold">
+                      {(lang === 'ar' ? ['أحد','إثن','ثلا','أرب','خمي','جمع','سبت'] : ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']).map(d => (
+                        <span key={d} className="flex-1 text-center">{d}</span>
+                      ))}
+                    </div>
+
+                    {/* Weekly Progress Bar */}
+                    <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+                      <div className="flex justify-between text-xs font-bold text-slate-500 mb-2">
+                        <span>{lang === 'ar' ? 'هدف الأسبوع' : 'Weekly Goal'}</span>
+                        <span>{learningStats.studyHoursThisWeek}/{learningStats.weeklyGoal}h</span>
+                      </div>
+                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${Math.min((learningStats.studyHoursThisWeek / learningStats.weeklyGoal) * 100, 100)}%` }}
+                          transition={{ delay: 0.5, duration: 0.8 }}
+                          className="h-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400"
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Achievements & Motivation */}
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                    className="glass-card rounded-2xl p-6 flex flex-col justify-between"
+                  >
+                    <div>
+                      <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2">
+                        <Star size={18} className="text-amber-500"/> {lang === 'ar' ? 'الإنجازات' : 'Achievements'}
+                      </h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-xl">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">🏆</span>
+                            <div>
+                              <p className="font-semibold text-sm text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'إجمالي النقاط' : 'Total Points'}</p>
+                              <p className="text-xs text-slate-400">{lang === 'ar' ? 'الترتيب: #' : 'Rank: #'}{learningStats.rank}</p>
+                            </div>
+                          </div>
+                          <span className="text-xl font-bold text-amber-500">{learningStats.totalPoints}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-xl">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">📚</span>
+                            <p className="font-semibold text-sm text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'شهادات مكتسبة' : 'Certificates Earned'}</p>
+                          </div>
+                          <span className="text-xl font-bold text-emerald-500">{certificates.length}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-xl">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">🧠</span>
+                            <p className="font-semibold text-sm text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'اختبارات تم اجتيازها' : 'Quizzes Passed'}</p>
+                          </div>
+                          <span className="text-xl font-bold text-purple-500">18</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Motivational Message */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 }}
+                      className="mt-5 p-4 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl text-white relative overflow-hidden"
+                    >
+                      <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full blur-xl" />
+                      <div className="relative z-10">
+                        <p className="text-lg font-bold flex items-center gap-2"><Zap size={20}/> {lang === 'ar' ? 'استمر!' : 'Keep Going!'}</p>
+                        <p className="text-sm text-white/80 mt-1">
+                          {lang === 'ar'
+                            ? `أنت في المرتبة #${learningStats.rank}! واصل التعلم ${learningStats.streak} يوماً متتالية — لقد حققت تقدماً رائعاً! 🚀`
+                            : `You're ranked #${learningStats.rank}! ${learningStats.streak} day streak — you're making incredible progress! 🚀`}
+                        </p>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                </div>
+              </div>
+            )}
+
+            {/* ═══════════════ PROFILE TAB ═══════════════ */}
             {activeTab === 'profile' && (
-              <UserProfileSettings currentUser={{ name: 'Aymane Benali', role: 'student', email: 'a.benali@gitm.ma', badges: ['developer'] }} />
+              <UserProfileSettings currentUser={{
+                name: studentName,
+                role: 'student',
+                email: studentEmail,
+                badges: currentUser?.badges || ['developer'],
+                membershipId: currentUser?.membershipId || ''
+              }} />
             )}
 
           </motion.div>
