@@ -149,9 +149,33 @@ export default function UserProfileSettings({ currentUser: propUser }) {
           <div className="flex flex-wrap gap-4 mt-3 text-slate-500 dark:text-slate-400 text-sm">
             <span className="flex items-center gap-1"><Mail size={16}/> {formData.email || currentUser.email}</span>
             <span className="flex items-center gap-1"><Globe size={16}/> Morocco</span>
-            {formData.github && <a href={formData.github} target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:text-blue-500 transition-colors"><Github size={16}/> GitHub</a>}
-            {formData.linkedin && <a href={formData.linkedin} target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:text-blue-500 transition-colors"><Linkedin size={16}/> LinkedIn</a>}
           </div>
+
+          {(formData.github || formData.linkedin || formData.facebook || formData.instagram) && (
+            <div className="flex flex-wrap gap-3 mt-4">
+              {formData.github && (
+                <a href={formData.github} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl transition-all shadow-md hover:shadow-slate-900/20">
+                  <Github size={16}/> GitHub
+                </a>
+              )}
+              {formData.linkedin && (
+                <a href={formData.linkedin} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-[#0A66C2] hover:bg-[#004182] text-white text-sm font-bold rounded-xl transition-all shadow-md hover:shadow-[#0A66C2]/20">
+                  <Linkedin size={16}/> LinkedIn
+                </a>
+              )}
+              {formData.facebook && (
+                <a href={formData.facebook} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-[#1877F2] hover:bg-[#0C58C2] text-white text-sm font-bold rounded-xl transition-all shadow-md hover:shadow-[#1877F2]/20">
+                  <Facebook size={16}/> Facebook
+                </a>
+              )}
+              {formData.instagram && (
+                <a href={formData.instagram} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F56040] hover:opacity-90 text-white text-sm font-bold rounded-xl transition-all shadow-md">
+                  <Instagram size={16}/> Instagram
+                </a>
+              )}
+            </div>
+          )}
+
           {formData.bio && (
             <p className="mt-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800 pt-3">
               {formData.bio}
