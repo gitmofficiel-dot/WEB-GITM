@@ -8,14 +8,18 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
-const PREDEFINED_CATEGORIES = ['مشاريع الأنظمة المدمجة', 'أخبار الروبوت علي', 'تغطيات الهاكاثون', 'تحديثات NABD-X', 'ورشات عمل', 'أكاديمية GITM'];
+const PREDEFINED_CATEGORIES = ['مشاريع الأنظمة المدمجة', 'أخبار الروبوت علي', 'تغطيات الهاكاثون', 'تحديثات NABD-X', 'ورشات عمل', 'أكاديمية GITM', 'Technology'];
 
 export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
   const { lang } = useLanguage();
   
   // States
-  const [title, setTitle] = useState(initialData?.title || initialData?.titleEn || '');
+  const [titleAr, setTitleAr] = useState(initialData?.titleAr || initialData?.title || '');
+  const [titleEn, setTitleEn] = useState(initialData?.titleEn || '');
   const [content, setContent] = useState(initialData?.content || '');
+  const [mainImage, setMainImage] = useState(initialData?.mainImage || '');
+  const [fbVideo, setFbVideo] = useState(initialData?.fbVideo || '');
+  const [ytVideo, setYtVideo] = useState(initialData?.ytVideo || '');
   const [isZenMode, setIsZenMode] = useState(false);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [saveStatus, setSaveStatus] = useState(''); // 'saving', 'saved', ''
@@ -40,10 +44,14 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
     if (savedDraft && !initialData) {
       try {
         const draft = JSON.parse(savedDraft);
-        if (draft.title) setTitle(draft.title);
+        if (draft.titleAr) setTitleAr(draft.titleAr);
+        if (draft.titleEn) setTitleEn(draft.titleEn);
         if (draft.content) setContent(draft.content);
         if (draft.tags) setTags(draft.tags);
         if (draft.category) setSelectedCategory(draft.category);
+        if (draft.mainImage) setMainImage(draft.mainImage);
+        if (draft.fbVideo) setFbVideo(draft.fbVideo);
+        if (draft.ytVideo) setYtVideo(draft.ytVideo);
       } catch (e) {
         console.error('Failed to parse draft', e);
       }
@@ -52,9 +60,9 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (title || content) {
+      if (titleAr || content) {
         setSaveStatus('saving');
-        localStorage.setItem('gitm_article_draft', JSON.stringify({ title, content, tags, category: selectedCategory }));
+        localStorage.setItem('gitm_article_draft', JSON.stringify({ titleAr, titleEn, content, tags, category: selectedCategory, mainImage, fbVideo, ytVideo }));
         setTimeout(() => {
           setSaveStatus('saved');
           setLastSaved(new Date());
@@ -64,7 +72,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
     }, 3000); // Auto-save 3 seconds after last keystroke
 
     return () => clearTimeout(timer);
-  }, [title, content, tags, selectedCategory]);
+  }, [titleAr, titleEn, content, tags, selectedCategory, mainImage, fbVideo, ytVideo]);
 
   // --- Quill Modules ---
   const modules = {
@@ -109,12 +117,12 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
 
   // --- Mock AI Functions ---
   const handleGenerateIntro = () => {
-    if (!title) return alert(lang === 'ar' ? 'الرجاء إدخال العنوان أولاً' : 'Please enter a title first');
+    if (!titleAr) return alert(lang === 'ar' ? 'الرجاء إدخال العنوان أولاً' : 'Please enter a title first');
     setAiLoading('intro');
     setTimeout(() => {
       const generatedIntro = lang === 'ar' 
-        ? `<p><strong>مقدمة تلقائية:</strong> يعكس هذا المقال بعنوان "${title}" رؤية حديثة وتطوراً ملحوظاً في مسيرتنا التكنولوجية. من خلال هذه الأسطر، سنستكشف التفاصيل التقنية والإنجازات التي تم تحقيقها بفضل جهود فريقنا المتميز.</p><br/>`
-        : `<p><strong>Auto Intro:</strong> This article titled "${title}" reflects a modern vision and remarkable progress in our tech journey. Through these lines, we explore the technical details and achievements realized by our outstanding team.</p><br/>`;
+        ? `<p><strong>مقدمة تلقائية:</strong> يعكس هذا المقال بعنوان "${titleAr}" رؤية حديثة وتطوراً ملحوظاً في مسيرتنا التكنولوجية. من خلال هذه الأسطر، سنستكشف التفاصيل التقنية والإنجازات التي تم تحقيقها بفضل جهود فريقنا المتميز.</p><br/>`
+        : `<p><strong>Auto Intro:</strong> This article titled "${titleEn || titleAr}" reflects a modern vision and remarkable progress in our tech journey. Through these lines, we explore the technical details and achievements realized by our outstanding team.</p><br/>`;
       setContent(generatedIntro + content);
       setAiLoading('');
     }, 2000);
@@ -162,7 +170,9 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
               {selectedCategory || (lang === 'ar' ? 'بدون تصنيف' : 'Uncategorized')}
             </span>
           </div>
-          <h1 className="text-4xl font-extrabold text-[#1e3a5f] dark:text-white mb-6 leading-tight">{title || (lang === 'ar' ? 'عنوان المقال...' : 'Article Title...')}</h1>
+          <h1 className="text-4xl font-extrabold text-[#1e3a5f] dark:text-white mb-2 leading-tight">{titleAr || (lang === 'ar' ? 'عنوان المقال (عربي)...' : 'Article Title (AR)...')}</h1>
+          {titleEn && <h2 className="text-2xl font-bold text-slate-500 mb-6">{titleEn}</h2>}
+          {mainImage && <img src={mainImage} alt="Main Article" className="w-full h-64 object-cover rounded-2xl mb-8 shadow-md" />}
           
           <div 
             className="prose dark:prose-invert max-w-none prose-img:rounded-2xl prose-img:shadow-xl prose-pre:bg-slate-900 prose-pre:rounded-xl"
@@ -239,7 +249,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
           <button 
             onClick={() => {
               localStorage.removeItem('gitm_article_draft');
-              onSave && onSave({ title, content, tags, category: selectedCategory, attachments });
+              onSave && onSave({ titleAr, titleEn, content, tags, category: selectedCategory, attachments, mainImage, fbVideo, ytVideo });
             }}
             className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl font-bold shadow-lg hover:shadow-cyan-500/30 hover:scale-105 transition-all"
           >
@@ -254,11 +264,19 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
         <div className="flex-1 flex flex-col gap-4">
           <input 
             type="text" 
-            placeholder={lang === 'ar' ? 'أدخل عنوان المقال المعبر...' : 'Enter an expressive title...'}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            placeholder={lang === 'ar' ? 'عنوان المقال (عربي)' : 'Article Title (AR)'}
+            value={titleAr}
+            onChange={(e) => setTitleAr(e.target.value)}
             className="w-full text-3xl font-extrabold p-4 bg-transparent border-b-2 border-transparent hover:border-slate-200 dark:hover:border-slate-800 focus:border-blue-500 dark:focus:border-blue-500 outline-none text-[#1e3a5f] dark:text-white transition-colors"
             dir="auto"
+          />
+          <input 
+            type="text" 
+            placeholder={lang === 'ar' ? 'عنوان المقال (إنجليزي) - Article Title' : 'Article Title (EN)'}
+            value={titleEn}
+            onChange={(e) => setTitleEn(e.target.value)}
+            className="w-full text-xl font-bold p-4 bg-transparent border-b-2 border-transparent hover:border-slate-200 dark:hover:border-slate-800 focus:border-blue-500 dark:focus:border-blue-500 outline-none text-[#1e3a5f] dark:text-white transition-colors opacity-80"
+            dir="ltr"
           />
           
           <div className="glass-card rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-xl bg-white dark:bg-slate-900">
@@ -271,6 +289,28 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
               className="h-[60vh] text-slate-800 dark:text-slate-200 font-cairo"
               placeholder={lang === 'ar' ? 'ابدأ في صياغة مقالك الإبداعي هنا...' : 'Start drafting your creative article here...'}
             />
+          </div>
+
+          <div className="glass-card rounded-2xl p-5 shadow-lg space-y-4">
+            <h3 className="font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+               <Globe size={18} className="text-blue-500"/> {lang === 'ar' ? 'الوسائط المتعددة (روابط وتضمين)' : 'Media & Embeds'}
+            </h3>
+            
+            <div>
+              <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'صورة المقال (رابط)' : 'Main Image URL'}</label>
+              <input type="text" value={mainImage} onChange={(e) => setMainImage(e.target.value)} placeholder="https://..." className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-blue-500 text-sm" dir="ltr" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'تضمين فيديو فيسبوك (رابط)' : 'Facebook Video URL'}</label>
+                <input type="text" value={fbVideo} onChange={(e) => setFbVideo(e.target.value)} placeholder="https://facebook.com/..." className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-blue-500 text-sm" dir="ltr" />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'تضمين فيديو يوتيوب (رابط)' : 'YouTube Video URL'}</label>
+                <input type="text" value={ytVideo} onChange={(e) => setYtVideo(e.target.value)} placeholder="https://youtube.com/watch?v=..." className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-blue-500 text-sm" dir="ltr" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -402,7 +442,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
                   onClick={() => fileInputRef.current.click()}
                   className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-slate-500 font-bold text-sm"
                 >
-                  <Upload size={16}/> {lang === 'ar' ? 'إرفاق ملفات (PDF, الصور...)' : 'Attach files (PDF, Images...)'}
+                  <Upload size={16}/> {lang === 'ar' ? 'رفع صور متعددة / فيديو / ملفات' : 'Upload Images / Video / Files'}
                 </button>
               </div>
             </div>
