@@ -1,13 +1,103 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 import {
-  User, Settings, Copy, Edit3, Camera, Globe, Mail, Briefcase, GraduationCap, CheckCircle, AlertCircle, Plus, Trash2, Github, Linkedin, Facebook, Instagram, Award
+  User, Settings, Copy, Edit3, Camera, Globe, Mail, Briefcase, GraduationCap, CheckCircle, AlertCircle, Plus, Trash2, Github, Linkedin, Facebook, Instagram, Award, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const PREDEFINED_SKILLS = ['Python', 'JavaScript', 'React', 'Node.js', 'C++', 'Java', 'Machine Learning', 'Deep Learning', 'Computer Vision', 'NLP', 'Data Science', 'IoT', 'Robotics', 'Cybersecurity', 'Cloud Computing', 'AWS', 'Azure', 'Docker', 'Kubernetes', 'Linux', 'Git', 'Agile', 'UI/UX Design', '3D Modeling', 'AutoCAD', 'SolidWorks', 'Arduino', 'Raspberry Pi'];
+const PREDEFINED_INTERESTS = ['Artificial Intelligence', 'Robotics', 'Internet of Things (IoT)', 'Web Development', 'Mobile App Development', 'Game Development', 'Data Analysis', 'Blockchain', 'Quantum Computing', 'Space Tech', 'Green Tech', 'Bioinformatics', 'Entrepreneurship', 'Open Source', 'Hackathons'];
+
+const MONTHS = [
+  { value: '01', ar: 'يناير', en: 'Jan' },
+  { value: '02', ar: 'فبراير', en: 'Feb' },
+  { value: '03', ar: 'مارس', en: 'Mar' },
+  { value: '04', ar: 'أبريل', en: 'Apr' },
+  { value: '05', ar: 'مايو', en: 'May' },
+  { value: '06', ar: 'يونيو', en: 'Jun' },
+  { value: '07', ar: 'يوليو', en: 'Jul' },
+  { value: '08', ar: 'أغسطس', en: 'Aug' },
+  { value: '09', ar: 'سبتمبر', en: 'Sep' },
+  { value: '10', ar: 'أكتوبر', en: 'Oct' },
+  { value: '11', ar: 'نوفمبر', en: 'Nov' },
+  { value: '12', ar: 'ديسمبر', en: 'Dec' },
+];
+
+const SearchableMultiSelect = ({ options, selected, onChange, placeholder, lang }) => {
+  const [query, setQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filteredOptions = options.filter(o => o.toLowerCase().includes(query.toLowerCase()) && !selected.includes(o));
+
+  const handleAdd = (val) => {
+    if(val && !selected.includes(val)) {
+      onChange([...selected, val]);
+    }
+    setQuery('');
+    setIsOpen(false);
+  };
+
+  const handleRemove = (val) => {
+    onChange(selected.filter(s => s !== val));
+  };
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <div className="flex flex-wrap gap-2 mb-2">
+        <AnimatePresence>
+          {selected.map(s => (
+            <motion.span key={s} initial={{scale:0.8,opacity:0}} animate={{scale:1,opacity:1}} exit={{scale:0.8,opacity:0}} className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-bold rounded-lg flex items-center gap-2 border border-blue-100 dark:border-blue-800">
+              {s}
+              <X size={14} className="cursor-pointer hover:text-red-500 transition-colors" onClick={() => handleRemove(s)} />
+            </motion.span>
+          ))}
+        </AnimatePresence>
+      </div>
+      <div className="relative">
+        <input 
+          type="text" 
+          value={query} 
+          onChange={e => { setQuery(e.target.value); setIsOpen(true); }}
+          onFocus={() => setIsOpen(true)}
+          placeholder={placeholder}
+          className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500"
+          dir="auto"
+        />
+        <AnimatePresence>
+          {isOpen && (query || filteredOptions.length > 0) && (
+            <motion.div initial={{opacity:0,y:-10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="absolute z-50 w-full mt-2 max-h-60 overflow-y-auto bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl">
+              {filteredOptions.map(opt => (
+                <div key={opt} onClick={() => handleAdd(opt)} className="px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer text-[#1e3a5f] dark:text-white border-b border-slate-100 dark:border-slate-700 last:border-0">
+                  {opt}
+                </div>
+              ))}
+              {query && !options.includes(query) && !selected.includes(query) && (
+                <div onClick={() => handleAdd(query)} className="px-4 py-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer text-blue-500 font-bold flex items-center gap-2 border-t border-slate-100 dark:border-slate-700">
+                  <Plus size={16}/> {lang === 'ar' ? `إضافة "${query}" كمهارة جديدة` : `Add "${query}" as new`}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
 
 export default function UserProfileSettings({ currentUser: propUser }) {
   const { lang } = useLanguage();
@@ -35,10 +125,10 @@ export default function UserProfileSettings({ currentUser: propUser }) {
   });
 
   const [academicPaths, setAcademicPaths] = useState(currentUser.academicPaths || []);
-  const [newPath, setNewPath] = useState({ degree: '', startYear: '', endYear: '' });
+  const [newPath, setNewPath] = useState({ degree: '', startYear: '', startMonth: '', endYear: '', endMonth: '' });
 
-  const [skillsText, setSkillsText] = useState((currentUser.skills || []).join(', '));
-  const [interestsText, setInterestsText] = useState((currentUser.interests || []).join(', '));
+  const [skills, setSkills] = useState(currentUser.skills || []);
+  const [interests, setInterests] = useState(currentUser.interests || []);
 
   const years = Array.from({length: 30}, (_, i) => new Date().getFullYear() - i);
 
@@ -65,14 +155,24 @@ export default function UserProfileSettings({ currentUser: propUser }) {
   };
 
   const handleAddPath = () => {
-    if (!newPath.degree || !newPath.startYear) return;
-    const updatedPaths = [...academicPaths, newPath].sort((a, b) => b.startYear - a.startYear);
+    if (!newPath.degree || !newPath.startYear || !newPath.startMonth) return;
+    const updatedPaths = [...academicPaths, newPath].sort((a, b) => {
+      if (b.startYear !== a.startYear) return b.startYear - a.startYear;
+      return parseInt(b.startMonth) - parseInt(a.startMonth);
+    });
     setAcademicPaths(updatedPaths);
-    setNewPath({ degree: '', startYear: '', endYear: '' });
+    setNewPath({ degree: '', startYear: '', startMonth: '', endYear: '', endMonth: '' });
   };
 
   const handleRemovePath = (index) => {
     setAcademicPaths(academicPaths.filter((_, i) => i !== index));
+  };
+
+  const formatPathDate = (year, month) => {
+    if (!year) return '';
+    if (!month) return year;
+    const m = MONTHS.find(x => x.value === month);
+    return `${lang === 'ar' ? m.ar : m.en} ${year}`;
   };
 
   const handleSaveProfile = async () => {
@@ -99,8 +199,8 @@ export default function UserProfileSettings({ currentUser: propUser }) {
             instagram: formData.instagram
           },
           academicPaths,
-          skills: skillsText.split(',').map(s => s.trim()).filter(s => s),
-          interests: interestsText.split(',').map(s => s.trim()).filter(s => s),
+          skills: skills,
+          interests: interests,
           updatedAt: new Date().toISOString()
         });
         setSaveStatus('success');
@@ -199,18 +299,18 @@ export default function UserProfileSettings({ currentUser: propUser }) {
 
           <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Briefcase size={20} className="text-cyan-500"/> {lang === 'ar' ? 'المهارات التقنية' : 'Technical Skills'}</h3>
           <div className="flex flex-wrap gap-2 mb-6">
-            {skillsText ? skillsText.split(',').map((s,i) => s.trim() && (
+            {skills.length > 0 ? skills.map((s,i) => (
               <span key={i} className="px-3 py-1 bg-cyan-50 dark:bg-cyan-900/20 text-cyan-700 dark:text-cyan-400 font-bold rounded-lg text-sm border border-cyan-100 dark:border-cyan-800">
-                {s.trim()}
+                {s}
               </span>
             )) : <p className="text-sm text-slate-400">{lang === 'ar' ? 'لم تتم الإضافة' : 'None added'}</p>}
           </div>
 
           <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Globe size={20} className="text-rose-500"/> {lang === 'ar' ? 'الاهتمامات' : 'Interests'}</h3>
           <div className="flex flex-wrap gap-2">
-            {interestsText ? interestsText.split(',').map((s,i) => s.trim() && (
+            {interests.length > 0 ? interests.map((s,i) => (
               <span key={i} className="px-3 py-1 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 font-bold rounded-lg text-sm border border-rose-100 dark:border-rose-800">
-                {s.trim()}
+                {s}
               </span>
             )) : <p className="text-sm text-slate-400">{lang === 'ar' ? 'لم تتم الإضافة' : 'None added'}</p>}
           </div>
@@ -222,7 +322,9 @@ export default function UserProfileSettings({ currentUser: propUser }) {
               <div key={i} className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700 relative overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-l-xl"></div>
                 <p className="font-bold text-[#1e3a5f] dark:text-white">{path.degree}</p>
-                <p className="text-sm font-semibold text-slate-500 mt-1">{path.startYear} - {path.endYear || (lang === 'ar' ? 'الآن' : 'Present')}</p>
+                <p className="text-sm font-semibold text-slate-500 mt-1">
+                  {formatPathDate(path.startYear, path.startMonth)} - {formatPathDate(path.endYear, path.endMonth) || (lang === 'ar' ? 'الآن' : 'Present')}
+                </p>
               </div>
             )) : (
               <p className="text-sm text-slate-400">{lang === 'ar' ? 'لم تتم إضافة مسارات' : 'No academic paths added'}</p>
@@ -329,7 +431,9 @@ export default function UserProfileSettings({ currentUser: propUser }) {
                       <motion.div key={idx} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,height:0}} className="flex items-center justify-between bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                         <div>
                           <p className="font-bold text-[#1e3a5f] dark:text-white">{path.degree}</p>
-                          <p className="text-sm text-slate-500">{path.startYear} - {path.endYear || (lang === 'ar' ? 'الآن' : 'Present')}</p>
+                          <p className="text-sm text-slate-500">
+                            {formatPathDate(path.startYear, path.startMonth)} - {formatPathDate(path.endYear, path.endMonth) || (lang === 'ar' ? 'الآن' : 'Present')}
+                          </p>
                         </div>
                         <button onClick={() => handleRemovePath(idx)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
                           <Trash2 size={18} />
@@ -339,28 +443,53 @@ export default function UserProfileSettings({ currentUser: propUser }) {
                   </AnimatePresence>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 items-end bg-slate-50 dark:bg-slate-900/30 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-                  <div className="flex-1 w-full">
+                <div className="bg-slate-50 dark:bg-slate-900/30 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4">
+                  <div>
                     <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'التخصص أو الشهادة' : 'Degree or Major'}</label>
                     <input type="text" value={newPath.degree} onChange={e => setNewPath({...newPath, degree: e.target.value})} className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
-                  <div className="w-full sm:w-32">
-                    <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'سنة البداية' : 'Start Year'}</label>
-                    <select value={newPath.startYear} onChange={e => setNewPath({...newPath, startYear: e.target.value})} className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
-                      <option value="">{lang === 'ar' ? 'اختر' : 'Select'}</option>
-                      {years.map(y => <option key={`s-${y}`} value={y}>{y}</option>)}
-                    </select>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'شهر البداية' : 'Start Month'}</label>
+                        <select value={newPath.startMonth} onChange={e => setNewPath({...newPath, startMonth: e.target.value})} className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
+                          <option value="">{lang === 'ar' ? 'الشهر' : 'Month'}</option>
+                          {MONTHS.map(m => <option key={m.value} value={m.value}>{lang === 'ar' ? m.ar : m.en}</option>)}
+                        </select>
+                      </div>
+                      <div className="flex-1">
+                        <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'سنة البداية' : 'Start Year'}</label>
+                        <select value={newPath.startYear} onChange={e => setNewPath({...newPath, startYear: e.target.value})} className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
+                          <option value="">{lang === 'ar' ? 'السنة' : 'Year'}</option>
+                          {years.map(y => <option key={`s-${y}`} value={y}>{y}</option>)}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'شهر النهاية' : 'End Month'}</label>
+                        <select value={newPath.endMonth} onChange={e => setNewPath({...newPath, endMonth: e.target.value})} className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
+                          <option value="">{lang === 'ar' ? 'الآن' : 'Present'}</option>
+                          {MONTHS.map(m => <option key={m.value} value={m.value}>{lang === 'ar' ? m.ar : m.en}</option>)}
+                        </select>
+                      </div>
+                      <div className="flex-1">
+                        <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'سنة النهاية' : 'End Year'}</label>
+                        <select value={newPath.endYear} onChange={e => setNewPath({...newPath, endYear: e.target.value})} className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
+                          <option value="">{lang === 'ar' ? 'الآن' : 'Present'}</option>
+                          {years.map(y => <option key={`e-${y}`} value={y}>{y}</option>)}
+                        </select>
+                      </div>
+                    </div>
                   </div>
-                  <div className="w-full sm:w-32">
-                    <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'سنة النهاية' : 'End Year'}</label>
-                    <select value={newPath.endYear} onChange={e => setNewPath({...newPath, endYear: e.target.value})} className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
-                      <option value="">{lang === 'ar' ? 'الآن' : 'Present'}</option>
-                      {years.map(y => <option key={`e-${y}`} value={y}>{y}</option>)}
-                    </select>
+
+                  <div className="pt-2">
+                    <button onClick={handleAddPath} className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+                      <Plus size={18} /> {lang === 'ar' ? 'إضافة مسار أكاديمي' : 'Add Academic Path'}
+                    </button>
                   </div>
-                  <button onClick={handleAddPath} className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
-                    <Plus size={16} /> {lang === 'ar' ? 'إضافة' : 'Add'}
-                  </button>
                 </div>
               </div>
 
@@ -368,13 +497,25 @@ export default function UserProfileSettings({ currentUser: propUser }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-slate-200 dark:border-slate-800 pt-8">
                 <div>
                   <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-2 flex items-center gap-2"><Briefcase size={18} className="text-purple-500"/> {lang === 'ar' ? 'المهارات التقنية' : 'Technical Skills'}</h4>
-                  <p className="text-xs text-slate-500 mb-4">{lang === 'ar' ? 'مثال: Python, React, AI (افصل بينها بفاصلة)' : 'e.g. Python, React, AI (comma separated)'}</p>
-                  <input type="text" value={skillsText} onChange={e => setSkillsText(e.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500" dir="ltr" />
+                  <p className="text-xs text-slate-500 mb-4">{lang === 'ar' ? 'ابحث عن المهارة أو قم بكتابتها وإضافتها' : 'Search for a skill or type to add a new one'}</p>
+                  <SearchableMultiSelect 
+                    options={PREDEFINED_SKILLS} 
+                    selected={skills} 
+                    onChange={setSkills} 
+                    placeholder={lang === 'ar' ? 'ابحث عن مهارة...' : 'Search skills...'} 
+                    lang={lang}
+                  />
                 </div>
                 <div>
                   <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-2 flex items-center gap-2"><Globe size={18} className="text-rose-500"/> {lang === 'ar' ? 'الاهتمامات ومجالات البحث' : 'Interests & Research Fields'}</h4>
-                  <p className="text-xs text-slate-500 mb-4">{lang === 'ar' ? 'مثال: الروبوتيك، إنترنت الأشياء (افصل بينها بفاصلة)' : 'e.g. Robotics, IoT (comma separated)'}</p>
-                  <input type="text" value={interestsText} onChange={e => setInterestsText(e.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500" dir="ltr" />
+                  <p className="text-xs text-slate-500 mb-4">{lang === 'ar' ? 'ابحث عن الاهتمامات أو قم بكتابتها وإضافتها' : 'Search for interests or type to add'}</p>
+                  <SearchableMultiSelect 
+                    options={PREDEFINED_INTERESTS} 
+                    selected={interests} 
+                    onChange={setInterests} 
+                    placeholder={lang === 'ar' ? 'ابحث عن مجال بحث أو اهتمام...' : 'Search interests...'} 
+                    lang={lang}
+                  />
                 </div>
               </div>
 
