@@ -11,6 +11,7 @@ import UserProfileSettings from './UserProfileSettings';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 import { db } from '../../config/firebase';
 import { collection, addDoc, deleteDoc, doc, serverTimestamp, getDocs, query, orderBy, updateDoc } from 'firebase/firestore';
+import { toast } from '../../utils/toast';
 
 export default function ContentManagerDashboard() {
   const { lang } = useLanguage();
@@ -53,6 +54,12 @@ export default function ContentManagerDashboard() {
     { id: 1, title: 'New IoT Workshop Announcement', titleAr: 'إعلان ورشة إنترنت الأشياء', type: 'article', author: 'Fatima Zahra', submittedDate: '2026-06-24', priority: 'high' },
     { id: 2, title: 'Partnership Press Release', titleAr: 'بيان صحفي عن الشراكة', type: 'press', author: 'Media Team', submittedDate: '2026-06-23', priority: 'medium' },
   ]);
+
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+
+  const confirmAction = (title, message, onConfirm) => {
+    setConfirmDialog({ isOpen: true, title, message, onConfirm });
+  };
 
   // --- Fetch Data ---
   const fetchArticles = async () => {
@@ -131,14 +138,22 @@ export default function ContentManagerDashboard() {
     }
   };
 
-  const handleDeleteArticle = async (id) => {
-    if (!window.confirm(lang === 'ar' ? 'هل أنت متأكد من حذف هذا المقال؟' : 'Are you sure you want to delete this article?')) return;
-    try {
-      await deleteDoc(doc(db, 'news', id));
-      setArticles(prev => prev.filter(a => a.id !== id));
-    } catch (error) {
-      console.error('Error deleting article:', error);
-    }
+  const handleDeleteArticle = (id) => {
+    confirmAction(
+      lang === 'ar' ? 'تأكيد الحذف' : 'Confirm Deletion',
+      lang === 'ar' ? 'هل أنت متأكد من حذف هذا المقال؟ لا يمكن التراجع عن هذا الإجراء.' : 'Are you sure you want to delete this article? This action cannot be undone.',
+      async () => {
+        try {
+          await deleteDoc(doc(db, 'news', id));
+          setArticles(prev => prev.filter(a => a.id !== id));
+          toast.success(lang === 'ar' ? 'تم حذف المقال بنجاح' : 'Article deleted successfully');
+        } catch (error) {
+          console.error('Error deleting article:', error);
+          toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحذف' : 'An error occurred during deletion');
+        }
+        setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
+      }
+    );
   };
 
   const handleEditArticle = (article) => {
@@ -184,14 +199,22 @@ export default function ContentManagerDashboard() {
     }
   };
 
-  const handleDeleteMedia = async (id) => {
-    if (!window.confirm(lang === 'ar' ? 'هل أنت متأكد من حذف هذا الملف؟' : 'Are you sure you want to delete this media?')) return;
-    try {
-      await deleteDoc(doc(db, 'gallery', id));
-      setMediaItems(prev => prev.filter(m => m.id !== id));
-    } catch (error) {
-      console.error('Error deleting media:', error);
-    }
+  const handleDeleteMedia = (id) => {
+    confirmAction(
+      lang === 'ar' ? 'تأكيد الحذف' : 'Confirm Deletion',
+      lang === 'ar' ? 'هل أنت متأكد من حذف هذا الملف؟ لا يمكن التراجع عن هذا الإجراء.' : 'Are you sure you want to delete this media? This action cannot be undone.',
+      async () => {
+        try {
+          await deleteDoc(doc(db, 'gallery', id));
+          setMediaItems(prev => prev.filter(m => m.id !== id));
+          toast.success(lang === 'ar' ? 'تم حذف الملف بنجاح' : 'Media deleted successfully');
+        } catch (error) {
+          console.error('Error deleting media:', error);
+          toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحذف' : 'An error occurred during deletion');
+        }
+        setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
+      }
+    );
   };
 
   const handleApproveQueue = (id) => {
@@ -220,8 +243,32 @@ export default function ContentManagerDashboard() {
     visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.4, ease: 'easeOut' } }),
   };
 
+  const ConfirmDialogComponent = () => {
+    if (!confirmDialog.isOpen) return null;
+    return (
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-700 text-center">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle size={32} />
+          </div>
+          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-2">{confirmDialog.title}</h3>
+          <p className="text-slate-500 dark:text-slate-400 mb-6">{confirmDialog.message}</p>
+          <div className="flex gap-3">
+            <button onClick={() => setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null })} className="flex-1 py-3 font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl transition-colors">
+              {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+            </button>
+            <button onClick={confirmDialog.onConfirm} className="flex-1 py-3 font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl shadow-lg shadow-red-500/30 transition-all">
+              {lang === 'ar' ? 'تأكيد' : 'Confirm'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={`flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative ${lang === 'ar' ? 'md:flex-row-reverse' : ''}`}>
+      <ConfirmDialogComponent />
       {/* Sidebar */}
       <div className="w-full md:w-64 shrink-0">
         <div className="glass-card rounded-3xl p-4 sticky top-24 border border-rose-200 dark:border-rose-900/30 shadow-xl">

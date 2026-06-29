@@ -8,7 +8,7 @@ import {
   Edit, Trash2, Bot, TrendingUp, AlertTriangle, Plus, Mail, Video, 
   Megaphone, CheckCircle, XCircle, LayoutDashboard, Settings, BrainCircuit,
   GraduationCap, Calendar, Database, Eye, Image, X, Save, Target, MapPin,
-  Link, UserPlus, Handshake, Info, Search
+  Link, UserPlus, Handshake, Info, Search, Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '../../utils/toast';
@@ -28,25 +28,30 @@ export default function PresidentDashboard() {
   }, []);
 
   const handleRoleChange = async (userId, newRole) => {
-    if(window.confirm(lang==='ar' ? `هل أنت متأكد من تغيير صلاحية المستخدم إلى ${newRole}؟` : `Change this user role to ${newRole}?`)) {
-      try {
-        const userRef = doc(db, 'users', userId);
-        const updates = { role: newRole };
-        
-        // Auto-assign membership ID if promoted to member and doesn't have one
-        if (newRole === 'member') {
-          const user = firebaseUsers.find(u => u.id === userId);
-          if (!user.membershipId) {
-            updates.membershipId = `GITM-MBR-${Math.floor(Math.random() * 10000)}`;
+    confirmAction(
+      lang === 'ar' ? 'تأكيد تغيير الصلاحية' : 'Confirm Role Change',
+      lang === 'ar' ? `هل أنت متأكد من تغيير صلاحية هذا المستخدم إلى ${newRole}؟` : `Change this user role to ${newRole}?`,
+      async () => {
+        try {
+          const userRef = doc(db, 'users', userId);
+          const updates = { role: newRole };
+          
+          if (newRole === 'member') {
+            const user = firebaseUsers.find(u => u.id === userId);
+            if (!user.membershipId) {
+              updates.membershipId = `GITM-MBR-${Math.floor(Math.random() * 10000)}`;
+            }
           }
+          
+          await updateDoc(userRef, updates);
+          toast.success(lang === 'ar' ? 'تم تغيير الصلاحية بنجاح' : 'Role updated successfully');
+        } catch (err) {
+          console.error("Error updating role", err);
+          toast.error(lang === 'ar' ? "فشل في تحديث الصلاحية" : "Failed to update role");
         }
-        
-        await updateDoc(userRef, updates);
-      } catch (err) {
-        console.error("Error updating role", err);
-        toast.error(lang === 'ar' ? "فشل في تحديث الصلاحية" : "Failed to update role");
+        setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
       }
-    }
+    );
   };
 
   const [news, setNews] = useState([]);
@@ -69,9 +74,14 @@ export default function PresidentDashboard() {
 
   // --- Modal States ---
   const [modalState, setModalState] = useState({ isOpen: false, type: '', data: null });
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
 
   const openModal = (type, data = null) => setModalState({ isOpen: true, type, data });
   const closeModal = () => setModalState({ isOpen: false, type: '', data: null });
+
+  const confirmAction = (title, message, onConfirm) => {
+    setConfirmDialog({ isOpen: true, title, message, onConfirm });
+  };
 
   // --- CRUD Handlers ---
   const handleSave = async (formData) => {
@@ -101,25 +111,32 @@ export default function PresidentDashboard() {
     closeModal();
   };
 
-  const handleDelete = async (type, id) => {
-    if (window.confirm(lang === 'ar' ? 'هل أنت متأكد من الحذف؟' : 'Are you sure you want to delete this?')) {
-      if (type === 'member') {
-        return handleRoleChange(id, 'suspended');
-      }
-      const colName = type === 'event' ? 'events' : 
-                      type === 'course' ? 'courses' : 
-                      type === 'news' ? 'news' : 
-                      type === 'gallery' ? 'gallery' : null;
-      if (colName) {
-        try {
-          await deleteDoc(doc(db, colName, id));
-          toast.success(lang === 'ar' ? 'تم الحذف بنجاح' : 'Deleted successfully');
-        } catch (error) {
-          console.error("Delete error:", error);
-          toast.error(lang === 'ar' ? 'حدث خطأ' : 'An error occurred');
+  const handleDelete = (type, id) => {
+    confirmAction(
+      lang === 'ar' ? 'تأكيد الحذف' : 'Confirm Deletion',
+      lang === 'ar' ? 'هل أنت متأكد من الحذف؟ لا يمكن التراجع عن هذا الإجراء.' : 'Are you sure you want to delete this? This action cannot be undone.',
+      async () => {
+        if (type === 'member') {
+          handleRoleChange(id, 'suspended');
+          setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
+          return;
         }
+        const colName = type === 'event' ? 'events' : 
+                        type === 'course' ? 'courses' : 
+                        type === 'news' ? 'news' : 
+                        type === 'gallery' ? 'gallery' : null;
+        if (colName) {
+          try {
+            await deleteDoc(doc(db, colName, id));
+            toast.success(lang === 'ar' ? 'تم الحذف بنجاح' : 'Deleted successfully');
+          } catch (error) {
+            console.error("Delete error:", error);
+            toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحذف' : 'An error occurred during deletion');
+          }
+        }
+        setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
       }
-    }
+    );
   };
 
   const handleUpdateRegStatus = (id, newStatus) => {
@@ -173,47 +190,98 @@ export default function PresidentDashboard() {
         case 'event':
           return (
             <>
-              <input name="title" value={formData.title || ''} onChange={handleChange} placeholder={lang==='ar'?"عنوان الحدث":"Event Title"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"عنوان الحدث (عربي)":"Event Title (Arabic)"}</label>
+              <input name="title_ar" value={formData.title_ar || formData.title || ''} onChange={handleChange} placeholder={lang==='ar'?"عنوان الحدث":"Event Title"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"عنوان الحدث (إنجليزي)":"Event Title (English)"}</label>
+              <input name="title_en" value={formData.title_en || ''} onChange={handleChange} placeholder="Event Title" className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"التاريخ":"Date"}</label>
               <input type="date" name="date" value={formData.date || ''} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"المكان":"Location"}</label>
+              <input name="location" value={formData.location || ''} onChange={handleChange} placeholder={lang==='ar'?"المكان":"Location"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"وصف الحدث":"Description"}</label>
+              <textarea name="description_ar" value={formData.description_ar || ''} onChange={handleChange} rows={3} placeholder={lang==='ar'?"الوصف بالعربية":"Arabic Description"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"نوع الحدث":"Event Type"}</label>
+              <select name="type" value={formData.type || 'workshop'} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                  <option value="workshop">{lang==='ar'?"ورشة عمل":"Workshop"}</option>
+                  <option value="conference">{lang==='ar'?"مؤتمر":"Conference"}</option>
+                  <option value="hackathon">{lang==='ar'?"هاكاثون":"Hackathon"}</option>
+                  <option value="meetup">{lang==='ar'?"لقاء":"Meetup"}</option>
+              </select>
               {isEdit && (
+                  <>
+                  <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الحالة":"Status"}</label>
                   <select name="status" value={formData.status || ''} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
                       <option value="Planning">Planning</option>
                       <option value="Confirmed">Confirmed</option>
                       <option value="Completed">Completed</option>
                   </select>
+                  </>
               )}
             </>
           );
         case 'course':
           return (
             <>
-              <input name="title" value={formData.title || ''} onChange={handleChange} placeholder={lang==='ar'?"اسم الدورة":"Course Title"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"اسم الدورة (عربي)":"Course Title (Arabic)"}</label>
+              <input name="title_ar" value={formData.title_ar || formData.title || ''} onChange={handleChange} placeholder={lang==='ar'?"اسم الدورة":"Course Title"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"اسم الدورة (إنجليزي)":"Course Title (English)"}</label>
+              <input name="title_en" value={formData.title_en || ''} onChange={handleChange} placeholder="Course Title" className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"المدرب":"Instructor"}</label>
               <input name="instructor" value={formData.instructor || ''} onChange={handleChange} placeholder={lang==='ar'?"المدرب":"Instructor"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"وصف الدورة":"Description"}</label>
+              <textarea name="description_ar" value={formData.description_ar || ''} onChange={handleChange} rows={3} placeholder={lang==='ar'?"الوصف":"Description"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الوضع":"Mode"}</label>
+              <select name="mode" value={formData.mode || 'remote'} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                  <option value="remote">{lang==='ar'?"عن بعد":"Remote"}</option>
+                  <option value="in-person">{lang==='ar'?"حضوري":"In-Person"}</option>
+              </select>
               {isEdit && (
+                  <>
+                  <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الحالة":"Status"}</label>
                   <select name="status" value={formData.status || ''} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
                       <option value="Upcoming">Upcoming</option>
                       <option value="Active">Active</option>
                       <option value="Archived">Archived</option>
                   </select>
+                  </>
               )}
             </>
           );
         case 'news':
           return (
             <>
-              <input name="title" value={formData.title || ''} onChange={handleChange} placeholder={lang==='ar'?"عنوان المقال":"Article Title"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"عنوان المقال (عربي)":"Article Title (Arabic)"}</label>
+              <input name="title_ar" value={formData.title_ar || formData.title || ''} onChange={handleChange} placeholder={lang==='ar'?"عنوان المقال":"Article Title"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"عنوان المقال (إنجليزي)":"Article Title (English)"}</label>
+              <input name="title_en" value={formData.title_en || ''} onChange={handleChange} placeholder="Article Title" className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"المحتوى (عربي)":"Content (Arabic)"}</label>
+              <textarea name="content_ar" value={formData.content_ar || ''} onChange={handleChange} rows={4} placeholder={lang==='ar'?"محتوى المقال":"Article Content"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"صورة المقال (رابط)":"Image URL"}</label>
+              <input name="imageUrl" value={formData.imageUrl || ''} onChange={handleChange} placeholder="https://..." className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"القسم":"Category"}</label>
+              <select name="category" value={formData.category || 'Technology'} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                  <option value="Technology">Technology</option>
+                  <option value="Events">Events</option>
+                  <option value="Academy">Academy</option>
+                  <option value="Partners">Partners</option>
+              </select>
               {isEdit && (
+                  <>
+                  <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الحالة":"Status"}</label>
                   <select name="status" value={formData.status || ''} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
                       <option value="Draft">Draft</option>
                       <option value="Published">Published</option>
                   </select>
+                  </>
               )}
             </>
           );
         case 'gallery':
           return (
             <>
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"اسم الصورة/الملف":"File Name"}</label>
               <input name="name" value={formData.name || ''} onChange={handleChange} placeholder={lang==='ar'?"اسم الصورة/الملف":"File Name"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الصورة":"Image"}</label>
               <input type="file" className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
             </>
           );
@@ -229,7 +297,9 @@ export default function PresidentDashboard() {
         case 'member':
             return (
               <>
+                <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الاسم":"Name"}</label>
                 <input name="name" value={formData.name || ''} onChange={handleChange} placeholder={lang==='ar'?"الاسم":"Name"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+                <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"البريد الإلكتروني":"Email"}</label>
                 <input name="email" value={formData.email || ''} onChange={handleChange} placeholder={lang==='ar'?"البريد الإلكتروني":"Email"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
               </>
             )
@@ -240,7 +310,7 @@ export default function PresidentDashboard() {
 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white">
               {isEdit ? (lang==='ar'?'تعديل':'Edit') : (lang==='ar'?'إضافة جديد':'Add New')}
@@ -250,10 +320,31 @@ export default function PresidentDashboard() {
           <div className="mb-6">
             {renderFields()}
           </div>
-          <div className="flex justify-end gap-3">
-            <button onClick={closeModal} className="px-4 py-2 rounded-xl font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">{lang==='ar'?'إلغاء':'Cancel'}</button>
-            <button onClick={() => handleSave(formData)} className="px-4 py-2 rounded-xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:shadow-lg hover:shadow-cyan-500/30 transition-all flex items-center gap-2">
-              <Save size={18}/> {lang==='ar'?'حفظ':'Save'}
+          <button onClick={() => handleSave(formData)} className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3 rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all flex justify-center items-center gap-2">
+            <Save size={20}/> {lang==='ar'?'حفظ التغييرات':'Save Changes'}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // --- Confirm Dialog Component ---
+  const ConfirmDialog = () => {
+    if (!confirmDialog.isOpen) return null;
+    return (
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-700 text-center">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle size={32} />
+          </div>
+          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-2">{confirmDialog.title}</h3>
+          <p className="text-slate-500 dark:text-slate-400 mb-6">{confirmDialog.message}</p>
+          <div className="flex gap-3">
+            <button onClick={() => setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null })} className="flex-1 py-3 font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl transition-colors">
+              {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+            </button>
+            <button onClick={confirmDialog.onConfirm} className="flex-1 py-3 font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl shadow-lg shadow-red-500/30 transition-all">
+              {lang === 'ar' ? 'تأكيد' : 'Confirm'}
             </button>
           </div>
         </div>
@@ -799,6 +890,7 @@ export default function PresidentDashboard() {
       
       {/* Dynamic Modal Overlay */}
       <CrudModal />
+      <ConfirmDialog />
 
     </div>
   );

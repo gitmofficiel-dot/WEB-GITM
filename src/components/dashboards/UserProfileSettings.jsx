@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 import {
-  User, Settings, Copy, Edit3, Camera, Bell, Lock, Globe, ShieldCheck, Mail, Briefcase, GraduationCap, CheckCircle, AlertCircle
+  User, Settings, Copy, Edit3, Camera, Globe, Mail, Briefcase, GraduationCap, CheckCircle, AlertCircle, Plus, Trash2, Github, Linkedin, Facebook, Instagram, Award
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -13,14 +13,34 @@ export default function UserProfileSettings({ currentUser: propUser }) {
   const { lang } = useLanguage();
   const { currentUser: authUser } = useAuth();
   const currentUser = authUser || propUser || { name: 'Student', role: 'student', email: 'student@gitm.ma', badges: [], membershipId: '' };
+  
   const [activeSubTab, setActiveSubTab] = useState('profile');
   const [copyStatus, setCopyStatus] = useState('');
   const [saveStatus, setSaveStatus] = useState('');
   
-  // Real functional image upload state
   const [profileImage, setProfileImage] = useState(currentUser.imageUrl || null);
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
+
+  // Expanded Form Data
+  const [formData, setFormData] = useState({
+    nameLatin: currentUser.nameLatin || currentUser.name || '',
+    nameAr: currentUser.nameAr || '',
+    email: currentUser.email || '',
+    bio: currentUser.bio || '',
+    github: currentUser.socialLinks?.github || '',
+    linkedin: currentUser.socialLinks?.linkedin || '',
+    facebook: currentUser.socialLinks?.facebook || '',
+    instagram: currentUser.socialLinks?.instagram || '',
+  });
+
+  const [academicPaths, setAcademicPaths] = useState(currentUser.academicPaths || []);
+  const [newPath, setNewPath] = useState({ degree: '', startYear: '', endYear: '' });
+
+  const [skillsText, setSkillsText] = useState((currentUser.skills || []).join(', '));
+  const [interestsText, setInterestsText] = useState((currentUser.interests || []).join(', '));
+
+  const years = Array.from({length: 30}, (_, i) => new Date().getFullYear() - i);
 
   const handleCopyCVLink = () => {
     if (!currentUser.membershipId) {
@@ -28,7 +48,6 @@ export default function UserProfileSettings({ currentUser: propUser }) {
       setTimeout(() => setCopyStatus(''), 3000);
       return;
     }
-    
     const cvLink = `https://gitm.ma/cv/${currentUser.membershipId}`;
     navigator.clipboard.writeText(cvLink).then(() => {
       setCopyStatus('success');
@@ -45,13 +64,22 @@ export default function UserProfileSettings({ currentUser: propUser }) {
     }
   };
 
+  const handleAddPath = () => {
+    if (!newPath.degree || !newPath.startYear) return;
+    const updatedPaths = [...academicPaths, newPath].sort((a, b) => b.startYear - a.startYear);
+    setAcademicPaths(updatedPaths);
+    setNewPath({ degree: '', startYear: '', endYear: '' });
+  };
+
+  const handleRemovePath = (index) => {
+    setAcademicPaths(academicPaths.filter((_, i) => i !== index));
+  };
+
   const handleSaveProfile = async () => {
     setSaveStatus('loading');
     try {
       if (currentUser?.membershipId) {
         let finalImageUrl = currentUser.imageUrl || '';
-        
-        // If a new file is selected, upload it to Cloudinary
         if (selectedFile) {
           finalImageUrl = await uploadToCloudinary(selectedFile, 'image');
         }
@@ -59,11 +87,24 @@ export default function UserProfileSettings({ currentUser: propUser }) {
         const userRef = doc(db, 'users', currentUser.membershipId);
         await updateDoc(userRef, {
           imageUrl: finalImageUrl,
+          nameLatin: formData.nameLatin,
+          nameAr: formData.nameAr,
+          name: formData.nameLatin || currentUser.name, // Keep backwards compatible
+          email: formData.email,
+          bio: formData.bio,
+          socialLinks: {
+            github: formData.github,
+            linkedin: formData.linkedin,
+            facebook: formData.facebook,
+            instagram: formData.instagram
+          },
+          academicPaths,
+          skills: skillsText.split(',').map(s => s.trim()).filter(s => s),
+          interests: interestsText.split(',').map(s => s.trim()).filter(s => s),
           updatedAt: new Date().toISOString()
         });
         setSaveStatus('success');
       } else {
-        // Simulate save for users without membershipId
         await new Promise(resolve => setTimeout(resolve, 1000));
         setSaveStatus('success');
       }
@@ -80,47 +121,87 @@ export default function UserProfileSettings({ currentUser: propUser }) {
       <div className="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl"></div>
       
       <div className="flex flex-col md:flex-row gap-6 items-start border-b border-slate-200 dark:border-slate-800 pb-6 relative z-10">
-        <div className="w-24 h-24 rounded-2xl bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center text-4xl font-bold shadow-xl overflow-hidden border-2 border-transparent">
+        <div className="w-24 h-24 rounded-2xl bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center text-4xl font-bold shadow-xl overflow-hidden border-2 border-transparent shrink-0">
           {profileImage ? (
             <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
           ) : (
-            currentUser.name.charAt(0)
+            (formData.nameLatin || currentUser.name).charAt(0)
           )}
         </div>
-        <div className="flex-1">
+        <div className="flex-1 w-full">
           <div className="flex justify-between items-start">
             <div>
-              <h2 className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{currentUser.name}</h2>
-              <p className="text-blue-600 dark:text-cyan-400 font-semibold text-lg uppercase tracking-wider">{currentUser.role} @ GITM</p>
+              <h2 className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{formData.nameLatin || currentUser.name}</h2>
+              {formData.nameAr && <h3 className="text-xl font-bold text-[#1e3a5f]/80 dark:text-white/80 font-cairo mt-1">{formData.nameAr}</h3>}
+              <p className="text-blue-600 dark:text-cyan-400 font-semibold text-lg uppercase tracking-wider mt-1">{currentUser.role} @ GITM</p>
             </div>
             {currentUser.membershipId ? (
-              <div className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700">
+              <div className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 shrink-0">
                 <p className="text-[10px] text-slate-400 font-bold uppercase">{lang === 'ar' ? 'رقم العضوية' : 'Membership ID'}</p>
                 <p className="font-mono text-sm font-bold text-[#1e3a5f] dark:text-white">{currentUser.membershipId}</p>
               </div>
             ) : (
-              <span className="px-3 py-1 bg-amber-50 text-amber-600 text-xs font-bold rounded-lg border border-amber-200">
+              <span className="px-3 py-1 bg-amber-50 text-amber-600 text-xs font-bold rounded-lg border border-amber-200 shrink-0 whitespace-nowrap">
                 {lang === 'ar' ? 'طالب - بدون عضوية' : 'Student - No ID'}
               </span>
             )}
           </div>
-          <div className="flex gap-4 mt-3 text-slate-500 dark:text-slate-400 text-sm">
-            <span className="flex items-center gap-1"><Mail size={16}/> {currentUser.email}</span>
+          <div className="flex flex-wrap gap-4 mt-3 text-slate-500 dark:text-slate-400 text-sm">
+            <span className="flex items-center gap-1"><Mail size={16}/> {formData.email || currentUser.email}</span>
             <span className="flex items-center gap-1"><Globe size={16}/> Morocco</span>
+            {formData.github && <a href={formData.github} target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:text-blue-500 transition-colors"><Github size={16}/> GitHub</a>}
+            {formData.linkedin && <a href={formData.linkedin} target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:text-blue-500 transition-colors"><Linkedin size={16}/> LinkedIn</a>}
           </div>
+          {formData.bio && (
+            <p className="mt-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800 pt-3">
+              {formData.bio}
+            </p>
+          )}
         </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 relative z-10">
         <div>
-          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Briefcase size={20} className="text-cyan-500"/> {lang === 'ar' ? 'المهارات والشارات' : 'Skills & Badges'}</h3>
-          <div className="flex flex-wrap gap-2">
-            {currentUser.badges.length > 0 ? currentUser.badges.map(b => (
-              <span key={b} className="px-3 py-1 bg-cyan-50 dark:bg-cyan-900/20 text-cyan-700 dark:text-cyan-400 font-bold rounded-lg text-sm uppercase tracking-wide border border-cyan-100 dark:border-cyan-800">
+          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Award size={20} className="text-amber-500"/> {lang === 'ar' ? 'الشارات والأوسمة' : 'Badges'}</h3>
+          <div className="flex flex-wrap gap-2 mb-6">
+            {(currentUser.badges || []).length > 0 ? currentUser.badges.map(b => (
+              <span key={b} className="px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 font-bold rounded-lg text-sm uppercase tracking-wide border border-amber-100 dark:border-amber-800">
                 {b}
               </span>
             )) : (
               <p className="text-sm text-slate-400">{lang === 'ar' ? 'لا توجد شارات حالياً.' : 'No badges earned yet.'}</p>
+            )}
+          </div>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Briefcase size={20} className="text-cyan-500"/> {lang === 'ar' ? 'المهارات التقنية' : 'Technical Skills'}</h3>
+          <div className="flex flex-wrap gap-2 mb-6">
+            {skillsText ? skillsText.split(',').map((s,i) => s.trim() && (
+              <span key={i} className="px-3 py-1 bg-cyan-50 dark:bg-cyan-900/20 text-cyan-700 dark:text-cyan-400 font-bold rounded-lg text-sm border border-cyan-100 dark:border-cyan-800">
+                {s.trim()}
+              </span>
+            )) : <p className="text-sm text-slate-400">{lang === 'ar' ? 'لم تتم الإضافة' : 'None added'}</p>}
+          </div>
+
+          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Globe size={20} className="text-rose-500"/> {lang === 'ar' ? 'الاهتمامات' : 'Interests'}</h3>
+          <div className="flex flex-wrap gap-2">
+            {interestsText ? interestsText.split(',').map((s,i) => s.trim() && (
+              <span key={i} className="px-3 py-1 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 font-bold rounded-lg text-sm border border-rose-100 dark:border-rose-800">
+                {s.trim()}
+              </span>
+            )) : <p className="text-sm text-slate-400">{lang === 'ar' ? 'لم تتم الإضافة' : 'None added'}</p>}
+          </div>
+        </div>
+        <div>
+          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><GraduationCap size={20} className="text-blue-500"/> {lang === 'ar' ? 'المسار الأكاديمي' : 'Academic Path'}</h3>
+          <div className="space-y-3">
+            {academicPaths.length > 0 ? academicPaths.map((path, i) => (
+              <div key={i} className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700 relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-l-xl"></div>
+                <p className="font-bold text-[#1e3a5f] dark:text-white">{path.degree}</p>
+                <p className="text-sm font-semibold text-slate-500 mt-1">{path.startYear} - {path.endYear || (lang === 'ar' ? 'الآن' : 'Present')}</p>
+              </div>
+            )) : (
+              <p className="text-sm text-slate-400">{lang === 'ar' ? 'لم تتم إضافة مسارات' : 'No academic paths added'}</p>
             )}
           </div>
         </div>
@@ -130,17 +211,16 @@ export default function UserProfileSettings({ currentUser: propUser }) {
 
   return (
     <div className="space-y-6">
-      
-      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-2">
+      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto hide-scrollbar">
         <button 
           onClick={() => setActiveSubTab('profile')}
-          className={`flex items-center gap-2 px-4 py-2 font-bold transition-all border-b-2 ${activeSubTab === 'profile' ? 'border-cyan-500 text-cyan-500 dark:text-cyan-400' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'}`}
+          className={`flex items-center gap-2 px-4 py-2 font-bold transition-all border-b-2 whitespace-nowrap ${activeSubTab === 'profile' ? 'border-cyan-500 text-cyan-500 dark:text-cyan-400' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'}`}
         >
           <User size={18}/> {lang === 'ar' ? 'الملف الشخصي و السيرة الذاتية' : 'Profile & CV'}
         </button>
         <button 
           onClick={() => setActiveSubTab('settings')}
-          className={`flex items-center gap-2 px-4 py-2 font-bold transition-all border-b-2 ${activeSubTab === 'settings' ? 'border-blue-500 text-blue-500 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'}`}
+          className={`flex items-center gap-2 px-4 py-2 font-bold transition-all border-b-2 whitespace-nowrap ${activeSubTab === 'settings' ? 'border-blue-500 text-blue-500 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'}`}
         >
           <Settings size={18}/> {lang === 'ar' ? 'الإعدادات' : 'Settings'}
         </button>
@@ -153,31 +233,13 @@ export default function UserProfileSettings({ currentUser: propUser }) {
               <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white mb-2">
                 <User className="text-cyan-500" size={24}/> {lang === 'ar' ? 'معاينة السيرة الذاتية (CV)' : 'CV Preview'}
               </h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {lang === 'ar' 
-                  ? 'يتم توليد السيرة الذاتية رسمياً للأعضاء الموثقين فقط.' 
-                  : 'CV is officially generated for verified members only.'}
-              </p>
             </div>
             <div className="flex items-center gap-3">
-              <AnimatePresence>
-                {copyStatus === 'success' && (
-                  <motion.span initial={{opacity:0, x:10}} animate={{opacity:1, x:0}} exit={{opacity:0, x:10}} className="text-emerald-500 text-sm font-bold flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 rounded-lg">
-                    <CheckCircle size={16}/> {lang === 'ar' ? 'تم النسخ!' : 'Copied!'}
-                  </motion.span>
-                )}
-                {copyStatus === 'error' && (
-                  <motion.span initial={{opacity:0, x:10}} animate={{opacity:1, x:0}} exit={{opacity:0, x:10}} className="text-amber-500 text-sm font-bold flex items-center gap-1 bg-amber-50 dark:bg-amber-900/30 px-3 py-1.5 rounded-lg">
-                    <AlertCircle size={16}/> {lang === 'ar' ? 'غير مصرح (لا يوجد رقم عضوية)' : 'Unauthorized (No ID)'}
-                  </motion.span>
-                )}
-              </AnimatePresence>
               <button onClick={handleCopyCVLink} className="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-700 transition-colors">
                 <Copy size={16}/> {lang === 'ar' ? 'نسخ رابط السيرة الذاتية' : 'Copy CV Link'}
               </button>
             </div>
           </div>
-          
           <CVPreview />
         </motion.div>
       )}
@@ -186,7 +248,7 @@ export default function UserProfileSettings({ currentUser: propUser }) {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           <div className="glass-card rounded-3xl p-6">
             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-              <Edit3 className="text-blue-500" size={24}/> {lang === 'ar' ? 'تعديل البيانات الأساسية والهوية الرقمية' : 'Edit Personal Info & Digital Identity'}
+              <Edit3 className="text-blue-500" size={24}/> {lang === 'ar' ? 'تعديل البيانات الأساسية' : 'Edit Personal Info'}
             </h3>
             
             <div className="space-y-8">
@@ -199,65 +261,96 @@ export default function UserProfileSettings({ currentUser: propUser }) {
                   {profileImage ? (
                     <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
-                    <span className="text-3xl font-bold text-slate-500 dark:text-slate-400">{currentUser.name.charAt(0)}</span>
+                    <span className="text-3xl font-bold text-slate-500 dark:text-slate-400">{(formData.nameLatin || currentUser.name).charAt(0)}</span>
                   )}
                   <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <Camera className="text-white" size={24} />
                   </div>
                 </div>
                 <div>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    ref={fileInputRef} 
-                    onChange={handleImageUpload} 
-                    className="hidden" 
-                  />
-                  <button 
-                    onClick={() => fileInputRef.current.click()}
-                    className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-sm font-bold transition-colors text-slate-800 dark:text-white"
-                  >
-                    {lang === 'ar' ? 'اختيار صورة جديدة' : 'Choose New Photo'}
+                  <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} className="hidden" />
+                  <button onClick={() => fileInputRef.current.click()} className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-sm font-bold transition-colors text-slate-800 dark:text-white">
+                    {lang === 'ar' ? 'تغيير الصورة الشخصية' : 'Change Profile Photo'}
                   </button>
-                  <p className="text-xs text-slate-500 mt-2">{lang === 'ar' ? 'يُفضل استخدام صورة احترافية مربعة (1:1)' : 'Preferably a professional square image (1:1)'}</p>
                 </div>
               </div>
 
               {/* Basic Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الاسم الكامل' : 'Full Name'}</label>
-                  <input type="text" defaultValue={currentUser.name} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                  <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الاسم الكامل (لاتيني)' : 'Full Name (Latin)'}</label>
+                  <input type="text" value={formData.nameLatin} onChange={e => setFormData({...formData, nameLatin: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الاسم الكامل (عربي)' : 'Full Name (Arabic)'}</label>
+                  <input type="text" value={formData.nameAr} onChange={e => setFormData({...formData, nameAr: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500 font-cairo" dir="rtl" />
                 </div>
                 <div>
                   <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'البريد الإلكتروني' : 'Email'}</label>
-                  <input type="email" defaultValue={currentUser.email} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                  <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'نبذة تعريفية (Bio)' : 'Bio'}</label>
-                  <textarea rows="3" placeholder={lang === 'ar' ? 'تحدث عن شغفك ومجال تخصصك...' : 'Talk about your passion and expertise...'} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"></textarea>
-                </div>
-              </div>
-
-              {/* Advanced Portfolio Data */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-slate-200 dark:border-slate-800 pt-8">
-                <div>
-                  <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Briefcase size={18} className="text-purple-500"/> {lang === 'ar' ? 'المهارات التقنية' : 'Technical Skills'}</h4>
-                  <input type="text" placeholder={lang === 'ar' ? 'مثال: Python, React, AI (افصل بينها بفاصلة)' : 'e.g. Python, React, AI (comma separated)'} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Globe size={18} className="text-rose-500"/> {lang === 'ar' ? 'الاهتمامات ومجالات البحث' : 'Interests & Research Fields'}</h4>
-                  <input type="text" placeholder={lang === 'ar' ? 'مثال: الروبوتيك، إنترنت الأشياء (افصل بينها بفاصلة)' : 'e.g. Robotics, IoT (comma separated)'} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                  <textarea rows="3" value={formData.bio} onChange={e => setFormData({...formData, bio: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
               </div>
 
               {/* Academic Path */}
               <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
-                <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><GraduationCap size={18} className="text-blue-500"/> {lang === 'ar' ? 'المسار الأكاديمي' : 'Academic Path'}</h4>
-                <div className="flex gap-4">
-                  <input type="text" placeholder={lang === 'ar' ? 'السنة (مثال: 2023)' : 'Year (e.g. 2023)'} className="w-1/4 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white" />
-                  <input type="text" placeholder={lang === 'ar' ? 'التخصص أو الشهادة' : 'Degree or Major'} className="w-1/2 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white" />
-                  <button className="w-1/4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors">{lang === 'ar' ? 'إضافة' : 'Add'}</button>
+                <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><GraduationCap size={18} className="text-blue-500"/> {lang === 'ar' ? 'مهارات المسار الأكاديمي' : 'Academic Path'}</h4>
+                
+                <div className="space-y-4 mb-6">
+                  <AnimatePresence>
+                    {academicPaths.map((path, idx) => (
+                      <motion.div key={idx} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,height:0}} className="flex items-center justify-between bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <div>
+                          <p className="font-bold text-[#1e3a5f] dark:text-white">{path.degree}</p>
+                          <p className="text-sm text-slate-500">{path.startYear} - {path.endYear || (lang === 'ar' ? 'الآن' : 'Present')}</p>
+                        </div>
+                        <button onClick={() => handleRemovePath(idx)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                          <Trash2 size={18} />
+                        </button>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 items-end bg-slate-50 dark:bg-slate-900/30 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                  <div className="flex-1 w-full">
+                    <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'التخصص أو الشهادة' : 'Degree or Major'}</label>
+                    <input type="text" value={newPath.degree} onChange={e => setNewPath({...newPath, degree: e.target.value})} className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <div className="w-full sm:w-32">
+                    <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'سنة البداية' : 'Start Year'}</label>
+                    <select value={newPath.startYear} onChange={e => setNewPath({...newPath, startYear: e.target.value})} className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
+                      <option value="">{lang === 'ar' ? 'اختر' : 'Select'}</option>
+                      {years.map(y => <option key={`s-${y}`} value={y}>{y}</option>)}
+                    </select>
+                  </div>
+                  <div className="w-full sm:w-32">
+                    <label className="text-xs font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'سنة النهاية' : 'End Year'}</label>
+                    <select value={newPath.endYear} onChange={e => setNewPath({...newPath, endYear: e.target.value})} className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
+                      <option value="">{lang === 'ar' ? 'الآن' : 'Present'}</option>
+                      {years.map(y => <option key={`e-${y}`} value={y}>{y}</option>)}
+                    </select>
+                  </div>
+                  <button onClick={handleAddPath} className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <Plus size={16} /> {lang === 'ar' ? 'إضافة' : 'Add'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Advanced Portfolio Data (Skills & Interests) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-slate-200 dark:border-slate-800 pt-8">
+                <div>
+                  <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-2 flex items-center gap-2"><Briefcase size={18} className="text-purple-500"/> {lang === 'ar' ? 'المهارات التقنية' : 'Technical Skills'}</h4>
+                  <p className="text-xs text-slate-500 mb-4">{lang === 'ar' ? 'مثال: Python, React, AI (افصل بينها بفاصلة)' : 'e.g. Python, React, AI (comma separated)'}</p>
+                  <input type="text" value={skillsText} onChange={e => setSkillsText(e.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500" dir="ltr" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-2 flex items-center gap-2"><Globe size={18} className="text-rose-500"/> {lang === 'ar' ? 'الاهتمامات ومجالات البحث' : 'Interests & Research Fields'}</h4>
+                  <p className="text-xs text-slate-500 mb-4">{lang === 'ar' ? 'مثال: الروبوتيك، إنترنت الأشياء (افصل بينها بفاصلة)' : 'e.g. Robotics, IoT (comma separated)'}</p>
+                  <input type="text" value={interestsText} onChange={e => setInterestsText(e.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500" dir="ltr" />
                 </div>
               </div>
 
@@ -265,8 +358,22 @@ export default function UserProfileSettings({ currentUser: propUser }) {
               <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
                 <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Globe size={18} className="text-cyan-500"/> {lang === 'ar' ? 'الروابط وحسابات التواصل' : 'Social & Portfolio Links'}</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <input type="url" placeholder="GitHub URL" className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white" />
-                  <input type="url" placeholder="LinkedIn URL" className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-[#1e3a5f] dark:text-white" />
+                  <div className="flex items-center gap-3">
+                    <Github className="text-slate-700 dark:text-slate-300" size={20} />
+                    <input type="url" placeholder="GitHub URL" value={formData.github} onChange={e => setFormData({...formData, github: e.target.value})} className="flex-1 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500" dir="ltr"/>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Linkedin className="text-blue-600" size={20} />
+                    <input type="url" placeholder="LinkedIn URL" value={formData.linkedin} onChange={e => setFormData({...formData, linkedin: e.target.value})} className="flex-1 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500" dir="ltr" />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Facebook className="text-blue-500" size={20} />
+                    <input type="url" placeholder="Facebook URL" value={formData.facebook} onChange={e => setFormData({...formData, facebook: e.target.value})} className="flex-1 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500" dir="ltr" />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Instagram className="text-pink-500" size={20} />
+                    <input type="url" placeholder="Instagram URL" value={formData.instagram} onChange={e => setFormData({...formData, instagram: e.target.value})} className="flex-1 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-blue-500" dir="ltr" />
+                  </div>
                 </div>
               </div>
 

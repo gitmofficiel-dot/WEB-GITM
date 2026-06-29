@@ -32,16 +32,30 @@ service cloud.firestore {
       allow delete: if isAdminOrPresident();
     }
 
-    // GITM Global Data Collection (news, tasks, events, etc.)
-    match /gitm_data/{docId} {
-      // Everyone can read public data
+    // GITM Root Collections
+    match /news/{docId} {
       allow read: if true;
-      
-      // Only President/Admins can write to most data
       allow write: if isAdminOrPresident();
-      
-      // Teachers can write to courses/grades
-      allow write: if isTeacher() && (docId == 'courses' || docId == 'grades');
+    }
+    match /events/{docId} {
+      allow read: if true;
+      allow write: if isAdminOrPresident();
+    }
+    match /projects/{docId} {
+      allow read: if true;
+      allow write: if isAdminOrPresident();
+    }
+    match /gallery/{docId} {
+      allow read: if true;
+      allow write: if isAdminOrPresident();
+    }
+    match /courses/{docId} {
+      allow read: if true;
+      allow write: if isTeacher() || isAdminOrPresident();
+    }
+    match /grades/{docId} {
+      allow read: if true;
+      allow write: if isTeacher() || isAdminOrPresident();
     }
     
     // Default Deny
