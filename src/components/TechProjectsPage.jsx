@@ -36,11 +36,16 @@ export default function TechProjectsPage() {
     fetchProjects();
   }, []);
 
-  const getLocalized = (obj, field, l) => {
-    if (!obj) return '';
-    if (obj[`${field}_${l}`]) return obj[`${field}_${l}`];
-    if (obj[field] && typeof obj[field] === 'object') return obj[field][l] || obj[field].en || '';
-    return obj[field] || '';
+  const getLocalizedTitle = (proj, l) => {
+    if (!proj) return '';
+    if (l === 'ar') return proj.titleAr || proj.titleEn || proj.title || '';
+    return proj.titleEn || proj.titleAr || proj.title || '';
+  };
+
+  const getLocalizedDesc = (proj, l) => {
+    if (!proj) return '';
+    if (l === 'ar') return proj.descriptionAr || proj.descriptionEn || proj.description || '';
+    return proj.descriptionEn || proj.descriptionAr || proj.description || '';
   };
 
   const getIcon = (iconName) => {
@@ -124,7 +129,7 @@ export default function TechProjectsPage() {
                 <div className="h-48 relative overflow-hidden">
                   <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="flex gap-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      <a href={proj.github || '#'} className="p-3 bg-slate-800 rounded-full hover:bg-teal-500 text-white transition-colors">
+                      <a href={proj.githubUrl || proj.github || '#'} className="p-3 bg-slate-800 rounded-full hover:bg-teal-500 text-white transition-colors">
                         <Github className="w-6 h-6" />
                       </a>
                       <a href={proj.link || '#'} className="p-3 bg-slate-800 rounded-full hover:bg-teal-500 text-white transition-colors">
@@ -132,7 +137,7 @@ export default function TechProjectsPage() {
                       </a>
                     </div>
                   </div>
-                  <img src={proj.imageUrl || proj.image} alt="Project" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <img src={proj.coverImage || proj.imageUrl || proj.image} alt="Project" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   <div className="absolute top-4 left-4 z-0 bg-slate-900/90 p-2 rounded-xl border border-slate-700 shadow-lg">
                     {getIcon(proj.icon)}
                   </div>
@@ -140,18 +145,37 @@ export default function TechProjectsPage() {
 
                 <div className="p-6 flex flex-col flex-grow bg-slate-900/50">
                   <h3 className="text-xl font-bold text-white mb-3 font-orbitron group-hover:text-teal-300 transition-colors">
-                    {getLocalized(proj, 'title', lang)}
+                    {getLocalizedTitle(proj, lang)}
                   </h3>
-                  <p className="text-slate-400 mb-6 text-sm leading-relaxed flex-grow">
-                    {getLocalized(proj, 'description', lang)}
-                  </p>
+                  <div className="text-slate-400 mb-6 text-sm leading-relaxed flex-grow prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: getLocalizedDesc(proj, lang) }} />
                   
-                  <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-slate-700/50">
-                    {proj.tech && proj.tech.map((t, i) => (
-                      <span key={i} className="px-2.5 py-1 text-xs font-medium text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-md">
-                        {t}
-                      </span>
-                    ))}
+                  {/* Progress & Team */}
+                  <div className="mb-4">
+                    <div className="flex justify-between text-xs text-slate-500 mb-1 font-bold">
+                      <span className="uppercase text-teal-500">{proj.status}</span>
+                      <span>{proj.progress || 0}%</span>
+                    </div>
+                    <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-teal-500" style={{ width: `${proj.progress || 0}%` }} />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-700/50">
+                    <div className="flex flex-wrap gap-2 flex-1">
+                      {(proj.techStack || proj.tech || []).slice(0,3).map((t, i) => (
+                        <span key={i} className="px-2.5 py-1 text-[10px] font-bold text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-md">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <div className="flex -space-x-2 shrink-0">
+                      {(proj.teamMembers || []).slice(0,3).map((m, i) => (
+                        <div key={i} className="w-8 h-8 rounded-full bg-slate-800 border-2 border-slate-900 flex items-center justify-center text-[10px] font-bold text-slate-300" title={m.name}>
+                          {m.initials || '?'}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </motion.div>

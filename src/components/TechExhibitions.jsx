@@ -2,30 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, CalendarDays, Ticket } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
-
-const exhibitions = [
-  {
-    id: 1,
-    name: { en: 'GITEX Africa 2026', ar: 'جيتكس إفريقيا 2026' },
-    date: '2026-10-15T09:00:00',
-    location: { en: 'Marrakech, Morocco', ar: 'مراكش، المغرب' },
-    description: { en: 'The largest tech and startup event in Africa.', ar: 'أكبر حدث للتكنولوجيا والشركات الناشئة في إفريقيا.' }
-  },
-  {
-    id: 2,
-    name: { en: 'AI Disrupt Summit', ar: 'قمة الذكاء الاصطناعي' },
-    date: '2026-11-20T10:00:00',
-    location: { en: 'Casablanca, Morocco', ar: 'الدار البيضاء، المغرب' },
-    description: { en: 'Exploring the future of enterprise AI solutions.', ar: 'استكشاف مستقبل حلول الذكاء الاصطناعي للشركات.' }
-  },
-  {
-    id: 3,
-    name: { en: 'DevFest MENA', ar: 'مهرجان المطورين الشرق الأوسط' },
-    date: '2026-12-05T08:30:00',
-    location: { en: 'Rabat, Morocco', ar: 'الرباط، المغرب' },
-    description: { en: 'Annual developer festival featuring Google technologies.', ar: 'مهرجان المطورين السنوي لتقنيات جوجل.' }
-  }
-];
+import { db } from '../config/firebase';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 const Countdown = ({ targetDate, lang }) => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -64,6 +42,26 @@ const Countdown = ({ targetDate, lang }) => {
 
 const TechExhibitions = () => {
   const { lang } = useLanguage();
+  const [exhibitions, setExhibitions] = useState([]);
+
+  useEffect(() => {
+    const fetchExhibitions = async () => {
+      try {
+        const q = query(collection(db, 'events'), orderBy('startDate', 'asc'));
+        const snapshot = await getDocs(q);
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Only keep future events
+        const futureEvents = data.filter(e => new Date(`${e.startDate}T${e.startTime || '00:00'}`) > new Date());
+        setExhibitions(futureEvents);
+      } catch (error) {
+        console.error('Error fetching exhibitions:', error);
+      }
+    };
+    fetchExhibitions();
+  }, []);
+
+  if (exhibitions.length === 0) return null;
+
   const nextEvent = exhibitions[0];
 
   return (
@@ -84,10 +82,10 @@ const TechExhibitions = () => {
             <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide mb-4 inline-block">
               {lang === 'ar' ? 'الحدث القادم' : 'Next Event'}
             </span>
-            <h3 className="text-2xl font-bold text-[#0B132B] dark:text-white mb-2">{nextEvent.name[lang] || nextEvent.name.en}</h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">{nextEvent.description[lang] || nextEvent.description.en}</p>
+            <h3 className="text-2xl font-bold text-[#0B132B] dark:text-white mb-2">{lang === 'ar' ? (nextEvent.title || nextEvent.titleEn) : (nextEvent.titleEn || nextEvent.title)}</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-4" dangerouslySetInnerHTML={{ __html: nextEvent.description?.substring(0, 100) + '...' }}></p>
             
-            <Countdown targetDate={nextEvent.date} lang={lang} />
+            <Countdown targetDate={`${nextEvent.startDate}T${nextEvent.startTime || '00:00'}`} lang={lang} />
             
             <button className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 dark:bg-cyan-600 dark:hover:bg-cyan-700 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
               <Ticket size={18} /> {lang === 'ar' ? 'سجل الآن' : 'Register Now'}
@@ -102,17 +100,17 @@ const TechExhibitions = () => {
                 className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 rounded-2xl bg-[#e0fcfc] dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all gap-4"
               >
                 <div className="flex-1">
-                  <h4 className="text-xl font-bold text-[#0B132B] dark:text-white mb-2">{exhibition.name[lang] || exhibition.name.en}</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{exhibition.description[lang] || exhibition.description.en}</p>
+                  <h4 className="text-xl font-bold text-[#0B132B] dark:text-white mb-2">{lang === 'ar' ? (exhibition.title || exhibition.titleEn) : (exhibition.titleEn || exhibition.title)}</h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400" dangerouslySetInnerHTML={{ __html: exhibition.description?.substring(0, 80) + '...' }}></p>
                 </div>
                 <div className="flex flex-col gap-2 min-w-[200px]">
                   <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                     <CalendarDays size={16} className="text-emerald-500 dark:text-cyan-400" /> 
-                    {new Date(exhibition.date).toLocaleDateString(lang === 'ar' ? 'ar-MA' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    {exhibition.startDate}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                     <MapPin size={16} className="text-emerald-500 dark:text-cyan-400" /> 
-                    {exhibition.location[lang] || exhibition.location.en}
+                    {exhibition.mode === 'Online' ? 'Online / عن بُعد' : exhibition.location}
                   </div>
                 </div>
               </motion.div>

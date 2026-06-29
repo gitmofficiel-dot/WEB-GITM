@@ -1,5 +1,5 @@
 import React, { useEffect, Suspense, lazy } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -19,6 +19,7 @@ const EventDetails = lazy(() => import('./components/EventDetails'));
 const TechProjectsPage = lazy(() => import('./components/TechProjectsPage'));
 const AIFeatures = lazy(() => import('./components/AIFeatures'));
 const Academy = lazy(() => import('./components/Academy'));
+const ClassroomTheater = lazy(() => import('./components/academy/ClassroomTheater'));
 const MemberProfiles = lazy(() => import('./components/MemberProfiles'));
 const PublicProfile = lazy(() => import('./components/PublicProfile'));
 const AuthForms = lazy(() => import('./components/AuthForms'));
@@ -51,6 +52,9 @@ const LoadingFallback = () => (
 const AppContent = () => {
   const { view, setView } = useLanguage();
   const { currentUser } = useAuth();
+  const location = useLocation();
+  
+  const isTheaterMode = location.pathname.includes('/academy/course/');
 
   const renderDashboard = () => {
     if (!currentUser) return <Navigate to="/login" replace />;
@@ -81,6 +85,7 @@ const AppContent = () => {
         <Route path="/projects" element={<TechProjectsPage />} />
         <Route path="/ai-features" element={<AIFeatures />} />
         <Route path="/academy" element={<Academy />} />
+        <Route path="/academy/course/:id" element={<ClassroomTheater />} />
         <Route path="/about" element={<MemberProfiles />} />
         <Route path="/profile/:id" element={<PublicProfile />} />
         <Route path="/project-details" element={<ProjectDetails />} />
@@ -112,16 +117,16 @@ const AppContent = () => {
 
       {/* Main App Layout */}
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Navbar />
+        {!isTheaterMode && <Navbar />}
         
         {/* Main Content Area */}
-        <main className="flex-1 mt-20 p-4 md:p-6 pb-24 max-w-7xl mx-auto w-full">
+        <main className={`flex-1 ${isTheaterMode ? 'w-full h-screen overflow-hidden' : 'mt-20 p-4 md:p-6 pb-24 max-w-7xl mx-auto w-full'}`}>
           <Suspense fallback={<LoadingFallback />}>
             {renderRoutes()}
           </Suspense>
         </main>
         
-        <Footer />
+        {!isTheaterMode && <Footer />}
       </div>
 
       {/* Global AI Assistant */}

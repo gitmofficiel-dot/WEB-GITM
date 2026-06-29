@@ -4,16 +4,18 @@ import { Calendar as CalendarIcon, MapPin, Clock, Users, ArrowRight, Lock, Loade
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../config/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import EventRegistrationModal from './EventRegistrationModal';
 
 export default function EventsPage() {
   const { lang } = useLanguage();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const q = query(collection(db, 'events'), orderBy('date', 'desc'));
+        const q = query(collection(db, 'events'), orderBy('startDate', 'desc'));
         const querySnapshot = await getDocs(q);
         const fetchedEvents = querySnapshot.docs.map(doc => ({
           id: doc.id,
@@ -109,15 +111,15 @@ export default function EventsPage() {
                 <div className="h-48 relative overflow-hidden">
                   <img src={evt.imageUrl || evt.image} alt="Event" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
-                  {evt.status === 'past' && (
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+                  {!evt.isRegistrationOpen && (
                     <div className="absolute top-4 right-4 bg-slate-900/80 backdrop-blur text-slate-300 text-xs font-bold px-3 py-1 rounded-full border border-slate-700">
-                      {lang === 'ar' ? 'منتهي' : lang === 'fr' ? 'Terminé' : 'Past Event'}
+                      {lang === 'ar' ? 'مغلق / مكتمل' : lang === 'fr' ? 'Fermé' : 'Closed / Full'}
                     </div>
                   )}
-                  {evt.internal && (
-                    <div className="absolute top-4 left-4 bg-rose-500/80 backdrop-blur text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                      <Lock className="w-3 h-3" />
-                      {lang === 'ar' ? 'داخلي' : lang === 'fr' ? 'Interne' : 'Internal'}
+                  {evt.mode === 'Online' && (
+                    <div className="absolute top-4 left-4 bg-indigo-500/80 backdrop-blur text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                      {lang === 'ar' ? 'عن بُعد' : lang === 'fr' ? 'En ligne' : 'Online'}
                     </div>
                   )}
                 </div>
@@ -130,37 +132,30 @@ export default function EventsPage() {
                   <div className="space-y-3 mb-8 flex-grow">
                     <div className="flex items-center gap-3 text-slate-400 text-sm">
                       <CalendarIcon className="w-4 h-4 text-teal-500" />
-                      <span>{evt.date}</span>
+                      <span>{evt.startDate}</span>
                     </div>
                     <div className="flex items-center gap-3 text-slate-400 text-sm">
                       <Clock className="w-4 h-4 text-teal-500" />
-                      <span>{evt.time}</span>
+                      <span>{evt.startTime}</span>
                     </div>
                     <div className="flex items-center gap-3 text-slate-400 text-sm">
                       <MapPin className="w-4 h-4 text-teal-500" />
-                      <span>{getLocalized(evt, 'location', lang)}</span>
+                      <span>{evt.mode === 'Online' ? 'عن بُعد' : evt.location}</span>
                     </div>
                     <div className="flex items-center gap-3 text-slate-400 text-sm">
                       <Users className="w-4 h-4 text-teal-500" />
-                      <span>{evt.attendees} {lang === 'ar' ? 'مشارك' : lang === 'fr' ? 'Participants' : 'Attendees'}</span>
+                      <span>{evt.maxCapacity} {lang === 'ar' ? 'مقعد' : lang === 'fr' ? 'Places' : 'Seats'}</span>
                     </div>
                   </div>
 
-                  {evt.status === 'upcoming' ? (
-                    evt.internal ? (
-                      <button disabled className="w-full py-3 rounded-xl bg-slate-800 text-slate-400 font-medium border border-slate-700 flex items-center justify-center gap-2 cursor-not-allowed">
-                        <Lock className="w-4 h-4" />
-                        {lang === 'ar' ? 'يتطلب معرف العضوية' : lang === 'fr' ? 'Nécessite un ID Membre' : 'Requires Membership ID'}
-                      </button>
-                    ) : (
-                      <button className="w-full btn-primary py-3 rounded-xl flex items-center justify-center gap-2 group/btn">
-                        {lang === 'ar' ? 'سجل الآن' : lang === 'fr' ? 'S\'inscrire' : 'Register Now'}
-                        <ArrowRight className={`w-4 h-4 group-hover/btn:translate-x-1 transition-transform ${lang === 'ar' ? 'rotate-180 group-hover/btn:-translate-x-1' : ''}`} />
-                      </button>
-                    )
+                  {evt.isRegistrationOpen ? (
+                    <button onClick={() => setSelectedEvent(evt)} className="w-full btn-primary py-3 rounded-xl flex items-center justify-center gap-2 group/btn">
+                      {lang === 'ar' ? 'سجل الآن' : lang === 'fr' ? 'S\'inscrire' : 'Register Now'}
+                      <ArrowRight className={`w-4 h-4 group-hover/btn:translate-x-1 transition-transform ${lang === 'ar' ? 'rotate-180 group-hover/btn:-translate-x-1' : ''}`} />
+                    </button>
                   ) : (
-                    <button className="w-full py-3 rounded-xl glass text-slate-300 font-medium hover:bg-slate-800 transition-colors">
-                      {lang === 'ar' ? 'عرض الملخص' : lang === 'fr' ? 'Voir le Résumé' : 'View Recap'}
+                    <button disabled className="w-full py-3 rounded-xl glass text-slate-400 font-medium cursor-not-allowed">
+                      {lang === 'ar' ? 'التسجيل مغلق' : lang === 'fr' ? 'Inscriptions fermées' : 'Registration Closed'}
                     </button>
                   )}
                 </div>
@@ -169,6 +164,13 @@ export default function EventsPage() {
           </div>
         )}
       </div>
+      
+      {selectedEvent && (
+        <EventRegistrationModal 
+          event={selectedEvent} 
+          onClose={() => setSelectedEvent(null)} 
+        />
+      )}
     </div>
   );
 }

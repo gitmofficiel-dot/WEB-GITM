@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, Calendar, Award, User, Code, Zap, Heart, UserPlus, Search } from 'lucide-react';
+import { LayoutDashboard, Calendar, Award, User, Code, Zap, Heart, UserPlus, Search, Users, BookOpen } from 'lucide-react';
 import UserProfileSettings from './UserProfileSettings';
+import HackathonMatchmaker from './HackathonMatchmaker';
+import DebuggingLedger from './DebuggingLedger';
 
 export default function MemberDashboard() {
   const { lang } = useLanguage();
@@ -30,6 +32,8 @@ export default function MemberDashboard() {
         {[
           { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
           { id: 'projects', icon: Code, label: lang === 'ar' ? 'مشاريعي' : 'My Projects' },
+          { id: 'matchmaker', icon: Users, label: lang === 'ar' ? 'فريق الهاكاثون' : 'Matchmaker' },
+          { id: 'ledger', icon: BookOpen, label: lang === 'ar' ? 'دفتر الأخطاء' : 'Bug Ledger' },
           { id: 'events', icon: Calendar, label: lang === 'ar' ? 'الأحداث' : 'Events' },
           { id: 'certificates', icon: Award, label: lang === 'ar' ? 'الشهادات' : 'Certificates' },
           { id: 'profile', icon: User, label: lang === 'ar' ? 'الملف الشخصي' : 'Profile' }
@@ -154,6 +158,14 @@ export default function MemberDashboard() {
                 </div>
               </div>
             </div>
+          </motion.div>
+        ) : activeTab === 'matchmaker' ? (
+          <motion.div key="matchmaker" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+            <HackathonMatchmaker />
+          </motion.div>
+        ) : activeTab === 'ledger' ? (
+          <motion.div key="ledger" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+            <DebuggingLedger />
           </motion.div>
         ) : (
           <motion.div key="wip" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-12 text-center">

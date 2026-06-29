@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
   PenTool, Image as ImageIcon, BarChart2, Plus, Edit, Trash2, Eye, Calendar, Globe, Settings,
   Search, CheckCircle, XCircle, Clock, Upload, FileText, Link2, ArrowUpRight,
-  AlertTriangle, Send, Filter, X, Save, ListChecks, Loader2
+  AlertTriangle, Send, Filter, X, Save, ListChecks, Loader2, MapPin, Users, BookOpen, Rocket
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
@@ -12,6 +12,10 @@ import { uploadToCloudinary } from '../../utils/cloudinary';
 import { db } from '../../config/firebase';
 import { collection, addDoc, deleteDoc, doc, serverTimestamp, getDocs, query, orderBy, updateDoc } from 'firebase/firestore';
 import { toast } from '../../utils/toast';
+import SmartArticleEditor from './SmartArticleEditor';
+import SmartEventEditor from './SmartEventEditor';
+import SmartCourseBuilder from './SmartCourseBuilder';
+import SmartProjectBuilder from './SmartProjectBuilder';
 
 export default function ContentManagerDashboard() {
   const { lang } = useLanguage();
@@ -29,6 +33,27 @@ export default function ContentManagerDashboard() {
   const [articleForm, setArticleForm] = useState({ title: '', titleEn: '', author: '', status: 'Draft', content: '', category: '' });
   const [articleImage, setArticleImage] = useState(null);
   const [isSavingArticle, setIsSavingArticle] = useState(false);
+
+  // --- Events State ---
+  const [events, setEvents] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [showEventEditor, setShowEventEditor] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [isSavingEvent, setIsSavingEvent] = useState(false);
+
+  // --- Courses State ---
+  const [courses, setCourses] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(true);
+  const [showCourseEditor, setShowCourseEditor] = useState(false);
+  const [editingCourse, setEditingCourse] = useState(null);
+  const [isSavingCourse, setIsSavingCourse] = useState(false);
+
+  // --- Projects State ---
+  const [projects, setProjects] = useState([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [showProjectEditor, setShowProjectEditor] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
+  const [isSavingProject, setIsSavingProject] = useState(false);
 
   // --- Media State ---
   const [mediaItems, setMediaItems] = useState([]);
@@ -62,6 +87,48 @@ export default function ContentManagerDashboard() {
   };
 
   // --- Fetch Data ---
+  const fetchProjects = async () => {
+    setLoadingProjects(true);
+    try {
+      const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setProjects(data);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
+
+  const fetchCourses = async () => {
+    setLoadingCourses(true);
+    try {
+      const q = query(collection(db, 'courses'), orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setCourses(data);
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+    } finally {
+      setLoadingCourses(false);
+    }
+  };
+
+  const fetchEvents = async () => {
+    setLoadingEvents(true);
+    try {
+      const q = query(collection(db, 'events'), orderBy('startDate', 'desc'));
+      const snapshot = await getDocs(q);
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setEvents(data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    } finally {
+      setLoadingEvents(false);
+    }
+  };
+
   const fetchArticles = async () => {
     setLoadingArticles(true);
     try {
@@ -93,6 +160,9 @@ export default function ContentManagerDashboard() {
   useEffect(() => {
     fetchArticles();
     fetchMedia();
+    fetchEvents();
+    fetchCourses();
+    fetchProjects();
   }, []);
 
   // --- Handlers ---
@@ -138,6 +208,44 @@ export default function ContentManagerDashboard() {
     }
   };
 
+  const handleSaveArticleFromEditor = async (data) => {
+    setIsSavingArticle(true);
+    try {
+      const articleData = {
+        title: data.title,
+        titleEn: data.title, // or handle translation
+        author: managerName,
+        status: 'Published', // you might want to read this from editor data
+        content: data.content,
+        category: data.category,
+        tags: data.tags || [],
+        attachments: data.attachments || [],
+        date: new Date().toISOString().split('T')[0],
+        updatedAt: serverTimestamp(),
+      };
+
+      if (editingArticle) {
+        const articleRef = doc(db, 'news', editingArticle.id);
+        await updateDoc(articleRef, articleData);
+        toast.success(lang === 'ar' ? 'تم تحديث المقال بنجاح' : 'Article updated successfully');
+      } else {
+        articleData.createdAt = serverTimestamp();
+        articleData.views = 0;
+        await addDoc(collection(db, 'news'), articleData);
+        toast.success(lang === 'ar' ? 'تم نشر المقال بنجاح' : 'Article published successfully');
+      }
+      
+      setShowArticleModal(false);
+      setEditingArticle(null);
+      fetchArticles();
+    } catch (error) {
+      console.error('Error saving article from editor:', error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving article');
+    } finally {
+      setIsSavingArticle(false);
+    }
+  };
+
   const handleDeleteArticle = (id) => {
     confirmAction(
       lang === 'ar' ? 'تأكيد الحذف' : 'Confirm Deletion',
@@ -149,6 +257,153 @@ export default function ContentManagerDashboard() {
           toast.success(lang === 'ar' ? 'تم حذف المقال بنجاح' : 'Article deleted successfully');
         } catch (error) {
           console.error('Error deleting article:', error);
+          toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحذف' : 'An error occurred during deletion');
+        }
+        setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
+      }
+    );
+  };
+
+  const handleSaveEventFromEditor = async (data, imageFile) => {
+    setIsSavingEvent(true);
+    try {
+      let imageUrl = editingEvent?.imageUrl || '';
+      if (imageFile) {
+        imageUrl = await uploadToCloudinary(imageFile);
+      }
+      
+      const eventData = {
+        ...data,
+        imageUrl,
+        updatedAt: serverTimestamp(),
+      };
+
+      if (editingEvent) {
+        const eventRef = doc(db, 'events', editingEvent.id);
+        await updateDoc(eventRef, eventData);
+        toast.success(lang === 'ar' ? 'تم تحديث الفعالية بنجاح' : 'Event updated successfully');
+      } else {
+        eventData.createdAt = serverTimestamp();
+        await addDoc(collection(db, 'events'), eventData);
+        toast.success(lang === 'ar' ? 'تم نشر الفعالية بنجاح' : 'Event published successfully');
+      }
+      
+      setShowEventEditor(false);
+      setEditingEvent(null);
+      fetchEvents();
+    } catch (error) {
+      console.error('Error saving event:', error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving event');
+    } finally {
+      setIsSavingEvent(false);
+    }
+  };
+
+  const handleDeleteEvent = (id) => {
+    confirmAction(
+      lang === 'ar' ? 'تأكيد الحذف' : 'Confirm Deletion',
+      lang === 'ar' ? 'هل أنت متأكد من حذف هذه الفعالية؟ لا يمكن التراجع.' : 'Are you sure you want to delete this event? Cannot be undone.',
+      async () => {
+        try {
+          await deleteDoc(doc(db, 'events', id));
+          setEvents(prev => prev.filter(a => a.id !== id));
+          toast.success(lang === 'ar' ? 'تم حذف الفعالية بنجاح' : 'Event deleted successfully');
+        } catch (error) {
+          console.error('Error deleting event:', error);
+          toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحذف' : 'An error occurred during deletion');
+        }
+        setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
+      }
+    );
+  };
+
+  const handleSaveCourseFromEditor = async (courseData) => {
+    setIsSavingCourse(true);
+    try {
+      const dataToSave = {
+        ...courseData,
+        updatedAt: serverTimestamp(),
+      };
+
+      if (editingCourse) {
+        const courseRef = doc(db, 'courses', editingCourse.id);
+        await updateDoc(courseRef, dataToSave);
+        toast.success(lang === 'ar' ? 'تم تحديث المسار بنجاح' : 'Course updated successfully');
+      } else {
+        dataToSave.createdAt = serverTimestamp();
+        await addDoc(collection(db, 'courses'), dataToSave);
+        toast.success(lang === 'ar' ? 'تم نشر المسار بنجاح' : 'Course published successfully');
+      }
+      
+      setShowCourseEditor(false);
+      setEditingCourse(null);
+      fetchCourses();
+    } catch (error) {
+      console.error('Error saving course:', error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving course');
+    } finally {
+      setIsSavingCourse(false);
+    }
+  };
+
+  const handleDeleteCourse = (id) => {
+    confirmAction(
+      lang === 'ar' ? 'تأكيد الحذف' : 'Confirm Deletion',
+      lang === 'ar' ? 'هل أنت متأكد من حذف هذا المسار؟ لا يمكن التراجع.' : 'Are you sure you want to delete this course? Cannot be undone.',
+      async () => {
+        try {
+          await deleteDoc(doc(db, 'courses', id));
+          setCourses(prev => prev.filter(a => a.id !== id));
+          toast.success(lang === 'ar' ? 'تم حذف المسار بنجاح' : 'Course deleted successfully');
+        } catch (error) {
+          console.error('Error deleting course:', error);
+          toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحذف' : 'An error occurred during deletion');
+        }
+        setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
+      }
+    );
+  };
+
+  const handleSaveProjectFromEditor = async (projectData) => {
+    setIsSavingProject(true);
+    try {
+      const dataToSave = {
+        ...projectData,
+        updatedAt: serverTimestamp(),
+      };
+
+      if (editingProject) {
+        const projectRef = doc(db, 'projects', editingProject.id);
+        await updateDoc(projectRef, dataToSave);
+        toast.success(lang === 'ar' ? 'تم تحديث المشروع بنجاح' : 'Project updated successfully');
+      } else {
+        dataToSave.createdAt = serverTimestamp();
+        await addDoc(collection(db, 'projects'), dataToSave);
+        toast.success(lang === 'ar' ? 'تم حفظ المشروع بنجاح' : 'Project saved successfully');
+      }
+      
+      setShowProjectEditor(false);
+      setEditingProject(null);
+      fetchProjects();
+    } catch (error) {
+      console.error('Error saving project:', error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving project');
+    } finally {
+      setIsSavingProject(false);
+    }
+  };
+
+  const handleDeleteProject = (id) => {
+    confirmAction(
+      lang === 'ar' ? 'تأكيد الحذف' : 'Confirm Deletion',
+      lang === 'ar' ? 'هل أنت متأكد من حذف هذا المشروع؟ لا يمكن التراجع.' : 'Are you sure you want to delete this project? Cannot be undone.',
+      async () => {
+        try {
+          await deleteDoc(doc(db, 'projects', id));
+          setProjects(prev => prev.filter(a => a.id !== id));
+          toast.success(lang === 'ar' ? 'تم حذف المشروع بنجاح' : 'Project deleted successfully');
+        } catch (error) {
+          console.error('Error deleting project:', error);
           toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحذف' : 'An error occurred during deletion');
         }
         setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
@@ -232,6 +487,9 @@ export default function ContentManagerDashboard() {
 
   const tabs = [
     { id: 'articles', icon: PenTool, label: lang === 'ar' ? 'المقالات' : 'Articles' },
+    { id: 'events', icon: Calendar, label: lang === 'ar' ? 'إدارة الفعاليات' : 'Events' },
+    { id: 'projects', icon: Rocket, label: lang === 'ar' ? 'إدارة المشاريع' : 'Projects' },
+    { id: 'courses', icon: BookOpen, label: lang === 'ar' ? 'هيكلة التداريب' : 'Courses' },
     { id: 'media', icon: ImageIcon, label: lang === 'ar' ? 'مكتبة الوسائط' : 'Media Library' },
     { id: 'seo', icon: Search, label: lang === 'ar' ? 'أدوات SEO' : 'SEO Tools' },
     { id: 'queue', icon: ListChecks, label: lang === 'ar' ? 'طابور النشر' : 'Publishing Queue' },
@@ -321,11 +579,21 @@ export default function ContentManagerDashboard() {
                     }}
                     className="bg-gradient-to-r from-rose-500 to-pink-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-rose-500/20 transition-all hover:scale-105"
                   >
-                    <Plus size={16}/> {lang === 'ar' ? 'مقال جديد' : 'New Article'}
+                    <Plus size={16}/> {lang === 'ar' ? 'مقال جديد (المحرر الذكي)' : 'New Article (Smart)'}
                   </button>
                 </div>
 
-                {/* Stats */}
+                {showArticleModal ? (
+                  <SmartArticleEditor 
+                    initialData={editingArticle || null}
+                    onCancel={() => setShowArticleModal(false)}
+                    onSave={(data) => {
+                      handleSaveArticleFromEditor(data);
+                    }}
+                  />
+                ) : (
+                  <>
+                    {/* Stats */}
                 <div className="grid grid-cols-3 gap-4">
                   {[
                     { label: lang === 'ar' ? 'منشور' : 'Published', value: articles.filter(a => a.status === 'Published').length, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
@@ -374,95 +642,216 @@ export default function ContentManagerDashboard() {
                       ))}
                     </div>
                   )}
+                  )}
+                </div>
+                </>
+                )}
+              </div>
+            )}
+
+            {/* ═══════════════ EVENTS TAB ═══════════════ */}
+            {activeTab === 'events' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+                    <Calendar className="text-rose-500"/> {lang === 'ar' ? 'إدارة الفعاليات' : 'Events Management'}
+                  </h3>
+                  <button
+                    onClick={() => { 
+                      setEditingEvent(null); 
+                      setShowEventEditor(true); 
+                    }}
+                    className="bg-gradient-to-r from-rose-500 to-pink-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-rose-500/20 transition-all hover:scale-105"
+                  >
+                    <Plus size={16}/> {lang === 'ar' ? 'فعالية جديدة' : 'New Event'}
+                  </button>
                 </div>
 
-                {/* Article Modal */}
-                <AnimatePresence>
-                  {showArticleModal && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
-                      onClick={() => setShowArticleModal(false)}
-                    >
-                      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-                        onClick={e => e.stopPropagation()}
-                        className="glass-card rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700"
-                      >
-                        <div className="flex justify-between items-center mb-6">
-                          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white">
-                            {editingArticle ? (lang === 'ar' ? 'تعديل المقال' : 'Edit Article') : (lang === 'ar' ? 'مقال جديد' : 'New Article')}
-                          </h3>
-                          <button onClick={() => setShowArticleModal(false)} className="text-slate-400 hover:text-slate-600 p-1"><X size={20}/></button>
-                        </div>
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'العنوان (بالعربية)' : 'Title (Arabic)'}</label>
-                              <input type="text" value={articleForm.title} onChange={e => setArticleForm(p => ({...p, title: e.target.value}))}
-                                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-rose-500 outline-none"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'العنوان (بالانجليزية)' : 'Title (English)'}</label>
-                              <input type="text" value={articleForm.titleEn} onChange={e => setArticleForm(p => ({...p, titleEn: e.target.value}))}
-                                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-rose-500 outline-none"
-                              />
-                            </div>
-                          </div>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الكاتب' : 'Author'}</label>
-                              <input type="text" value={articleForm.author} onChange={e => setArticleForm(p => ({...p, author: e.target.value}))} placeholder={managerName}
-                                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-rose-500 outline-none"
-                              />
-                            </div>
-                            <div>
-                              <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'التصنيف' : 'Category'}</label>
-                              <input type="text" value={articleForm.category} onChange={e => setArticleForm(p => ({...p, category: e.target.value}))}
-                                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-rose-500 outline-none"
-                              />
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الحالة' : 'Status'}</label>
-                            <select value={articleForm.status} onChange={e => setArticleForm(p => ({...p, status: e.target.value}))}
-                              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-rose-500 outline-none"
+                {showEventEditor ? (
+                  <SmartEventEditor 
+                    initialData={editingEvent || null}
+                    onCancel={() => setShowEventEditor(false)}
+                    onSave={handleSaveEventFromEditor}
+                  />
+                ) : (
+                  <>
+                    <div className="glass-card rounded-2xl p-6">
+                      {loadingEvents ? (
+                        <div className="flex justify-center p-8"><Loader2 className="animate-spin text-rose-500" size={32}/></div>
+                      ) : (
+                        <div className="space-y-3">
+                          {events.map((ev, i) => (
+                            <motion.div key={ev.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
+                              className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow gap-3"
                             >
-                              <option value="Draft">Draft</option>
-                              <option value="Published">Published</option>
-                              <option value="Archived">Archived</option>
-                            </select>
-                          </div>
-
-                          <div>
-                            <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'المحتوى' : 'Content'}</label>
-                            <textarea rows={4} value={articleForm.content} onChange={e => setArticleForm(p => ({...p, content: e.target.value}))}
-                              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-rose-500 outline-none resize-none"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الصورة' : 'Image'}</label>
-                            {editingArticle?.imageUrl && !articleImage && (
-                              <img src={editingArticle.imageUrl} alt="Current" className="h-20 w-20 object-cover rounded-xl mb-3" />
-                            )}
-                            <input type="file" accept="image/*" onChange={e => setArticleImage(e.target.files[0])}
-                              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-rose-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100 dark:file:bg-rose-900/30 dark:file:text-rose-400"
-                            />
-                          </div>
-
-                          <button onClick={handleSaveArticle} disabled={isSavingArticle || (!articleForm.title.trim() && !articleForm.titleEn.trim())}
-                            className="w-full py-3 bg-gradient-to-r from-rose-500 to-pink-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-2"
-                          >
-                            {isSavingArticle ? <Loader2 size={16} className="animate-spin" /> : <Save size={16}/>} 
-                            {isSavingArticle ? (lang === 'ar' ? 'جاري الحفظ...' : 'Saving...') : (editingArticle ? (lang === 'ar' ? 'حفظ التعديلات' : 'Save Changes') : (lang === 'ar' ? 'نشر المقال' : 'Create Article'))}
-                          </button>
+                              <div className="flex-1 flex items-center gap-4">
+                                {ev.imageUrl && (
+                                  <img src={ev.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover hidden sm:block" />
+                                )}
+                                <div>
+                                  <h4 className="font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? (ev.title || ev.titleEn) : (ev.titleEn || ev.title)}</h4>
+                                  <div className="flex flex-wrap gap-3 mt-1">
+                                    <span className="text-xs text-slate-500 flex items-center gap-1"><Calendar size={12}/> {ev.startDate}</span>
+                                    <span className="text-xs text-slate-500 flex items-center gap-1"><MapPin size={12}/> {ev.mode === 'Online' ? 'عن بُعد' : ev.location}</span>
+                                    <span className="text-xs text-slate-500 flex items-center gap-1"><Users size={12}/> {ev.maxCapacity} Seats</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                                <span className={`px-3 py-1 text-[10px] rounded-full uppercase font-bold ${ev.isRegistrationOpen ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'}`}>
+                                  {ev.isRegistrationOpen ? 'Open' : 'Closed'}
+                                </span>
+                                <div className="flex gap-1 border-l border-slate-200 dark:border-slate-700 pl-3">
+                                  <button onClick={() => { setEditingEvent(ev); setShowEventEditor(true); }} className="text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg transition-colors"><Edit size={15}/></button>
+                                  <button onClick={() => handleDeleteEvent(ev.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"><Trash2 size={15}/></button>
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                          {events.length === 0 && (
+                            <p className="text-center text-slate-500 font-bold py-8">{lang === 'ar' ? 'لا توجد فعاليات' : 'No events found'}</p>
+                          )}
                         </div>
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* ═══════════════ COURSES TAB ═══════════════ */}
+            {activeTab === 'courses' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+                    <BookOpen className="text-teal-500"/> {lang === 'ar' ? 'هيكلة التداريب (Academy)' : 'Course Management'}
+                  </h3>
+                  <button
+                    onClick={() => { 
+                      setEditingCourse(null); 
+                      setShowCourseEditor(true); 
+                    }}
+                    className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-teal-500/20 transition-all hover:scale-105"
+                  >
+                    <Plus size={16}/> {lang === 'ar' ? 'مسار جديد' : 'New Course'}
+                  </button>
+                </div>
+
+                {showCourseEditor ? (
+                  <SmartCourseBuilder 
+                    initialData={editingCourse || null}
+                    onCancel={() => setShowCourseEditor(false)}
+                    onSave={handleSaveCourseFromEditor}
+                  />
+                ) : (
+                  <div className="glass-card rounded-2xl p-6">
+                    {loadingCourses ? (
+                      <div className="flex justify-center p-8"><Loader2 className="animate-spin text-teal-500" size={32}/></div>
+                    ) : (
+                      <div className="space-y-3">
+                        {courses.map((course, i) => (
+                          <motion.div key={course.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
+                            className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow gap-3"
+                          >
+                            <div className="flex-1 flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-500 hidden sm:flex">
+                                <BookOpen size={24} />
+                              </div>
+                              <div>
+                                <h4 className="font-bold text-[#1e3a5f] dark:text-white">{course.title}</h4>
+                                <div className="flex flex-wrap gap-3 mt-1">
+                                  <span className="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">{course.track}</span>
+                                  <span className="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">{course.level}</span>
+                                  <span className="text-xs text-slate-500 flex items-center gap-1">{course.modules?.length || 0} Modules</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                              <span className={`px-3 py-1 text-[10px] rounded-full uppercase font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400`}>
+                                {course.status || 'Published'}
+                              </span>
+                              <div className="flex gap-1 border-l border-slate-200 dark:border-slate-700 pl-3">
+                                <button onClick={() => { setEditingCourse(course); setShowCourseEditor(true); }} className="text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg transition-colors"><Edit size={15}/></button>
+                                <button onClick={() => handleDeleteCourse(course.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"><Trash2 size={15}/></button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                        {courses.length === 0 && (
+                          <p className="text-center text-slate-500 font-bold py-8">{lang === 'ar' ? 'لا توجد مسارات أكاديمية' : 'No courses found'}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ═══════════════ PROJECTS TAB ═══════════════ */}
+            {activeTab === 'projects' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+                    <Rocket className="text-indigo-500"/> {lang === 'ar' ? 'إدارة المشاريع الهندسية' : 'Engineering Projects'}
+                  </h3>
+                  <button
+                    onClick={() => { 
+                      setEditingProject(null); 
+                      setShowProjectEditor(true); 
+                    }}
+                    className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-indigo-500/20 transition-all hover:scale-105"
+                  >
+                    <Plus size={16}/> {lang === 'ar' ? 'مشروع جديد' : 'New Project'}
+                  </button>
+                </div>
+
+                {showProjectEditor ? (
+                  <SmartProjectBuilder 
+                    initialData={editingProject || null}
+                    onCancel={() => setShowProjectEditor(false)}
+                    onSave={handleSaveProjectFromEditor}
+                  />
+                ) : (
+                  <div className="glass-card rounded-2xl p-6">
+                    {loadingProjects ? (
+                      <div className="flex justify-center p-8"><Loader2 className="animate-spin text-indigo-500" size={32}/></div>
+                    ) : (
+                      <div className="space-y-3">
+                        {projects.map((project, i) => (
+                          <motion.div key={project.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
+                            className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow gap-3"
+                          >
+                            <div className="flex-1 flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-500 hidden sm:flex shrink-0">
+                                <Rocket size={24} />
+                              </div>
+                              <div>
+                                <h4 className="font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? (project.titleAr || project.titleEn) : (project.titleEn || project.titleAr)}</h4>
+                                <div className="flex flex-wrap gap-3 mt-1">
+                                  <span className="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">{project.category}</span>
+                                  <span className="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md text-indigo-500">{project.progress}%</span>
+                                  <span className="text-xs text-slate-500 flex items-center gap-1"><Users size={12}/> {project.teamMembers?.length || 0} Members</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                              <span className={`px-3 py-1 text-[10px] rounded-full uppercase font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400`}>
+                                {project.status}
+                              </span>
+                              <div className="flex gap-1 border-l border-slate-200 dark:border-slate-700 pl-3">
+                                <button onClick={() => { setEditingProject(project); setShowProjectEditor(true); }} className="text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg transition-colors"><Edit size={15}/></button>
+                                <button onClick={() => handleDeleteProject(project.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"><Trash2 size={15}/></button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                        {projects.length === 0 && (
+                          <p className="text-center text-slate-500 font-bold py-8">{lang === 'ar' ? 'لا توجد مشاريع هندسية' : 'No projects found'}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 

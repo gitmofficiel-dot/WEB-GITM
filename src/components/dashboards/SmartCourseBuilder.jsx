@@ -1,0 +1,291 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { 
+  BookOpen, Plus, Trash2, Save, X, ArrowLeft, GripVertical, Video, FileText, Activity
+} from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+// --- Sortable Module Component ---
+const SortableModule = ({ module, onRemove, onAddLesson, onUpdateModule, onRemoveLesson, onUpdateLesson }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: module.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl mb-4 overflow-hidden">
+      <div className="bg-slate-100 dark:bg-slate-800 p-4 flex items-center gap-4">
+        <div {...attributes} {...listeners} className="cursor-grab text-slate-400 hover:text-slate-600">
+          <GripVertical size={20} />
+        </div>
+        <input 
+          type="text" 
+          value={module.title} 
+          onChange={(e) => onUpdateModule(module.id, 'title', e.target.value)}
+          placeholder="Module Title (e.g. Unit 1: Introduction)" 
+          className="flex-1 bg-transparent border-none outline-none font-bold text-[#1e3a5f] dark:text-white text-lg"
+        />
+        <button onClick={() => onRemove(module.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"><Trash2 size={18}/></button>
+      </div>
+      
+      <div className="p-4 space-y-3">
+        {module.lessons.map((lesson, index) => (
+          <div key={lesson.id} className="flex flex-col gap-3 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl relative group">
+             <div className="flex justify-between items-center mb-2">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Lesson {index + 1}</span>
+                <button onClick={() => onRemoveLesson(module.id, lesson.id)} className="text-slate-400 hover:text-red-500"><X size={16}/></button>
+             </div>
+             <input 
+                type="text" 
+                value={lesson.title} 
+                onChange={(e) => onUpdateLesson(module.id, lesson.id, 'title', e.target.value)}
+                placeholder="Lesson Title" 
+                className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:border-teal-500"
+             />
+             <div className="flex gap-3">
+               <div className="flex-1 relative">
+                 <Video size={16} className="absolute left-3 top-2.5 text-slate-400" />
+                 <input 
+                    type="text" 
+                    value={lesson.videoUrl} 
+                    onChange={(e) => onUpdateLesson(module.id, lesson.id, 'videoUrl', e.target.value)}
+                    placeholder="YouTube URL or ID" 
+                    className="w-full pl-9 p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:border-teal-500 text-blue-500"
+                    dir="ltr"
+                 />
+               </div>
+               <div className="flex-1 relative">
+                 <FileText size={16} className="absolute left-3 top-2.5 text-slate-400" />
+                 <input 
+                    type="text" 
+                    value={lesson.attachmentUrl} 
+                    onChange={(e) => onUpdateLesson(module.id, lesson.id, 'attachmentUrl', e.target.value)}
+                    placeholder="Attachment Link (PDF/Zip)" 
+                    className="w-full pl-9 p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:border-teal-500"
+                    dir="ltr"
+                 />
+               </div>
+             </div>
+          </div>
+        ))}
+        
+        <button 
+          onClick={() => onAddLesson(module.id)}
+          className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-slate-500 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 hover:border-teal-500 hover:text-teal-500 transition-all flex items-center justify-center gap-2"
+        >
+          <Plus size={18} /> Add Lesson
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// --- Main Editor ---
+export default function SmartCourseBuilder({ initialData, onCancel, onSave }) {
+  const { lang } = useLanguage();
+  
+  const [title, setTitle] = useState(initialData?.title || '');
+  const [track, setTrack] = useState(initialData?.track || 'Edge AI'); // Edge AI, Robotics, IoT Cloud
+  const [level, setLevel] = useState(initialData?.level || 'Beginner');
+  const [description, setDescription] = useState(initialData?.description || '');
+  
+  const [modules, setModules] = useState(initialData?.modules || [
+    { id: 'mod-1', title: 'Module 1', lessons: [] }
+  ]);
+  
+  const [isSaving, setIsSaving] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      setModules((items) => {
+        const oldIndex = items.findIndex((i) => i.id === active.id);
+        const newIndex = items.findIndex((i) => i.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+
+  const addModule = () => {
+    setModules([...modules, { id: `mod-${Date.now()}`, title: '', lessons: [] }]);
+  };
+
+  const removeModule = (id) => {
+    setModules(modules.filter(m => m.id !== id));
+  };
+
+  const updateModule = (id, field, value) => {
+    setModules(modules.map(m => m.id === id ? { ...m, [field]: value } : m));
+  };
+
+  const addLesson = (moduleId) => {
+    setModules(modules.map(m => {
+      if (m.id === moduleId) {
+        return {
+          ...m,
+          lessons: [...m.lessons, { id: `les-${Date.now()}`, title: '', videoUrl: '', attachmentUrl: '' }]
+        };
+      }
+      return m;
+    }));
+  };
+
+  const removeLesson = (moduleId, lessonId) => {
+    setModules(modules.map(m => {
+      if (m.id === moduleId) {
+        return { ...m, lessons: m.lessons.filter(l => l.id !== lessonId) };
+      }
+      return m;
+    }));
+  };
+
+  const updateLesson = (moduleId, lessonId, field, value) => {
+    setModules(modules.map(m => {
+      if (m.id === moduleId) {
+        return {
+          ...m,
+          lessons: m.lessons.map(l => l.id === lessonId ? { ...l, [field]: value } : l)
+        };
+      }
+      return m;
+    }));
+  };
+
+  const handleSubmit = () => {
+    setIsSaving(true);
+    const courseData = {
+      title, track, level, description, modules,
+      status: 'Published',
+      enrolledCount: 0
+    };
+    onSave(courseData);
+  };
+
+  return (
+    <div className="w-full bg-slate-50 dark:bg-slate-900 min-h-screen pb-12">
+      {/* Topbar */}
+      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40 px-6 py-4 flex justify-between items-center shadow-sm">
+        <div className="flex items-center gap-4">
+          <button onClick={onCancel} className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 rounded-xl transition-colors">
+             <ArrowLeft size={20} className="text-slate-700 dark:text-slate-300"/>
+          </button>
+          <div>
+            <h2 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+              <BookOpen className="text-teal-500" size={24}/> 
+              {lang === 'ar' ? 'منشئ المسارات الذكي' : 'Smart Course Builder'}
+            </h2>
+            <p className="text-xs text-slate-500">{lang === 'ar' ? 'سحب وإفلات، بناء هيكلي، وتكامل يوتيوب' : 'Drag & drop, structural building, YouTube integration'}</p>
+          </div>
+        </div>
+        
+        <button 
+          onClick={handleSubmit} disabled={isSaving || !title}
+          className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-xl font-bold shadow-lg hover:shadow-teal-500/30 hover:scale-105 transition-all disabled:opacity-50 disabled:scale-100"
+        >
+          {isSaving ? <Activity size={18} className="animate-spin"/> : <Save size={18}/>} 
+          {lang === 'ar' ? 'نشر المسار' : 'Publish Course'}
+        </button>
+      </div>
+
+      <div className="max-w-5xl mx-auto mt-8 px-4 grid grid-cols-1 gap-6">
+        
+        {/* Course Meta */}
+        <div className="glass-card rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-3">
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'عنوان الدورة' : 'Course Title'}</label>
+              <input type="text" value={title} onChange={e=>setTitle(e.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-teal-500 text-lg font-bold" dir="auto" />
+            </div>
+            
+            <div>
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'المسار الأكاديمي' : 'Academic Track'}</label>
+              <select value={track} onChange={e=>setTrack(e.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-teal-500">
+                <option value="Edge AI">Edge AI & Computer Vision</option>
+                <option value="Robotics">Robotics & ROS2</option>
+                <option value="IoT Cloud">IoT & Cloud Architectures</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'المستوى' : 'Level'}</label>
+              <select value={level} onChange={e=>setLevel(e.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-teal-500">
+                <option value="Beginner">Beginner (مبتدئ)</option>
+                <option value="Intermediate">Intermediate (متوسط)</option>
+                <option value="Advanced">Advanced (متقدم)</option>
+              </select>
+            </div>
+            
+            <div className="md:col-span-3">
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'نظرة عامة على الدورة' : 'Course Overview'}</label>
+              <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                <ReactQuill theme="snow" value={description} onChange={setDescription} className="h-32 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Modules Builder (Drag & Drop) */}
+        <div className="mt-4">
+          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2">
+            <BookOpen size={20} className="text-teal-500"/> {lang === 'ar' ? 'هيكلة المنهج (Curriculum Builder)' : 'Curriculum Builder'}
+          </h3>
+
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={modules.map(m => m.id)} strategy={verticalListSortingStrategy}>
+              {modules.map((mod) => (
+                <SortableModule 
+                  key={mod.id} 
+                  module={mod} 
+                  onRemove={removeModule}
+                  onUpdateModule={updateModule}
+                  onAddLesson={addLesson}
+                  onRemoveLesson={removeLesson}
+                  onUpdateLesson={updateLesson}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+
+          <button 
+            onClick={addModule}
+            className="w-full py-4 bg-teal-50 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400 font-bold rounded-2xl border-2 border-dashed border-teal-200 dark:border-teal-800 hover:bg-teal-100 transition-colors flex items-center justify-center gap-2 mt-4"
+          >
+            <Plus size={20}/> {lang === 'ar' ? 'إضافة وحدة جديدة' : 'Add New Module'}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  );
+}
