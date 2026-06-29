@@ -3,7 +3,7 @@ import { translations, languages } from '../translations/dictionary';
 import { auth } from '../config/firebaseAuth';
 import { onAuthStateChanged, signOut, updateProfile } from 'firebase/auth';
 import { db } from '../config/firebase';
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot, collection } from 'firebase/firestore';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -244,27 +244,22 @@ export const LanguageProvider = ({ children }) => {
 
   // Effect: Listen to Data from Firestore
   useEffect(() => {
-    if (!user) return;
+    const unsubTasks = onSnapshot(doc(db, 'gitm_data', 'tasks'), snap => snap.exists() && snap.data().items && setTasks(snap.data().items));
     
-    const collections = [
-      { key: 'tasks', setter: setTasks },
-      { key: 'news', setter: setNews },
-      { key: 'gallery', setter: setGallery },
-      { key: 'events', setter: setEvents },
-      { key: 'courses', setter: setCourses }
-    ];
+    // Proper root collections
+    const unsubNews = onSnapshot(collection(db, 'news'), snap => setNews(snap.docs.map(d => ({id: d.id, ...d.data()}))));
+    const unsubEvents = onSnapshot(collection(db, 'events'), snap => setEvents(snap.docs.map(d => ({id: d.id, ...d.data()}))));
+    const unsubGallery = onSnapshot(collection(db, 'gallery'), snap => setGallery(snap.docs.map(d => ({id: d.id, ...d.data()}))));
+    const unsubCourses = onSnapshot(collection(db, 'courses'), snap => setCourses(snap.docs.map(d => ({id: d.id, ...d.data()}))));
 
-    const unsubscribes = collections.map(({ key, setter }) => {
-      const docRef = doc(db, 'gitm_data', key);
-      return onSnapshot(docRef, (docSnap) => {
-        if (docSnap.exists() && docSnap.data().items) {
-          setter(docSnap.data().items);
-        }
-      });
-    });
-
-    return () => unsubscribes.forEach(unsub => unsub());
-  }, [user]);
+    return () => {
+      unsubTasks();
+      unsubNews();
+      unsubEvents();
+      unsubGallery();
+      unsubCourses();
+    };
+  }, []);
 
   // Generic Sync Helper
   const syncToFirestore = (key, data) => {
@@ -275,10 +270,7 @@ export const LanguageProvider = ({ children }) => {
 
   // Sync tasks to Firestore when changed locally
   useEffect(() => { syncToFirestore('tasks', tasks); }, [tasks, user]);
-  useEffect(() => { syncToFirestore('news', news); }, [news, user]);
-  useEffect(() => { syncToFirestore('gallery', gallery); }, [gallery, user]);
-  useEffect(() => { syncToFirestore('events', events); }, [events, user]);
-  useEffect(() => { syncToFirestore('courses', courses); }, [courses, user]);
+  // Removed auto-sync for news, gallery, events, courses since they are managed individually
 
   // Effect: Save all data (Local Fallback for smaller data or non-migrated yet)
   // localStorage.setItem('gitm_tasks', JSON.stringify(tasks)); - Moved to Firestore

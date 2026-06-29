@@ -1,28 +1,25 @@
 /**
- * Uploads a file to Cloudinary using an unsigned upload preset.
+ * Uploads a file to Cloudinary using unsigned upload.
+ * Requires VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in .env
  * 
  * @param {File} file - The file object to upload
- * @param {string} resourceType - The type of file ('image', 'video', 'raw' for documents)
+ * @param {string} resourceType - 'auto', 'image', 'video', or 'raw'
  * @returns {Promise<string>} - The secure URL of the uploaded file
  */
 export const uploadToCloudinary = async (file, resourceType = 'auto') => {
-  // Replace these with your actual Cloudinary credentials or use environment variables
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dzx2xxx'; // Fallback dummy
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'gitm_preset'; // Fallback dummy
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
-  if (!cloudName || !uploadPreset) {
-    console.error("Cloudinary credentials are not set. Check your .env file.");
-    throw new Error("Missing Cloudinary configuration.");
+  if (!cloudName || !uploadPreset || cloudName === 'your_cloud_name' || uploadPreset === 'your_upload_preset') {
+    throw new Error("Cloudinary configuration is missing. Please check your .env file.");
   }
-
-  const url = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
 
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', uploadPreset);
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
       method: 'POST',
       body: formData,
     });
@@ -33,9 +30,9 @@ export const uploadToCloudinary = async (file, resourceType = 'auto') => {
     }
 
     const data = await response.json();
-    return data.secure_url; // Return the secure HTTPS URL of the uploaded file
+    return data.secure_url; // Return the URL of the uploaded file
   } catch (error) {
-    console.error("Error uploading to Cloudinary:", error);
+    console.error("Cloudinary upload error:", error);
     throw error;
   }
 };

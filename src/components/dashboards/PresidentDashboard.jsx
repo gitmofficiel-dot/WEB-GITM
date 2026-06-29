@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, updateDoc, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import UserProfileSettings from './UserProfileSettings';
 import { useLanguage } from '../../context/LanguageContext';
@@ -49,28 +49,18 @@ export default function PresidentDashboard() {
     }
   };
 
-  const [news, setNews] = useState([
-    { id: 1, title: 'شراكة جديدة مع وزارة الانتقال الرقمي', date: '2026-07-01', status: 'Published' },
-    { id: 2, title: 'افتتاح مقر GITM الجديد في طنجة', date: '2026-06-25', status: 'Draft' },
-    { id: 3, title: 'إطلاق مسابقة هاكاثون الابتكار 2026', date: '2026-06-10', status: 'Published' }
-  ]);
+  const [news, setNews] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [gallery, setGallery] = useState([]);
 
-  const [courses, setCourses] = useState([
-    { id: 1, title: 'تطوير تطبيقات الويب المتقدمة (React/Node)', instructor: 'Mourad', enrolled: 215, status: 'Active' },
-    { id: 2, title: 'الذكاء الاصطناعي التطبيقي (Python/TensorFlow)', instructor: 'Youssef Alaoui', enrolled: 150, status: 'Active' },
-    { id: 3, title: 'مقدمة في صناعة الروبوتات', instructor: 'Khadija Mansouri', enrolled: 85, status: 'Upcoming' }
-  ]);
-
-  const [events, setEvents] = useState([
-    { id: 1, title: 'القمة الوطنية GITM 2026 - الدار البيضاء', date: '2026-08-15', attendees: 500, status: 'Planning' },
-    { id: 2, title: 'ورشة عمل الذكاء الاصطناعي - جامعة محمد الخامس', date: '2026-09-10', attendees: 200, status: 'Confirmed' }
-  ]);
-
-  const [gallery, setGallery] = useState([
-    { id: 1, name: 'GITM_Summit_2025.jpg', type: 'image' },
-    { id: 2, name: 'Workshop_Rabat.jpg', type: 'image' },
-    { id: 3, name: 'Hackathon_Winners.jpg', type: 'image' }
-  ]);
+  useEffect(() => {
+    const unsubNews = onSnapshot(collection(db, 'news'), snap => setNews(snap.docs.map(d => ({id: d.id, ...d.data()}))));
+    const unsubCourses = onSnapshot(collection(db, 'courses'), snap => setCourses(snap.docs.map(d => ({id: d.id, ...d.data()}))));
+    const unsubEvents = onSnapshot(collection(db, 'events'), snap => setEvents(snap.docs.map(d => ({id: d.id, ...d.data()}))));
+    const unsubGallery = onSnapshot(collection(db, 'gallery'), snap => setGallery(snap.docs.map(d => ({id: d.id, ...d.data()}))));
+    return () => { unsubNews(); unsubCourses(); unsubEvents(); unsubGallery(); };
+  }, []);
 
   const [aiSettings, setAiSettings] = useState({
     moderation: { model: 'gemini-1.5-pro', actions: 1450, active: true },
@@ -84,49 +74,50 @@ export default function PresidentDashboard() {
   const closeModal = () => setModalState({ isOpen: false, type: '', data: null });
 
   // --- CRUD Handlers ---
-  const handleSave = (formData) => {
+  const handleSave = async (formData) => {
     const isEdit = !!modalState.data;
-    
-    if (modalState.type === 'event') {
+    const colName = modalState.type === 'event' ? 'events' : 
+                    modalState.type === 'course' ? 'courses' : 
+                    modalState.type === 'news' ? 'news' : 
+                    modalState.type === 'gallery' ? 'gallery' : null;
+
+    if (!colName) return closeModal();
+
+    try {
       if (isEdit) {
-        setEvents(events.map(e => e.id === modalState.data.id ? { ...e, ...formData } : e));
+        await updateDoc(doc(db, colName, modalState.data.id), { ...formData, updatedAt: serverTimestamp() });
       } else {
-        setEvents([...events, { id: Date.now(), attendees: 0, status: 'Planning', ...formData }]);
+        const extraData = modalState.type === 'event' ? { attendees: 0, status: 'Planning' } :
+                          modalState.type === 'course' ? { enrolled: 0, status: 'Upcoming' } :
+                          modalState.type === 'news' ? { date: new Date().toISOString().split('T')[0], status: 'Draft' } :
+                          modalState.type === 'gallery' ? { type: 'image' } : {};
+        await addDoc(collection(db, colName), { ...formData, ...extraData, createdAt: serverTimestamp() });
       }
-    } else if (modalState.type === 'course') {
-      if (isEdit) {
-        setCourses(courses.map(c => c.id === modalState.data.id ? { ...c, ...formData } : c));
-      } else {
-        setCourses([...courses, { id: Date.now(), enrolled: 0, status: 'Upcoming', ...formData }]);
-      }
-    } else if (modalState.type === 'news') {
-      if (isEdit) {
-        setNews(news.map(n => n.id === modalState.data.id ? { ...n, ...formData } : n));
-      } else {
-        const today = new Date().toISOString().split('T')[0];
-        setNews([...news, { id: Date.now(), date: today, status: 'Draft', ...formData }]);
-      }
-    } else if (modalState.type === 'gallery') {
-      if (isEdit) {
-        setGallery(gallery.map(g => g.id === modalState.data.id ? { ...g, ...formData } : g));
-      } else {
-        setGallery([...gallery, { id: Date.now(), type: 'image', ...formData }]);
-      }
-    } else if (modalState.type === 'member') {
-        // Handled via Firebase now
+      toast.success(lang === 'ar' ? 'تم الحفظ بنجاح' : 'Saved successfully');
+    } catch (error) {
+      console.error("Save error:", error);
+      toast.error(lang === 'ar' ? 'حدث خطأ' : 'An error occurred');
     }
     closeModal();
   };
 
-  const handleDelete = (type, id) => {
+  const handleDelete = async (type, id) => {
     if (window.confirm(lang === 'ar' ? 'هل أنت متأكد من الحذف؟' : 'Are you sure you want to delete this?')) {
-      if (type === 'event') setEvents(events.filter(e => e.id !== id));
-      if (type === 'course') setCourses(courses.filter(c => c.id !== id));
-      if (type === 'news') setNews(news.filter(n => n.id !== id));
-      if (type === 'gallery') setGallery(gallery.filter(g => g.id !== id));
       if (type === 'member') {
-        // Suspend user instead of deleting
-        handleRoleChange(id, 'suspended');
+        return handleRoleChange(id, 'suspended');
+      }
+      const colName = type === 'event' ? 'events' : 
+                      type === 'course' ? 'courses' : 
+                      type === 'news' ? 'news' : 
+                      type === 'gallery' ? 'gallery' : null;
+      if (colName) {
+        try {
+          await deleteDoc(doc(db, colName, id));
+          toast.success(lang === 'ar' ? 'تم الحذف بنجاح' : 'Deleted successfully');
+        } catch (error) {
+          console.error("Delete error:", error);
+          toast.error(lang === 'ar' ? 'حدث خطأ' : 'An error occurred');
+        }
       }
     }
   };
@@ -634,9 +625,6 @@ export default function PresidentDashboard() {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-              <div className="space-y-6">
                 <div className="glass-card rounded-3xl p-6">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">

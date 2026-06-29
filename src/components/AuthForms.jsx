@@ -45,12 +45,22 @@ export default function AuthForms({ initialMode = 'login', setView }) {
     try {
       if (mode === 'login') {
         await login(email, password);
-        // User logged in, context handles the state
+        import('../utils/toast').then(({ toast }) => {
+          toast.success(lang === 'ar' ? 'تم تسجيل الدخول بنجاح!' : 'Successfully logged in!');
+        });
       } else {
         await signup(email, password, name);
+        import('../utils/toast').then(({ toast }) => {
+          toast.success(lang === 'ar' ? 'تم إنشاء الحساب بنجاح!' : 'Account successfully created!');
+        });
       }
+      setView('dashboard');
     } catch (err) {
-      setError(formatAuthError(err));
+      const errorMsg = formatAuthError(err);
+      setError(errorMsg);
+      import('../utils/toast').then(({ toast }) => {
+        toast.error(errorMsg);
+      });
     } finally {
       setLoading(false);
     }
@@ -60,9 +70,17 @@ export default function AuthForms({ initialMode = 'login', setView }) {
     setError('');
     try {
       const result = await signInWithPopup(auth, provider);
-      loginUser(result.user.email, 'member', result.user.displayName || '');
+      // The LanguageContext will automatically detect the auth state change and create/sync the user
+      import('../utils/toast').then(({ toast }) => {
+        toast.success(lang === 'ar' ? 'تم تسجيل الدخول بنجاح!' : 'Successfully logged in!');
+      });
+      setView('dashboard');
     } catch (err) {
-      setError(formatAuthError(err));
+      const errorMsg = formatAuthError(err);
+      setError(errorMsg);
+      import('../utils/toast').then(({ toast }) => {
+        toast.error(errorMsg);
+      });
     }
   };
 
