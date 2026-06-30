@@ -5,10 +5,12 @@ import { useAuth } from '../../context/AuthContext';
 import {
   BookOpen, FileText, CheckCircle, Clock, Award, Star, Settings, PlayCircle,
   Download, Share2, Eye, BarChart3, Target, TrendingUp, Zap, Brain,
-  Calendar, Medal, GraduationCap, Flame, Copy, ExternalLink
+  Calendar, Medal, GraduationCap, Flame, Copy, ExternalLink, Terminal
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
+import CodeSimulator from './CodeSimulator';
+import InspirationCard from './InspirationCard';
 
 export default function StudentDashboard() {
   const { lang } = useLanguage();
@@ -61,6 +63,7 @@ export default function StudentDashboard() {
   const tabs = [
     { id: 'courses', icon: BookOpen, label: lang === 'ar' ? 'دوراتي' : 'My Courses' },
     { id: 'assignments', icon: FileText, label: lang === 'ar' ? 'الواجبات' : 'Assignments' },
+    { id: 'lab', icon: Terminal, label: lang === 'ar' ? 'محاكي البرمجة' : 'Virtual Lab' },
     { id: 'certificates', icon: Award, label: lang === 'ar' ? 'الشهادات' : 'Certificates' },
     { id: 'stats', icon: BarChart3, label: lang === 'ar' ? 'إحصائيات التعلم' : 'Learning Stats' },
     { id: 'profile', icon: Settings, label: lang === 'ar' ? 'الملف الشخصي' : 'Profile & Settings' },
@@ -109,6 +112,7 @@ export default function StudentDashboard() {
             {/* ═══════════════ COURSES TAB ═══════════════ */}
             {activeTab === 'courses' && (
               <div className="space-y-6">
+                <InspirationCard lang={lang} />
                 <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
                   <BookOpen className="text-blue-500"/> {lang === 'ar' ? 'التقدم الأكاديمي' : 'Academic Progress'}
                 </h3>
@@ -428,6 +432,26 @@ export default function StudentDashboard() {
                 badges: currentUser?.badges || ['developer'],
                 membershipId: currentUser?.membershipId || ''
               }} />
+            )}
+
+            {/* ═══════════════ VIRTUAL LAB TAB ═══════════════ */}
+            {activeTab === 'lab' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+                    <Terminal className="text-cyan-500"/> {lang === 'ar' ? 'محاكي البرمجة والبيئة الافتراضية' : 'Virtual Lab & Code Simulator'}
+                  </h3>
+                  <span className="px-4 py-1.5 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 rounded-full text-sm font-bold animate-pulse">
+                    {lang === 'ar' ? 'HackerRank محرك' : 'HackerRank Engine'}
+                  </span>
+                </div>
+                <p className="text-slate-500 mb-4 text-sm">
+                  {lang === 'ar' 
+                    ? 'بيئة حية لتنفيذ الأكواد مباشرة من المتصفح دون الحاجة لتثبيت أي برامج.' 
+                    : 'A live environment to execute code directly from the browser without installing any software.'}
+                </p>
+                <CodeSimulator lang={lang} />
+              </div>
             )}
 
           </motion.div>

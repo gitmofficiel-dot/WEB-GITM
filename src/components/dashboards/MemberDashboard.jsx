@@ -6,6 +6,7 @@ import { LayoutDashboard, Calendar, Award, User, Code, Zap, Heart, UserPlus, Sea
 import UserProfileSettings from './UserProfileSettings';
 import HackathonMatchmaker from './HackathonMatchmaker';
 import DebuggingLedger from './DebuggingLedger';
+import InspirationCard from './InspirationCard';
 
 export default function MemberDashboard() {
   const { lang } = useLanguage();
@@ -61,6 +62,8 @@ export default function MemberDashboard() {
         ) : activeTab === 'overview' ? (
           <motion.div key="overview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
             
+            <InspirationCard lang={lang} />
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="glass-card p-6 bg-gradient-to-br from-rose-500/10 to-transparent border-t-2 border-rose-500 hover-lift">
                 <Code size={32} className="text-rose-400 mb-4" />

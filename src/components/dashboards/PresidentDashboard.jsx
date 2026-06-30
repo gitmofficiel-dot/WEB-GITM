@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '../../utils/toast';
+import VisitorAnalytics from './VisitorAnalytics';
+
 export default function PresidentDashboard() {
   const navigate = useNavigate();
   const { lang, t, user, eventRegistrations, setEventRegistrations } = useLanguage();
@@ -430,6 +432,8 @@ export default function PresidentDashboard() {
                     </div>
                   </div>
                 </div>
+
+                <VisitorAnalytics />
               </div>
             )}
 

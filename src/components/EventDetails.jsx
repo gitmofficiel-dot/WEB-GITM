@@ -7,6 +7,9 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from '../utils/toast';
 import { db } from '../config/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import LocationMap from './ui/LocationMap';
+import { sendEmailNotification } from '../utils/emailjs';
+
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
 const IMAGES = [
@@ -72,7 +75,16 @@ export default function EventDetails() {
         registeredAt: serverTimestamp()
       });
 
-      toast.success(txt(lang, 'Registered successfully! 🎉', 'تم تسجيلك بنجاح! 🎉', 'Inscription réussie ! 🎉', '注册成功！🎉'));
+      // Send Email Notification
+      await sendEmailNotification('template_event_registration', {
+        to_email: currentUser.email,
+        to_name: currentUser.name,
+        event_title: ev.title_en || ev.title_ar || 'GITM Event',
+        event_date: ev.date,
+        event_location: ev.location
+      });
+
+      toast.success(txt(lang, 'Registered successfully! An email confirmation has been sent. 🎉', 'تم تسجيلك بنجاح! تم إرسال بريد إلكتروني للتأكيد. 🎉', 'Inscription réussie ! Un email de confirmation a été envoyé. 🎉', '注册成功！已发送确认电子邮件。🎉'));
     } catch (err) {
       console.error(err);
       toast.error(txt(lang, 'Registration failed.', 'فشل التسجيل. حاول مرة أخرى.', 'Échec.', '失败。'));
@@ -189,11 +201,16 @@ export default function EventDetails() {
                       </div>
                     </div>
                   )}
-                  <div className="flex items-start gap-3">
-                    <MapPin className="text-indigo-500 mt-1 shrink-0" />
-                    <div>
-                      <p className="text-sm text-slate-500">{txt(lang, 'Location', 'الموقع', 'Lieu', '位置')}</p>
-                      <p className="font-bold">{viewDetailsEvent.location}</p>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-start gap-3">
+                      <MapPin className="text-indigo-500 mt-1 shrink-0" />
+                      <div>
+                        <p className="text-sm text-slate-500">{txt(lang, 'Location', 'الموقع', 'Lieu', '位置')}</p>
+                        <p className="font-bold">{viewDetailsEvent.location}</p>
+                      </div>
+                    </div>
+                    <div className="h-48 mt-2 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                      <LocationMap locationName={viewDetailsEvent.location} />
                     </div>
                   </div>
                   {viewDetailsEvent.contactDate && (

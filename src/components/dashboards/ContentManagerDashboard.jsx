@@ -16,6 +16,7 @@ import SmartArticleEditor from './SmartArticleEditor';
 import SmartEventEditor from './SmartEventEditor';
 import SmartCourseBuilder from './SmartCourseBuilder';
 import SmartProjectBuilder from './SmartProjectBuilder';
+import VisitorAnalytics from './VisitorAnalytics';
 
 export default function ContentManagerDashboard() {
   const { lang } = useLanguage();
@@ -486,6 +487,7 @@ export default function ContentManagerDashboard() {
   };
 
   const tabs = [
+    { id: 'analytics', icon: BarChart2, label: lang === 'ar' ? 'التحليلات' : 'Analytics' },
     { id: 'articles', icon: PenTool, label: lang === 'ar' ? 'المقالات' : 'Articles' },
     { id: 'events', icon: Calendar, label: lang === 'ar' ? 'إدارة الفعاليات' : 'Events' },
     { id: 'projects', icon: Rocket, label: lang === 'ar' ? 'إدارة المشاريع' : 'Projects' },
@@ -562,6 +564,13 @@ export default function ContentManagerDashboard() {
       <div className="flex-1 w-full min-w-0">
         <AnimatePresence mode="wait">
           <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }} className="space-y-6">
+
+            {/* ═══════════════ ANALYTICS TAB ═══════════════ */}
+            {activeTab === 'analytics' && (
+              <div className="space-y-6">
+                <VisitorAnalytics />
+              </div>
+            )}
 
             {/* ═══════════════ ARTICLES TAB ═══════════════ */}
             {activeTab === 'articles' && (

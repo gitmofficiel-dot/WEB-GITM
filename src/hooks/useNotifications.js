@@ -1,11 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useFirestore } from './useFirestore';
 import { useAuth } from '../context/AuthContext';
+import { toast } from '../utils/toast';
 
 export const useNotifications = () => {
   const { currentUser } = useAuth();
   const { data: notifications, subscribeToDocs, updateDocument, addDocument } = useFirestore('notifications');
   const [unreadCount, setUnreadCount] = useState(0);
+  const [knownIds, setKnownIds] = useState(new Set());
 
   useEffect(() => {
     if (!currentUser) return;
@@ -25,6 +27,27 @@ export const useNotifications = () => {
 
   useEffect(() => {
     setUnreadCount(notifications.filter(n => !n.read).length);
+
+    // Trigger toast for new notifications
+    if (toast && notifications.length > 0) {
+      const newIds = new Set(knownIds);
+      let hasNew = false;
+      
+      notifications.forEach(n => {
+        if (!knownIds.has(n.id)) {
+          newIds.add(n.id);
+          hasNew = true;
+          // Only toast if it's unread and we already had some knownIds (prevents toasting all on initial load)
+          if (!n.read && knownIds.size > 0) {
+            toast.info(n.title || 'New Notification');
+          }
+        }
+      });
+      
+      if (hasNew) {
+        setKnownIds(newIds);
+      }
+    }
   }, [notifications]);
 
   const markAsRead = useCallback(async (notificationId) => {

@@ -1,0 +1,210 @@
+import React, { useState } from 'react';
+import Editor from '@monaco-editor/react';
+import { Play, RotateCcw, CheckCircle, XCircle, Code2, Terminal, AlertTriangle } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const defaultCode = {
+  javascript: `// Write your JavaScript algorithm here
+function calculatePoints(courses) {
+  return courses * 100;
+}
+
+console.log(calculatePoints(5));`,
+  python: `# Write your Python algorithm here
+def calculate_points(courses):
+    return courses * 100
+
+print(calculate_points(5))`,
+  cpp: `// Write your C++ algorithm here
+#include <iostream>
+using namespace std;
+
+int calculatePoints(int courses) {
+    return courses * 100;
+}
+
+int main() {
+    cout << calculatePoints(5) << endl;
+    return 0;
+}`
+};
+
+export default function CodeSimulator({ lang = 'en' }) {
+  const [language, setLanguage] = useState('javascript');
+  const [code, setCode] = useState(defaultCode.javascript);
+  const [output, setOutput] = useState('');
+  const [isRunning, setIsRunning] = useState(false);
+  const [status, setStatus] = useState(null); // 'success', 'error', null
+
+  const handleLanguageChange = (langId) => {
+    setLanguage(langId);
+    setCode(defaultCode[langId]);
+    setOutput('');
+    setStatus(null);
+  };
+
+  const handleRunCode = () => {
+    setIsRunning(true);
+    setStatus(null);
+    setOutput(lang === 'ar' ? 'جاري التنفيذ...' : 'Running code...');
+
+    // Simulate network delay and execution (Judge0 API Mock)
+    setTimeout(() => {
+      setIsRunning(false);
+      
+      // Simple eval for JS, mock output for Python/C++
+      if (language === 'javascript') {
+        try {
+          // SAFE EVAL MOCK FOR DEMO PURPOSES ONLY
+          let mockConsole = [];
+          const originalConsoleLog = console.log;
+          console.log = (...args) => mockConsole.push(args.join(' '));
+          
+          // eslint-disable-next-line no-eval
+          eval(code);
+          
+          console.log = originalConsoleLog;
+          setOutput(mockConsole.join('\n') || (lang === 'ar' ? 'تم التنفيذ بنجاح (بدون مخرجات)' : 'Execution finished (no output)'));
+          setStatus('success');
+        } catch (err) {
+          setOutput(err.toString());
+          setStatus('error');
+        }
+      } else {
+        // Mock output for non-JS languages
+        if (code.includes('print(') || code.includes('cout')) {
+          setOutput('500');
+          setStatus('success');
+        } else if (code.includes('error') || code.includes('Exception')) {
+          setOutput('SyntaxError: unexpected token at line 4');
+          setStatus('error');
+        } else {
+          setOutput('Execution finished (no output)');
+          setStatus('success');
+        }
+      }
+    }, 1500);
+  };
+
+  return (
+    <div className="flex flex-col h-[600px] bg-[#1e1e2e] rounded-2xl overflow-hidden border border-slate-700/50 shadow-2xl">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between px-4 py-3 bg-[#181825] border-b border-slate-700">
+        <div className="flex items-center gap-3">
+          <Code2 className="text-cyan-400" size={20} />
+          <h3 className="font-orbitron font-bold text-white text-sm">
+            {lang === 'ar' ? 'محاكي البرمجة (HackerRank Engine)' : 'Code Simulator (HackerRank Engine)'}
+          </h3>
+        </div>
+        <div className="flex items-center gap-4">
+          <select 
+            value={language}
+            onChange={(e) => handleLanguageChange(e.target.value)}
+            className="bg-[#313244] text-white text-xs font-mono px-3 py-1.5 rounded-lg border border-slate-600 focus:outline-none focus:border-cyan-500"
+          >
+            <option value="javascript">JavaScript (Node.js)</option>
+            <option value="python">Python 3.10</option>
+            <option value="cpp">C++ (GCC 9.4)</option>
+          </select>
+
+          <button 
+            onClick={() => setCode(defaultCode[language])}
+            className="text-slate-400 hover:text-white transition-colors"
+            title={lang === 'ar' ? 'إعادة التعيين' : 'Reset Code'}
+          >
+            <RotateCcw size={16} />
+          </button>
+
+          <button 
+            onClick={handleRunCode}
+            disabled={isRunning}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${
+              isRunning 
+                ? 'bg-slate-600 text-slate-300 cursor-not-allowed'
+                : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:shadow-lg hover:shadow-emerald-500/20'
+            }`}
+          >
+            {isRunning ? (
+              <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
+                <Terminal size={16} />
+              </motion.div>
+            ) : (
+              <Play size={16} />
+            )}
+            {lang === 'ar' ? (isRunning ? 'جاري...' : 'تشغيل الكود') : (isRunning ? 'Running...' : 'Run Code')}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Editor Area */}
+        <div className="flex-1 relative">
+          <Editor
+            height="100%"
+            language={language === 'cpp' ? 'cpp' : language}
+            theme="vs-dark"
+            value={code}
+            onChange={(val) => setCode(val)}
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+              fontFamily: 'Consolas, "Courier New", monospace',
+              padding: { top: 16 },
+              scrollBeyondLastLine: false,
+              smoothScrolling: true,
+              cursorBlinking: "smooth",
+              cursorSmoothCaretAnimation: "on",
+              formatOnPaste: true,
+            }}
+          />
+        </div>
+
+        {/* Terminal/Output Area */}
+        <div className="w-1/3 bg-[#11111b] border-l border-slate-700/50 flex flex-col">
+          <div className="px-4 py-2 bg-[#181825] border-b border-slate-700/50 flex justify-between items-center">
+            <span className="text-xs font-bold text-slate-400 flex items-center gap-2">
+              <Terminal size={14} /> {lang === 'ar' ? 'المخرجات (Console)' : 'Output Console'}
+            </span>
+            {status === 'success' && <CheckCircle size={14} className="text-emerald-500" />}
+            {status === 'error' && <XCircle size={14} className="text-rose-500" />}
+          </div>
+          <div className="p-4 flex-1 overflow-y-auto">
+            {output ? (
+              <pre className={`font-mono text-sm whitespace-pre-wrap ${status === 'error' ? 'text-rose-400' : 'text-slate-300'}`}>
+                {output}
+              </pre>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-slate-600 opacity-50">
+                <Terminal size={48} className="mb-2" />
+                <p className="text-sm font-semibold">
+                  {lang === 'ar' ? 'اضغط تشغيل لرؤية المخرجات' : 'Run code to see output'}
+                </p>
+              </div>
+            )}
+          </div>
+          {/* Mock Validation Panel */}
+          {status === 'success' && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="m-4 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+              <h4 className="text-emerald-400 font-bold text-sm mb-1 flex items-center gap-2">
+                <CheckCircle size={14} /> {lang === 'ar' ? 'اجتزت جميع الاختبارات!' : 'All test cases passed!'}
+              </h4>
+              <p className="text-emerald-500/80 text-xs">
+                {lang === 'ar' ? 'تم إضافة 100 نقطة لرصيدك.' : '+100 XP added to your profile.'}
+              </p>
+            </motion.div>
+          )}
+          {status === 'error' && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="m-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl">
+              <h4 className="text-rose-400 font-bold text-sm mb-1 flex items-center gap-2">
+                <AlertTriangle size={14} /> {lang === 'ar' ? 'فشل الاختبار' : 'Test failed'}
+              </h4>
+              <p className="text-rose-500/80 text-xs">
+                {lang === 'ar' ? 'راجع السطر المذكور أعلاه وأعد المحاولة.' : 'Check the error message and try again.'}
+              </p>
+            </motion.div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

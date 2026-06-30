@@ -4,6 +4,7 @@ import { Code, Github, ExternalLink, Cpu, Database, Layers, Loader2 } from 'luci
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../config/firebase';
 import { collection, getDocs, query } from 'firebase/firestore';
+import LiveGithubStats from './ui/LiveGithubStats';
 
 const ICON_MAP = {
   Database,
@@ -158,6 +159,11 @@ export default function TechProjectsPage() {
                     <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
                       <div className="h-full bg-teal-500" style={{ width: `${proj.progress || 0}%` }} />
                     </div>
+                  </div>
+                  
+                  {/* GitHub Stats */}
+                  <div className="mb-4">
+                    <LiveGithubStats repoUrl={proj.githubUrl || proj.github} />
                   </div>
 
                   <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-700/50">

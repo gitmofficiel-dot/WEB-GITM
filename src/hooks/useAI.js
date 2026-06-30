@@ -8,12 +8,21 @@ export const useAI = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const callOpenRouter = async (systemPrompt, userPrompt, jsonFormat = false) => {
+  const MODEL_ROUTER = {
+    'translation': 'qwen/qwen3-coder:free', // Fast and good at languages
+    'generation': 'qwen/qwen3-coder:free', // Cost-effective general text
+    'complex_json': 'openai/gpt-oss-120b:free', // Excellent at reasoning and JSON
+    'moderation': 'openai/gpt-oss-120b:free', // Deep reasoning
+    'default': 'openai/gpt-oss-120b:free'
+  };
+
+  const callOpenRouter = async (systemPrompt, userPrompt, jsonFormat = false, taskType = 'default') => {
     setLoading(true);
     setError(null);
     try {
+      const selectedModel = MODEL_ROUTER[taskType] || MODEL_ROUTER.default;
       const response = await openRouterClient.chat.completions.create({
-        model: 'openai/gpt-4o',
+        model: selectedModel,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
@@ -36,36 +45,36 @@ export const useAI = () => {
     Additional context: ${context}
     Please respond professionally and accurately.`;
     
-    return await callOpenRouter(systemPrompt, prompt);
+    return await callOpenRouter(systemPrompt, prompt, false, 'generation');
   }, []);
 
   const translateText = useCallback(async (text) => {
     const systemPrompt = 'You are an expert translator. The user will give you text. Translate it into 4 languages: Arabic, English, French, and Chinese. Return a JSON object with strictly these keys: "ar", "en", "fr", "zh". DO NOT return markdown blocks, only the raw JSON.';
     
-    const result = await callOpenRouter(systemPrompt, text, true);
+    const result = await callOpenRouter(systemPrompt, text, true, 'translation');
     return JSON.parse(result);
   }, []);
 
   const summarize = useCallback(async (text) => {
     const systemPrompt = 'Summarize the following text concisely in the same language it was written. Highlight the main points.';
-    return await callOpenRouter(systemPrompt, text);
+    return await callOpenRouter(systemPrompt, text, false, 'generation');
   }, []);
 
   const generateSEO = useCallback(async (title, content) => {
     const systemPrompt = 'You are an SEO expert. Given the title and content of an article, return a JSON object with "metaDescription" (max 160 chars) and "tags" (array of 5-8 relevant keywords). DO NOT return markdown blocks, only raw JSON.';
-    const result = await callOpenRouter(systemPrompt, `Title: ${title}\nContent: ${content}`, true);
+    const result = await callOpenRouter(systemPrompt, `Title: ${title}\nContent: ${content}`, true, 'complex_json');
     return JSON.parse(result);
   }, []);
 
   const moderateContent = useCallback(async (content) => {
     const systemPrompt = 'You are a content moderator. Analyze the provided text for inappropriate content, hate speech, spam, or PII. Return a JSON object with "isApproved" (boolean), "reason" (string, if rejected), and "flaggedWords" (array of strings). DO NOT return markdown blocks, only raw JSON.';
-    const result = await callOpenRouter(systemPrompt, content, true);
+    const result = await callOpenRouter(systemPrompt, content, true, 'moderation');
     return JSON.parse(result);
   }, []);
 
   const generateQuiz = useCallback(async (topic, difficulty = 'intermediate', numQuestions = 5) => {
     const systemPrompt = `You are an expert course creator. Generate a multiple-choice quiz about "${topic}" at a "${difficulty}" level with ${numQuestions} questions. Return a JSON object with a "questions" array. Each question object should have: "question" (string), "options" (array of 4 strings), "correctAnswerIndex" (integer 0-3), and "explanation" (string). DO NOT return markdown blocks, only raw JSON.`;
-    const result = await callOpenRouter(systemPrompt, `Generate quiz`, true);
+    const result = await callOpenRouter(systemPrompt, `Generate quiz`, true, 'complex_json');
     return JSON.parse(result);
   }, []);
 

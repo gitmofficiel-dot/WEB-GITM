@@ -7,6 +7,7 @@ import {
   Users, BookOpen, Sparkles, FolderGit2, Activity, Search
 } from 'lucide-react';
 import NotificationBell from './ui/NotificationBell';
+import GlobalSearch from './ui/GlobalSearch';
 
 const Navbar = () => {
   const { 
@@ -97,6 +98,7 @@ const Navbar = () => {
 
             {/* Right Controls */}
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
+              <GlobalSearch />
               
               {/* Theme Toggle */}
               <button
