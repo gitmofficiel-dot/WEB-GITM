@@ -4,10 +4,9 @@ import { useLanguage } from '../context/LanguageContext';
 import { 
   Menu, X, Sun, Moon, Globe, ChevronDown, User, LogIn, 
   LayoutDashboard, Home, Newspaper, Image, Calendar, Code2,
-  Users, BookOpen, Sparkles, FolderGit2, Activity, Search
+  Users, BookOpen, Sparkles, FolderGit2, Activity
 } from 'lucide-react';
 import NotificationBell from './ui/NotificationBell';
-import GlobalSearch from './ui/GlobalSearch';
 
 const Navbar = () => {
   const { 
@@ -97,27 +96,26 @@ const Navbar = () => {
             </div>
 
             {/* Right Controls */}
-            <div className="flex items-center space-x-2 rtl:space-x-reverse">
-              <GlobalSearch />
+            <div className="flex items-center space-x-1 sm:space-x-2 rtl:space-x-reverse">
               
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-xl hover:bg-cyan-100 dark:hover:bg-[#e0fcfc]/5 text-slate-500 dark:text-cyber-muted hover:text-[#1e3a5f] dark:hover:text-white transition-all"
+                className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-all"
                 title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
               >
-                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
               </button>
 
               {/* Language Selector */}
               <div className="relative">
                 <button
                   onClick={() => { setLangDropdown(!langDropdown); setProfileDropdown(false); }}
-                  className="flex items-center space-x-1.5 rtl:space-x-reverse px-2.5 py-2 rounded-xl hover:bg-cyan-100 dark:hover:bg-[#e0fcfc]/5 text-slate-500 dark:text-cyber-muted hover:text-[#1e3a5f] dark:hover:text-white transition-all text-xs font-semibold"
+                  className="flex items-center space-x-1 rtl:space-x-reverse p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-all font-bold text-xs uppercase"
+                  title="Change Language"
                 >
-                  <Globe size={14} />
-                  <span className="hidden sm:inline">{langLabels[lang]}</span>
-                  <ChevronDown size={12} className={`transition-transform ${langDropdown ? 'rotate-180' : ''}`} />
+                  <Globe size={18} />
+                  <span className="hidden sm:inline-block ml-1">{lang}</span>
                 </button>
                 
                 {langDropdown && (

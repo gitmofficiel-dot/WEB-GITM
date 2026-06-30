@@ -8,6 +8,7 @@ import ParticleBackground from './components/ParticleBackground';
 import AIChatBot from './components/AIChatBot';
 import Footer from './components/Footer';
 import ToastContainer from './components/ui/ToastContainer';
+import GlobalSearch from './components/ui/GlobalSearch';
 
 // Lazy loading all major components for better performance
 const Home = lazy(() => import('./components/Home'));
@@ -122,6 +123,7 @@ const AppContent = () => {
       {/* Main App Layout */}
       <div className="relative z-10 flex flex-col min-h-screen">
         {!isTheaterMode && <Navbar />}
+        {!isTheaterMode && <GlobalSearch />}
         
         {/* Main Content Area */}
         <main className={`flex-1 ${isTheaterMode ? 'w-full h-screen overflow-hidden' : 'mt-20 p-4 md:p-6 pb-24 max-w-7xl mx-auto w-full'}`}>

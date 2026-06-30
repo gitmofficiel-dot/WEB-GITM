@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { ChevronRight, Globe, Zap, Users, ShieldCheck, Target, BrainCircuit, Activity } from 'lucide-react';
+import { ChevronRight, Globe, Zap, Users, ShieldCheck, Target, BrainCircuit, Activity, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Hero() {
@@ -62,6 +62,27 @@ export default function Hero() {
             ? 'مجموعة بحث وتطوير مغربية تسعى لتدريب وتأهيل جيل جديد من المهندسين والمبتكرين في مجالات الذكاء الاصطناعي، الروبوتيك، والأنظمة المدمجة.' 
             : 'A Moroccan R&D group dedicated to training and empowering a new generation of engineers and innovators in AI, Robotics, and Embedded Systems.'}
         </motion.p>
+
+        {/* Global Search Bar (Fixed in Hero) */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="w-full max-w-2xl mx-auto mb-16 relative z-30"
+        >
+          <div 
+            onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))}
+            className="flex items-center gap-3 w-full p-4 rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-cyan-500/30 hover:border-cyan-500 dark:hover:border-cyan-400 shadow-xl cursor-text transition-all group"
+          >
+            <Search className="text-slate-400 group-hover:text-cyan-500 transition-colors" size={24} />
+            <span className="flex-1 text-left rtl:text-right text-slate-500 text-lg">
+              {lang === 'ar' ? 'ابحث عن أي شيء في GITM...' : 'Search anything in GITM...'}
+            </span>
+            <kbd className="px-3 py-1 bg-slate-200 dark:bg-white/10 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-white/20 hidden sm:block">
+              Ctrl + K
+            </kbd>
+          </div>
+        </motion.div>
 
         {/* Call to Action Buttons */}
         <motion.div 

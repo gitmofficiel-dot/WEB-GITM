@@ -64,15 +64,9 @@ export default function GlobalSearch() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+        className="fixed bottom-6 right-6 rtl:right-auto rtl:left-6 z-[90] flex items-center justify-center w-14 h-14 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white shadow-xl shadow-cyan-500/30 hover:scale-105 transition-all duration-300 group"
       >
-        <Search size={16} />
-        <span className="text-sm font-medium hidden sm:inline">
-          {lang === 'ar' ? 'بحث ذكي...' : 'Smart Search...'}
-        </span>
-        <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-sans font-semibold bg-slate-200 dark:bg-white/10 rounded border border-slate-300 dark:border-white/20">
-          Ctrl+K
-        </kbd>
+        <Search size={24} className="group-hover:rotate-12 transition-transform" />
       </button>
 
       <AnimatePresence>

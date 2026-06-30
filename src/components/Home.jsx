@@ -9,7 +9,7 @@ import AIFeatures from './AIFeatures';
 
 const Home = () => {
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full gap-24 py-12">
       <Hero />
       <PartnersSlider />
       <AIFeatures />
