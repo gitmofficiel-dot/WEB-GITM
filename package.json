@@ -30,6 +30,7 @@
     "react-leaflet": "^5.0.0",
     "react-quill": "^2.0.0",
     "react-router-dom": "^7.18.0",
+    "recharts": "^3.9.1",
     "three": "^0.184.0"
   },
   "devDependencies": {
