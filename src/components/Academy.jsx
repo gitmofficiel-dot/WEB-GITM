@@ -253,46 +253,62 @@ export default function Academy() {
             </div>
           )
         ) : (
-                <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white mb-4 line-clamp-2">
-                  {lang === 'ar' ? course.title_ar : course.title_en}
-                </h3>
-                <p className="text-slate-500 dark:text-slate-400 mb-8 h-20 line-clamp-3 flex-1">
-                  {lang === 'ar' ? course.description_ar : course.description_en}
-                </p>
-                <button 
-                  onClick={() => startCourse(course)}
-                  className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-3 rounded-xl font-bold flex items-center justify-center gap-2 group-hover:bg-cyan-500 group-hover:text-white transition-all mt-auto"
-                >
-                  <PlayCircle size={20} /> {lang === 'ar' ? 'ابدأ المسار' : 'Start Track'}
-                </button>
-              </div>
-            ))}
-
-            {/* Locked Course Example - visually appealing padding */}
-            <div className="glass-card rounded-3xl p-8 border border-slate-200 dark:border-slate-800 opacity-60 flex flex-col">
-              <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-6 shrink-0">
-                <Lock size={32} />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-400 mb-4">{lang === 'ar' ? 'الروبوتيك المتقدم' : 'Advanced Robotics'}</h3>
-              <p className="text-slate-500 mb-8 h-20 flex-1">
-                {lang === 'ar' ? 'قريباً: تعلم برمجة الروبوتات باستخدام ROS2.' : 'Coming soon: Learn robot programming with ROS2.'}
+          /* Library Tab */
+          booksLoading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="w-12 h-12 text-indigo-400 animate-spin mb-4" />
+              <p className="text-indigo-300 font-orbitron animate-pulse">
+                {lang === 'ar' ? 'جاري البحث عن الكتب...' : 'Searching for books...'}
               </p>
-                </button>
-              </div>
             </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-8 flex justify-center w-full">
-                <Pagination 
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                />
-              </div>
-            )}
+          ) : books.length === 0 ? (
+            <div className="text-center py-20 bg-slate-900/50 rounded-2xl border border-slate-700/50">
+              <BookOpen className="w-16 h-16 text-slate-500 mx-auto mb-4 opacity-50" />
+              <p className="text-slate-400 text-lg">{lang === 'ar' ? 'لا توجد كتب مطابقة لبحثك.' : 'No books found for your search.'}</p>
             </div>
-          </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+              {books.map((book, idx) => {
+                const info = book.volumeInfo;
+                const thumbnail = info.imageLinks?.thumbnail || 'https://via.placeholder.com/150x200?text=No+Cover';
+                return (
+                  <motion.div
+                    key={book.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="glass-card hover-lift card-3d rounded-2xl overflow-hidden border border-slate-700/50 hover:border-indigo-500/50 group flex flex-col bg-slate-900/50"
+                  >
+                    <div className="h-56 bg-slate-800 flex items-center justify-center p-4 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent z-10" />
+                      <img src={thumbnail} alt={info.title} className="max-h-full max-w-full object-contain relative z-0 group-hover:scale-110 transition-transform duration-500" />
+                    </div>
+                    <div className="p-5 flex flex-col flex-1 relative z-20 -mt-6 bg-slate-900/90 backdrop-blur-md rounded-t-2xl border-t border-slate-700/50">
+                      <h3 className="text-lg font-bold text-white mb-1 line-clamp-2 group-hover:text-indigo-300 transition-colors" title={info.title}>
+                        {info.title}
+                      </h3>
+                      <p className="text-indigo-400 text-xs font-medium mb-3 truncate">
+                        {info.authors ? info.authors.join(', ') : 'Unknown Author'}
+                      </p>
+                      <p className="text-slate-400 text-xs line-clamp-3 mb-4 flex-1">
+                        {info.description || (lang === 'ar' ? 'لا يوجد وصف متاح لهذا الكتاب.' : 'No description available for this book.')}
+                      </p>
+                      <a 
+                        href={info.previewLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-2.5 bg-indigo-500/20 hover:bg-indigo-500 text-indigo-300 hover:text-white border border-indigo-500/30 rounded-xl font-bold transition-all text-center text-sm flex items-center justify-center gap-2"
+                      >
+                        <Search size={14} />
+                        {lang === 'ar' ? 'تصفح الكتاب' : 'Preview Book'}
+                      </a>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )
         )}
       </div>
     );

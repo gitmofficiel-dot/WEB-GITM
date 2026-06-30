@@ -642,7 +642,6 @@ export default function ContentManagerDashboard() {
                       ))}
                     </div>
                   )}
-                  )}
                 </div>
                 </>
                 )}
