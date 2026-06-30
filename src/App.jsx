@@ -2,6 +2,7 @@ import React, { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { useAuth } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 import Navbar from './components/Navbar';
 import ParticleBackground from './components/ParticleBackground';
 import AIChatBot from './components/AIChatBot';
@@ -22,6 +23,8 @@ const Academy = lazy(() => import('./components/Academy'));
 const ClassroomTheater = lazy(() => import('./components/academy/ClassroomTheater'));
 const MemberProfiles = lazy(() => import('./components/MemberProfiles'));
 const PublicProfile = lazy(() => import('./components/PublicProfile'));
+const About = lazy(() => import('./components/About'));
+const ProjectsHub = lazy(() => import('./components/ProjectsHub'));
 const AuthForms = lazy(() => import('./components/AuthForms'));
 const ForgotPassword = lazy(() => import('./components/ForgotPassword'));
 const VerifyCertificate = lazy(() => import('./components/VerifyCertificate'));
@@ -50,7 +53,6 @@ const LoadingFallback = () => (
 );
 
 const AppContent = () => {
-  const { view, setView } = useLanguage();
   const { currentUser } = useAuth();
   const location = useLocation();
   
@@ -75,7 +77,7 @@ const AppContent = () => {
   const renderRoutes = () => {
     return (
       <Routes>
-        <Route path="/" element={<Home setView={setView} />} />
+        <Route path="/" element={<Home />} />
         <Route path="/news" element={<NewsPage />} />
         <Route path="/news/:id" element={<NewsDetails />} />
         <Route path="/news/global/article" element={<GlobalNewsDetails />} />
@@ -87,8 +89,10 @@ const AppContent = () => {
         <Route path="/academy" element={<Academy />} />
         <Route path="/academy/course/:id" element={<ClassroomTheater />} />
         <Route path="/about" element={<MemberProfiles />} />
+        <Route path="/about-us" element={<About />} />
+        <Route path="/projects-hub" element={<ProjectsHub />} />
         <Route path="/profile/:id" element={<PublicProfile />} />
-        <Route path="/project-details" element={<ProjectDetails />} />
+        <Route path="/project-details/:id" element={<ProjectDetails />} />
         <Route path="/virtual-lab" element={<VirtualLab />} />
         <Route path="/collab-board" element={<CollaborationBoard />} />
         <Route path="/login" element={<AuthForms initialMode="login" />} />
@@ -109,7 +113,7 @@ const AppContent = () => {
       <div className="fixed inset-0 z-0 bg-gradient-to-br from-transparent to-teal-50/50 dark:to-cyan-900/10 pointer-events-none" />
       
       {/* 3D Particle Background - Only shown on home page or behind transparent layers */}
-      {view === 'home' && (
+      {location.pathname === '/' && (
         <div className="fixed inset-0 z-0">
           <ParticleBackground />
         </div>
@@ -141,7 +145,9 @@ const AppContent = () => {
 function App() {
   return (
     <LanguageProvider>
-      <AppContent />
+      <NotificationProvider>
+        <AppContent />
+      </NotificationProvider>
     </LanguageProvider>
   );
 }

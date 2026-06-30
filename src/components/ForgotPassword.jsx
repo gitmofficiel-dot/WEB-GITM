@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Mail, KeyRound, CheckCircle } from 'lucide-react';
 
 export default function ForgotPassword() {
-  const { lang, setView } = useLanguage();
+  const { lang } = useLanguage();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
@@ -23,8 +24,8 @@ export default function ForgotPassword() {
       >
         <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/20 dark:bg-purple-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
         
-        <button onClick={() => setView('login')} className="mb-6 flex items-center text-slate-500 hover:text-blue-600 transition text-sm font-medium relative z-10">
-          <ArrowLeft className="w-4 h-4 mr-1 rtl:ml-1 rtl:rotate-180" /> {lang === 'ar' ? 'العودة لتسجيل الدخول' : 'Back to Login'}
+        <button onClick={() => navigate('/login')} className="mb-6 flex items-center text-slate-500 hover:text-blue-600 transition text-sm font-medium relative z-10">
+          <ArrowRight className="w-4 h-4 mr-2 rtl:ml-2 rtl:mr-0 rtl:rotate-180" /> {lang === 'ar' ? 'العودة لتسجيل الدخول' : 'Back to Login'}
         </button>
 
         <div className="relative z-10 text-center mb-8">

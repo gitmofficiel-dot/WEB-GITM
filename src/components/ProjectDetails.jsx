@@ -1,10 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Cpu, Download, PlayCircle, Code2, Users, FileText, CheckCircle2 } from 'lucide-react';
 
 export default function ProjectDetails() {
-  const { lang, setView, selectedProfileId } = useLanguage();
+  const { lang, selectedProfileId } = useLanguage();
+  const navigate = useNavigate();
   // Using a mock project, in a real scenario we'd pass an ID via context or router.
   
   const project = {
@@ -26,7 +28,7 @@ export default function ProjectDetails() {
     <div className="min-h-screen pt-24 pb-20 bg-cyan-50 dark:bg-slate-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <button onClick={() => setView('projects')} className="mb-6 flex items-center text-slate-500 hover:text-blue-600 transition font-medium">
+        <button onClick={() => navigate('/projects-hub')} className="mb-6 flex items-center text-slate-500 hover:text-blue-600 transition font-medium">
           <ArrowLeft className="w-5 h-5 mr-2 rtl:ml-2 rtl:rotate-180" /> {lang === 'ar' ? 'العودة للمشاريع' : 'Back to Projects'}
         </button>
 

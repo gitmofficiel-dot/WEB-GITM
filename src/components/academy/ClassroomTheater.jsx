@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   PlayCircle, CheckCircle, ChevronDown, ChevronRight, 
   FileText, Code, Download, Image as ImageIcon, ZoomIn, Loader2, ArrowLeft, Cpu,
-  Activity, ShieldAlert
+  Activity, ShieldAlert, MessageSquare, Bot, Send
 } from 'lucide-react';
 import { db } from '../../config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -118,6 +118,7 @@ const ClassroomTabs = ({ lesson, courseDescription }) => {
 
   const tabs = [
     { id: 'overview', icon: FileText, label: lang === 'ar' ? 'الوصف' : 'Overview' },
+    { id: 'ai-tutor', icon: Bot, label: lang === 'ar' ? 'المعلم الذكي' : 'AI Tutor' },
     { id: 'downloads', icon: Download, label: lang === 'ar' ? 'المرفقات' : 'Downloads' },
     { id: 'visuals', icon: ImageIcon, label: lang === 'ar' ? 'المخططات' : 'Visuals' },
     { id: 'lab', icon: Cpu, label: lang === 'ar' ? 'المختبر السحابي' : 'Hardware Lab' },
@@ -160,6 +161,48 @@ const ClassroomTabs = ({ lesson, courseDescription }) => {
                 ) : (
                    <p className="text-slate-500">{lang === 'ar' ? 'لا يوجد وصف متاح.' : 'No overview available.'}</p>
                 )}
+              </div>
+            )}
+
+            {activeTab === 'ai-tutor' && (
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 h-[400px] flex flex-col overflow-hidden relative">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-5 pointer-events-none">
+                  <Bot size={200} />
+                </div>
+                <div className="p-4 bg-teal-500/10 border-b border-teal-500/20 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-teal-500 text-white flex items-center justify-center">
+                    <Bot size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-[#1e3a5f] dark:text-white">GITM AI Tutor</h4>
+                    <p className="text-xs text-teal-600 dark:text-teal-400 font-medium">{lang === 'ar' ? 'اسألني أي شيء عن هذا الدرس' : 'Ask me anything about this lesson'}</p>
+                  </div>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {/* Mock message from AI */}
+                  <div className="flex gap-3 max-w-[85%]">
+                    <div className="w-8 h-8 shrink-0 rounded-full bg-teal-500 text-white flex items-center justify-center">
+                      <Bot size={16} />
+                    </div>
+                    <div className="bg-white dark:bg-slate-700 p-3 rounded-2xl rounded-tl-sm border border-slate-200 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-200 shadow-sm">
+                      {lang === 'ar' ? `مرحباً! أنا مساعدك الذكي لدرس "${lesson?.title}". هل لديك أي استفسارات حول المحتوى؟` : `Hello! I am your AI assistant for the lesson "${lesson?.title}". Do you have any questions about the content?`}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
+                  <div className="relative flex items-center">
+                    <input 
+                      type="text" 
+                      placeholder={lang === 'ar' ? 'اكتب سؤالك هنا...' : 'Type your question here...'} 
+                      className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-700 dark:text-slate-200 text-sm"
+                    />
+                    <button className="absolute right-2 text-white bg-teal-500 hover:bg-teal-600 p-2 rounded-lg transition-colors">
+                      <Send size={16} className={lang === 'ar' ? 'rotate-180' : ''} />
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 

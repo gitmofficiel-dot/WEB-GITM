@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { ToggleRight, ToggleLeft, Key, UserCheck, Minimize2, Settings } from 'lucide-react';
 
 const DemoController = () => {
-  const { lang, t, activeDashboardRole, setActiveDashboardRole, view, setView, loginUser } = useLanguage();
+  const { lang, t, activeDashboardRole, setActiveDashboardRole, loginUser } = useLanguage();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const roles = [
@@ -19,6 +22,7 @@ const DemoController = () => {
 
   const handleRoleSwitch = (roleId, email, name) => {
     loginUser(email, roleId, name);
+    navigate('/dashboard');
   };
 
   if (isCollapsed) {
@@ -53,7 +57,7 @@ const DemoController = () => {
 
       <div className="space-y-1.5">
         {roles.map((role) => {
-          const isActive = view === 'dashboard' && activeDashboardRole === role.id;
+          const isActive = location.pathname.includes('/dashboard') && activeDashboardRole === role.id;
           return (
             <button
               key={role.id}

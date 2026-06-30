@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { 
   Menu, X, Sun, Moon, Globe, ChevronDown, User, LogIn, 
   LayoutDashboard, Home, Newspaper, Image, Calendar, Code2,
-  Users, BookOpen, Sparkles, FolderGit2, Activity
+  Users, BookOpen, Sparkles, FolderGit2, Activity, Search
 } from 'lucide-react';
+import NotificationBell from './ui/NotificationBell';
 
 const Navbar = () => {
   const { 
     lang, changeLanguage, t, languages, theme, toggleTheme, 
-    view, setView, user, logoutUser 
+    user, logoutUser 
   } = useLanguage();
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = location.pathname;
   
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -25,17 +31,17 @@ const Navbar = () => {
 
   useEffect(() => {
     setMobileOpen(false);
-  }, [view]);
+  }, [currentPath]);
 
   const navItems = [
     { id: 'home', icon: Home, label: { ar: 'الالرئيسية', en: 'Home', fr: 'Accueil', zh: '首页' } },
     { id: 'news', icon: Newspaper, label: { ar: 'الأخبار', en: 'News', fr: 'Actualités', zh: '新闻' } },
     { id: 'academy', icon: BookOpen, label: { ar: 'الأكاديمية', en: 'Academy', fr: 'Académie', zh: '学院' } },
-    { id: 'projects', icon: FolderGit2, label: { ar: 'المشاريع', en: 'Projects', fr: 'Projets', zh: '项目' } },
-    { id: 'gallery', icon: Image, label: { ar: 'المعرض', en: 'Gallery', fr: 'Galerie', zh: '画廊' } },
-    { id: 'events', icon: Calendar, label: { ar: 'الفعاليات', en: 'Events', fr: 'Événements', zh: '活动' } },
-    { id: 'about', icon: Users, label: { ar: 'من نحن', en: 'About Us', fr: 'À propos', zh: '关于我们' } },
-    { id: 'ai-features', icon: Sparkles, label: { ar: 'الذكاء الاصطناعي', en: 'AI Features', fr: 'IA', zh: 'AI功能' } },
+    { id: 'projects-hub', path: '/projects-hub', icon: FolderGit2, label: { ar: 'المشاريع', en: 'Projects', fr: 'Projets', zh: '项目' } },
+    { id: 'gallery', path: '/gallery', icon: Image, label: { ar: 'المعرض', en: 'Gallery', fr: 'Galerie', zh: '画廊' } },
+    { id: 'events', path: '/events', icon: Calendar, label: { ar: 'الفعاليات', en: 'Events', fr: 'Événements', zh: '活动' } },
+    { id: 'about-us', path: '/about-us', icon: Users, label: { ar: 'من نحن', en: 'About Us', fr: 'À propos', zh: '关于我们' } },
+    { id: 'ai-features', path: '/ai-features', icon: Sparkles, label: { ar: 'الذكاء الاصطناعي', en: 'AI Features', fr: 'IA', zh: 'AI功能' } },
   ];
 
   const langLabels = { ar: 'العربية', en: 'English', fr: 'Français', zh: '中文' };
@@ -52,7 +58,7 @@ const Navbar = () => {
             
             {/* Logo */}
             <button 
-              onClick={() => setView('home')}
+              onClick={() => navigate('/')}
               className="flex items-center space-x-2 rtl:space-x-reverse group"
             >
               <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center shadow-glow-cyan group-hover:scale-110 transition-transform duration-300 bg-black/50 backdrop-blur-sm border border-cyan-500/20">
@@ -70,11 +76,12 @@ const Navbar = () => {
             <div className="hidden lg:flex items-center space-x-1 rtl:space-x-reverse">
               {navItems.map(item => {
                 const Icon = item.icon;
-                const isActive = view === item.id || (item.id === 'home' && view === 'home');
+                const itemPath = item.path || `/${item.id}`;
+                const isActive = currentPath === itemPath || (item.id === 'home' && currentPath === '/');
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setView(item.id)}
+                    onClick={() => navigate(itemPath)}
                     className={`flex items-center space-x-1.5 rtl:space-x-reverse px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-300 ${
                       isActive
                         ? 'bg-teal-500/10 dark:bg-[#00E5FF]/10 text-teal-600 dark:text-[#00E5FF] border border-teal-500/20 dark:border-[#00E5FF]/20'
@@ -134,6 +141,8 @@ const Navbar = () => {
                 )}
               </div>
 
+              {user && <NotificationBell />}
+
               {/* Auth / Profile */}
               {user ? (
                 <div className="relative">
@@ -162,7 +171,11 @@ const Navbar = () => {
                           <span className="text-[9px] font-mono text-teal-500 dark:text-[#00E5FF] uppercase font-bold mt-1 block">{user.role}</span>
                         </div>
                         <button
-                          onClick={() => { setView('dashboard'); setProfileDropdown(false); }}
+                          onClick={() => { 
+                            const secureHash = Math.random().toString(36).substring(2, 10);
+                            navigate(`/dashboard/${secureHash}`); 
+                            setProfileDropdown(false); 
+                          }}
                           className="w-full px-4 py-2.5 text-xs font-semibold text-left rtl:text-right text-slate-600 dark:text-cyber-muted hover:bg-cyan-50 dark:hover:bg-[#e0fcfc]/5 flex items-center space-x-2 rtl:space-x-reverse"
                         >
                           <LayoutDashboard size={14} />
@@ -181,7 +194,7 @@ const Navbar = () => {
                 </div>
               ) : (
                 <button
-                  onClick={() => setView('login')}
+                  onClick={() => navigate('/login')}
                   className="flex items-center space-x-1.5 rtl:space-x-reverse px-3 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-teal-500 to-cyan-500 dark:from-[#00E5FF] dark:to-[#00FF87] text-white dark:text-black hover:shadow-lg transition-all hover:-translate-y-0.5"
                 >
                   <LogIn size={14} />
@@ -216,11 +229,12 @@ const Navbar = () => {
             <nav className="space-y-1">
               {navItems.map(item => {
                 const Icon = item.icon;
-                const isActive = view === item.id;
+                const itemPath = item.path || `/${item.id}`;
+                const isActive = currentPath === itemPath || (item.id === 'home' && currentPath === '/');
                 return (
                   <button
                     key={item.id}
-                    onClick={() => { setView(item.id); setMobileOpen(false); }}
+                    onClick={() => { navigate(itemPath); setMobileOpen(false); }}
                     className={`w-full flex items-center space-x-3 rtl:space-x-reverse px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                       isActive
                         ? 'bg-teal-500/10 dark:bg-[#00E5FF]/10 text-teal-600 dark:text-[#00E5FF] border border-teal-500/20 dark:border-[#00E5FF]/20'

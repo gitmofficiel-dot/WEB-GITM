@@ -4,6 +4,7 @@ import { Camera, X, ZoomIn, MapPin, Calendar, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../config/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import Pagination from './ui/Pagination';
 
 export default function GalleryPage() {
   const { lang } = useLanguage();
@@ -11,6 +12,8 @@ export default function GalleryPage() {
   const [filter, setFilter] = useState('all');
   const [gallery, setGallery] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     const fetchGallery = async () => {
@@ -40,6 +43,8 @@ export default function GalleryPage() {
   ];
 
   const filteredGallery = filter === 'all' ? gallery : gallery.filter(item => item.category === filter);
+  const totalPages = Math.ceil(filteredGallery.length / itemsPerPage);
+  const currentGallery = filteredGallery.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const getLocalized = (obj, field, l) => {
     if (!obj) return '';
@@ -100,7 +105,7 @@ export default function GalleryPage() {
           {filters.map((f) => (
             <button
               key={f.id}
-              onClick={() => setFilter(f.id)}
+              onClick={() => { setFilter(f.id); setCurrentPage(1); }}
               className={`px-5 py-2 rounded-full font-medium transition-all duration-300 ${
                 filter === f.id 
                   ? 'bg-teal-500 text-white shadow-[0_0_15px_rgba(13,148,136,0.5)]' 
@@ -120,7 +125,7 @@ export default function GalleryPage() {
               {lang === 'ar' ? 'جاري التحميل...' : lang === 'fr' ? 'Chargement...' : 'Loading...'}
             </p>
           </div>
-        ) : gallery.length === 0 ? (
+        ) : currentGallery.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -132,7 +137,7 @@ export default function GalleryPage() {
         ) : (
           <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence>
-              {filteredGallery.map((item) => (
+              {currentGallery.map((item) => (
                 <motion.div
                   layout
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -164,6 +169,17 @@ export default function GalleryPage() {
               ))}
             </AnimatePresence>
           </motion.div>
+        )}
+
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <div className="mt-12 flex justify-center">
+            <Pagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         )}
 
         {/* Lightbox */}

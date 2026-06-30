@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { Mail, Lock, User, LogIn, UserPlus, ArrowRight, Github, Link as LinkIcon, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -8,9 +9,10 @@ import { useAuth } from '../context/AuthContext';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
-export default function AuthForms({ initialMode = 'login', setView }) {
+export default function AuthForms({ initialMode = 'login' }) {
   const { lang, loginUser, registerUser } = useLanguage();
   const { login, signup } = useAuth();
+  const navigate = useNavigate();
   const [mode, setMode] = useState(initialMode); // 'login' or 'register'
   
   const [email, setEmail] = useState('');
@@ -54,7 +56,8 @@ export default function AuthForms({ initialMode = 'login', setView }) {
           toast.success(lang === 'ar' ? 'تم إنشاء الحساب بنجاح!' : 'Account successfully created!');
         });
       }
-      setView('dashboard');
+      const secureHash = Math.random().toString(36).substring(2, 10);
+      navigate(`/dashboard/${secureHash}`);
     } catch (err) {
       const errorMsg = formatAuthError(err);
       setError(errorMsg);
@@ -74,7 +77,8 @@ export default function AuthForms({ initialMode = 'login', setView }) {
       import('../utils/toast').then(({ toast }) => {
         toast.success(lang === 'ar' ? 'تم تسجيل الدخول بنجاح!' : 'Successfully logged in!');
       });
-      setView('dashboard');
+      const secureHash = Math.random().toString(36).substring(2, 10);
+      navigate(`/dashboard/${secureHash}`);
     } catch (err) {
       const errorMsg = formatAuthError(err);
       setError(errorMsg);
@@ -161,7 +165,7 @@ export default function AuthForms({ initialMode = 'login', setView }) {
               <label className="block text-sm font-medium text-[#2d507b] dark:text-slate-300 mb-2 flex justify-between">
                 <span>{txt(lang, 'Password', 'كلمة المرور', 'Mot de passe', '密码')}</span>
                 {mode === 'login' && (
-                  <button type="button" onClick={() => setView('forgot-password')} className="text-teal-600 dark:text-cyan-400 hover:underline text-xs">
+                  <button type="button" onClick={() => navigate('/forgot-password')} className="text-teal-600 dark:text-cyan-400 hover:underline text-xs">
                     {txt(lang, 'Forgot Password?', 'نسيت كلمة المرور؟', 'Mot de passe oublié?', '忘记密码？')}
                   </button>
                 )}
@@ -230,7 +234,7 @@ export default function AuthForms({ initialMode = 'login', setView }) {
                 </button>
               </div>
 
-              <button onClick={() => setView('verify-certificate')} type="button" className="flex items-center justify-center w-full gap-2 text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-cyan-400 transition">
+              <button onClick={() => navigate('/verify-certificate')} type="button" className="flex items-center justify-center w-full gap-2 text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-cyan-400 transition">
                 <CheckCircle className="w-4 h-4" />
                 <span>{lang === 'ar' ? 'التحقق من الشهادات' : 'Verify a Certificate'}</span>
               </button>

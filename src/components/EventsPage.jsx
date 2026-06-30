@@ -5,12 +5,19 @@ import { useLanguage } from '../context/LanguageContext';
 import { db } from '../config/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import EventRegistrationModal from './EventRegistrationModal';
+import SearchBar from './ui/SearchBar';
+import Pagination from './ui/Pagination';
 
 export default function EventsPage() {
   const { lang } = useLanguage();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  
+  // Filtering & Pagination
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -43,6 +50,17 @@ export default function EventsPage() {
     if (obj[field] && typeof obj[field] === 'object') return obj[field][l] || obj[field].en || '';
     return obj[field] || '';
   };
+
+  const filteredEvents = events.filter(evt => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    const title = getLocalized(evt, 'title', lang).toLowerCase();
+    const location = (evt.location || '').toLowerCase();
+    return title.includes(q) || location.includes(q);
+  });
+
+  const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
+  const currentEvents = filteredEvents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="min-h-screen grid-bg py-24 px-6 md:px-12 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
@@ -80,6 +98,15 @@ export default function EventsPage() {
           </motion.p>
         </div>
 
+        {/* Search Bar */}
+        <div className="max-w-2xl mx-auto mb-12">
+          <SearchBar 
+            value={searchQuery}
+            onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+            placeholder={lang === 'ar' ? 'ابحث في الفعاليات...' : 'Search events...'}
+          />
+        </div>
+
         {/* Events Grid */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
@@ -88,7 +115,7 @@ export default function EventsPage() {
               {lang === 'ar' ? 'جاري التحميل...' : lang === 'fr' ? 'Chargement...' : 'Loading...'}
             </p>
           </div>
-        ) : events.length === 0 ? (
+        ) : currentEvents.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -98,8 +125,9 @@ export default function EventsPage() {
             <h3 className="text-2xl font-orbitron text-white mb-2">{emptyMessage[lang] || emptyMessage.en}</h3>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {events.map((evt, index) => (
+          <div className="flex flex-col gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {currentEvents.map((evt, index) => (
               <motion.div
                 key={evt.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -160,7 +188,19 @@ export default function EventsPage() {
                   )}
                 </div>
               </motion.div>
-            ))}
+              ))}
+            </div>
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-8 flex justify-center">
+                <Pagination 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -1,10 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Calendar, Tag, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Calendar, Tag } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
-const LatestNews = ({ setView }) => {
+const LatestNews = () => {
   const { lang, news } = useLanguage();
+  const navigate = useNavigate();
 
   const officialNews = (news || [])
     .filter(item => !item.id || item.type === 'official' || item.id.toString().startsWith('gitm-'))
@@ -22,7 +24,7 @@ const LatestNews = ({ setView }) => {
             <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full"></div>
           </div>
           <button 
-            onClick={() => setView && setView('news')}
+            onClick={() => navigate('/news')}
             className="hidden sm:flex items-center gap-2 text-emerald-600 dark:text-cyan-400 hover:underline font-semibold"
           >
             {lang === 'ar' ? 'عرض كل الأخبار' : 'View All News'} <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''} />
@@ -63,9 +65,9 @@ const LatestNews = ({ setView }) => {
           )}
         </div>
         
-        <button 
-          onClick={() => setView && setView('news')}
-          className="w-full mt-8 sm:hidden py-3 rounded-xl border-2 border-emerald-500 dark:border-cyan-500 text-emerald-600 dark:text-cyan-400 font-bold flex items-center justify-center gap-2"
+        <button            
+          onClick={() => navigate('/news')}
+          className="group w-full mt-8 sm:hidden px-6 py-3 rounded-xl border border-teal-500/30 text-teal-600 dark:text-[#00E5FF] hover:bg-teal-50 dark:hover:bg-[#00E5FF]/10 transition-all font-semibold flex items-center justify-center gap-2"
         >
           {lang === 'ar' ? 'عرض كل الأخبار' : 'View All News'} <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''} />
         </button>

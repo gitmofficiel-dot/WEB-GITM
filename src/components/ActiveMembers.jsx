@@ -1,12 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Award, Star, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
-const ActiveMembers = ({ setView }) => {
-  const { lang, users } = useLanguage();
+const ActiveMembers = () => {
+  const { lang, users, setSelectedProfileId } = useLanguage();
+  const navigate = useNavigate();
 
   // Find top members based on the number of badges they have
   // Fallback to mock data if users array is empty or lacks badges
@@ -45,8 +47,8 @@ const ActiveMembers = ({ setView }) => {
             <div className="w-20 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"></div>
           </div>
           <button 
-            onClick={() => setView && setView('about')}
-            className="hidden sm:flex items-center gap-2 text-amber-600 dark:text-amber-400 hover:underline font-semibold"
+            onClick={() => navigate('/about-us')}
+            className="group px-6 py-2 rounded-full border border-teal-500/30 text-teal-600 dark:text-[#00E5FF] hover:bg-teal-50 dark:hover:bg-[#00E5FF]/10 transition-all font-semibold text-sm flex items-center gap-2"
           >
             {txt(lang, 'View All Members', 'عرض كل الأعضاء', 'Voir tous les membres', '查看所有成员')}
           </button>
@@ -60,7 +62,11 @@ const ActiveMembers = ({ setView }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="glass-card card-3d p-6 rounded-2xl bg-cyan-50/50 dark:bg-slate-800/50 backdrop-blur-md border border-cyan-300 dark:border-slate-700 hover-lift text-center group"
+              onClick={() => {
+                setSelectedProfileId(member.id);
+                navigate(`/profile/${member.id}`);
+              }}
+              className="glass-card card-3d p-6 rounded-2xl bg-cyan-50/50 dark:bg-slate-800/50 backdrop-blur-md border border-cyan-300 dark:border-slate-700 hover-lift text-center group cursor-pointer"
             >
               <div className="relative w-24 h-24 mx-auto mb-4">
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full blur opacity-40 group-hover:opacity-60 transition-opacity"></div>

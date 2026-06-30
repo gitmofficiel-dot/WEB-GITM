@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight, Star, Clock, Award } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
 const courses = [
@@ -160,8 +161,9 @@ const CourseCard = ({ course, lang }) => {
   );
 };
 
-const AcademySlider = ({ setView }) => {
+const AcademySlider = () => {
   const { lang } = useLanguage();
+  const navigate = useNavigate();
   const sliderRef = useRef(null);
 
   const scroll = (direction) => {
@@ -220,7 +222,7 @@ const AcademySlider = ({ setView }) => {
         {/* CTA Button */}
         <div className="text-center mt-10">
           <button
-            onClick={() => setView && setView('academy')}
+            onClick={() => navigate('/academy')}
             className="group relative inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-semibold text-sm shadow-lg shadow-emerald-500/25 dark:shadow-cyan-500/25 hover:shadow-xl hover:shadow-emerald-500/30 dark:hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-105 active:scale-[0.98]"
           >
             <span>{lang === 'ar' ? 'استكشف الأكاديمية' : 'Explore Academy'}</span>

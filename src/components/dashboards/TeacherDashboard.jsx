@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -14,7 +15,8 @@ import { uploadToCloudinary } from '../../utils/cloudinary';
 import { toast } from '../../utils/toast';
 
 export default function TeacherDashboard() {
-  const { lang, setView } = useLanguage();
+  const { lang } = useLanguage();
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState('courses');
   const [gradeInputs, setGradeInputs] = useState({});

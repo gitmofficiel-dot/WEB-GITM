@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -10,7 +11,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
 
 export default function StudentDashboard() {
-  const { lang, setView } = useLanguage();
+  const { lang } = useLanguage();
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState('courses');
   const [copiedLink, setCopiedLink] = useState(null);
@@ -144,7 +146,7 @@ export default function StudentDashboard() {
                       </div>
 
                       <button
-                        onClick={() => setView('academy')}
+                        onClick={() => navigate('/academy')}
                         className={`w-full py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] ${
                           course.progress === 100
                             ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'

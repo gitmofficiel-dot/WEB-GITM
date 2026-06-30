@@ -5,16 +5,18 @@ import AcademySlider from './AcademySlider';
 import LatestNews from './LatestNews';
 import TechExhibitions from './TechExhibitions';
 import ActiveMembers from './ActiveMembers';
+import AIFeatures from './AIFeatures';
 
-const Home = ({ setView }) => {
+const Home = () => {
   return (
     <div className="flex flex-col w-full">
-      <Hero setView={setView} />
+      <Hero />
       <PartnersSlider />
-      <AcademySlider setView={setView} />
-      <LatestNews setView={setView} />
-      <TechExhibitions setView={setView} />
-      <ActiveMembers setView={setView} />
+      <AIFeatures />
+      <AcademySlider />
+      <LatestNews />
+      <TechExhibitions />
+      <ActiveMembers />
     </div>
   );
 };

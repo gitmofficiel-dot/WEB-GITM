@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle2, ShieldCheck, Search, Award } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ShieldCheck, Search } from 'lucide-react';
 
 export default function VerifyCertificate() {
-  const { lang, setView } = useLanguage();
-  const [certId, setCertId] = React.useState('');
-  const [status, setStatus] = React.useState('idle'); // idle, loading, valid, invalid
+  const { lang } = useLanguage();
+  const navigate = useNavigate();
+  const [certId, setCertId] = useState('');
+  const [status, setStatus] = useState('idle'); // idle, loading, valid, invalid
 
   const handleVerify = (e) => {
     e.preventDefault();
@@ -25,7 +27,7 @@ export default function VerifyCertificate() {
 
   return (
     <div className="min-h-screen pt-24 pb-12 bg-cyan-50 dark:bg-slate-900 flex flex-col items-center justify-center px-4">
-      <button onClick={() => setView('home')} className="mb-8 flex items-center text-slate-500 hover:text-teal-600 transition self-start max-w-3xl mx-auto w-full">
+      <button onClick={() => navigate('/')} className="mb-8 flex items-center text-slate-500 hover:text-teal-600 transition self-start max-w-3xl mx-auto w-full">
         <ArrowLeft className="w-5 h-5 mr-2 rtl:ml-2 rtl:rotate-180" /> {lang === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
       </button>
 

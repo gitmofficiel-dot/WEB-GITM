@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Calendar, User, Tag, ShieldCheck, ChevronLeft, Share2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { toast } from '../utils/toast';
+import CommentsSection from './ui/CommentsSection';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
@@ -97,6 +98,9 @@ export default function NewsDetails() {
                 {lang === 'ar' ? (article.content_ar || <p>المحتوى الكامل للمقال سيتم عرضه هنا. هذه المساحة مخصصة للتفاصيل الشاملة للخبر مع دعم الفقرات المتعددة والصور إن وجدت.</p>) : (article.content_en || <p>The full content of the article will be displayed here. This space is dedicated to comprehensive details of the news, supporting multiple paragraphs and images if any.</p>)}
               </div>
             </div>
+            
+            {/* Comments Section */}
+            <CommentsSection targetId={article.id} targetType="news" />
           </div>
         </div>
       </div>

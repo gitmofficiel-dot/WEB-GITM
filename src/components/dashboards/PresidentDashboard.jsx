@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { collection, onSnapshot, doc, updateDoc, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import UserProfileSettings from './UserProfileSettings';
@@ -13,6 +14,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '../../utils/toast';
 export default function PresidentDashboard() {
+  const navigate = useNavigate();
   const { lang, t, user, eventRegistrations, setEventRegistrations } = useLanguage();
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -600,7 +602,10 @@ export default function PresidentDashboard() {
                               </select>
                             </td>
                             <td className="p-3 text-right">
-                              <button onClick={() => handleDelete('member', m.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
+                              <div className="flex justify-end gap-2">
+                                <button onClick={() => navigate(`/profile/${m.id}`)} className="p-2 text-slate-400 hover:text-cyan-500 transition-colors bg-slate-100 dark:bg-slate-800 rounded-lg"><Eye size={16}/></button>
+                                <button onClick={() => handleDelete('member', m.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors bg-slate-100 dark:bg-slate-800 rounded-lg"><Trash2 size={16}/></button>
+                              </div>
                             </td>
                           </tr>
                         ))}

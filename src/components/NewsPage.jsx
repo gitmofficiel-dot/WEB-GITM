@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Newspaper, Calendar, ChevronRight, User, Hash, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../config/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import SearchBar from './ui/SearchBar';
+import Pagination from './ui/Pagination';
 
 export default function NewsPage() {
   const { lang } = useLanguage();
+  const navigate = useNavigate();
   const [newsList, setNewsList] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Filtering & Pagination
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -41,6 +50,18 @@ export default function NewsPage() {
     if (obj[field] && typeof obj[field] === 'object') return obj[field][l] || obj[field].en || '';
     return obj[field] || '';
   };
+
+  const filteredNews = newsList.filter(news => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    const title = getLocalized(news, 'title', lang).toLowerCase();
+    const summary = getLocalized(news, 'summary', lang).toLowerCase();
+    const category = (news.category || '').toLowerCase();
+    return title.includes(q) || summary.includes(q) || category.includes(q);
+  });
+
+  const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
+  const currentNews = filteredNews.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="min-h-screen grid-bg py-24 px-6 md:px-12 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
@@ -78,6 +99,15 @@ export default function NewsPage() {
           </motion.p>
         </div>
 
+        {/* Search Bar */}
+        <div className="max-w-2xl mx-auto mb-12">
+          <SearchBar 
+            value={searchQuery}
+            onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+            placeholder={lang === 'ar' ? 'ابحث في الأخبار...' : 'Search news...'}
+          />
+        </div>
+
         {/* News Feed */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
@@ -86,7 +116,7 @@ export default function NewsPage() {
               {lang === 'ar' ? 'جاري التحميل...' : lang === 'fr' ? 'Chargement...' : 'Loading...'}
             </p>
           </div>
-        ) : newsList.length === 0 ? (
+        ) : currentNews.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -96,8 +126,9 @@ export default function NewsPage() {
             <h3 className="text-2xl font-orbitron text-white mb-2">{emptyMessage[lang] || emptyMessage.en}</h3>
           </motion.div>
         ) : (
-          <div className="grid gap-8 max-w-5xl mx-auto">
-            {newsList.map((news, index) => (
+          <div className="flex flex-col gap-8 max-w-5xl mx-auto">
+            <div className="grid gap-8">
+              {currentNews.map((news, index) => (
               <motion.div 
                 key={news.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -128,7 +159,10 @@ export default function NewsPage() {
                         <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-teal-500"/> {news.date}</span>
                         <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-teal-500"/> {news.author}</span>
                       </div>
-                      <button className="flex items-center gap-2 text-teal-400 hover:text-teal-300 font-medium transition-colors">
+                      <button 
+                        onClick={() => navigate(`/news/${news.id}`)}
+                        className="flex items-center gap-2 text-teal-400 hover:text-teal-300 font-medium transition-colors"
+                      >
                         {lang === 'ar' ? 'اقرأ المزيد' : lang === 'fr' ? 'Lire la suite' : 'Read Article'}
                         <ChevronRight className={`w-4 h-4 ${lang === 'ar' ? 'rotate-180' : ''}`} />
                       </button>
@@ -136,7 +170,19 @@ export default function NewsPage() {
                   </div>
                 </div>
               </motion.div>
-            ))}
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-8 flex justify-center">
+                <Pagination 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -7,8 +7,10 @@ import QuizEngine from './academy/QuizEngine';
 import { db } from '../config/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { toast } from '../utils/toast';
+import SearchBar from './ui/SearchBar';
+import Pagination from './ui/Pagination';
 
-export default function Academy({ setView }) {
+export default function Academy() {
   const { lang } = useLanguage();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,6 +19,11 @@ export default function Academy({ setView }) {
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [unlockedModules, setUnlockedModules] = useState([0]); // Index 0 is unlocked by default
   const [courseCompleted, setCourseCompleted] = useState(false);
+
+  // Pagination & Search
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -77,6 +84,24 @@ export default function Academy({ setView }) {
     closeCourse();
   };
 
+  const getLocalized = (obj, field, l) => {
+    if (!obj) return '';
+    if (obj[`${field}_${l}`]) return obj[`${field}_${l}`];
+    if (obj[field] && typeof obj[field] === 'object') return obj[field][l] || obj[field].en || '';
+    return obj[field] || '';
+  };
+
+  const filteredCourses = courses.filter(c => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    const title = getLocalized(c, 'title', lang).toLowerCase();
+    const desc = getLocalized(c, 'description', lang).toLowerCase();
+    return title.includes(q) || desc.includes(q);
+  });
+
+  const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
+  const currentCourses = filteredCourses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   // --- CATALOG VIEW ---
   if (!activeCourse) {
     return (
@@ -97,16 +122,28 @@ export default function Academy({ setView }) {
             <Loader2 size={48} className="text-cyan-500 animate-spin mb-4" />
             <p className="text-slate-500 font-bold">{lang === 'ar' ? 'جاري تحميل المقررات...' : 'Loading courses...'}</p>
           </div>
-        ) : courses.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center">
-            <BookOpen size={48} className="text-slate-400 mb-4" />
-            <p className="text-slate-500 text-lg font-bold">
-              {lang === 'ar' ? 'لا توجد مقررات متاحة حالياً.' : 'No courses available right now.'}
-            </p>
-          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto w-full">
-            {courses.map((course) => (
+          <div className="w-full max-w-6xl mx-auto flex flex-col flex-1">
+            {/* Search Bar */}
+            <div className="max-w-2xl mx-auto mb-12 w-full">
+              <SearchBar 
+                value={searchQuery}
+                onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+                placeholder={lang === 'ar' ? 'ابحث في المقررات...' : 'Search courses...'}
+              />
+            </div>
+
+            {currentCourses.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-center py-20">
+                <BookOpen size={48} className="text-slate-400 mb-4" />
+                <p className="text-slate-500 text-lg font-bold">
+                  {lang === 'ar' ? 'لا توجد مقررات.' : 'No courses found.'}
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
+                  {currentCourses.map((course) => (
               <div key={course.id} className="glass-card rounded-3xl p-8 border border-slate-200 dark:border-slate-800 hover:border-cyan-500 transition-colors group flex flex-col">
                 {course.thumbnailUrl ? (
                   <div className="w-full h-40 rounded-2xl mb-6 bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0">
@@ -141,9 +178,20 @@ export default function Academy({ setView }) {
               <p className="text-slate-500 mb-8 h-20 flex-1">
                 {lang === 'ar' ? 'قريباً: تعلم برمجة الروبوتات باستخدام ROS2.' : 'Coming soon: Learn robot programming with ROS2.'}
               </p>
-              <button disabled className="w-full bg-slate-200 dark:bg-slate-800 text-slate-400 py-3 rounded-xl font-bold flex items-center justify-center gap-2 cursor-not-allowed mt-auto">
-                {lang === 'ar' ? 'غير متاح حالياً' : 'Currently Unavailable'}
-              </button>
+                </button>
+              </div>
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-8 flex justify-center w-full">
+                <Pagination 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
             </div>
           </div>
         )}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { Facebook, Twitter, Youtube, MapPin, Mail, Phone, ArrowRight, ShieldCheck, Github } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -7,7 +8,8 @@ import { db } from '../config/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function Footer() {
-  const { lang, view, setView } = useLanguage();
+  const { lang } = useLanguage();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -75,14 +77,14 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3">
               {[
-                { key: 'home', label: lang === 'ar' ? 'الرئيسية' : 'Home' },
-                { key: 'news', label: lang === 'ar' ? 'الأخبار' : 'News' },
-                { key: 'events', label: lang === 'ar' ? 'الفعاليات' : 'Events' },
-                { key: 'academy', label: lang === 'ar' ? 'الأكاديمية' : 'Academy' },
-                { key: 'projects', label: lang === 'ar' ? 'المشاريع' : 'Projects' }
+                { key: 'home', path: '/', label: lang === 'ar' ? 'الرئيسية' : 'Home' },
+                { key: 'news', path: '/news', label: lang === 'ar' ? 'الأخبار' : 'News' },
+                { key: 'events', path: '/events', label: lang === 'ar' ? 'الفعاليات' : 'Events' },
+                { key: 'academy', path: '/academy', label: lang === 'ar' ? 'الأكاديمية' : 'Academy' },
+                { key: 'projects', path: '/projects-hub', label: lang === 'ar' ? 'المشاريع' : 'Projects' }
               ].map(link => (
                 <li key={link.key}>
-                  <button onClick={() => setView(link.key)} className="text-slate-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group text-sm">
+                  <button onClick={() => navigate(link.path)} className="text-slate-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group text-sm">
                     <ArrowRight size={14} className="opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all rtl:rotate-180" />
                     {link.label}
                   </button>
