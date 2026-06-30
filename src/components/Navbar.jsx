@@ -40,8 +40,7 @@ const Navbar = () => {
     { id: 'projects-hub', path: '/projects-hub', icon: FolderGit2, label: { ar: 'المشاريع', en: 'Projects', fr: 'Projets', zh: '项目' } },
     { id: 'gallery', path: '/gallery', icon: Image, label: { ar: 'المعرض', en: 'Gallery', fr: 'Galerie', zh: '画廊' } },
     { id: 'events', path: '/events', icon: Calendar, label: { ar: 'الفعاليات', en: 'Events', fr: 'Événements', zh: '活动' } },
-    { id: 'about-us', path: '/about-us', icon: Users, label: { ar: 'من نحن', en: 'About Us', fr: 'À propos', zh: '关于我们' } },
-    { id: 'ai-features', path: '/ai-features', icon: Sparkles, label: { ar: 'الذكاء الاصطناعي', en: 'AI Features', fr: 'IA', zh: 'AI功能' } },
+    { id: 'about-us', path: '/about-us', icon: Users, label: { ar: 'من نحن', en: 'About Us', fr: 'À propos', zh: '关于我们' } }
   ];
 
   const langLabels = { ar: 'العربية', en: 'English', fr: 'Français', zh: '中文' };

@@ -115,6 +115,12 @@ export default function SmartCourseBuilder({ initialData, onCancel, onSave }) {
   const [level, setLevel] = useState(initialData?.level || 'Beginner');
   const [description, setDescription] = useState(initialData?.description || '');
   
+  const [coverImage, setCoverImage] = useState(initialData?.coverImage || '');
+  const [fbVideo, setFbVideo] = useState(initialData?.fbVideo || '');
+  const [ytVideo, setYtVideo] = useState(initialData?.ytVideo || '');
+  const [attachments, setAttachments] = useState(initialData?.attachments || []);
+  const fileInputRef = React.useRef(null);
+  
   const [modules, setModules] = useState(initialData?.modules || [
     { id: 'mod-1', title: 'Module 1', lessons: [] }
   ]);
@@ -182,10 +188,21 @@ export default function SmartCourseBuilder({ initialData, onCancel, onSave }) {
     }));
   };
 
+  const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const newAttachments = files.map(file => ({
+      name: file.name,
+      size: (file.size / 1024).toFixed(1) + ' KB',
+      type: file.type
+    }));
+    setAttachments([...attachments, ...newAttachments]);
+  };
+
   const handleSubmit = () => {
     setIsSaving(true);
     const courseData = {
       title, track, level, description, modules,
+      coverImage, fbVideo, ytVideo, attachments,
       status: 'Published',
       enrolledCount: 0
     };
@@ -253,6 +270,51 @@ export default function SmartCourseBuilder({ initialData, onCancel, onSave }) {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Course Media */}
+        <div className="glass-card rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+           <h3 className="text-lg font-bold text-[#1e3a5f] dark:text-white mb-4">{lang === 'ar' ? 'الوسائط المتعددة والمرفقات' : 'Rich Media & Attachments'}</h3>
+           
+           <div className="space-y-4">
+              <div>
+                 <label className="text-sm font-bold text-slate-500 mb-1 block">Cover Image URL</label>
+                 <input type="text" value={coverImage} onChange={e=>setCoverImage(e.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-teal-500 text-sm" placeholder="https://..." dir="ltr" />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                   <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'تضمين فيديو فيسبوك (رابط)' : 'Facebook Promo Video URL'}</label>
+                   <input type="text" value={fbVideo} onChange={e=>setFbVideo(e.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-teal-500 text-sm" placeholder="https://facebook.com/..." dir="ltr" />
+                </div>
+                <div>
+                   <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'تضمين فيديو يوتيوب (رابط)' : 'YouTube Promo Video URL'}</label>
+                   <input type="text" value={ytVideo} onChange={e=>setYtVideo(e.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-teal-500 text-sm" placeholder="https://youtube.com/watch?v=..." dir="ltr" />
+                </div>
+              </div>
+              
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-700 space-y-3 mt-4">
+                 <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'ملفات الدورة (PDF, ZIP)' : 'Course Files (PDF, ZIP)'}</label>
+                 {attachments.map((file, i) => (
+                   <div key={i} className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                     <div className="flex items-center gap-2 overflow-hidden">
+                       <span className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">{file.name}</span>
+                     </div>
+                     <button onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))} className="text-slate-600 dark:text-slate-400 hover:text-red-500 shrink-0 p-1">
+                       <X size={14}/>
+                     </button>
+                   </div>
+                 ))}
+                 
+                 <input type="file" multiple ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
+                 <button 
+                   onClick={() => fileInputRef.current.click()}
+                   className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors text-slate-500 font-bold text-sm flex items-center justify-center gap-2"
+                 >
+                   <Plus size={16}/> {lang === 'ar' ? 'رفع ملفات / صور متعددة' : 'Upload Files / Multiple Images'}
+                 </button>
+              </div>
+           </div>
         </div>
 
         {/* Modules Builder (Drag & Drop) */}

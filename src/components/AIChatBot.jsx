@@ -94,43 +94,43 @@ const AIChatBot = () => {
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-14 h-14 rounded-full flex items-center justify-center shadow-glow-cyan transition-all duration-300 hover:scale-110 ${isOpen ? 'bg-red-500 hover:bg-red-600' : 'bg-gradient-to-r from-cyan-500 to-emerald-500 hover:shadow-glow-emerald'}`}
+        className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-xl ${isOpen ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/30' : 'bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-400 hover:to-blue-500 text-white shadow-teal-500/30'}`}
       >
-        {isOpen ? <X className="text-white" size={24} /> : <MessageCircle className="text-white" size={28} />}
+        {isOpen ? <X size={24} /> : <MessageCircle size={28} />}
       </button>
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-20 right-0 rtl:left-0 rtl:right-auto w-80 sm:w-96 h-[500px] bg-white dark:bg-slate-900 flex flex-col overflow-hidden animate-fade-in-up shadow-2xl border border-cyan-200 dark:border-slate-800 rounded-3xl origin-bottom-right rtl:origin-bottom-left">
+        <div className="absolute bottom-20 right-0 rtl:left-0 rtl:right-auto w-80 sm:w-96 h-[500px] bg-white dark:bg-slate-900 flex flex-col overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 rounded-3xl origin-bottom-right rtl:origin-bottom-left animate-in zoom-in-95 duration-200">
           {/* Header */}
-          <div className="px-5 py-4 bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 border-b border-white/10 flex items-center justify-between">
+          <div className="px-5 py-4 bg-gradient-to-r from-teal-500 to-blue-600 text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-500/30">
-                <Bot className="text-cyan-400" size={18} />
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border border-white/30 backdrop-blur-sm">
+                <Bot size={22} />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white font-orbitron">{lang === 'ar' ? 'المساعد الذكي لـ GITM' : 'GITM AI Assistant'}</h3>
-                <span className="flex items-center gap-1.5 text-[10px] text-emerald-400">
-                  <span className="status-online w-1.5 h-1.5" />
+                <h3 className="text-sm font-bold font-orbitron drop-shadow-md">{lang === 'ar' ? 'المساعد الذكي لـ GITM' : 'GITM AI Assistant'}</h3>
+                <span className="flex items-center gap-1.5 text-[10px] text-teal-100 font-bold">
+                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                   {lang === 'ar' ? 'متصل الآن' : 'Online'}
                 </span>
               </div>
             </div>
-            <Sparkles className="text-cyan-400/50" size={18} />
+            <Sparkles className="text-teal-200" size={18} />
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 p-5 overflow-y-auto flex flex-col gap-4 scrollbar-none">
+          <div className="flex-1 p-5 overflow-y-auto flex flex-col gap-4 scrollbar-none bg-slate-50 dark:bg-[#0f172a]">
             {messages.map((msg) => (
               <div key={msg.id} className={`flex gap-3 max-w-[85%] ${msg.sender === 'user' ? 'self-end flex-row-reverse' : 'self-start'}`}>
-                <div className={`w-6 h-6 shrink-0 rounded-full flex items-center justify-center mt-1 ${msg.sender === 'user' ? 'bg-emerald-500/20' : 'bg-cyan-500/20'}`}>
-                  {msg.sender === 'user' ? <User className="text-emerald-400" size={12} /> : <Bot className="text-cyan-400" size={12} />}
+                <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center shadow-sm ${msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-teal-500 text-white'}`}>
+                  {msg.sender === 'user' ? <User size={16} /> : <Bot size={16} />}
                 </div>
-                <div className="flex flex-col gap-1">
-                  <div className={`p-3 text-xs leading-relaxed text-[#1e3a5f] dark:text-slate-200 ${msg.sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'}`}>
+                <div className="flex flex-col gap-1 max-w-[80%]">
+                  <div className={`p-3 text-sm leading-relaxed shadow-sm rounded-2xl ${msg.sender === 'user' ? 'bg-blue-500 text-white rounded-tr-none' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-tl-none'}`}>
                     {msg.text}
                   </div>
-                  <span className={`text-[9px] text-slate-600 dark:text-slate-500 ${msg.sender === 'user' ? 'text-right rtl:text-left' : 'text-left rtl:text-right'}`}>
+                  <span className={`text-[10px] text-slate-500 dark:text-slate-400 ${msg.sender === 'user' ? 'text-right rtl:text-left' : 'text-left rtl:text-right'}`}>
                     {msg.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -138,14 +138,14 @@ const AIChatBot = () => {
             ))}
             
             {isTyping && (
-              <div className="flex gap-3 max-w-[85%] self-start">
-                <div className="w-6 h-6 shrink-0 rounded-full flex items-center justify-center mt-1 bg-cyan-500/20">
-                  <Bot className="text-cyan-400" size={12} />
+              <div className="flex gap-3 self-start">
+                <div className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center shadow-sm bg-teal-500 text-white">
+                  <Bot size={16} />
                 </div>
-                <div className="p-3 chat-bubble-ai flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div className="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-2">
+                  <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               </div>
             )}
@@ -154,12 +154,12 @@ const AIChatBot = () => {
 
           {/* Suggestions */}
           {messages.length < 3 && !isTyping && (
-            <div className="px-5 py-2 flex flex-wrap gap-2 border-t border-white/5">
+            <div className="px-5 py-3 flex flex-wrap gap-2 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
               {suggestions.map(s => (
                 <button
                   key={s.id}
                   onClick={() => handleSend(s.label)}
-                  className="px-3 py-1.5 rounded-full text-[10px] font-medium bg-[#e0fcfc]/5 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 transition-colors"
+                  className="px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 hover:bg-teal-50 dark:bg-slate-800 dark:hover:bg-teal-900/30 text-slate-600 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 border border-slate-200 dark:border-slate-700 transition-colors"
                 >
                   {s.label}
                 </button>
@@ -167,8 +167,7 @@ const AIChatBot = () => {
             </div>
           )}
 
-          {/* Input Area */}
-          <div className="p-4 bg-cyan-100/50 dark:bg-black/20 border-t border-cyan-300 dark:border-white/10">
+          <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
             <form 
               onSubmit={(e) => { e.preventDefault(); handleSend(); }}
               className="relative flex items-center"
@@ -177,23 +176,23 @@ const AIChatBot = () => {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={lang === 'ar' ? 'اكتب أو تحدث...' : 'Type or speak...'}
-                className="w-full bg-white dark:bg-[#e0fcfc]/5 border border-cyan-300 dark:border-white/10 rounded-xl py-3 pl-4 pr-20 rtl:pr-4 rtl:pl-20 text-sm text-[#1e3a5f] dark:text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                placeholder={lang === 'ar' ? 'اكتب رسالتك هنا...' : 'Type your message...'}
+                className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-2xl py-3 pl-4 pr-20 rtl:pr-4 rtl:pl-20 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition-all shadow-inner"
               />
               <div className="absolute right-2 rtl:left-2 rtl:right-auto flex items-center">
                 <button
                   type="button"
                   onClick={startListening}
-                  className={`p-2 rounded-full transition-colors mr-1 rtl:mr-0 rtl:ml-1 ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-cyan-600 dark:text-slate-400 hover:text-cyan-700 dark:hover:text-cyan-400 hover:bg-cyan-200 dark:hover:bg-[#e0fcfc]/5'}`}
+                  className={`p-2 rounded-full transition-colors mr-1 rtl:mr-0 rtl:ml-1 ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-slate-400 hover:text-teal-600 dark:hover:text-teal-400'}`}
                 >
-                  {isListening ? <Mic size={16} /> : <MicOff size={16} />}
+                  {isListening ? <Mic size={18} /> : <MicOff size={18} />}
                 </button>
                 <button
                   type="submit"
                   disabled={!input.trim() || isTyping}
-                  className="p-2 text-cyan-400 hover:text-cyan-300 disabled:opacity-50 disabled:hover:text-cyan-400 transition-colors"
+                  className="p-2 text-teal-600 dark:text-teal-400 hover:text-teal-700 disabled:opacity-50 transition-colors"
                 >
-                  <Send size={18} className="rtl:rotate-180" />
+                  <Send size={20} className="rtl:rotate-180" />
                 </button>
               </div>
             </form>

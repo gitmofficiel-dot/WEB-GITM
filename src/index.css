@@ -25,9 +25,10 @@
 
 /* Light mode overrides */
 :root:not(.dark) {
-  --glass-bg: rgba(224, 252, 252, 0.7);
-  --glass-border: rgba(0, 150, 150, 0.1);
-  --glass-shadow: 0 8px 32px rgba(0, 150, 150, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+  --color-bg-light: #ffffff;
 }
 
 /* ========================================
@@ -160,9 +161,9 @@ html[dir="rtl"] body {
 }
 
 :root:not(.dark) .glass-strong {
-  background: rgba(224, 252, 252, 0.85);
-  border: 1px solid rgba(0, 150, 150, 0.15);
-  box-shadow: 0 12px 40px rgba(0, 150, 150, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
 }
 
 .glass-card {
@@ -182,8 +183,8 @@ html[dir="rtl"] body {
 }
 
 :root:not(.dark) .glass-card:hover {
-  border-color: rgba(13, 148, 136, 0.3);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), 0 0 30px rgba(13, 148, 136, 0.08);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 0 30px rgba(0, 0, 0, 0.02);
 }
 
 /* ========================================

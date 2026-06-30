@@ -20,11 +20,16 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave }) {
     githubUrl: initialData?.githubUrl || '',
     progress: initialData?.progress || 0,
     coverImage: initialData?.coverImage || '',
+    fbVideo: initialData?.fbVideo || '',
+    ytVideo: initialData?.ytVideo || '',
   });
 
   const [teamMembers, setTeamMembers] = useState(initialData?.teamMembers || []);
   const [techStack, setTechStack] = useState(initialData?.techStack?.join(', ') || '');
+  const [attachments, setAttachments] = useState(initialData?.attachments || []);
   const [isSaving, setIsSaving] = useState(false);
+
+  const fileInputRef = React.useRef(null);
 
   const handleAddMember = () => {
     setTeamMembers([...teamMembers, { id: Date.now(), name: '', role: '', initials: '' }]);
@@ -53,9 +58,20 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave }) {
     const projectData = {
       ...formData,
       teamMembers,
+      attachments,
       techStack: techStack.split(',').map(s => s.trim()).filter(Boolean),
     };
     onSave(projectData);
+  };
+
+  const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const newAttachments = files.map(file => ({
+      name: file.name,
+      size: (file.size / 1024).toFixed(1) + ' KB',
+      type: file.type
+    }));
+    setAttachments([...attachments, ...newAttachments]);
   };
 
   return (
@@ -189,7 +205,42 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave }) {
                  <label className="text-sm font-bold text-slate-500 mb-1 flex items-center gap-2"><ImageIcon size={16}/> Cover Image URL</label>
                  <input type="text" value={formData.coverImage} onChange={e=>setFormData({...formData, coverImage: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-indigo-500 text-sm" placeholder="https://..." dir="ltr" />
               </div>
+              
+              <div>
+                 <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'تضمين فيديو فيسبوك (رابط)' : 'Facebook Video URL'}</label>
+                 <input type="text" value={formData.fbVideo} onChange={e=>setFormData({...formData, fbVideo: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-indigo-500 text-sm" placeholder="https://facebook.com/..." dir="ltr" />
+              </div>
+
+              <div>
+                 <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'تضمين فيديو يوتيوب (رابط)' : 'YouTube Video URL'}</label>
+                 <input type="text" value={formData.ytVideo} onChange={e=>setFormData({...formData, ytVideo: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-indigo-500 text-sm" placeholder="https://youtube.com/watch?v=..." dir="ltr" />
+              </div>
             </div>
+          </div>
+
+          <div className="glass-card rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+             <h3 className="text-lg font-bold text-[#1e3a5f] dark:text-white mb-4">{lang === 'ar' ? 'المرفقات والصور (متعدد)' : 'Attachments & Gallery'}</h3>
+             
+             <div className="space-y-3">
+               {attachments.map((file, i) => (
+                 <div key={i} className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                   <div className="flex items-center gap-2 overflow-hidden">
+                     <span className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">{file.name}</span>
+                   </div>
+                   <button onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))} className="text-slate-600 dark:text-slate-400 hover:text-red-500 shrink-0 p-1">
+                     <X size={14}/>
+                   </button>
+                 </div>
+               ))}
+               
+               <input type="file" multiple ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
+               <button 
+                 onClick={() => fileInputRef.current.click()}
+                 className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors text-slate-500 font-bold text-sm flex items-center justify-center gap-2"
+               >
+                 <Plus size={16}/> {lang === 'ar' ? 'رفع ملفات / صور متعددة' : 'Upload Files / Multiple Images'}
+               </button>
+             </div>
           </div>
 
         </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
-import { BookOpen, Award, PlayCircle, Lock, CheckCircle, ChevronRight, X, Loader2, Library, Search } from 'lucide-react';
+import { BookOpen, Award, PlayCircle, Lock, CheckCircle, ChevronRight, X, Loader2, Library, Search, Star, Filter, Users, Clock, ArrowRight, Video } from 'lucide-react';
 import LessonView from './academy/LessonView';
 import QuizEngine from './academy/QuizEngine';
 import { db } from '../config/firebase';
@@ -20,13 +20,17 @@ export default function Academy() {
 
   const [activeCourse, setActiveCourse] = useState(null);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
-  const [unlockedModules, setUnlockedModules] = useState([0]); // Index 0 is unlocked by default
+  const [unlockedModules, setUnlockedModules] = useState([0]); 
   const [courseCompleted, setCourseCompleted] = useState(false);
 
   // Pagination & Search
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+
+  // Filters
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedLevel, setSelectedLevel] = useState('All');
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -36,7 +40,18 @@ export default function Academy() {
         querySnapshot.forEach((doc) => {
           coursesData.push({ id: doc.id, ...doc.data() });
         });
-        setCourses(coursesData);
+        
+        // Add mock data if empty for demonstration
+        if (coursesData.length === 0) {
+          const mockCourses = [
+            { id: '1', title_en: 'Advanced AI & Machine Learning', title_ar: 'الذكاء الاصطناعي المتقدم', description_en: 'Master neural networks and deep learning.', description_ar: 'تعلم الشبكات العصبية والتعلم العميق.', track: 'AI', level: 'Advanced', rating: 4.9, students: 12500, duration: '12 Weeks' },
+            { id: '2', title_en: 'Full-Stack React Development', title_ar: 'تطوير تطبيقات الويب باستخدام رياكت', description_en: 'Build modern web apps from scratch.', description_ar: 'ابن تطبيقات ويب حديثة من الصفر.', track: 'Web Dev', level: 'Intermediate', rating: 4.8, students: 8400, duration: '8 Weeks' },
+            { id: '3', title_en: 'Cybersecurity Fundamentals', title_ar: 'أساسيات الأمن السيبراني', description_en: 'Protect systems against modern threats.', description_ar: 'حماية الأنظمة من التهديدات الحديثة.', track: 'Security', level: 'Beginner', rating: 4.7, students: 15300, duration: '6 Weeks' }
+          ];
+          setCourses(mockCourses);
+        } else {
+          setCourses(coursesData);
+        }
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {
@@ -81,10 +96,7 @@ export default function Academy() {
   }, [searchQuery, activeTab]);
 
   const startCourse = (course) => {
-    if (!course.modules || course.modules.length === 0) {
-      toast.info(lang === 'ar' ? 'هذا المقرر لا يحتوي على دروس بعد.' : 'This course has no lessons yet.');
-      return;
-    }
+    // If no real modules exist yet, we still open the course view to show the Coursera style intro
     setActiveCourse(course);
     setCurrentModuleIndex(0);
     setUnlockedModules([0]);
@@ -96,6 +108,7 @@ export default function Academy() {
   };
 
   const handleLessonComplete = () => {
+    if (!activeCourse.modules) return;
     const nextIndex = currentModuleIndex + 1;
     if (nextIndex < activeCourse.modules.length) {
       if (!unlockedModules.includes(nextIndex)) {
@@ -111,12 +124,7 @@ export default function Academy() {
     setCourseCompleted(true);
   };
 
-  const handleQuizFail = () => {
-    // Logic to restart quiz is handled inside QuizEngine
-  };
-
   const generateCertificate = () => {
-    // In a real app, this would hit an API to mint the cert
     toast.success(lang === 'ar' ? 'تم إصدار شهادتك بنجاح! رقم: GITM-CERT-9092' : 'Certificate issued successfully! ID: GITM-CERT-9092');
     closeCourse();
   };
@@ -129,6 +137,8 @@ export default function Academy() {
   };
 
   const filteredCourses = courses.filter(c => {
+    if (selectedCategory !== 'All' && c.track !== selectedCategory) return false;
+    if (selectedLevel !== 'All' && c.level !== selectedLevel) return false;
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     const title = getLocalized(c, 'title', lang).toLowerCase();
@@ -139,291 +149,343 @@ export default function Academy() {
   const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
   const currentCourses = filteredCourses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  // --- CATALOG VIEW ---
-  if (!activeCourse) {
-    return (
-      <div className="container-custom py-24 min-h-screen relative flex flex-col">
-        <div className="absolute top-20 right-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-[100px] -z-10"></div>
-        
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-orbitron font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 mb-6">
-            {lang === 'ar' ? 'أكاديمية التعلم LMS' : 'Academy LMS'}
-          </h1>
-          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            {lang === 'ar' ? 'مسارات تدريبية احترافية تنتهي بشهادات معتمدة.' : 'Professional training tracks ending with certified credentials.'}
-          </p>
-        </div>
+  const categories = ['All', 'AI', 'Web Dev', 'Security', 'Data Science', 'Cloud'];
+  const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 
-        {/* Tabs */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white/ dark:bg-slate-900/ backdrop-blur-md p-1 rounded-2xl inline-flex border border-slate-200/ dark:border-slate-700/">
-            <button
-              onClick={() => { setActiveTab('courses'); setCurrentPage(1); setSearchQuery(''); }}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${
-                activeTab === 'courses' 
-                  ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/25' 
-                  : 'text-slate-600 dark:text-slate-400 hover:text-white hover:bg-slate-50 dark:bg-slate-800'
-              }`}
-            >
-              <BookOpen className="w-5 h-5" />
-              {lang === 'ar' ? 'الدورات التدريبية' : 'Courses'}
-            </button>
-            <button
-              onClick={() => { setActiveTab('library'); setCurrentPage(1); setSearchQuery(''); }}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${
-                activeTab === 'library' 
-                  ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25' 
-                  : 'text-slate-600 dark:text-slate-400 hover:text-white hover:bg-slate-50 dark:bg-slate-800'
-              }`}
-            >
-              <Library className="w-5 h-5" />
-              {lang === 'ar' ? 'المكتبة الرقمية' : 'Digital Library'}
-            </button>
+  if (activeCourse) {
+    return (
+      <div className="w-full min-h-screen bg-slate-50 dark:bg-[#09090b]">
+        {/* Course Header - Coursera Style */}
+        <div className="w-full bg-[#1e3a5f] dark:bg-slate-900 text-white py-16 px-4 md:px-12 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-900/50 to-blue-900/50 z-0"></div>
+          <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row gap-8 items-center">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 text-teal-400 text-sm font-bold mb-4">
+                <ChevronRight size={16} />
+                <span>{activeCourse.track || 'Technology'}</span>
+                <ChevronRight size={16} />
+                <span>{getLocalized(activeCourse, 'title', lang)}</span>
+              </div>
+              <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">{getLocalized(activeCourse, 'title', lang)}</h1>
+              <p className="text-lg text-slate-300 mb-6 max-w-2xl">{getLocalized(activeCourse, 'description', lang)}</p>
+              
+              <div className="flex flex-wrap items-center gap-6 text-sm text-slate-300 mb-8">
+                <div className="flex items-center gap-1 text-yellow-400 font-bold">
+                  <Star fill="currentColor" size={18} />
+                  <span>{activeCourse.rating || '4.8'}</span>
+                  <span className="text-slate-400 font-normal ml-1">(12k reviews)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users size={18} />
+                  <span>{activeCourse.students || '10,000+'} {lang === 'ar' ? 'طالب مسجل' : 'already enrolled'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock size={18} />
+                  <span>{activeCourse.duration || '6 Months'} {lang === 'ar' ? 'من الدراسة' : 'to complete'}</span>
+                </div>
+              </div>
+              
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => {
+                    // Logic to jump to player
+                    toast.success(lang === 'ar' ? 'تم استئناف الدورة' : 'Course resumed');
+                  }}
+                  className="px-8 py-4 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-xl shadow-lg transition-all"
+                >
+                  {lang === 'ar' ? 'سجل مجاناً وابدأ الآن' : 'Enroll for Free & Start'}
+                </button>
+                <button onClick={closeCourse} className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-md transition-all">
+                  {lang === 'ar' ? 'العودة للمقررات' : 'Back to Catalog'}
+                </button>
+              </div>
+            </div>
+            
+            <div className="w-full md:w-[400px] shrink-0">
+              <div className="bg-white p-2 rounded-2xl shadow-2xl relative group overflow-hidden">
+                <img src={activeCourse.thumbnail || 'https://via.placeholder.com/600x400'} className="w-full aspect-video object-cover rounded-xl" alt="Course Video Preview" />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/20 transition-all rounded-xl cursor-pointer">
+                  <div className="w-16 h-16 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <PlayCircle className="text-white w-10 h-10" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Search */}
-        <div className="max-w-xl mx-auto mb-12">
-          <SearchBar 
-            value={searchQuery}
-            onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
-            placeholder={
-              activeTab === 'courses'
-                ? (lang === 'ar' ? 'ابحث في المقررات...' : 'Search courses...')
-                : (lang === 'ar' ? 'ابحث عن الكتب (مثال: AI, React)...' : 'Search books (e.g. AI, React)...')
-            }
-          />
+        {/* Course Curriculum & Player Area */}
+        <div className="max-w-7xl mx-auto px-4 py-12">
+           {!activeCourse.modules || activeCourse.modules.length === 0 ? (
+             <div className="text-center py-24 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800">
+                <Video className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">
+                  {lang === 'ar' ? 'الدروس قيد التجهيز' : 'Curriculum is being prepared'}
+                </h3>
+                <p className="text-slate-500 dark:text-slate-400">
+                  {lang === 'ar' ? 'سيتم إضافة محتوى الفيديو قريباً. يرجى العودة لاحقاً.' : 'Video content will be uploaded soon. Please check back later.'}
+                </p>
+             </div>
+           ) : (
+             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                  {/* The actual lesson player would go here, currently handled by LessonView component if modules exist */}
+                  <LessonView 
+                    lesson={activeCourse.modules[currentModuleIndex]}
+                    onComplete={handleLessonComplete}
+                  />
+                </div>
+                <div className="lg:col-span-1">
+                  <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm sticky top-24">
+                     <h3 className="text-xl font-bold mb-6 text-slate-800 dark:text-white">
+                        {lang === 'ar' ? 'محتوى الدورة' : 'Course Content'}
+                     </h3>
+                     <div className="flex flex-col gap-3">
+                        {activeCourse.modules.map((mod, idx) => (
+                           <button
+                             key={idx}
+                             onClick={() => unlockedModules.includes(idx) && setCurrentModuleIndex(idx)}
+                             className={`flex items-center justify-between p-4 rounded-xl border text-left transition-all ${
+                               currentModuleIndex === idx 
+                                 ? 'bg-teal-50 dark:bg-teal-500/10 border-teal-500 text-teal-700 dark:text-teal-400 shadow-sm'
+                                 : unlockedModules.includes(idx)
+                                   ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-teal-300'
+                                   : 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 opacity-60 cursor-not-allowed'
+                             }`}
+                           >
+                              <div className="flex items-center gap-3">
+                                {unlockedModules.includes(idx) ? (
+                                  <PlayCircle size={18} className={currentModuleIndex === idx ? 'text-teal-500' : 'text-slate-400'} />
+                                ) : (
+                                  <Lock size={18} className="text-slate-400" />
+                                )}
+                                <span className="font-semibold text-sm">
+                                  {lang === 'ar' ? `الدرس ${idx + 1}` : `Lesson ${idx + 1}`}
+                                </span>
+                              </div>
+                              {currentModuleIndex > idx && <CheckCircle size={16} className="text-green-500" />}
+                           </button>
+                        ))}
+                     </div>
+                  </div>
+                </div>
+             </div>
+           )}
         </div>
-
-        {/* Content Area */}
-        {activeTab === 'courses' ? (
-          loading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="w-12 h-12 text-teal-400 animate-spin mb-4" />
-              <p className="text-teal-300 font-orbitron animate-pulse">
-                {lang === 'ar' ? 'جاري التحميل...' : 'Loading...'}
-              </p>
-            </div>
-          ) : currentCourses.length === 0 ? (
-            <div className="text-center py-20 bg-white/ dark:bg-slate-900/ rounded-2xl border border-slate-200/ dark:border-slate-700/">
-              <p className="text-slate-600 dark:text-slate-400">{lang === 'ar' ? 'لا توجد دورات.' : 'No courses found.'}</p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-8 max-w-7xl mx-auto">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {currentCourses.map((course, index) => (
-                  <motion.div 
-                    key={course.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="group cursor-pointer relative rounded-2xl overflow-hidden aspect-square border border-slate-200 dark:border-slate-700/50 hover:border-teal-500/50 shadow-lg hover:shadow-[0_0_30px_rgba(20,184,166,0.2)] transition-all bg-white dark:bg-slate-900"
-                    onClick={() => startCourse(course)}
-                  >
-                    {/* Background Image */}
-                    <img 
-                      src={course.thumbnail || 'https://via.placeholder.com/600x600?text=Course'} 
-                      alt="Course Thumbnail" 
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                    />
-                    
-                    {/* Dark Overlay Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
-                    
-                    {/* Content */}
-                    <div className="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                      {/* Top Badges */}
-                      <div className="flex justify-between items-start">
-                        <div className="bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-teal-300 text-xs font-bold shadow-xl">
-                          {course.track}
-                        </div>
-                      </div>
-
-                      {/* Bottom Reveal Content */}
-                      <div className="transform translate-y-8 group-hover:translate-y-0 transition-transform duration-300">
-                        <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 font-orbitron group-hover:text-teal-300 transition-colors drop-shadow-md">
-                          {getLocalized(course, 'title', lang)}
-                        </h3>
-                        
-                        <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                          {getLocalized(course, 'description', lang)}
-                        </p>
-                        
-                        <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-150">
-                          <button 
-                            className="w-full py-3 bg-teal-500 hover:bg-teal-400 text-white rounded-xl font-bold transition-all shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              startCourse(course);
-                            }}
-                          >
-                            <PlayCircle size={18} />
-                            {lang === 'ar' ? 'ابدأ التعلم' : 'Start Learning'}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-              {totalPages > 1 && (
-                <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-              )}
-            </div>
-          )
-        ) : (
-          /* Library Tab */
-          booksLoading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="w-12 h-12 text-indigo-400 animate-spin mb-4" />
-              <p className="text-indigo-300 font-orbitron animate-pulse">
-                {lang === 'ar' ? 'جاري البحث عن الكتب...' : 'Searching for books...'}
-              </p>
-            </div>
-          ) : books.length === 0 ? (
-            <div className="text-center py-20 bg-white/ dark:bg-slate-900/ rounded-2xl border border-slate-200/ dark:border-slate-700/">
-              <BookOpen className="w-16 h-16 text-slate-500 mx-auto mb-4 opacity-50" />
-              <p className="text-slate-600 dark:text-slate-400 text-lg">{lang === 'ar' ? 'لا توجد كتب مطابقة لبحثك.' : 'No books found for your search.'}</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-              {books.map((book, idx) => {
-                const info = book.volumeInfo;
-                const thumbnail = info.imageLinks?.thumbnail || 'https://via.placeholder.com/150x200?text=No+Cover';
-                return (
-                  <motion.div
-                    key={book.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.05 }}
-                    className="glass-card hover-lift card-3d rounded-2xl overflow-hidden border border-slate-200/ dark:border-slate-700/ hover:border-indigo-500/50 group flex flex-col bg-white/ dark:bg-slate-900/"
-                  >
-                    <div className="h-56 bg-slate-50 dark:bg-slate-800 flex items-center justify-center p-4 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent z-10" />
-                      <img src={thumbnail} alt={info.title} className="max-h-full max-w-full object-contain relative z-0 group-hover:scale-110 transition-transform duration-500" />
-                    </div>
-                    <div className="p-5 flex flex-col flex-1 relative z-20 -mt-6 bg-white/ dark:bg-slate-900/ backdrop-blur-md rounded-t-2xl border-t border-slate-200/ dark:border-slate-700/">
-                      <h3 className="text-lg font-bold text-white mb-1 line-clamp-2 group-hover:text-indigo-300 transition-colors" title={info.title}>
-                        {info.title}
-                      </h3>
-                      <p className="text-indigo-400 text-xs font-medium mb-3 truncate">
-                        {info.authors ? info.authors.join(', ') : 'Unknown Author'}
-                      </p>
-                      <p className="text-slate-600 dark:text-slate-400 text-xs line-clamp-3 mb-4 flex-1">
-                        {info.description || (lang === 'ar' ? 'لا يوجد وصف متاح لهذا الكتاب.' : 'No description available for this book.')}
-                      </p>
-                      <a 
-                        href={info.previewLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full py-2.5 bg-indigo-500/20 hover:bg-indigo-500 text-indigo-300 hover:text-white border border-indigo-500/30 rounded-xl font-bold transition-all text-center text-sm flex items-center justify-center gap-2"
-                      >
-                        <Search size={14} />
-                        {lang === 'ar' ? 'تصفح الكتاب' : 'Preview Book'}
-                      </a>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )
-        )}
       </div>
     );
   }
 
-  // --- LMS ACTIVE COURSE VIEW ---
-  const currentModule = activeCourse.modules[currentModuleIndex];
-
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0f172a] pt-20 flex flex-col md:flex-row">
-      
-      {/* Sidebar */}
-      <div className="w-full md:w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-[calc(100vh-80px)] md:sticky md:top-20 shrink-0">
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-          <h2 className="font-bold text-[#1e3a5f] dark:text-white line-clamp-1" title={lang === 'ar' ? activeCourse.title_ar : activeCourse.title_en}>
-            {lang === 'ar' ? activeCourse.title_ar : activeCourse.title_en}
-          </h2>
-          <button onClick={closeCourse} className="text-slate-600 dark:text-slate-400 hover:text-rose-500 transition-colors"><X size={20}/></button>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
-          {activeCourse.modules.map((mod, idx) => {
-            const isUnlocked = unlockedModules.includes(idx);
-            const isActive = idx === currentModuleIndex;
-            const isCompleted = unlockedModules.includes(idx + 1) || (idx === activeCourse.modules.length - 1 && courseCompleted);
+    <div className="w-full bg-slate-50 dark:bg-[#09090b] min-h-screen">
+      {/* Academy Hero */}
+      <div className="bg-[#1e3a5f] dark:bg-slate-900 text-white py-20 px-4 relative overflow-hidden">
+         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+         <div className="absolute inset-0 bg-gradient-to-r from-teal-900/80 to-blue-900/80"></div>
+         <div className="max-w-7xl mx-auto relative z-10 text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 font-orbitron">
+              {lang === 'ar' ? 'تعلم بلا حدود مع' : 'Learn Without Limits with'} <span className="text-teal-400">GITM</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto mb-10">
+              {lang === 'ar' ? 'اكتسب المهارات التي تحتاجها من أفضل الخبراء في التكنولوجيا والأعمال.' : 'Build the skills you need from top experts in technology and business.'}
+            </p>
             
-            return (
-              <button
-                key={mod.id}
-                disabled={!isUnlocked}
-                onClick={() => setCurrentModuleIndex(idx)}
-                className={`w-full text-left p-4 rounded-xl flex items-center gap-3 transition-all ${
-                  isActive ? 'bg-cyan-50 dark:bg-cyan-900/30 border border-cyan-200 dark:border-cyan-800' 
-                  : isUnlocked ? 'bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-50 dark:bg-slate-800' 
-                  : 'opacity-50 cursor-not-allowed'
-                }`}
-              >
-                {isCompleted ? (
-                  <CheckCircle size={20} className="text-emerald-500 shrink-0" />
-                ) : isUnlocked ? (
-                  <PlayCircle size={20} className={isActive ? 'text-cyan-500' : 'text-slate-600 dark:text-slate-400'} shrink-0 />
-                ) : (
-                  <Lock size={20} className="text-slate-600 dark:text-slate-400 shrink-0" />
-                )}
-                
-                <span className={`text-sm font-semibold line-clamp-2 ${isActive ? 'text-cyan-700 dark:text-cyan-400' : 'text-slate-600 dark:text-slate-300'}`}>
-                  {lang === 'ar' ? mod.title_ar : mod.title_en}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+            <div className="max-w-2xl mx-auto relative flex items-center">
+               <Search className="absolute left-4 text-slate-400 w-6 h-6" />
+               <input 
+                 type="text"
+                 value={searchQuery}
+                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                 placeholder={lang === 'ar' ? 'ماذا تريد أن تتعلم اليوم؟' : 'What do you want to learn today?'}
+                 className="w-full pl-14 pr-32 py-5 rounded-full text-slate-800 focus:outline-none focus:ring-4 focus:ring-teal-500/30 text-lg shadow-2xl"
+               />
+               <button className="absolute right-2 px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-full transition-colors">
+                 {lang === 'ar' ? 'بحث' : 'Search'}
+               </button>
+            </div>
+         </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-8">
         
-        {courseCompleted && (
-          <div className="p-6 border-t border-slate-200 dark:border-slate-800 bg-emerald-50 dark:bg-emerald-900/20">
-            <button onClick={generateCertificate} className="w-full bg-emerald-500 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-emerald-600 transition-colors flex justify-center items-center gap-2">
-              <Award size={20} /> {lang === 'ar' ? 'استخراج الشهادة' : 'Claim Certificate'}
-            </button>
-          </div>
-        )}
-      </div>
+        {/* Sidebar Filters */}
+        <div className="w-full lg:w-64 shrink-0">
+           <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm sticky top-24">
+              <div className="flex items-center gap-2 mb-6 text-slate-800 dark:text-white">
+                <Filter size={20} />
+                <h3 className="font-bold text-lg">{lang === 'ar' ? 'تصفية النتائج' : 'Filters'}</h3>
+              </div>
+              
+              <div className="mb-8">
+                <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+                  {lang === 'ar' ? 'التخصصات' : 'Categories'}
+                </h4>
+                <div className="flex flex-col gap-2">
+                   {categories.map(cat => (
+                     <label key={cat} className="flex items-center gap-3 cursor-pointer group">
+                        <input 
+                          type="radio" 
+                          name="category"
+                          checked={selectedCategory === cat}
+                          onChange={() => { setSelectedCategory(cat); setCurrentPage(1); }}
+                          className="w-4 h-4 text-teal-500 focus:ring-teal-500 border-gray-300"
+                        />
+                        <span className={`text-slate-700 dark:text-slate-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors ${selectedCategory === cat ? 'font-bold text-teal-600 dark:text-teal-400' : ''}`}>
+                          {cat}
+                        </span>
+                     </label>
+                   ))}
+                </div>
+              </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 bg-slate-50 dark:bg-[#0f172a] p-4 md:p-8 overflow-y-auto">
-        <div className="max-w-4xl mx-auto">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentModule.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              {currentModule.type === 'lesson' ? (
-                <LessonView 
-                  lesson={{
-                    title: lang === 'ar' ? currentModule.title_ar : currentModule.title_en,
-                    content: lang === 'ar' ? currentModule.content_ar : currentModule.content_en,
-                    videoUrl: currentModule.fileUrl || currentModule.videoUrl // fileUrl from new format
-                  }} 
-                  lang={lang} 
-                  onComplete={handleLessonComplete} 
-                />
-              ) : (
-                <QuizEngine 
-                  questions={currentModule.questions}
-                  lang={lang}
-                  onComplete={handleQuizComplete}
-                  onFail={handleQuizFail}
-                />
-              )}
-            </motion.div>
-          </AnimatePresence>
+              <div>
+                <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+                  {lang === 'ar' ? 'المستوى' : 'Level'}
+                </h4>
+                <div className="flex flex-col gap-2">
+                   {levels.map(lvl => (
+                     <label key={lvl} className="flex items-center gap-3 cursor-pointer group">
+                        <input 
+                          type="radio" 
+                          name="level"
+                          checked={selectedLevel === lvl}
+                          onChange={() => { setSelectedLevel(lvl); setCurrentPage(1); }}
+                          className="w-4 h-4 text-teal-500 focus:ring-teal-500 border-gray-300"
+                        />
+                        <span className={`text-slate-700 dark:text-slate-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors ${selectedLevel === lvl ? 'font-bold text-teal-600 dark:text-teal-400' : ''}`}>
+                          {lvl}
+                        </span>
+                     </label>
+                   ))}
+                </div>
+              </div>
+           </div>
+        </div>
+
+        {/* Course Grid */}
+        <div className="flex-1">
+          <div className="flex items-center justify-between mb-8">
+             <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+               {lang === 'ar' ? 'الدورات المتاحة' : 'Available Courses'}
+               <span className="text-slate-400 text-sm ml-3 font-normal">({filteredCourses.length} results)</span>
+             </h2>
+             
+             {/* Simple Tabs to switch to Library if needed */}
+             <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+               <button onClick={() => setActiveTab('courses')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'courses' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>
+                 Courses
+               </button>
+               <button onClick={() => setActiveTab('library')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'library' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>
+                 Books
+               </button>
+             </div>
+          </div>
+
+          {activeTab === 'courses' ? (
+            loading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="w-10 h-10 text-teal-500 animate-spin" />
+              </div>
+            ) : currentCourses.length === 0 ? (
+              <div className="text-center py-24 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+                <p className="text-slate-500 text-lg">{lang === 'ar' ? 'لا توجد دورات مطابقة للفلتر.' : 'No courses match your filters.'}</p>
+                <button onClick={() => { setSelectedCategory('All'); setSelectedLevel('All'); setSearchQuery(''); }} className="mt-4 text-teal-600 font-bold hover:underline">
+                  {lang === 'ar' ? 'مسح الفلاتر' : 'Clear Filters'}
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-6">
+                {currentCourses.map((course, idx) => (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.05 }}
+                    key={course.id}
+                    onClick={() => startCourse(course)}
+                    className="flex flex-col sm:flex-row bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-xl hover:border-teal-500/30 transition-all cursor-pointer group"
+                  >
+                    <div className="w-full sm:w-72 h-48 sm:h-auto relative overflow-hidden shrink-0">
+                      <img src={course.thumbnail || 'https://via.placeholder.com/400x300'} alt="Course Thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    
+                    <div className="p-6 flex flex-col justify-between flex-1">
+                       <div>
+                         <div className="flex items-center gap-2 mb-2">
+                           <span className="text-xs font-bold px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-md">
+                             {course.track || 'Tech'}
+                           </span>
+                           <span className="text-xs font-bold px-2 py-1 bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-md">
+                             {course.level || 'Intermediate'}
+                           </span>
+                         </div>
+                         <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+                           {getLocalized(course, 'title', lang)}
+                         </h3>
+                         <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">
+                           {getLocalized(course, 'description', lang)}
+                         </p>
+                       </div>
+                       
+                       <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4 mt-auto">
+                          <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                             <div className="flex items-center gap-1 font-bold text-slate-700 dark:text-slate-200">
+                               <Star size={16} className="text-yellow-400" fill="currentColor" />
+                               {course.rating || '4.8'}
+                             </div>
+                             <div className="flex items-center gap-1">
+                               <Users size={16} />
+                               {(course.students || 0).toLocaleString()}
+                             </div>
+                          </div>
+                          
+                          <div className="text-teal-600 dark:text-teal-400 font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform rtl:group-hover:-translate-x-1">
+                            {lang === 'ar' ? 'عرض التفاصيل' : 'View Details'}
+                            <ArrowRight size={16} className="rtl:rotate-180" />
+                          </div>
+                       </div>
+                    </div>
+                  </motion.div>
+                ))}
+                
+                {totalPages > 1 && (
+                  <div className="mt-8">
+                    <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+                  </div>
+                )}
+              </div>
+            )
+          ) : (
+            /* Library View */
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+               {booksLoading ? (
+                 <div className="col-span-full py-20 text-center"><Loader2 className="w-10 h-10 text-indigo-500 animate-spin mx-auto" /></div>
+               ) : books.map((book, idx) => {
+                 const info = book.volumeInfo;
+                 const thumbnail = info.imageLinks?.thumbnail || 'https://via.placeholder.com/150x200?text=No+Cover';
+                 return (
+                   <div key={book.id} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-xl transition-all flex flex-col">
+                      <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden mb-4 bg-slate-100 dark:bg-slate-800">
+                        <img src={thumbnail} alt={info.title} className="w-full h-full object-cover" />
+                      </div>
+                      <h4 className="font-bold text-slate-800 dark:text-white line-clamp-2 mb-1">{info.title}</h4>
+                      <p className="text-xs text-slate-500 mb-4">{info.authors?.join(', ') || 'Unknown Author'}</p>
+                      
+                      <a 
+                        href={info.previewLink} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="mt-auto block w-full py-2.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-center font-bold rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
+                      >
+                        {lang === 'ar' ? 'تصفح الكتاب' : 'Read Preview'}
+                      </a>
+                   </div>
+                 )
+               })}
+            </div>
+          )}
         </div>
       </div>
-
     </div>
   );
 }
