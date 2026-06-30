@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Editor from '@monaco-editor/react';
-import { Play, RotateCcw, CheckCircle, XCircle, Code2, Terminal, AlertTriangle } from 'lucide-react';
+import { Play, RotateCcw, CheckCircle, XCircle, Code2, Terminal, AlertTriangle, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAI } from '../../hooks/useAI';
 
 const defaultCode = {
   javascript: `// Write your JavaScript algorithm here
@@ -43,47 +44,28 @@ export default function CodeSimulator({ lang = 'en' }) {
     setStatus(null);
   };
 
-  const handleRunCode = () => {
+  const { simulateCodeExecution, loading: aiLoading } = useAI();
+
+  const handleRunCode = async () => {
     setIsRunning(true);
     setStatus(null);
     setOutput(lang === 'ar' ? 'جاري التنفيذ...' : 'Running code...');
 
-    // Simulate network delay and execution (Judge0 API Mock)
-    setTimeout(() => {
-      setIsRunning(false);
-      
-      // Simple eval for JS, mock output for Python/C++
-      if (language === 'javascript') {
-        try {
-          // SAFE EVAL MOCK FOR DEMO PURPOSES ONLY
-          let mockConsole = [];
-          const originalConsoleLog = console.log;
-          console.log = (...args) => mockConsole.push(args.join(' '));
-          
-          // eslint-disable-next-line no-eval
-          eval(code);
-          
-          console.log = originalConsoleLog;
-          setOutput(mockConsole.join('\n') || (lang === 'ar' ? 'تم التنفيذ بنجاح (بدون مخرجات)' : 'Execution finished (no output)'));
-          setStatus('success');
-        } catch (err) {
-          setOutput(err.toString());
-          setStatus('error');
-        }
+    try {
+      const result = await simulateCodeExecution(code, language);
+      if (result && result.output) {
+        setOutput(result.output);
+        setStatus(result.status === 'success' ? 'success' : 'error');
       } else {
-        // Mock output for non-JS languages
-        if (code.includes('print(') || code.includes('cout')) {
-          setOutput('500');
-          setStatus('success');
-        } else if (code.includes('error') || code.includes('Exception')) {
-          setOutput('SyntaxError: unexpected token at line 4');
-          setStatus('error');
-        } else {
-          setOutput('Execution finished (no output)');
-          setStatus('success');
-        }
+        setOutput('Execution finished (no output)');
+        setStatus('success');
       }
-    }, 1500);
+    } catch (err) {
+      setOutput(err.toString());
+      setStatus('error');
+    } finally {
+      setIsRunning(false);
+    }
   };
 
   return (

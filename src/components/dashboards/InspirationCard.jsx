@@ -9,9 +9,11 @@ export default function InspirationCard({ lang = 'en' }) {
   const fetchFact = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://numbersapi.com/random/math?json');
+      const url = encodeURIComponent('http://numbersapi.com/random/math?json');
+      const response = await fetch(`https://api.allorigins.win/get?url=${url}`);
       const data = await response.json();
-      setFact(data.text);
+      const parsedData = JSON.parse(data.contents);
+      setFact(parsedData.text);
     } catch (error) {
       console.error('Failed to fetch from Numbers API:', error);
       setFact(lang === 'ar' ? 'الرياضيات هي لغة الكون.' : 'Mathematics is the language of the universe.');

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import { useAuth } from '../../context/AuthContext';
+import { useAI } from '../../hooks/useAI';
 import {
   BookOpen, Users, ClipboardCheck, Video, Settings, Edit3, FileText, Plus,
   BarChart3, TrendingUp, Award, Calendar, Play, Trash2, GraduationCap,
-  CheckCircle, Clock, Star, Target, PieChart, Loader2, UploadCloud
+  CheckCircle, Clock, Star, Target, PieChart, Loader2, UploadCloud, BrainCircuit
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
@@ -18,6 +18,7 @@ export default function TeacherDashboard() {
   const { lang } = useLanguage();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const { evaluateCode, loading: aiLoading } = useAI();
   const [activeTab, setActiveTab] = useState('courses');
   const [gradeInputs, setGradeInputs] = useState({});
   const [gradedItems, setGradedItems] = useState({});
@@ -82,11 +83,25 @@ export default function TeacherDashboard() {
   }, [teacherEmail]);
 
   const [studentSubmissions, setStudentSubmissions] = useState([
-    { id: 1, student: 'Aymane Benali', studentAr: 'أيمن بنعلي', assignment: 'Neural Network Model', assignmentAr: 'نموذج الشبكة العصبية', date: '2026-06-21', status: 'Needs Grading', course: 'Edge AI Development' },
-    { id: 2, student: 'Sara Khan', studentAr: 'سارة خان', assignment: 'Robotics Kinematics Report', assignmentAr: 'تقرير الحركيات', date: '2026-06-20', status: 'Needs Grading', course: 'Advanced Robotics Lab' },
-    { id: 3, student: 'Omar Tazi', studentAr: 'عمر التازي', assignment: 'Ethics Case Study', assignmentAr: 'دراسة حالة أخلاقية', date: '2026-06-19', status: 'Needs Grading', course: 'AI Ethics' },
-    { id: 4, student: 'Fatima Zahra', studentAr: 'فاطمة الزهراء', assignment: 'Sensor Calibration Lab', assignmentAr: 'مختبر معايرة المستشعرات', date: '2026-06-18', status: 'Needs Grading', course: 'Advanced Robotics Lab' },
+    { id: 1, student: 'Aymane Benali', studentAr: 'أيمن بنعلي', assignment: 'Neural Network Model', assignmentAr: 'نموذج الشبكة العصبية', date: '2026-06-21', status: 'Needs Grading', course: 'Edge AI Development', mockCode: 'def build_model():\n  return "Model"\n# Needs more layers', language: 'python' },
+    { id: 2, student: 'Sara Khan', studentAr: 'سارة خان', assignment: 'Robotics Kinematics Report', assignmentAr: 'تقرير الحركيات', date: '2026-06-20', status: 'Needs Grading', course: 'Advanced Robotics Lab', mockCode: 'import math\ndef calculate_kinematics(theta):\n  return math.sin(theta) * 10', language: 'python' },
+    { id: 3, student: 'Omar Tazi', studentAr: 'عمر التازي', assignment: 'Ethics Case Study', assignmentAr: 'دراسة حالة أخلاقية', date: '2026-06-19', status: 'Needs Grading', course: 'AI Ethics', mockCode: 'class EthicsEvaluator:\n  def evaluate(self, action):\n    return True', language: 'python' },
+    { id: 4, student: 'Fatima Zahra', studentAr: 'فاطمة الزهراء', assignment: 'Sensor Calibration Lab', assignmentAr: 'مختبر معايرة المستشعرات', date: '2026-06-18', status: 'Needs Grading', course: 'Advanced Robotics Lab', mockCode: 'void calibrateSensor() {\n  analogRead(A0);\n  delay(100);\n}', language: 'cpp' },
   ]);
+
+  const handleAIGrade = async (submission) => {
+    try {
+      const result = await evaluateCode(submission.mockCode, submission.language, submission.assignment);
+      if (result && result.score !== undefined) {
+        setGradeInputs(prev => ({ ...prev, [submission.id]: result.score }));
+        toast.success(lang === 'ar' ? 'تم التقييم بنجاح: ' + result.feedback : 'AI Graded: ' + result.feedback);
+      } else {
+        toast.error('AI could not grade this submission.');
+      }
+    } catch (err) {
+      toast.error('Failed to run AI Grader.');
+    }
+  };
 
   const analyticsData = {
     avgScore: 78.5,
@@ -551,6 +566,14 @@ export default function TeacherDashboard() {
                                   onChange={e => setGradeInputs(prev => ({ ...prev, [sub.id]: e.target.value }))}
                                   className="w-24 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-center font-bold text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-amber-500 outline-none"
                                 />
+                                <button
+                                  onClick={() => handleAIGrade(sub)}
+                                  disabled={aiLoading}
+                                  className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 p-2.5 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                                  title={lang === 'ar' ? 'تقييم تلقائي بالذكاء الاصطناعي' : 'AI Auto-Grade'}
+                                >
+                                  {aiLoading ? <Loader2 className="animate-spin" size={20} /> : <BrainCircuit size={20} className="text-purple-500" />}
+                                </button>
                                 <button
                                   onClick={() => handleGradeSubmit(sub.id)}
                                   disabled={!gradeInputs[sub.id]}

@@ -78,6 +78,30 @@ export const useAI = () => {
     return JSON.parse(result);
   }, []);
 
+  const evaluateCode = useCallback(async (code, language, problemDescription) => {
+    const systemPrompt = `You are an expert programming instructor and an automated grading system (like HackerRank). You will be given a problem description and the student's code in ${language}.
+Evaluate the code for correctness, efficiency, and edge cases. 
+Return a JSON object with: 
+- "score": an integer from 0 to 100
+- "feedback": a short string giving constructive feedback
+- "passed": boolean (true if score >= 70)
+- "improvements": an array of short strings with suggestions.
+DO NOT return markdown blocks, only raw JSON.`;
+    const result = await callOpenRouter(systemPrompt, `Problem: ${problemDescription}\n\nCode:\n${code}`, true, 'complex_json');
+    return JSON.parse(result);
+  }, []);
+
+  const simulateCodeExecution = useCallback(async (code, language) => {
+    const systemPrompt = `You are a code execution engine (like Judge0). The user provides code in ${language}. 
+Execute the code mentally and return the exact standard output (stdout) and standard error (stderr).
+Return a JSON object with strictly these keys:
+- "output": a string containing the exact stdout and stderr (or compilation error).
+- "status": string "success" if it runs successfully, or "error" if it crashes or fails to compile.
+DO NOT return markdown blocks, only raw JSON.`;
+    const result = await callOpenRouter(systemPrompt, code, true, 'complex_json');
+    return JSON.parse(result);
+  }, []);
+
   return {
     loading,
     error,
@@ -86,6 +110,8 @@ export const useAI = () => {
     summarize,
     generateSEO,
     moderateContent,
-    generateQuiz
+    generateQuiz,
+    evaluateCode,
+    simulateCodeExecution
   };
 };
