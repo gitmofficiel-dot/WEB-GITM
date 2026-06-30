@@ -58,13 +58,13 @@ const CurriculumSidebar = ({ course, activeIds, setActiveIds, completedLessons }
           <div key={mod.id} className="mb-2">
             <button 
               onClick={() => toggleModule(mod.id)}
-              className="w-full flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-left"
+              className="w-full flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-50 dark:bg-slate-800 rounded-xl transition-colors text-left"
             >
               <div className="flex flex-col">
                  <span className="text-xs font-bold text-teal-600 dark:text-teal-400 mb-1">{lang === 'ar' ? 'الوحدة' : 'Module'} {modIdx + 1}</span>
                  <span className="font-bold text-sm text-[#1e3a5f] dark:text-slate-200">{mod.title}</span>
               </div>
-              {expandedModules.includes(mod.id) ? <ChevronDown size={18} className="text-slate-400" /> : <ChevronRight size={18} className="text-slate-400" />}
+              {expandedModules.includes(mod.id) ? <ChevronDown size={18} className="text-slate-600 dark:text-slate-400" /> : <ChevronRight size={18} className="text-slate-600 dark:text-slate-400" />}
             </button>
 
             <AnimatePresence>
@@ -87,13 +87,13 @@ const CurriculumSidebar = ({ course, activeIds, setActiveIds, completedLessons }
                           className={`w-full flex items-center gap-3 p-2.5 rounded-lg text-left transition-all ${
                             isActive 
                               ? 'bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300' 
-                              : 'hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400'
+                              : 'hover:bg-slate-50 dark:hover:bg-slate-50/ dark:bg-slate-800/ text-slate-600 dark:text-slate-400'
                           }`}
                         >
                           {isCompleted ? (
                             <CheckCircle size={16} className="text-emerald-500 shrink-0" />
                           ) : (
-                            <PlayCircle size={16} className={`${isActive ? 'text-teal-500' : 'text-slate-400'} shrink-0`} />
+                            <PlayCircle size={16} className={`${isActive ? 'text-teal-500' : 'text-slate-600 dark:text-slate-400'} shrink-0`} />
                           )}
                           <span className={`text-sm flex-1 ${isActive ? 'font-bold' : 'font-medium'}`}>
                             {lessonIdx + 1}. {lesson.title}
@@ -136,7 +136,7 @@ const ClassroomTabs = ({ lesson, courseDescription }) => {
             className={`flex items-center gap-2 px-6 py-4 font-bold text-sm transition-colors border-b-2 whitespace-nowrap ${
               activeTab === tab.id 
                 ? 'border-teal-500 text-teal-600 dark:text-teal-400 bg-teal-50/50 dark:bg-teal-900/10' 
-                : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-600 dark:text-slate-300'
             }`}
           >
             <tab.icon size={16} /> {tab.label}
@@ -217,7 +217,7 @@ const ClassroomTabs = ({ lesson, courseDescription }) => {
                        <h4 className="font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'ملفات المشروع' : 'Project Files'}</h4>
                        <p className="text-xs text-slate-500">ZIP / PDF Archive</p>
                      </div>
-                     <Download size={20} className="ml-auto text-slate-300 group-hover:text-teal-500" />
+                     <Download size={20} className="ml-auto text-slate-600 dark:text-slate-300 group-hover:text-teal-500" />
                   </a>
                 ) : (
                   <p className="text-slate-500 italic">{lang === 'ar' ? 'لا توجد مرفقات لهذا الدرس' : 'No attachments for this lesson'}</p>
@@ -227,7 +227,7 @@ const ClassroomTabs = ({ lesson, courseDescription }) => {
 
             {activeTab === 'visuals' && (
               <div className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
-                 <ImageIcon size={48} className="text-slate-300 mb-4" />
+                 <ImageIcon size={48} className="text-slate-600 dark:text-slate-300 mb-4" />
                  <p className="text-slate-500 font-bold">{lang === 'ar' ? 'مساحة المخططات والصور قيد التطوير' : 'Visuals space under development'}</p>
                  <button className="mt-4 text-teal-500 flex items-center gap-2 text-sm font-bold hover:underline">
                    <ZoomIn size={16} /> {lang === 'ar' ? 'تكبير المخطط' : 'Zoom Schematic'}
@@ -334,9 +334,9 @@ export default function ClassroomTheater() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1a] flex flex-col" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Top Navigation */}
-      <div className="h-16 bg-[#1e3a5f] dark:bg-[#0a0f1a] border-b border-slate-700 flex items-center px-4 md:px-6 justify-between sticky top-0 z-50">
+      <div className="h-16 bg-[#1e3a5f] dark:bg-[#0a0f1a] border-b border-slate-200 dark:border-slate-700 flex items-center px-4 md:px-6 justify-between sticky top-0 z-50">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/academy')} className="text-slate-300 hover:text-white transition-colors p-2 hover:bg-slate-800 rounded-lg">
+          <button onClick={() => navigate('/academy')} className="text-slate-600 dark:text-slate-300 hover:text-white transition-colors p-2 hover:bg-slate-50 dark:bg-slate-800 rounded-lg">
             <ArrowLeft size={20} className={lang === 'ar' ? 'rotate-180' : ''} />
           </button>
           <div className="hidden sm:block w-px h-6 bg-slate-700"></div>

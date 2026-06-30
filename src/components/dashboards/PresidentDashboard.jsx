@@ -313,13 +313,13 @@ export default function PresidentDashboard() {
     };
 
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/ dark:bg-slate-900/ backdrop-blur-sm animate-fade-in">
         <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white">
               {isEdit ? (lang==='ar'?'تعديل':'Edit') : (lang==='ar'?'إضافة جديد':'Add New')}
             </h3>
-            <button onClick={closeModal} className="text-slate-400 hover:text-red-500 transition-colors p-2"><X size={20}/></button>
+            <button onClick={closeModal} className="text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors p-2"><X size={20}/></button>
           </div>
           <div className="mb-6">
             {renderFields()}
@@ -336,7 +336,7 @@ export default function PresidentDashboard() {
   const ConfirmDialog = () => {
     if (!confirmDialog.isOpen) return null;
     return (
-      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-white/ dark:bg-slate-900/ backdrop-blur-sm animate-fade-in">
         <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-700 text-center">
           <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle size={32} />
@@ -377,7 +377,7 @@ export default function PresidentDashboard() {
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
                     isActive 
                     ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30 translate-x-2' 
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-cyan-50 dark:hover:bg-slate-800 hover:text-cyan-600 dark:hover:text-cyan-400'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-cyan-50 dark:hover:bg-slate-50 dark:bg-slate-800 hover:text-cyan-600 dark:hover:text-cyan-400'
                   }`}
                 >
                   <Icon size={18} className={isActive ? 'animate-pulse' : ''} />
@@ -551,7 +551,7 @@ export default function PresidentDashboard() {
                     </div>
                     <button onClick={() => {
                         toast.success(lang === 'ar' ? 'تم نسخ رابط الدعوة للفريق: https://gitm.ma/invite/XYZ-123' : 'Team Invite Link Copied: https://gitm.ma/invite/XYZ-123');
-                    }} className="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg hover:bg-slate-700 transition-colors">
+                    }} className="bg-slate-50 dark:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg hover:bg-slate-700 transition-colors">
                       <Link size={16}/> {lang === 'ar' ? 'إنشاء رابط دعوة' : 'Generate Invite Link'}
                     </button>
                   </div>
@@ -568,7 +568,7 @@ export default function PresidentDashboard() {
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                         {firebaseUsers.map(m => (
-                          <tr key={m.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${m.role === 'suspended' ? 'opacity-50' : ''}`}>
+                          <tr key={m.id} className={`hover:bg-slate-50 dark:hover:bg-slate-50/ dark:bg-slate-800/ transition-colors ${m.role === 'suspended' ? 'opacity-50' : ''}`}>
                             <td className="p-3">
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 text-white flex items-center justify-center font-bold shadow-sm">
@@ -607,8 +607,8 @@ export default function PresidentDashboard() {
                             </td>
                             <td className="p-3 text-right">
                               <div className="flex justify-end gap-2">
-                                <button onClick={() => navigate(`/profile/${m.id}`)} className="p-2 text-slate-400 hover:text-cyan-500 transition-colors bg-slate-100 dark:bg-slate-800 rounded-lg"><Eye size={16}/></button>
-                                <button onClick={() => handleDelete('member', m.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors bg-slate-100 dark:bg-slate-800 rounded-lg"><Trash2 size={16}/></button>
+                                <button onClick={() => navigate(`/profile/${m.id}`)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-cyan-500 transition-colors bg-slate-100 dark:bg-slate-800 rounded-lg"><Eye size={16}/></button>
+                                <button onClick={() => handleDelete('member', m.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors bg-slate-100 dark:bg-slate-800 rounded-lg"><Trash2 size={16}/></button>
                               </div>
                             </td>
                           </tr>
@@ -708,14 +708,14 @@ export default function PresidentDashboard() {
                       <h5 className="font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2"><UserPlus size={18}/> {lang === 'ar' ? 'إضافة أعضاء لفريق مشروعك' : 'Add Team Members to Your Project'}</h5>
                       <div className="flex gap-2">
                         <div className="relative flex-1">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18}/>
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-400" size={18}/>
                           <input 
                             type="text" 
                             placeholder={lang === 'ar' ? 'ابحث بالاسم أو رقم العضوية...' : 'Search registered members by name or ID...'}
                             className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                           />
                         </div>
-                        <button className="bg-slate-800 dark:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-900 dark:hover:bg-slate-600 transition-colors">
+                        <button className="bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-white dark:bg-slate-900 dark:hover:bg-slate-600 transition-colors">
                           {lang === 'ar' ? 'إضافة' : 'Add Member'}
                         </button>
                       </div>
@@ -741,8 +741,8 @@ export default function PresidentDashboard() {
                         </div>
                         <div className="flex items-center gap-3 mt-4 md:mt-0">
                           <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold">{event.status}</span>
-                          <button onClick={() => openModal('event', event)} className="p-2 text-slate-400 hover:text-blue-500 transition-colors"><Edit size={16}/></button>
-                          <button onClick={() => handleDelete('event', event.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
+                          <button onClick={() => openModal('event', event)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors"><Edit size={16}/></button>
+                          <button onClick={() => handleDelete('event', event.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
                         </div>
                       </div>
                     ))}
@@ -796,8 +796,8 @@ export default function PresidentDashboard() {
                       <div className="flex items-center gap-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${n.status === 'Published' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>{n.status}</span>
                         <div className="flex gap-2 border-l border-slate-200 dark:border-slate-700 pl-4">
-                          <button onClick={() => openModal('news', n)} className="text-slate-400 hover:text-blue-500 p-2 transition-colors"><Edit size={16}/></button>
-                          <button onClick={() => handleDelete('news', n.id)} className="text-slate-400 hover:text-red-500 p-2 transition-colors"><Trash2 size={16}/></button>
+                          <button onClick={() => openModal('news', n)} className="text-slate-600 dark:text-slate-400 hover:text-blue-500 p-2 transition-colors"><Edit size={16}/></button>
+                          <button onClick={() => handleDelete('news', n.id)} className="text-slate-600 dark:text-slate-400 hover:text-red-500 p-2 transition-colors"><Trash2 size={16}/></button>
                         </div>
                       </div>
                     </div>
@@ -821,9 +821,9 @@ export default function PresidentDashboard() {
                       <div key={img.id} className="relative group rounded-xl overflow-hidden aspect-square bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                         <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 mix-blend-overlay"></div>
                         <div className="absolute inset-0 flex items-center justify-center opacity-30 group-hover:scale-110 transition-transform duration-500">
-                          <Image size={48} className="text-slate-400" />
+                          <Image size={48} className="text-slate-600 dark:text-slate-400" />
                         </div>
-                        <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
+                        <div className="absolute inset-0 bg-white/ dark:bg-slate-900/ opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
                           <button onClick={() => openModal('gallery', img)} className="p-2 bg-white/10 hover:bg-blue-500 text-white rounded-lg transition-colors"><Edit size={16}/></button>
                           <button onClick={() => handleDelete('gallery', img.id)} className="p-2 bg-white/10 hover:bg-red-500 text-white rounded-lg transition-colors"><Trash2 size={16}/></button>
                         </div>
@@ -862,7 +862,7 @@ export default function PresidentDashboard() {
                         <p className="flex justify-between"><span>Model:</span> <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 rounded">{aiSettings.moderation.model}</span></p>
                         <p className="flex justify-between"><span>Actions/Day:</span> <span className="font-bold">{aiSettings.moderation.actions}</span></p>
                       </div>
-                      <button onClick={() => openModal('ai', {type: 'moderation', model: aiSettings.moderation.model, param: aiSettings.moderation.actions})} className="mt-4 w-full py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#1e3a5f] dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Configure Rules</button>
+                      <button onClick={() => openModal('ai', {type: 'moderation', model: aiSettings.moderation.model, param: aiSettings.moderation.actions})} className="mt-4 w-full py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#1e3a5f] dark:text-white hover:bg-slate-50 dark:hover:bg-slate-50 dark:bg-slate-800 transition-colors">Configure Rules</button>
                     </div>
 
                     <div className="p-5 bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
@@ -881,7 +881,7 @@ export default function PresidentDashboard() {
                         <p className="flex justify-between"><span>Model:</span> <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 rounded">{aiSettings.predictive.model}</span></p>
                         <p className="flex justify-between"><span>Confidence Threshold:</span> <span className="font-bold">{aiSettings.predictive.threshold}%</span></p>
                       </div>
-                      <button onClick={() => openModal('ai', {type: 'predictive', model: aiSettings.predictive.model, param: aiSettings.predictive.threshold})} className="mt-4 w-full py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#1e3a5f] dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Adjust Parameters</button>
+                      <button onClick={() => openModal('ai', {type: 'predictive', model: aiSettings.predictive.model, param: aiSettings.predictive.threshold})} className="mt-4 w-full py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#1e3a5f] dark:text-white hover:bg-slate-50 dark:hover:bg-slate-50 dark:bg-slate-800 transition-colors">Adjust Parameters</button>
                     </div>
                   </div>
                 </div>

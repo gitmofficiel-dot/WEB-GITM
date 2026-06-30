@@ -90,7 +90,7 @@ export default function EventsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-400 max-w-2xl mx-auto text-lg"
+            className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg"
           >
             {lang === 'ar' ? 'انضم إلينا في ورش العمل والهاكاثونات والمؤتمرات التقنية في جميع أنحاء المغرب.' : 
              lang === 'fr' ? 'Rejoignez-nous pour des ateliers, des hackathons et des conférences tech à travers le Maroc.' : 
@@ -134,7 +134,7 @@ export default function EventsPage() {
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5, type: 'spring' }}
-                className="glass-card card-3d rounded-2xl overflow-hidden flex flex-col border border-slate-700/50 hover:border-teal-500/50 hover:shadow-[0_0_40px_rgba(20,184,166,0.15)] transition-all duration-500 group bg-slate-900/40 backdrop-blur-md"
+                className="glass-card card-3d rounded-2xl overflow-hidden flex flex-col border border-slate-200/ dark:border-slate-700/ hover:border-teal-500/50 hover:shadow-[0_0_40px_rgba(20,184,166,0.15)] transition-all duration-500 group bg-white/ dark:bg-slate-900/ backdrop-blur-md"
               >
                 <div className="h-56 relative overflow-hidden">
                   <img src={evt.imageUrl || evt.image} alt="Event" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
@@ -162,25 +162,25 @@ export default function EventsPage() {
                   </h3>
                   
                   <div className="space-y-4 mb-8 flex-grow">
-                    <div className="flex items-center gap-4 text-slate-300 bg-slate-800/30 p-2.5 rounded-lg border border-slate-700/30">
+                    <div className="flex items-center gap-4 text-slate-600 dark:text-slate-300 bg-slate-50/ dark:bg-slate-800/ p-2.5 rounded-lg border border-slate-200/ dark:border-slate-700/">
                       <div className="p-2 bg-teal-500/10 rounded-md">
                         <CalendarIcon className="w-4 h-4 text-teal-400" />
                       </div>
                       <span className="font-medium">{evt.startDate}</span>
                     </div>
-                    <div className="flex items-center gap-4 text-slate-300 bg-slate-800/30 p-2.5 rounded-lg border border-slate-700/30">
+                    <div className="flex items-center gap-4 text-slate-600 dark:text-slate-300 bg-slate-50/ dark:bg-slate-800/ p-2.5 rounded-lg border border-slate-200/ dark:border-slate-700/">
                       <div className="p-2 bg-teal-500/10 rounded-md">
                         <Clock className="w-4 h-4 text-teal-400" />
                       </div>
                       <span className="font-medium">{evt.startTime}</span>
                     </div>
-                    <div className="flex items-center gap-4 text-slate-300 bg-slate-800/30 p-2.5 rounded-lg border border-slate-700/30">
+                    <div className="flex items-center gap-4 text-slate-600 dark:text-slate-300 bg-slate-50/ dark:bg-slate-800/ p-2.5 rounded-lg border border-slate-200/ dark:border-slate-700/">
                       <div className="p-2 bg-teal-500/10 rounded-md">
                         <MapPin className="w-4 h-4 text-teal-400" />
                       </div>
                       <span className="font-medium">{evt.mode === 'Online' ? 'عن بُعد' : evt.location}</span>
                     </div>
-                    <div className="flex items-center gap-4 text-slate-300 bg-slate-800/30 p-2.5 rounded-lg border border-slate-700/30">
+                    <div className="flex items-center gap-4 text-slate-600 dark:text-slate-300 bg-slate-50/ dark:bg-slate-800/ p-2.5 rounded-lg border border-slate-200/ dark:border-slate-700/">
                       <div className="p-2 bg-teal-500/10 rounded-md">
                         <Users className="w-4 h-4 text-teal-400" />
                       </div>
@@ -194,7 +194,7 @@ export default function EventsPage() {
                       <ArrowRight className={`w-5 h-5 group-hover/btn:translate-x-1 transition-transform ${lang === 'ar' ? 'rotate-180 group-hover/btn:-translate-x-1' : ''}`} />
                     </button>
                   ) : (
-                    <button disabled className="w-full py-3 rounded-xl glass text-slate-400 font-medium cursor-not-allowed">
+                    <button disabled className="w-full py-3 rounded-xl glass text-slate-600 dark:text-slate-400 font-medium cursor-not-allowed">
                       {lang === 'ar' ? 'التسجيل مغلق' : lang === 'fr' ? 'Inscriptions fermées' : 'Registration Closed'}
                     </button>
                   )}

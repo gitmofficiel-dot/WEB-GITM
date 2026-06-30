@@ -186,7 +186,7 @@ export default function SmartEventEditor({ initialData, onCancel, onSave }) {
                       <h4 className="font-bold text-slate-800 dark:text-white">{item.title}</h4>
                       {item.desc && <p className="text-sm text-slate-500 mt-1">{item.desc}</p>}
                     </div>
-                    <button onClick={() => handleRemoveAgenda(item.id)} className="text-slate-400 hover:text-red-500 shrink-0"><Trash2 size={18}/></button>
+                    <button onClick={() => handleRemoveAgenda(item.id)} className="text-slate-600 dark:text-slate-400 hover:text-red-500 shrink-0"><Trash2 size={18}/></button>
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -325,9 +325,9 @@ export default function SmartEventEditor({ initialData, onCancel, onSave }) {
                 </div>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-white/ dark:bg-slate-900/ transition-colors">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <ImageIcon size={24} className="text-slate-400 mb-2"/>
+                  <ImageIcon size={24} className="text-slate-600 dark:text-slate-400 mb-2"/>
                   <p className="text-xs text-slate-500 font-bold">{lang === 'ar' ? 'انقر لرفع صورة' : 'Click to upload image'}</p>
                 </div>
                 <input type="file" className="hidden" accept="image/*" onChange={onImageChange} />

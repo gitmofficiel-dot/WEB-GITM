@@ -47,7 +47,7 @@ export default function ForgotPassword() {
             <div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 rtl:right-0 rtl:left-auto flex items-center pl-3 rtl:pr-3 pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
+                  <Mail className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                 </div>
                 <input
                   type="email"

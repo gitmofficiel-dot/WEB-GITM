@@ -147,7 +147,7 @@ export default function EventDetails() {
                   </h3>
                   
                   {/* Video Placeholder */}
-                  <div className="mb-6 relative rounded-xl overflow-hidden aspect-video bg-slate-900 group cursor-pointer shadow-lg">
+                  <div className="mb-6 relative rounded-xl overflow-hidden aspect-video bg-white dark:bg-slate-900 group cursor-pointer shadow-lg">
                     <img src={viewDetailsEvent.image || IMAGES[1]} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" alt="Video cover" />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-16 h-16 bg-cyan-500/80 backdrop-blur rounded-full flex items-center justify-center group-hover:bg-cyan-400 transition-colors">

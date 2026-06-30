@@ -257,7 +257,7 @@ export default function TeacherDashboard() {
   const ConfirmDialogComponent = () => {
     if (!confirmDialog.isOpen) return null;
     return (
-      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-white/ dark:bg-slate-900/ backdrop-blur-sm animate-fade-in">
         <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-700 text-center">
           <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <Trash2 size={32} />
@@ -297,7 +297,7 @@ export default function TeacherDashboard() {
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
                     activeTab === tab.id
                     ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/20'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-50 dark:bg-slate-800'
                   }`}
                 >
                   <Icon size={18} /> {tab.label}
@@ -371,7 +371,7 @@ export default function TeacherDashboard() {
                           </label>
                         </div>
                         <div className="flex justify-end gap-3">
-                          <button onClick={() => setShowCreateCourse(false)} className="px-4 py-2 rounded-xl font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                          <button onClick={() => setShowCreateCourse(false)} className="px-4 py-2 rounded-xl font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-50 dark:bg-slate-800 transition-colors">
                             {lang === 'ar' ? 'إلغاء' : 'Cancel'}
                           </button>
                           <button onClick={handleCreateCourse} disabled={isCreatingCourse} className="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2">
@@ -434,7 +434,7 @@ export default function TeacherDashboard() {
                                 />
                               </div>
                               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-                                <label className="flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors w-full md:w-auto">
+                                <label className="flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-50 dark:bg-slate-800 transition-colors w-full md:w-auto">
                                   <UploadCloud size={18} />
                                   <span className="truncate max-w-[200px]">{lessonFile ? lessonFile.name : (lang === 'ar' ? 'رفع ملف (PDF/فيديو)' : 'Upload File (PDF/Video)')}</span>
                                   <input type="file" className="hidden" onChange={e => setLessonFile(e.target.files[0])} />
@@ -453,7 +453,7 @@ export default function TeacherDashboard() {
 
                       {/* Lessons List */}
                       <div className="space-y-2">
-                        <h5 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-2">
+                        <h5 className="text-xs uppercase font-bold text-slate-600 dark:text-slate-400 tracking-wider mb-2">
                           {lang === 'ar' ? 'قائمة الدروس' : 'Lesson List'} ({course.lessons.length})
                         </h5>
                         {course.lessons.map((lesson, li) => (
@@ -464,7 +464,7 @@ export default function TeacherDashboard() {
                               <span className="w-7 h-7 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center text-xs font-bold text-slate-500">{li + 1}</span>
                               <div>
                                 <p className="font-semibold text-sm text-[#1e3a5f] dark:text-white">{lang === 'ar' ? lesson.titleAr : lesson.title}</p>
-                                <p className="text-xs text-slate-400 flex items-center gap-1"><Clock size={10}/> {lesson.duration}</p>
+                                <p className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1"><Clock size={10}/> {lesson.duration}</p>
                               </div>
                             </div>
                             <button onClick={() => handleDeleteLesson(course.id, lesson.id)}
@@ -532,7 +532,7 @@ export default function TeacherDashboard() {
                             <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1 mt-1">
                               <FileText size={14}/> {lang === 'ar' ? sub.assignmentAr : sub.assignment}
                             </p>
-                            <p className="text-xs text-slate-400 flex items-center gap-1 mt-1"><Calendar size={12}/> {sub.date}</p>
+                            <p className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1 mt-1"><Calendar size={12}/> {sub.date}</p>
                           </div>
 
                           <div className="flex items-center gap-3">
@@ -617,7 +617,7 @@ export default function TeacherDashboard() {
                               <span className="text-[10px] font-bold text-white">{g.count}</span>
                             </motion.div>
                           </div>
-                          <span className="text-xs font-bold text-slate-400 w-10 text-right">{g.pct}%</span>
+                          <span className="text-xs font-bold text-slate-600 dark:text-slate-400 w-10 text-right">{g.pct}%</span>
                         </div>
                       ))}
                     </div>
@@ -637,7 +637,7 @@ export default function TeacherDashboard() {
                             <span className="text-xl">{stu.badge}</span>
                             <div>
                               <p className="font-semibold text-sm text-[#1e3a5f] dark:text-white">{lang === 'ar' ? stu.nameAr : stu.name}</p>
-                              <p className="text-xs text-slate-400">{lang === 'ar' ? 'المتوسط العام' : 'Overall Average'}</p>
+                              <p className="text-xs text-slate-600 dark:text-slate-400">{lang === 'ar' ? 'المتوسط العام' : 'Overall Average'}</p>
                             </div>
                           </div>
                           <span className={`text-lg font-bold ${stu.avg >= 90 ? 'text-emerald-500' : 'text-blue-500'}`}>{stu.avg}%</span>
@@ -660,13 +660,13 @@ export default function TeacherDashboard() {
                         transition={{ delay: 0.5 + i * 0.05, duration: 0.4 }}
                         className="flex-1 bg-gradient-to-t from-blue-500 to-cyan-400 rounded-t-lg relative group cursor-pointer hover:from-blue-600 hover:to-cyan-500 transition-all"
                       >
-                        <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                        <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-50 dark:bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                           {val}%
                         </div>
                       </motion.div>
                     ))}
                   </div>
-                  <div className="flex justify-between mt-2 text-[10px] text-slate-400 font-bold">
+                  <div className="flex justify-between mt-2 text-[10px] text-slate-600 dark:text-slate-400 font-bold">
                     {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map(m => (
                       <span key={m}>{m}</span>
                     ))}
@@ -707,15 +707,15 @@ export default function TeacherDashboard() {
 
                       <div className="grid grid-cols-3 gap-3 mb-4">
                         <div className="text-center p-2 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                          <Calendar size={14} className="mx-auto text-slate-400 mb-1"/>
+                          <Calendar size={14} className="mx-auto text-slate-600 dark:text-slate-400 mb-1"/>
                           <p className="text-xs font-bold text-[#1e3a5f] dark:text-white">{session.date}</p>
                         </div>
                         <div className="text-center p-2 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                          <Clock size={14} className="mx-auto text-slate-400 mb-1"/>
+                          <Clock size={14} className="mx-auto text-slate-600 dark:text-slate-400 mb-1"/>
                           <p className="text-xs font-bold text-[#1e3a5f] dark:text-white">{session.time}</p>
                         </div>
                         <div className="text-center p-2 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                          <Users size={14} className="mx-auto text-slate-400 mb-1"/>
+                          <Users size={14} className="mx-auto text-slate-600 dark:text-slate-400 mb-1"/>
                           <p className="text-xs font-bold text-[#1e3a5f] dark:text-white">{session.participants}</p>
                         </div>
                       </div>
@@ -725,7 +725,7 @@ export default function TeacherDashboard() {
                         className={`w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
                           session.status === 'upcoming'
                             ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:shadow-lg hover:shadow-indigo-500/20 hover:scale-[1.02]'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 cursor-not-allowed'
                         }`}
                       >
                         <Play size={16}/> {session.status === 'upcoming' ? (lang === 'ar' ? 'انضمام للجلسة' : 'Join Session') : (lang === 'ar' ? 'انتهت الجلسة' : 'Session Ended')}

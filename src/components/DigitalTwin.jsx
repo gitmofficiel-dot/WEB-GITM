@@ -146,7 +146,7 @@ const DigitalTwin = () => {
               </svg>
 
               {/* Graphical Info Overlay */}
-              <div className="absolute top-2 right-2 bg-slate-900/90 border border-[#3A506B]/30 p-3 rounded-lg text-[10px] font-mono text-left" style={{ direction: 'ltr' }}>
+              <div className="absolute top-2 right-2 bg-white/ dark:bg-slate-900/ border border-[#3A506B]/30 p-3 rounded-lg text-[10px] font-mono text-left" style={{ direction: 'ltr' }}>
                 <div className="text-[#00E5FF] font-bold mb-1">DETECTION RADAR:</div>
                 <div className="text-white/80">CLASS: SEDAN_COUNT_5</div>
                 <div className="text-white/80">SPEED: 42 KM/H</div>
@@ -172,32 +172,32 @@ const DigitalTwin = () => {
 
               <div className="space-y-4">
                 <div>
-                  <span className="text-[10px] text-slate-400 dark:text-[#8A99AD] block uppercase tracking-wider">
+                  <span className="text-[10px] text-slate-600 dark:text-slate-400 dark:text-[#8A99AD] block uppercase tracking-wider">
                     {lang === 'ar' ? 'إجمالي المركبات المكتشفة' : 'Vehicles Detected'}
                   </span>
                   <div className="flex items-baseline space-x-2 rtl:space-x-reverse mt-1">
                     <span className="text-3xl font-black text-[#1e3a5f] dark:text-white font-orbitron">{vehicleCount}</span>
-                    <span className="text-xs text-slate-400 dark:text-cyber-muted">cars/min</span>
+                    <span className="text-xs text-slate-600 dark:text-slate-400 dark:text-cyber-muted">cars/min</span>
                   </div>
                 </div>
 
                 <div>
-                  <span className="text-[10px] text-slate-400 dark:text-[#8A99AD] block uppercase tracking-wider">
+                  <span className="text-[10px] text-slate-600 dark:text-slate-400 dark:text-[#8A99AD] block uppercase tracking-wider">
                     {lang === 'ar' ? 'تأخير الازدحام التقاطعي' : 'Intersection Delay'}
                   </span>
                   <div className="flex items-baseline space-x-2 rtl:space-x-reverse mt-1">
                     <span className="text-3xl font-black text-[#00E5FF] font-orbitron">{intersectionDelay}</span>
-                    <span className="text-xs text-slate-400 dark:text-cyber-muted">seconds</span>
+                    <span className="text-xs text-slate-600 dark:text-slate-400 dark:text-cyber-muted">seconds</span>
                   </div>
                 </div>
 
                 <div>
-                  <span className="text-[10px] text-slate-400 dark:text-[#8A99AD] block uppercase tracking-wider">
+                  <span className="text-[10px] text-slate-600 dark:text-slate-400 dark:text-[#8A99AD] block uppercase tracking-wider">
                     {lang === 'ar' ? 'استهلاك معالج الرسوميات (Edge)' : 'Edge GPU Load'}
                   </span>
                   <div className="flex items-baseline space-x-2 rtl:space-x-reverse mt-1">
                     <span className="text-3xl font-black text-[#00FF87] font-orbitron">{gpuLoad}%</span>
-                    <span className="text-xs text-slate-400 dark:text-cyber-muted">Maxwell Core</span>
+                    <span className="text-xs text-slate-600 dark:text-slate-400 dark:text-cyber-muted">Maxwell Core</span>
                   </div>
                 </div>
               </div>

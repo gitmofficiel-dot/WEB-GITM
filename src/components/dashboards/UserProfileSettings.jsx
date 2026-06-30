@@ -237,7 +237,7 @@ export default function UserProfileSettings({ currentUser: propUser }) {
             </div>
             {currentUser.membershipId ? (
               <div className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 shrink-0">
-                <p className="text-[10px] text-slate-400 font-bold uppercase">{lang === 'ar' ? 'رقم العضوية' : 'Membership ID'}</p>
+                <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold uppercase">{lang === 'ar' ? 'رقم العضوية' : 'Membership ID'}</p>
                 <p className="font-mono text-sm font-bold text-[#1e3a5f] dark:text-white">{currentUser.membershipId}</p>
               </div>
             ) : (
@@ -254,7 +254,7 @@ export default function UserProfileSettings({ currentUser: propUser }) {
           {(formData.github || formData.linkedin || formData.facebook || formData.instagram) && (
             <div className="flex flex-wrap gap-3 mt-4">
               {formData.github && (
-                <a href={formData.github} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl transition-all shadow-md hover:shadow-slate-900/20">
+                <a href={formData.github} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:bg-slate-800 text-white text-sm font-bold rounded-xl transition-all shadow-md hover:shadow-slate-900/20">
                   <Github size={16}/> GitHub
                 </a>
               )}
@@ -293,7 +293,7 @@ export default function UserProfileSettings({ currentUser: propUser }) {
                 {b}
               </span>
             )) : (
-              <p className="text-sm text-slate-400">{lang === 'ar' ? 'لا توجد شارات حالياً.' : 'No badges earned yet.'}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">{lang === 'ar' ? 'لا توجد شارات حالياً.' : 'No badges earned yet.'}</p>
             )}
           </div>
 
@@ -303,7 +303,7 @@ export default function UserProfileSettings({ currentUser: propUser }) {
               <span key={i} className="px-3 py-1 bg-cyan-50 dark:bg-cyan-900/20 text-cyan-700 dark:text-cyan-400 font-bold rounded-lg text-sm border border-cyan-100 dark:border-cyan-800">
                 {s}
               </span>
-            )) : <p className="text-sm text-slate-400">{lang === 'ar' ? 'لم تتم الإضافة' : 'None added'}</p>}
+            )) : <p className="text-sm text-slate-600 dark:text-slate-400">{lang === 'ar' ? 'لم تتم الإضافة' : 'None added'}</p>}
           </div>
 
           <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2"><Globe size={20} className="text-rose-500"/> {lang === 'ar' ? 'الاهتمامات' : 'Interests'}</h3>
@@ -312,7 +312,7 @@ export default function UserProfileSettings({ currentUser: propUser }) {
               <span key={i} className="px-3 py-1 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 font-bold rounded-lg text-sm border border-rose-100 dark:border-rose-800">
                 {s}
               </span>
-            )) : <p className="text-sm text-slate-400">{lang === 'ar' ? 'لم تتم الإضافة' : 'None added'}</p>}
+            )) : <p className="text-sm text-slate-600 dark:text-slate-400">{lang === 'ar' ? 'لم تتم الإضافة' : 'None added'}</p>}
           </div>
         </div>
         <div>
@@ -327,7 +327,7 @@ export default function UserProfileSettings({ currentUser: propUser }) {
                 </p>
               </div>
             )) : (
-              <p className="text-sm text-slate-400">{lang === 'ar' ? 'لم تتم إضافة مسارات' : 'No academic paths added'}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">{lang === 'ar' ? 'لم تتم إضافة مسارات' : 'No academic paths added'}</p>
             )}
           </div>
         </div>
@@ -340,13 +340,13 @@ export default function UserProfileSettings({ currentUser: propUser }) {
       <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto hide-scrollbar">
         <button 
           onClick={() => setActiveSubTab('profile')}
-          className={`flex items-center gap-2 px-4 py-2 font-bold transition-all border-b-2 whitespace-nowrap ${activeSubTab === 'profile' ? 'border-cyan-500 text-cyan-500 dark:text-cyan-400' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'}`}
+          className={`flex items-center gap-2 px-4 py-2 font-bold transition-all border-b-2 whitespace-nowrap ${activeSubTab === 'profile' ? 'border-cyan-500 text-cyan-500 dark:text-cyan-400' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-600 dark:text-slate-300'}`}
         >
           <User size={18}/> {lang === 'ar' ? 'الملف الشخصي و السيرة الذاتية' : 'Profile & CV'}
         </button>
         <button 
           onClick={() => setActiveSubTab('settings')}
-          className={`flex items-center gap-2 px-4 py-2 font-bold transition-all border-b-2 whitespace-nowrap ${activeSubTab === 'settings' ? 'border-blue-500 text-blue-500 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'}`}
+          className={`flex items-center gap-2 px-4 py-2 font-bold transition-all border-b-2 whitespace-nowrap ${activeSubTab === 'settings' ? 'border-blue-500 text-blue-500 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-600 dark:text-slate-300'}`}
         >
           <Settings size={18}/> {lang === 'ar' ? 'الإعدادات' : 'Settings'}
         </button>
@@ -361,7 +361,7 @@ export default function UserProfileSettings({ currentUser: propUser }) {
               </h3>
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={handleCopyCVLink} className="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-700 transition-colors">
+              <button onClick={handleCopyCVLink} className="bg-slate-50 dark:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-700 transition-colors">
                 <Copy size={16}/> {lang === 'ar' ? 'نسخ رابط السيرة الذاتية' : 'Copy CV Link'}
               </button>
             </div>

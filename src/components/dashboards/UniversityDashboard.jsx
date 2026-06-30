@@ -46,7 +46,7 @@ export default function UniversityDashboard() {
               return (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
-                    activeTab === tab.id ? 'bg-indigo-500 text-white shadow-lg translate-x-2' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    activeTab === tab.id ? 'bg-indigo-500 text-white shadow-lg translate-x-2' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-50 dark:bg-slate-800'
                   }`}>
                   <Icon size={18} /> {tab.label}
                 </button>

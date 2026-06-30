@@ -111,14 +111,14 @@ const LibraryWidget = () => {
             return (
             <div 
               key={book.key} 
-              className="flex items-start gap-3 p-3 rounded-xl bg-cyan-50 dark:bg-slate-900/50 hover:bg-cyan-100 dark:hover:bg-slate-800/80 transition-colors border border-cyan-200 dark:border-slate-800 group relative"
+              className="flex items-start gap-3 p-3 rounded-xl bg-cyan-50 dark:bg-slate-900/50 hover:bg-cyan-100 dark:hover:bg-slate-50/ dark:bg-slate-800/ transition-colors border border-cyan-200 dark:border-slate-800 group relative"
             >
               <button onClick={() => navigate('/library/book', { state: { book } })} className="shrink-0 text-left">
                 {coverUrl ? (
                   <img src={coverUrl} alt={book.title} className="w-12 h-16 object-cover rounded shadow-sm" />
                 ) : (
                   <div className="w-12 h-16 bg-cyan-200 dark:bg-slate-700 rounded flex items-center justify-center shadow-sm">
-                    <Book size={20} className="text-slate-400" />
+                    <Book size={20} className="text-slate-600 dark:text-slate-400" />
                   </div>
                 )}
               </button>
@@ -134,12 +134,12 @@ const LibraryWidget = () => {
                 <div className="mt-2 flex justify-end gap-2">
                   <button 
                     onClick={() => toggleSave('books', book)}
-                    className={`p-1 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'text-slate-400 hover:bg-cyan-200 dark:hover:bg-slate-700'}`}
+                    className={`p-1 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'text-slate-600 dark:text-slate-400 hover:bg-cyan-200 dark:hover:bg-slate-700'}`}
                     title={isSaved ? 'Unsave' : 'Save'}
                   >
                     <Bookmark size={14} className={isSaved ? 'fill-current' : ''} />
                   </button>
-                  <button onClick={() => navigate('/library/book', { state: { book } })} className="p-1 text-slate-400 hover:text-blue-500">
+                  <button onClick={() => navigate('/library/book', { state: { book } })} className="p-1 text-slate-600 dark:text-slate-400 hover:text-blue-500">
                     <ExternalLink size={14} />
                   </button>
                 </div>

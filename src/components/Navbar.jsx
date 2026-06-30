@@ -67,7 +67,7 @@ const Navbar = () => {
               </div>
               <div className="hidden sm:block">
                 <span className="text-sm font-black text-[#1e3a5f] dark:text-white font-orbitron tracking-wider">GITM</span>
-                <span className="text-[8px] text-slate-400 dark:text-cyber-muted block font-mono tracking-widest uppercase">
+                <span className="text-[8px] text-slate-600 dark:text-slate-400 dark:text-cyber-muted block font-mono tracking-widest uppercase">
                   Innovation Tech
                 </span>
               </div>
@@ -160,7 +160,7 @@ const Navbar = () => {
                       )}
                     </div>
                     <span className="text-xs font-bold text-[#2d507b] dark:text-white hidden sm:inline max-w-[80px] truncate">{user.name}</span>
-                    <ChevronDown size={12} className="text-slate-400 dark:text-cyber-muted" />
+                    <ChevronDown size={12} className="text-slate-600 dark:text-slate-400 dark:text-cyber-muted" />
                   </button>
 
                   {profileDropdown && (
@@ -169,7 +169,7 @@ const Navbar = () => {
                       <div className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-52 rounded-xl glass-strong border border-cyan-300 dark:border-white/10 shadow-xl z-20 overflow-hidden animate-fade-in-down">
                         <div className="px-4 py-3 border-b border-cyan-200 dark:border-white/5">
                           <p className="text-xs font-bold text-[#1e3a5f] dark:text-white truncate">{user.name}</p>
-                          <p className="text-[10px] text-slate-400 dark:text-cyber-muted truncate">{user.email}</p>
+                          <p className="text-[10px] text-slate-600 dark:text-slate-400 dark:text-cyber-muted truncate">{user.email}</p>
                           <span className="text-[9px] font-mono text-teal-500 dark:text-[#00E5FF] uppercase font-bold mt-1 block">{user.role}</span>
                         </div>
                         <button

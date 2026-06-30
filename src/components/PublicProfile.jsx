@@ -162,7 +162,7 @@ export default function PublicProfile() {
               <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-6 flex items-center gap-2"><Briefcase className="text-purple-500"/> {lang === 'ar' ? 'المشاريع البارزة' : 'Featured Projects'}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {profile.projects.map((proj, idx) => (
-                  <div key={idx} className="border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                  <div key={idx} className="border border-slate-200 dark:border-slate-800 rounded-2xl p-5 hover:bg-slate-50 dark:hover:bg-slate-50/ dark:bg-slate-800/ transition-colors">
                     <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-1">{proj.name}</h4>
                     <p className="text-sm text-slate-500 mb-3">{proj.role}</p>
                     <span className="px-2 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-bold rounded-lg uppercase">{proj.type}</span>

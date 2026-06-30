@@ -50,7 +50,7 @@ const AIReviewer = ({ code, onReviewComplete }) => {
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-700 rounded-xl p-4 flex flex-col gap-4">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h4 className="font-bold flex items-center gap-2 text-indigo-400">
           <Zap size={18} /> {lang === 'ar' ? 'المراجع الآلي (AI Reviewer)' : 'AI Code Reviewer'}
@@ -68,7 +68,7 @@ const AIReviewer = ({ code, onReviewComplete }) => {
       <AnimatePresence>
         {isAnalyzing && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center justify-center py-4">
-             <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden mb-2">
+             <div className="w-full h-1 bg-slate-50 dark:bg-slate-800 rounded-full overflow-hidden mb-2">
                 <motion.div 
                   className="h-full bg-indigo-500"
                   animate={{ x: ['-100%', '100%'] }}
@@ -81,22 +81,22 @@ const AIReviewer = ({ code, onReviewComplete }) => {
 
         {report && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-             <div className="flex items-center justify-between bg-slate-800/50 p-2 rounded-lg">
-                <span className="text-sm text-slate-300">{lang === 'ar' ? 'تقييم الجودة:' : 'Quality Score:'}</span>
+             <div className="flex items-center justify-between bg-slate-50/ dark:bg-slate-800/ p-2 rounded-lg">
+                <span className="text-sm text-slate-600 dark:text-slate-300">{lang === 'ar' ? 'تقييم الجودة:' : 'Quality Score:'}</span>
                 <span className={`font-bold ${report.score >= 90 ? 'text-emerald-400' : 'text-amber-400'}`}>{report.score}/100</span>
              </div>
              
              {report.issues.length > 0 && (
                <div className="space-y-1">
                  <span className="text-xs font-bold text-red-400 flex items-center gap-1"><AlertTriangle size={12}/> {lang === 'ar' ? 'ملاحظات هامة:' : 'Critical Issues:'}</span>
-                 {report.issues.map((iss, i) => <p key={i} className="text-xs text-slate-300 bg-red-500/10 p-2 rounded border border-red-500/20">{iss}</p>)}
+                 {report.issues.map((iss, i) => <p key={i} className="text-xs text-slate-600 dark:text-slate-300 bg-red-500/10 p-2 rounded border border-red-500/20">{iss}</p>)}
                </div>
              )}
 
              {report.optimizations.length > 0 && (
                <div className="space-y-1">
                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1"><CheckCircle size={12}/> {lang === 'ar' ? 'تحسينات مقترحة:' : 'Optimizations:'}</span>
-                 {report.optimizations.map((opt, i) => <p key={i} className="text-xs text-slate-300 bg-emerald-500/10 p-2 rounded border border-emerald-500/20">{opt}</p>)}
+                 {report.optimizations.map((opt, i) => <p key={i} className="text-xs text-slate-600 dark:text-slate-300 bg-emerald-500/10 p-2 rounded border border-emerald-500/20">{opt}</p>)}
                </div>
              )}
           </motion.div>
@@ -152,10 +152,10 @@ export default function HardwareLab() {
   };
 
   return (
-    <div className={`w-full bg-[#0B132B] border border-slate-700 rounded-2xl overflow-hidden flex flex-col font-sans transition-all duration-300 ${isFullscreen ? 'fixed inset-0 z-[100] rounded-none' : 'h-[800px]'}`}>
+    <div className={`w-full bg-[#0B132B] border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden flex flex-col font-sans transition-all duration-300 ${isFullscreen ? 'fixed inset-0 z-[100] rounded-none' : 'h-[800px]'}`}>
       
       {/* Header */}
-      <div className="h-14 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 shrink-0">
+      <div className="h-14 bg-white dark:bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center gap-3">
           <Cpu className="text-teal-400" size={20} />
           <h2 className="text-white font-bold font-orbitron">{lang === 'ar' ? 'مختبر العتاد السحابي' : 'Remote Hardware Lab'}</h2>
@@ -168,12 +168,12 @@ export default function HardwareLab() {
           <select 
             value={language} 
             onChange={handleLanguageChange}
-            className="bg-slate-800 border border-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-teal-500"
+            className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-teal-500"
           >
             <option value="cpp">C++ (Arduino/ESP)</option>
             <option value="python">MicroPython</option>
           </select>
-          <button onClick={() => setIsFullscreen(!isFullscreen)} className="text-slate-400 hover:text-white transition-colors">
+          <button onClick={() => setIsFullscreen(!isFullscreen)} className="text-slate-600 dark:text-slate-400 hover:text-white transition-colors">
             {isFullscreen ? <Minimize2 size={18}/> : <Maximize2 size={18}/>}
           </button>
         </div>
@@ -216,13 +216,13 @@ export default function HardwareLab() {
 
           {/* Terminal */}
           <div className="h-48 bg-[#0d1117] border-t border-slate-800 flex flex-col shrink-0">
-            <div className="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center gap-2 text-xs font-bold text-slate-400">
+            <div className="px-3 py-1.5 bg-white dark:bg-slate-900 border-b border-slate-800 flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400">
               <Terminal size={14} /> Terminal Output
             </div>
             <div ref={terminalRef} className="flex-1 overflow-y-auto p-3 font-mono text-xs space-y-1">
               {terminalOutput.map((log, i) => (
                 <div key={i} className={`
-                  ${log.type === 'system' ? 'text-slate-400' : ''}
+                  ${log.type === 'system' ? 'text-slate-600 dark:text-slate-400' : ''}
                   ${log.type === 'success' ? 'text-emerald-400' : ''}
                   ${log.type === 'error' ? 'text-red-400' : ''}
                   ${log.type === 'info' ? 'text-cyan-400' : ''}
@@ -235,10 +235,10 @@ export default function HardwareLab() {
         </div>
 
         {/* Right Column: Video Feed & AI Reviewer */}
-        <div className="w-full lg:w-80 shrink-0 bg-slate-900 flex flex-col p-4 gap-4 overflow-y-auto">
+        <div className="w-full lg:w-80 shrink-0 bg-white dark:bg-slate-900 flex flex-col p-4 gap-4 overflow-y-auto">
           
           {/* Webcam Feed Mockup */}
-          <div className="bg-black rounded-xl overflow-hidden border border-slate-700 relative aspect-video flex items-center justify-center group">
+          <div className="bg-black rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 relative aspect-video flex items-center justify-center group">
              <div className="absolute top-2 left-2 flex items-center gap-2 z-10">
                <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded flex items-center gap-1">
                  <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div> REC
@@ -247,7 +247,7 @@ export default function HardwareLab() {
              </div>
              
              {/* Fake Video Content */}
-             <div className="absolute inset-0 bg-slate-800 flex flex-col items-center justify-center">
+             <div className="absolute inset-0 bg-slate-50 dark:bg-slate-800 flex flex-col items-center justify-center">
                 <Camera size={32} className="text-slate-600 mb-2"/>
                 <span className="text-xs text-slate-500 font-orbitron text-center px-4">
                   Hardware Stream Active<br/>Waiting for deployment...
@@ -258,7 +258,7 @@ export default function HardwareLab() {
              <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] opacity-20"></div>
           </div>
 
-          <div className="text-xs text-slate-400 leading-relaxed">
+          <div className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
             {lang === 'ar' 
               ? 'مرحباً بك في مختبر GITM السحابي! يمكنك كتابة الكود هنا ورفعه مباشرة إلى اللوحات الإلكترونية (ESP32/Arduino) الموجودة فعلياً في المختبر لتشاهد النتيجة عبر البث المباشر.'
               : 'Welcome to GITM Cloud Lab! Write code and deploy it directly to real physical boards (ESP32/Arduino) located in our lab, and watch the results via live stream.'}
@@ -271,11 +271,11 @@ export default function HardwareLab() {
           <div className="mt-auto pt-4 border-t border-slate-800">
             <h4 className="text-xs font-bold text-slate-500 uppercase mb-2 flex items-center gap-1"><Settings size={12}/> {lang === 'ar' ? 'إعدادات اللوحة' : 'Board Config'}</h4>
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-slate-800 p-2 rounded border border-slate-700">
+              <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">
                 <span className="text-slate-500 block mb-0.5">Board</span>
                 <span className="text-slate-200 font-mono">ESP32 Dev</span>
               </div>
-              <div className="bg-slate-800 p-2 rounded border border-slate-700">
+              <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">
                 <span className="text-slate-500 block mb-0.5">Port</span>
                 <span className="text-slate-200 font-mono">/dev/ttyUSB0</span>
               </div>

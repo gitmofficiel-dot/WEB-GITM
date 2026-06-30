@@ -71,7 +71,7 @@ export default function CANBusSimulator() {
   };
 
   return (
-    <div className="w-full bg-[#0a0f1a] border border-slate-700/50 rounded-2xl overflow-hidden flex flex-col lg:flex-row h-[700px] font-sans">
+    <div className="w-full bg-[#0a0f1a] border border-slate-200/ dark:border-slate-700/ rounded-2xl overflow-hidden flex flex-col lg:flex-row h-[700px] font-sans">
       
       {/* Left Panel: Nodes & Injector */}
       <div className="w-full lg:w-80 bg-[#111827] border-r border-slate-800 flex flex-col shrink-0">
@@ -82,7 +82,7 @@ export default function CANBusSimulator() {
              <Activity size={18} className="text-cyan-400" />
              {lang === 'ar' ? 'محاكي CAN Bus' : 'CAN Bus Simulator'}
            </h2>
-           <p className="text-xs text-slate-400 mt-1">Automotive Network Analysis</p>
+           <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">Automotive Network Analysis</p>
         </div>
 
         {/* Network Nodes */}
@@ -95,7 +95,7 @@ export default function CANBusSimulator() {
                    <node.icon size={16} className={node.color} />
                    <div>
                      <span className="text-sm font-bold text-slate-200 block leading-none mb-1">{node.name}</span>
-                     <span className="text-[10px] font-mono text-slate-400">ID: {node.hexId}</span>
+                     <span className="text-[10px] font-mono text-slate-600 dark:text-slate-400">ID: {node.hexId}</span>
                    </div>
                  </div>
                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
@@ -112,18 +112,18 @@ export default function CANBusSimulator() {
           
           <div className="space-y-3 flex-1">
             <div>
-              <label className="text-[10px] font-bold text-slate-400 block mb-1">CAN ID (Hex)</label>
-              <input type="text" value={injectData.id} onChange={e=>setInjectData({...injectData, id: e.target.value})} className="w-full bg-[#0a0f1a] border border-slate-700 rounded-lg p-2 text-xs font-mono text-cyan-300 outline-none focus:border-cyan-500 uppercase" />
+              <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 block mb-1">CAN ID (Hex)</label>
+              <input type="text" value={injectData.id} onChange={e=>setInjectData({...injectData, id: e.target.value})} className="w-full bg-[#0a0f1a] border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs font-mono text-cyan-300 outline-none focus:border-cyan-500 uppercase" />
             </div>
             
             <div className="flex gap-2">
               <div className="w-16">
-                <label className="text-[10px] font-bold text-slate-400 block mb-1">DLC</label>
-                <input type="number" min="0" max="8" value={injectData.dlc} onChange={e=>setInjectData({...injectData, dlc: e.target.value})} className="w-full bg-[#0a0f1a] border border-slate-700 rounded-lg p-2 text-xs font-mono text-white outline-none focus:border-cyan-500" />
+                <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 block mb-1">DLC</label>
+                <input type="number" min="0" max="8" value={injectData.dlc} onChange={e=>setInjectData({...injectData, dlc: e.target.value})} className="w-full bg-[#0a0f1a] border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs font-mono text-white outline-none focus:border-cyan-500" />
               </div>
               <div className="flex-1">
-                <label className="text-[10px] font-bold text-slate-400 block mb-1">Data (Hex space separated)</label>
-                <input type="text" value={injectData.data} onChange={e=>setInjectData({...injectData, data: e.target.value})} className="w-full bg-[#0a0f1a] border border-slate-700 rounded-lg p-2 text-xs font-mono text-emerald-300 outline-none focus:border-cyan-500 uppercase" />
+                <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 block mb-1">Data (Hex space separated)</label>
+                <input type="text" value={injectData.data} onChange={e=>setInjectData({...injectData, data: e.target.value})} className="w-full bg-[#0a0f1a] border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs font-mono text-emerald-300 outline-none focus:border-cyan-500 uppercase" />
               </div>
             </div>
           </div>
@@ -149,7 +149,7 @@ export default function CANBusSimulator() {
              >
                {isCapturing ? '■ STOP' : '▶ START'}
              </button>
-             <button onClick={() => setFrames([])} className="text-xs font-bold text-slate-400 hover:text-white transition-colors">CLEAR</button>
+             <button onClick={() => setFrames([])} className="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-white transition-colors">CLEAR</button>
            </div>
            
            <div className="flex items-center gap-2">
@@ -181,12 +181,12 @@ export default function CANBusSimulator() {
                   className={`grid grid-cols-12 gap-2 p-1.5 rounded text-xs font-mono border-l-2 items-center ${
                     frame.type === 'tx' 
                       ? 'bg-blue-500/10 border-blue-500 text-blue-200' 
-                      : 'bg-slate-800/30 border-slate-600 text-slate-300 hover:bg-slate-800/80'
+                      : 'bg-slate-50/ dark:bg-slate-800/ border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50/ dark:bg-slate-800/'
                   }`}
                 >
                    <div className="col-span-2 text-slate-500">{frame.timestamp}</div>
                    <div className="col-span-1">
-                     <span className={`px-1 rounded text-[10px] font-bold ${frame.type === 'tx' ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-700 text-slate-400'}`}>
+                     <span className={`px-1 rounded text-[10px] font-bold ${frame.type === 'tx' ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-700 text-slate-600 dark:text-slate-400'}`}>
                        {frame.type.toUpperCase()}
                      </span>
                    </div>

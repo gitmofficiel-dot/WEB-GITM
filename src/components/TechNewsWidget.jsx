@@ -93,7 +93,7 @@ const TechNewsWidget = () => {
           return (
           <div 
             key={item.id} 
-            className="card-3d glass-card block p-4 rounded-xl bg-cyan-50 dark:bg-slate-900/50 hover:bg-cyan-100 dark:hover:bg-slate-800/80 transition-colors border border-cyan-200 dark:border-slate-800 group relative flex flex-col justify-between min-h-[150px]"
+            className="card-3d glass-card block p-4 rounded-xl bg-cyan-50 dark:bg-slate-900/50 hover:bg-cyan-100 dark:hover:bg-slate-50/ dark:bg-slate-800/ transition-colors border border-cyan-200 dark:border-slate-800 group relative flex flex-col justify-between min-h-[150px]"
           >
             <div>
               <div className="mb-3 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400 text-[10px] font-bold w-fit uppercase tracking-wider">
@@ -113,12 +113,12 @@ const TechNewsWidget = () => {
               <div className="flex items-center gap-2 shrink-0">
                 <button 
                   onClick={() => toggleSave('news', item)}
-                  className={`p-1.5 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'text-slate-400 hover:bg-cyan-200 dark:hover:bg-slate-700'}`}
+                  className={`p-1.5 rounded-full transition-colors ${isSaved ? 'bg-amber-100 text-amber-500' : 'text-slate-600 dark:text-slate-400 hover:bg-cyan-200 dark:hover:bg-slate-700'}`}
                   title={isSaved ? 'Unsave' : 'Save'}
                 >
                   <Bookmark size={14} className={isSaved ? 'fill-current' : ''} />
                 </button>
-                <button onClick={() => navigate('/news/global/article', { state: { newsItem: item } })} className="p-1.5 text-slate-400 hover:text-cyan-500 bg-slate-100 dark:bg-slate-800 rounded-full">
+                <button onClick={() => navigate('/news/global/article', { state: { newsItem: item } })} className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-cyan-500 bg-slate-100 dark:bg-slate-800 rounded-full">
                   <ExternalLink size={14} />
                 </button>
               </div>

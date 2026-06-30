@@ -128,7 +128,7 @@ export default function AuthForms({ initialMode = 'login' }) {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 rtl:right-0 rtl:left-auto flex items-center pl-3 rtl:pr-3 pointer-events-none">
-                    <User className="h-5 w-5 text-slate-400" />
+                    <User className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                   </div>
                   <input
                     type="text"
@@ -148,7 +148,7 @@ export default function AuthForms({ initialMode = 'login' }) {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 rtl:right-0 rtl:left-auto flex items-center pl-3 rtl:pr-3 pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
+                  <Mail className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                 </div>
                 <input
                   type="email"
@@ -172,7 +172,7 @@ export default function AuthForms({ initialMode = 'login' }) {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 rtl:right-0 rtl:left-auto flex items-center pl-3 rtl:pr-3 pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
+                  <Lock className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                 </div>
                 <input
                   type="password"
@@ -219,7 +219,7 @@ export default function AuthForms({ initialMode = 'login' }) {
                 <button 
                   type="button" 
                   onClick={() => handleProviderSignIn(googleProvider)}
-                  className="flex items-center justify-center gap-2 py-2 rounded-xl border border-cyan-300 dark:border-slate-700 hover:bg-cyan-50 dark:hover:bg-slate-800 transition"
+                  className="flex items-center justify-center gap-2 py-2 rounded-xl border border-cyan-300 dark:border-slate-700 hover:bg-cyan-50 dark:hover:bg-slate-50 dark:bg-slate-800 transition"
                 >
                   <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-4 h-4" />
                   <span className="text-sm font-bold">Google</span>
@@ -227,7 +227,7 @@ export default function AuthForms({ initialMode = 'login' }) {
                 <button 
                   type="button" 
                   onClick={() => handleProviderSignIn(githubProvider)}
-                  className="flex items-center justify-center gap-2 py-2 rounded-xl border border-cyan-300 dark:border-slate-700 hover:bg-cyan-50 dark:hover:bg-slate-800 transition"
+                  className="flex items-center justify-center gap-2 py-2 rounded-xl border border-cyan-300 dark:border-slate-700 hover:bg-cyan-50 dark:hover:bg-slate-50 dark:bg-slate-800 transition"
                 >
                   <Github className="w-4 h-4" />
                   <span className="text-sm font-bold">GitHub</span>

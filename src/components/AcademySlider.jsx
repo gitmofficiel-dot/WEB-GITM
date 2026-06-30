@@ -72,7 +72,7 @@ const StarRating = ({ rating }) => (
       <Star
         key={star}
         size={14}
-        className={star <= Math.floor(rating) ? 'text-yellow-400 fill-yellow-400' : 'text-slate-300 dark:text-slate-600'}
+        className={star <= Math.floor(rating) ? 'text-yellow-400 fill-yellow-400' : 'text-slate-600 dark:text-slate-300 dark:text-slate-600'}
       />
     ))}
     <span className="text-sm font-bold text-yellow-500 ml-1">{rating}</span>
@@ -94,7 +94,7 @@ const CourseCard = ({ course, lang }) => {
               {course.initials}
             </div>
             <div>
-              <p className="text-xs text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider">
+              <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider">
                 {lang === 'ar' ? 'المدرب' : 'Instructor'}
               </p>
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -135,7 +135,7 @@ const CourseCard = ({ course, lang }) => {
               {isCompleted && (
                 <Award size={14} className="text-emerald-500" />
               )}
-              <span className={`text-xs font-bold ${isCompleted ? 'text-emerald-500' : isNew ? 'text-slate-400' : 'text-cyan-600 dark:text-cyan-400'}`}>
+              <span className={`text-xs font-bold ${isCompleted ? 'text-emerald-500' : isNew ? 'text-slate-600 dark:text-slate-400' : 'text-cyan-600 dark:text-cyan-400'}`}>
                 {isCompleted
                   ? (lang === 'ar' ? '✓ مكتمل' : '✓ Completed')
                   : isNew

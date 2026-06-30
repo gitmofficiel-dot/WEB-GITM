@@ -41,7 +41,7 @@ const SortableModule = ({ module, onRemove, onAddLesson, onUpdateModule, onRemov
   return (
     <div ref={setNodeRef} style={style} className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl mb-4 overflow-hidden">
       <div className="bg-slate-100 dark:bg-slate-800 p-4 flex items-center gap-4">
-        <div {...attributes} {...listeners} className="cursor-grab text-slate-400 hover:text-slate-600">
+        <div {...attributes} {...listeners} className="cursor-grab text-slate-600 dark:text-slate-400 hover:text-slate-600">
           <GripVertical size={20} />
         </div>
         <input 
@@ -58,8 +58,8 @@ const SortableModule = ({ module, onRemove, onAddLesson, onUpdateModule, onRemov
         {module.lessons.map((lesson, index) => (
           <div key={lesson.id} className="flex flex-col gap-3 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl relative group">
              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Lesson {index + 1}</span>
-                <button onClick={() => onRemoveLesson(module.id, lesson.id)} className="text-slate-400 hover:text-red-500"><X size={16}/></button>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">Lesson {index + 1}</span>
+                <button onClick={() => onRemoveLesson(module.id, lesson.id)} className="text-slate-600 dark:text-slate-400 hover:text-red-500"><X size={16}/></button>
              </div>
              <input 
                 type="text" 
@@ -70,7 +70,7 @@ const SortableModule = ({ module, onRemove, onAddLesson, onUpdateModule, onRemov
              />
              <div className="flex gap-3">
                <div className="flex-1 relative">
-                 <Video size={16} className="absolute left-3 top-2.5 text-slate-400" />
+                 <Video size={16} className="absolute left-3 top-2.5 text-slate-600 dark:text-slate-400" />
                  <input 
                     type="text" 
                     value={lesson.videoUrl} 
@@ -81,7 +81,7 @@ const SortableModule = ({ module, onRemove, onAddLesson, onUpdateModule, onRemov
                  />
                </div>
                <div className="flex-1 relative">
-                 <FileText size={16} className="absolute left-3 top-2.5 text-slate-400" />
+                 <FileText size={16} className="absolute left-3 top-2.5 text-slate-600 dark:text-slate-400" />
                  <input 
                     type="text" 
                     value={lesson.attachmentUrl} 
@@ -97,7 +97,7 @@ const SortableModule = ({ module, onRemove, onAddLesson, onUpdateModule, onRemov
         
         <button 
           onClick={() => onAddLesson(module.id)}
-          className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-slate-500 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 hover:border-teal-500 hover:text-teal-500 transition-all flex items-center justify-center gap-2"
+          className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-slate-500 font-bold hover:bg-slate-100 dark:hover:bg-slate-50 dark:bg-slate-800 hover:border-teal-500 hover:text-teal-500 transition-all flex items-center justify-center gap-2"
         >
           <Plus size={18} /> Add Lesson
         </button>

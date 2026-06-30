@@ -88,7 +88,7 @@ const Archive = () => {
                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 dark:from-white/2 to-transparent opacity-40"></div>
                   
                   {/* Central Icon Illustration */}
-                  <div className="p-4 rounded-full bg-slate-900/60 dark:bg-black/60 border border-white/10 group-hover:scale-110 transition-transform duration-500">
+                  <div className="p-4 rounded-full bg-white/ dark:bg-slate-900/ dark:bg-black/60 border border-white/10 group-hover:scale-110 transition-transform duration-500">
                     <ItemIcon className="w-10 h-10 text-emerald-400 group-hover:animate-float" />
                   </div>
 

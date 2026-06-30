@@ -72,7 +72,7 @@ export default function About() {
         <h1 className="text-5xl md:text-7xl font-orbitron font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 mb-8 drop-shadow-lg">
           {lang === 'ar' ? 'من نحن' : 'About Us'}
         </h1>
-        <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
           {lang === 'ar' 
             ? 'المجموعة المغربية للابتكار التكنولوجي (GITM) تقود التحول التكنولوجي وتصنع مستقبل الذكاء الاصطناعي.' 
             : 'The Moroccan Group for Technological Innovation (GITM) leads tech transformation and shapes the future of AI.'}
@@ -95,7 +95,7 @@ export default function About() {
           <div className="absolute -right-10 -top-10 w-40 h-40 bg-cyan-500/20 rounded-full blur-3xl group-hover:bg-cyan-500/40 transition-all duration-700"></div>
           <Target className="text-cyan-400 mb-6 relative z-10" size={56} />
           <h2 className="text-3xl font-bold text-white mb-6 font-orbitron relative z-10">{lang === 'ar' ? 'رؤيتنا' : 'Our Vision'}</h2>
-          <p className="text-slate-300 leading-relaxed text-lg relative z-10 font-medium">
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg relative z-10 font-medium">
             {lang === 'ar' ? aboutData?.vision_ar : aboutData?.vision_en}
           </p>
         </motion.div>
@@ -105,7 +105,7 @@ export default function About() {
           <div className="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl group-hover:bg-indigo-500/40 transition-all duration-700"></div>
           <Flag className="text-indigo-400 mb-6 relative z-10" size={56} />
           <h2 className="text-3xl font-bold text-white mb-6 font-orbitron relative z-10">{lang === 'ar' ? 'رسالتنا' : 'Our Mission'}</h2>
-          <p className="text-slate-300 leading-relaxed text-lg relative z-10 font-medium">
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg relative z-10 font-medium">
             {lang === 'ar' ? aboutData?.mission_ar : aboutData?.mission_en}
           </p>
         </motion.div>
@@ -115,7 +115,7 @@ export default function About() {
           <div className="absolute -right-10 -top-10 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl group-hover:bg-purple-500/40 transition-all duration-700"></div>
           <History className="text-purple-400 mb-6 relative z-10" size={56} />
           <h2 className="text-3xl font-bold text-white mb-6 font-orbitron relative z-10">{lang === 'ar' ? 'تاريخنا' : 'History'}</h2>
-          <p className="text-slate-300 leading-relaxed text-lg relative z-10 font-medium">
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg relative z-10 font-medium">
             {lang === 'ar' ? aboutData?.history_ar : aboutData?.history_en}
           </p>
         </motion.div>
@@ -129,18 +129,54 @@ export default function About() {
             <div className="text-center p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-emerald-500/50 transition-colors">
               <Zap className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
               <span className="block text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 mb-2">{aboutData?.stats?.founded || '2024'}</span>
-              <span className="text-lg text-slate-300 font-medium">{lang === 'ar' ? 'سنة التأسيس' : 'Founded'}</span>
+              <span className="text-lg text-slate-600 dark:text-slate-300 font-medium">{lang === 'ar' ? 'سنة التأسيس' : 'Founded'}</span>
             </div>
             <div className="text-center p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-blue-500/50 transition-colors">
               <Activity className="w-12 h-12 text-blue-400 mx-auto mb-4" />
               <span className="block text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 mb-2">{aboutData?.stats?.projects || '15+'}</span>
-              <span className="text-lg text-slate-300 font-medium">{lang === 'ar' ? 'مشروع وطني' : 'National Projects'}</span>
+              <span className="text-lg text-slate-600 dark:text-slate-300 font-medium">{lang === 'ar' ? 'مشروع وطني' : 'National Projects'}</span>
             </div>
             <div className="text-center p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-500/50 transition-colors">
               <Users className="w-12 h-12 text-purple-400 mx-auto mb-4" />
               <span className="block text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-2">{aboutData?.stats?.members || '500+'}</span>
-              <span className="text-lg text-slate-300 font-medium">{lang === 'ar' ? 'عضو نشط' : 'Active Members'}</span>
+              <span className="text-lg text-slate-600 dark:text-slate-300 font-medium">{lang === 'ar' ? 'عضو نشط' : 'Active Members'}</span>
             </div>
+          </div>
+        </motion.div>
+
+        {/* Meet the Team */}
+        <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-3 mt-16 relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-white mb-4 font-orbitron drop-shadow-md">
+              {lang === 'ar' ? 'أعضاء الفريق' : 'Meet The Team'}
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg">
+              {lang === 'ar' 
+                ? 'تعرف على العقول المبدعة وراء نجاح المجموعة المغربية للابتكار التكنولوجي.' 
+                : 'Meet the creative minds behind the success of the Moroccan Group for Technological Innovation.'}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { role: lang === 'ar' ? 'الرئيس' : 'President', name: 'Mounir G', img: 'https://via.placeholder.com/400x400?text=MG' },
+              { role: lang === 'ar' ? 'نائب الرئيس' : 'Vice President', name: 'Ahmed A', img: 'https://via.placeholder.com/400x400?text=AA' },
+              { role: lang === 'ar' ? 'مدير المحتوى' : 'Content Manager', name: 'Sara K', img: 'https://via.placeholder.com/400x400?text=SK' },
+              { role: lang === 'ar' ? 'المدير التقني' : 'CTO', name: 'Youssef B', img: 'https://via.placeholder.com/400x400?text=YB' }
+            ].map((member, idx) => (
+              <div key={idx} className="glass-card p-6 rounded-3xl border border-slate-200/ dark:border-slate-700/ hover:border-cyan-500/50 transition-all text-center group">
+                <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-slate-800 group-hover:border-cyan-500 transition-colors relative">
+                  <img src={member.img} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 font-orbitron">{member.name}</h3>
+                <p className="text-cyan-400 font-medium mb-4">{member.role}</p>
+                <div className="flex justify-center gap-3">
+                  <a href="#" className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-cyan-500 hover:text-white transition-colors">
+                    <Globe size={16} />
+                  </a>
+                </div>
+              </div>
+            ))}
           </div>
         </motion.div>
 

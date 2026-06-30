@@ -71,7 +71,7 @@ const Auth = () => {
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-slate-500 dark:text-cyber-muted uppercase tracking-wider">{t('auth.name')}</label>
                   <div className="relative">
-                    <User className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 rtl:left-3 rtl:right-auto" />
+                    <User className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-400 w-4 h-4 rtl:left-3 rtl:right-auto" />
                     <input 
                       type="text"
                       required
@@ -86,7 +86,7 @@ const Auth = () => {
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-slate-500 dark:text-cyber-muted uppercase tracking-wider">{t('auth.email')}</label>
                 <div className="relative">
-                  <Mail className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 rtl:left-3 rtl:right-auto" />
+                  <Mail className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-400 w-4 h-4 rtl:left-3 rtl:right-auto" />
                   <input 
                     type="email"
                     required
@@ -101,7 +101,7 @@ const Auth = () => {
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-slate-500 dark:text-cyber-muted uppercase tracking-wider">{t('auth.password')}</label>
                   <div className="relative">
-                    <Lock className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 rtl:left-3 rtl:right-auto" />
+                    <Lock className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-400 w-4 h-4 rtl:left-3 rtl:right-auto" />
                     <input 
                       type="password"
                       required

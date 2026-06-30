@@ -87,9 +87,9 @@ export default function CodeSimulator({ lang = 'en' }) {
   };
 
   return (
-    <div className="flex flex-col h-[600px] bg-[#1e1e2e] rounded-2xl overflow-hidden border border-slate-700/50 shadow-2xl">
+    <div className="flex flex-col h-[600px] bg-[#1e1e2e] rounded-2xl overflow-hidden border border-slate-200/ dark:border-slate-700/ shadow-2xl">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-[#181825] border-b border-slate-700">
+      <div className="flex items-center justify-between px-4 py-3 bg-[#181825] border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center gap-3">
           <Code2 className="text-cyan-400" size={20} />
           <h3 className="font-orbitron font-bold text-white text-sm">
@@ -109,7 +109,7 @@ export default function CodeSimulator({ lang = 'en' }) {
 
           <button 
             onClick={() => setCode(defaultCode[language])}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-slate-600 dark:text-slate-400 hover:text-white transition-colors"
             title={lang === 'ar' ? 'إعادة التعيين' : 'Reset Code'}
           >
             <RotateCcw size={16} />
@@ -120,7 +120,7 @@ export default function CodeSimulator({ lang = 'en' }) {
             disabled={isRunning}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${
               isRunning 
-                ? 'bg-slate-600 text-slate-300 cursor-not-allowed'
+                ? 'bg-slate-600 text-slate-600 dark:text-slate-300 cursor-not-allowed'
                 : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:shadow-lg hover:shadow-emerald-500/20'
             }`}
           >
@@ -160,9 +160,9 @@ export default function CodeSimulator({ lang = 'en' }) {
         </div>
 
         {/* Terminal/Output Area */}
-        <div className="w-1/3 bg-[#11111b] border-l border-slate-700/50 flex flex-col">
-          <div className="px-4 py-2 bg-[#181825] border-b border-slate-700/50 flex justify-between items-center">
-            <span className="text-xs font-bold text-slate-400 flex items-center gap-2">
+        <div className="w-1/3 bg-[#11111b] border-l border-slate-200/ dark:border-slate-700/ flex flex-col">
+          <div className="px-4 py-2 bg-[#181825] border-b border-slate-200/ dark:border-slate-700/ flex justify-between items-center">
+            <span className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-2">
               <Terminal size={14} /> {lang === 'ar' ? 'المخرجات (Console)' : 'Output Console'}
             </span>
             {status === 'success' && <CheckCircle size={14} className="text-emerald-500" />}
@@ -170,7 +170,7 @@ export default function CodeSimulator({ lang = 'en' }) {
           </div>
           <div className="p-4 flex-1 overflow-y-auto">
             {output ? (
-              <pre className={`font-mono text-sm whitespace-pre-wrap ${status === 'error' ? 'text-rose-400' : 'text-slate-300'}`}>
+              <pre className={`font-mono text-sm whitespace-pre-wrap ${status === 'error' ? 'text-rose-400' : 'text-slate-600 dark:text-slate-300'}`}>
                 {output}
               </pre>
             ) : (

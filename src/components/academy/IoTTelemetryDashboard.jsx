@@ -72,8 +72,8 @@ export default function IoTTelemetryDashboard() {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-slate-900 border border-slate-700 p-3 rounded-lg shadow-xl text-xs font-mono">
-          <p className="text-slate-400 mb-1">T+{payload[0].payload.time}s</p>
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3 rounded-lg shadow-xl text-xs font-mono">
+          <p className="text-slate-600 dark:text-slate-400 mb-1">T+{payload[0].payload.time}s</p>
           {payload.map((entry, index) => (
             <p key={index} style={{ color: entry.color }} className="font-bold">
               {entry.name}: {entry.value}
@@ -86,7 +86,7 @@ export default function IoTTelemetryDashboard() {
   };
 
   return (
-    <div className="w-full bg-[#0B132B] border border-slate-700/50 rounded-2xl overflow-hidden font-sans flex flex-col h-[700px]">
+    <div className="w-full bg-[#0B132B] border border-slate-200/ dark:border-slate-700/ rounded-2xl overflow-hidden font-sans flex flex-col h-[700px]">
       
       {/* Header */}
       <div className="h-16 border-b border-slate-800 bg-[#111827] flex items-center justify-between px-6 shrink-0">
@@ -95,13 +95,13 @@ export default function IoTTelemetryDashboard() {
             <Activity className="text-cyan-400" />
             {lang === 'ar' ? 'لوحة القياسات عن بعد (IoT Telemetry)' : 'IoT Telemetry Dashboard'}
           </h2>
-          <p className="text-xs text-slate-400">Live NABD-X Engine Data Stream</p>
+          <p className="text-xs text-slate-600 dark:text-slate-400">Live NABD-X Engine Data Stream</p>
         </div>
 
         <div className="flex items-center gap-4">
            <button 
              onClick={() => setIsSimulating(!isSimulating)}
-             className={`p-2 rounded-lg border transition-colors ${isSimulating ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-800 border-slate-700 text-slate-400'}`}
+             className={`p-2 rounded-lg border transition-colors ${isSimulating ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'}`}
            >
              <RefreshCw size={18} className={isSimulating ? 'animate-spin' : ''} />
            </button>
@@ -120,25 +120,25 @@ export default function IoTTelemetryDashboard() {
       <div className="flex-1 p-6 overflow-y-auto">
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between relative overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between relative overflow-hidden">
              <div className="relative z-10">
-               <p className="text-sm font-bold text-slate-400 mb-1 flex items-center gap-2"><Gauge size={16} className="text-cyan-400"/> {lang === 'ar' ? 'السرعة' : 'Speed'}</p>
+               <p className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-1 flex items-center gap-2"><Gauge size={16} className="text-cyan-400"/> {lang === 'ar' ? 'السرعة' : 'Speed'}</p>
                <h3 className="text-3xl font-bold font-mono text-white">{latest.speed} <span className="text-sm text-slate-500">km/h</span></h3>
              </div>
              <Gauge size={64} className="text-cyan-500/10 absolute -right-4 -bottom-4" />
           </div>
 
-          <div className={`bg-slate-900 border rounded-xl p-4 flex items-center justify-between relative overflow-hidden transition-colors ${anomalyActive ? 'border-rose-500/50 bg-rose-500/5' : 'border-slate-800'}`}>
+          <div className={`bg-white dark:bg-slate-900 border rounded-xl p-4 flex items-center justify-between relative overflow-hidden transition-colors ${anomalyActive ? 'border-rose-500/50 bg-rose-500/5' : 'border-slate-800'}`}>
              <div className="relative z-10">
-               <p className="text-sm font-bold text-slate-400 mb-1 flex items-center gap-2"><Thermometer size={16} className={anomalyActive ? 'text-rose-400 animate-pulse' : 'text-amber-400'}/> {lang === 'ar' ? 'حرارة المحرك' : 'Engine Temp'}</p>
+               <p className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-1 flex items-center gap-2"><Thermometer size={16} className={anomalyActive ? 'text-rose-400 animate-pulse' : 'text-amber-400'}/> {lang === 'ar' ? 'حرارة المحرك' : 'Engine Temp'}</p>
                <h3 className={`text-3xl font-bold font-mono ${anomalyActive ? 'text-rose-400' : 'text-white'}`}>{latest.temperature} <span className="text-sm text-slate-500">°C</span></h3>
              </div>
              <Thermometer size={64} className={`${anomalyActive ? 'text-rose-500/20' : 'text-amber-500/10'} absolute -right-4 -bottom-4`} />
           </div>
 
-          <div className={`bg-slate-900 border rounded-xl p-4 flex items-center justify-between relative overflow-hidden transition-colors ${anomalyActive ? 'border-rose-500/50 bg-rose-500/5' : 'border-slate-800'}`}>
+          <div className={`bg-white dark:bg-slate-900 border rounded-xl p-4 flex items-center justify-between relative overflow-hidden transition-colors ${anomalyActive ? 'border-rose-500/50 bg-rose-500/5' : 'border-slate-800'}`}>
              <div className="relative z-10">
-               <p className="text-sm font-bold text-slate-400 mb-1 flex items-center gap-2"><Zap size={16} className={anomalyActive ? 'text-rose-400 animate-pulse' : 'text-purple-400'}/> {lang === 'ar' ? 'جهد البطارية' : 'Battery Volts'}</p>
+               <p className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-1 flex items-center gap-2"><Zap size={16} className={anomalyActive ? 'text-rose-400 animate-pulse' : 'text-purple-400'}/> {lang === 'ar' ? 'جهد البطارية' : 'Battery Volts'}</p>
                <h3 className={`text-3xl font-bold font-mono ${anomalyActive ? 'text-rose-400' : 'text-white'}`}>{latest.voltage} <span className="text-sm text-slate-500">V</span></h3>
              </div>
              <Zap size={64} className={`${anomalyActive ? 'text-rose-500/20' : 'text-purple-500/10'} absolute -right-4 -bottom-4`} />
@@ -148,8 +148,8 @@ export default function IoTTelemetryDashboard() {
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-64">
            {/* Speed & Temp Dual Chart */}
-           <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col h-full">
-              <h3 className="text-sm font-bold text-slate-300 mb-4">{lang === 'ar' ? 'السرعة و الحرارة' : 'Speed & Temperature Profile'}</h3>
+           <div className="bg-white dark:bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col h-full">
+              <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-4">{lang === 'ar' ? 'السرعة و الحرارة' : 'Speed & Temperature Profile'}</h3>
               <div className="flex-1 min-h-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
@@ -172,8 +172,8 @@ export default function IoTTelemetryDashboard() {
            </div>
 
            {/* Voltage Chart */}
-           <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col h-full">
-              <h3 className="text-sm font-bold text-slate-300 mb-4">{lang === 'ar' ? 'استقرار الجهد الكهربائي' : 'Voltage Stability'}</h3>
+           <div className="bg-white dark:bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col h-full">
+              <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-4">{lang === 'ar' ? 'استقرار الجهد الكهربائي' : 'Voltage Stability'}</h3>
               <div className="flex-1 min-h-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>

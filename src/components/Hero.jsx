@@ -26,7 +26,7 @@ export default function Hero() {
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-slate-900/60 border border-cyan-500/30 backdrop-blur-md shadow-[0_0_20px_rgba(6,182,212,0.2)] cursor-pointer hover:bg-slate-900/80 hover:scale-105 transition-all"
+          className="mb-8 inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/ dark:bg-slate-900/ border border-cyan-500/30 backdrop-blur-md shadow-[0_0_20px_rgba(6,182,212,0.2)] cursor-pointer hover:bg-white/ dark:bg-slate-900/ hover:scale-105 transition-all"
         >
           <div className="flex items-center justify-center w-6 h-6 rounded-full bg-cyan-500/20">
             <BrainCircuit size={16} className="text-cyan-400 animate-pulse" />
@@ -41,7 +41,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-6xl md:text-8xl font-orbitron font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-blue-200 mb-6 leading-tight drop-shadow-2xl"
+          className="text-6xl md:text-8xl font-orbitron font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-cyan-600 to-blue-700 dark:from-white dark:via-cyan-100 dark:to-blue-200 mb-6 leading-tight drop-shadow-2xl"
         >
           {lang === 'ar' ? 'نبني أنظمة المستقبل' : 'We Build The Future'}<br/>
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 relative">
@@ -56,7 +56,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto mb-12 leading-relaxed font-light"
+          className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto mb-12 leading-relaxed font-light"
         >
           {lang === 'ar' 
             ? 'مجموعة بحث وتطوير مغربية تسعى لتدريب وتأهيل جيل جديد من المهندسين والمبتكرين في مجالات الذكاء الاصطناعي، الروبوتيك، والأنظمة المدمجة.' 
@@ -80,9 +80,9 @@ export default function Hero() {
           </button>
           <button 
             onClick={() => navigate('/academy')}
-            className="group px-10 py-5 rounded-2xl bg-slate-900/60 text-white border-2 border-cyan-500/30 hover:border-cyan-400 hover:bg-slate-800 font-bold text-lg flex items-center justify-center gap-3 transition-all hover:-translate-y-1 backdrop-blur-md hover:shadow-[0_0_20px_-5px_rgba(6,182,212,0.3)]"
+            className="group px-10 py-5 rounded-2xl bg-white/60 dark:bg-slate-900/60 text-slate-900 dark:text-white border-2 border-cyan-500/30 hover:border-cyan-400 hover:bg-white dark:hover:bg-slate-50 dark:bg-slate-800 font-bold text-lg flex items-center justify-center gap-3 transition-all hover:-translate-y-1 backdrop-blur-md hover:shadow-[0_0_20px_-5px_rgba(6,182,212,0.3)]"
           >
-            <Globe size={24} className="text-cyan-400" />
+            <Globe size={24} className="text-cyan-600 dark:text-cyan-400" />
             {lang === 'ar' ? 'أكاديمية الذكاء الاصطناعي' : 'AI Academy'}
             <ChevronRight size={24} className={`text-cyan-400 group-hover:translate-x-2 transition-transform ${lang === 'ar' ? 'rotate-180 group-hover:-translate-x-2' : ''}`} />
           </button>

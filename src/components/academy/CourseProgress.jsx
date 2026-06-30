@@ -77,7 +77,7 @@ export default function CourseProgress({ course, lessons = [], completedLessonId
                                 {isCompleted ? (
                                     <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
                                 ) : (
-                                    <Circle className="w-5 h-5 text-slate-300 dark:text-slate-600 flex-shrink-0" />
+                                    <Circle className="w-5 h-5 text-slate-600 dark:text-slate-300 dark:text-slate-600 flex-shrink-0" />
                                 )}
                                 <span className={`font-medium text-sm md:text-base truncate ${isCompleted ? 'text-[#1e3a5f] dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'}`}>
                                     {idx + 1}. {getLoc(lesson, 'title', lang)}

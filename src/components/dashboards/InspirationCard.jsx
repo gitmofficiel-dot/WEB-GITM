@@ -28,7 +28,7 @@ export default function InspirationCard({ lang = 'en' }) {
     <motion.div 
       initial={{ opacity: 0, y: 20 }} 
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden bg-gradient-to-br from-[#1e3a5f] to-[#11111b] rounded-2xl p-6 text-white border border-slate-700/50 shadow-xl"
+      className="relative overflow-hidden bg-gradient-to-br from-[#1e3a5f] to-[#11111b] rounded-2xl p-6 text-white border border-slate-200/ dark:border-slate-700/ shadow-xl"
     >
       <div className="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/20 rounded-full blur-3xl"></div>
       
@@ -44,7 +44,7 @@ export default function InspirationCard({ lang = 'en' }) {
         <button 
           onClick={fetchFact} 
           disabled={loading}
-          className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors text-slate-300 hover:text-white"
+          className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors text-slate-600 dark:text-slate-300 hover:text-white"
         >
           <motion.div animate={{ rotate: loading ? 360 : 0 }} transition={{ repeat: loading ? Infinity : 0, duration: 1, ease: "linear" }}>
             <RefreshCw size={16} />
@@ -59,7 +59,7 @@ export default function InspirationCard({ lang = 'en' }) {
             <div className="h-4 bg-white/10 rounded w-1/2"></div>
           </div>
         ) : (
-          <p className="text-slate-300 leading-relaxed italic text-sm md:text-base">
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed italic text-sm md:text-base">
             "{fact}"
           </p>
         )}

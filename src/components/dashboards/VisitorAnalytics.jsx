@@ -33,7 +33,7 @@ export default function VisitorAnalytics() {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-[#181825] border border-slate-700/50 p-3 rounded-xl shadow-xl">
+        <div className="bg-[#181825] border border-slate-200/ dark:border-slate-700/ p-3 rounded-xl shadow-xl">
           <p className="text-white font-bold mb-2">{label}</p>
           {payload.map((entry, index) => (
             <p key={index} style={{ color: entry.color }} className="text-sm font-medium">

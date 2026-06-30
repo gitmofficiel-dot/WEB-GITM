@@ -128,7 +128,7 @@ const HardwareRequest = () => {
           {/* Inventory Catalogue (Left/col-span-8) */}
           <div className="lg:col-span-8 space-y-6">
             <div className="p-4 rounded-xl glass border border-[#3A506B]/20 flex items-center space-x-2 rtl:space-x-reverse bg-cyan-50 dark:bg-black/20">
-              <Search className="text-slate-400 dark:text-cyber-muted" size={16} />
+              <Search className="text-slate-600 dark:text-slate-400 dark:text-cyber-muted" size={16} />
               <input
                 type="text"
                 placeholder={lang === 'ar' ? 'ابحث عن جهاز (مثال: STM32, LiDAR)...' : 'Search hardware (e.g. STM32, LiDAR)...'}
@@ -157,7 +157,7 @@ const HardwareRequest = () => {
                       <span className="text-[9px] font-mono font-bold bg-[#3A506B]/20 text-[#3A506B] dark:text-[#8A99AD] px-2 py-0.5 rounded">
                         {item.category}
                       </span>
-                      <span className="text-[10px] font-mono text-slate-400 dark:text-cyber-muted">
+                      <span className="text-[10px] font-mono text-slate-600 dark:text-slate-400 dark:text-cyber-muted">
                         CODE: {item.code}
                       </span>
                     </div>
@@ -167,7 +167,7 @@ const HardwareRequest = () => {
                   </div>
 
                   <div className="flex justify-between items-center mt-4 pt-3 border-t border-[#3A506B]/10 dark:border-white/5 text-[10px]">
-                    <span className="text-slate-400 dark:text-cyber-muted">
+                    <span className="text-slate-600 dark:text-slate-400 dark:text-cyber-muted">
                       {lang === 'ar' ? `المجموع الكلي: ${item.total}` : `Total Stock: ${item.total}`}
                     </span>
                     <span className={`font-bold ${item.available > 0 ? 'text-[#00FF87]' : 'text-red-400'}`}>
@@ -188,7 +188,7 @@ const HardwareRequest = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-right rtl:text-right ltr:text-left text-xs font-mono">
                   <thead>
-                    <tr className="border-b border-[#3A506B]/20 text-slate-400 dark:text-cyber-muted">
+                    <tr className="border-b border-[#3A506B]/20 text-slate-600 dark:text-slate-400 dark:text-cyber-muted">
                       <th className="pb-2 font-bold">{lang === 'ar' ? 'اسم الجهاز' : 'Device'}</th>
                       <th className="pb-2 font-bold">{lang === 'ar' ? 'المستعير' : 'Borrower'}</th>
                       <th className="pb-2 font-bold">{lang === 'ar' ? 'تاريخ الإرجاع' : 'Return Date'}</th>
@@ -227,7 +227,7 @@ const HardwareRequest = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4 text-right rtl:text-right ltr:text-left text-xs">
               <div>
-                <label className="block text-slate-400 dark:text-cyber-muted mb-1">{lang === 'ar' ? 'اسم الطالب / المهندس' : 'Full Name'}</label>
+                <label className="block text-slate-600 dark:text-slate-400 dark:text-cyber-muted mb-1">{lang === 'ar' ? 'اسم الطالب / المهندس' : 'Full Name'}</label>
                 <input
                   type="text"
                   required
@@ -239,7 +239,7 @@ const HardwareRequest = () => {
               </div>
 
               <div>
-                <label className="block text-slate-400 dark:text-cyber-muted mb-1">{lang === 'ar' ? 'البريد الإلكتروني المهني' : 'Work Email'}</label>
+                <label className="block text-slate-600 dark:text-slate-400 dark:text-cyber-muted mb-1">{lang === 'ar' ? 'البريد الإلكتروني المهني' : 'Work Email'}</label>
                 <input
                   type="email"
                   required
@@ -251,7 +251,7 @@ const HardwareRequest = () => {
               </div>
 
               <div>
-                <label className="block text-slate-400 dark:text-cyber-muted mb-1">
+                <label className="block text-slate-600 dark:text-slate-400 dark:text-cyber-muted mb-1">
                   {lang === 'ar' ? 'رمز الباركود للجهاز' : 'Device Barcode/Code'}
                 </label>
                 <div className="flex space-x-2 rtl:space-x-reverse items-center">
@@ -275,7 +275,7 @@ const HardwareRequest = () => {
               </div>
 
               <div>
-                <label className="block text-slate-400 dark:text-cyber-muted mb-1">{lang === 'ar' ? 'مدة الإعارة المطلوبة' : 'Loan Duration'}</label>
+                <label className="block text-slate-600 dark:text-slate-400 dark:text-cyber-muted mb-1">{lang === 'ar' ? 'مدة الإعارة المطلوبة' : 'Loan Duration'}</label>
                 <select
                   value={formData.duration}
                   onChange={(e) => setFormData(f => ({ ...f, duration: e.target.value }))}
@@ -312,7 +312,7 @@ const HardwareRequest = () => {
             </div>
 
             {/* Viewfinder simulation */}
-            <div className="relative aspect-square max-w-[280px] mx-auto border-2 border-dashed border-[#00FF87] rounded-xl overflow-hidden bg-slate-900 flex items-center justify-center">
+            <div className="relative aspect-square max-w-[280px] mx-auto border-2 border-dashed border-[#00FF87] rounded-xl overflow-hidden bg-white dark:bg-slate-900 flex items-center justify-center">
               <Camera size={48} className="text-white/20 animate-pulse" />
               
               {/* Horizontal laser scan line */}

@@ -53,7 +53,7 @@ export default function LiveGithubStats({ repoUrl }) {
             <Star size={14} className="fill-yellow-500" />
             <span>{stats.stars}</span>
           </motion.div>
-          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="flex items-center gap-1 text-slate-400 bg-slate-800 px-2 py-1 rounded-md border border-slate-700">
+          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="flex items-center gap-1 text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">
             <GitFork size={14} />
             <span>{stats.forks}</span>
           </motion.div>

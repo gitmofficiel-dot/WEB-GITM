@@ -175,7 +175,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
           {mainImage && <img src={mainImage} alt="Main Article" className="w-full h-64 object-cover rounded-2xl mb-8 shadow-md" />}
           
           <div 
-            className="prose dark:prose-invert max-w-none prose-img:rounded-2xl prose-img:shadow-xl prose-pre:bg-slate-900 prose-pre:rounded-xl"
+            className="prose dark:prose-invert max-w-none prose-img:rounded-2xl prose-img:shadow-xl prose-pre:bg-white dark:bg-slate-900 prose-pre:rounded-xl"
             dangerouslySetInnerHTML={{ __html: content || (lang === 'ar' ? '<p>محتوى المقال...</p>' : '<p>Article content...</p>') }}
           />
 
@@ -329,7 +329,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
                 <button 
                   onClick={handleGenerateIntro}
                   disabled={aiLoading !== ''}
-                  className="w-full flex justify-between items-center px-4 py-3 bg-white/50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-800 rounded-xl font-bold text-sm text-indigo-700 dark:text-indigo-300 transition-colors border border-indigo-200 dark:border-indigo-800"
+                  className="w-full flex justify-between items-center px-4 py-3 bg-white/50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-50 dark:bg-slate-800 rounded-xl font-bold text-sm text-indigo-700 dark:text-indigo-300 transition-colors border border-indigo-200 dark:border-indigo-800"
                 >
                   {lang === 'ar' ? 'صياغة مقدمة جذابة' : 'Generate Catchy Intro'}
                   {aiLoading === 'intro' ? <Activity size={16} className="animate-spin" /> : <Bot size={16} />}
@@ -338,7 +338,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
                 <button 
                   onClick={handleProofread}
                   disabled={aiLoading !== ''}
-                  className="w-full flex justify-between items-center px-4 py-3 bg-white/50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-800 rounded-xl font-bold text-sm text-indigo-700 dark:text-indigo-300 transition-colors border border-indigo-200 dark:border-indigo-800"
+                  className="w-full flex justify-between items-center px-4 py-3 bg-white/50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-50 dark:bg-slate-800 rounded-xl font-bold text-sm text-indigo-700 dark:text-indigo-300 transition-colors border border-indigo-200 dark:border-indigo-800"
                 >
                   {lang === 'ar' ? 'تدقيق لغوي وهندسي' : 'Technical Proofread'}
                   {aiLoading === 'proofread' ? <Activity size={16} className="animate-spin" /> : <CheckCircle size={16} />}
@@ -347,7 +347,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
                 <button 
                   onClick={handleSEO}
                   disabled={aiLoading !== ''}
-                  className="w-full flex justify-between items-center px-4 py-3 bg-white/50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-800 rounded-xl font-bold text-sm text-indigo-700 dark:text-indigo-300 transition-colors border border-indigo-200 dark:border-indigo-800"
+                  className="w-full flex justify-between items-center px-4 py-3 bg-white/50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-50 dark:bg-slate-800 rounded-xl font-bold text-sm text-indigo-700 dark:text-indigo-300 transition-colors border border-indigo-200 dark:border-indigo-800"
                 >
                   {lang === 'ar' ? 'تحسين الـ SEO' : 'Optimize SEO'}
                   {aiLoading === 'seo' ? <Activity size={16} className="animate-spin" /> : <Globe size={16} />}
@@ -401,7 +401,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
                     </AnimatePresence>
                   </div>
                   <div className="relative">
-                    <Tag size={16} className="absolute right-3 top-3 text-slate-400" />
+                    <Tag size={16} className="absolute right-3 top-3 text-slate-600 dark:text-slate-400" />
                     <input 
                       type="text" 
                       value={tagInput}
@@ -430,7 +430,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
                         <FileText size={16} className="text-blue-500 shrink-0"/>
                         <span className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">{file.name}</span>
                       </div>
-                      <button onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))} className="text-slate-400 hover:text-red-500 shrink-0 p-1">
+                      <button onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))} className="text-slate-600 dark:text-slate-400 hover:text-red-500 shrink-0 p-1">
                         <X size={14}/>
                       </button>
                     </motion.div>

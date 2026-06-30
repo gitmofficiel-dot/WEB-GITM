@@ -73,7 +73,7 @@ export default function LibraryBookDetails() {
               <h3 className="font-bold text-lg text-[#1e3a5f] dark:text-white line-clamp-1 pr-4">{book.title}</h3>
             </div>
             {book.previewLink && (
-              <a href={book.previewLink} target="_blank" rel="noopener noreferrer" className="p-2 text-slate-500 hover:bg-cyan-200 dark:hover:bg-slate-800 rounded-xl transition-colors flex items-center gap-2 text-sm font-semibold whitespace-nowrap" title="Preview Original">
+              <a href={book.previewLink} target="_blank" rel="noopener noreferrer" className="p-2 text-slate-500 hover:bg-cyan-200 dark:hover:bg-slate-50 dark:bg-slate-800 rounded-xl transition-colors flex items-center gap-2 text-sm font-semibold whitespace-nowrap" title="Preview Original">
                 <ExternalLink size={18} />
                 <span className="hidden sm:inline">{txt(lang, 'Preview Link', 'رابط المعاينة الأصلي', 'Lien original', '预览链接')}</span>
               </a>

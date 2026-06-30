@@ -149,20 +149,20 @@ export default function Academy() {
           <h1 className="text-4xl md:text-5xl font-orbitron font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 mb-6">
             {lang === 'ar' ? 'أكاديمية التعلم LMS' : 'Academy LMS'}
           </h1>
-          <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             {lang === 'ar' ? 'مسارات تدريبية احترافية تنتهي بشهادات معتمدة.' : 'Professional training tracks ending with certified credentials.'}
           </p>
         </div>
 
         {/* Tabs */}
         <div className="flex justify-center mb-8">
-          <div className="bg-slate-900/50 backdrop-blur-md p-1 rounded-2xl inline-flex border border-slate-700/50">
+          <div className="bg-white/ dark:bg-slate-900/ backdrop-blur-md p-1 rounded-2xl inline-flex border border-slate-200/ dark:border-slate-700/">
             <button
               onClick={() => { setActiveTab('courses'); setCurrentPage(1); setSearchQuery(''); }}
               className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${
                 activeTab === 'courses' 
                   ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/25' 
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-white hover:bg-slate-50 dark:bg-slate-800'
               }`}
             >
               <BookOpen className="w-5 h-5" />
@@ -173,7 +173,7 @@ export default function Academy() {
               className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${
                 activeTab === 'library' 
                   ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25' 
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-white hover:bg-slate-50 dark:bg-slate-800'
               }`}
             >
               <Library className="w-5 h-5" />
@@ -205,12 +205,12 @@ export default function Academy() {
               </p>
             </div>
           ) : currentCourses.length === 0 ? (
-            <div className="text-center py-20 bg-slate-900/50 rounded-2xl border border-slate-700/50">
-              <p className="text-slate-400">{lang === 'ar' ? 'لا توجد دورات.' : 'No courses found.'}</p>
+            <div className="text-center py-20 bg-white/ dark:bg-slate-900/ rounded-2xl border border-slate-200/ dark:border-slate-700/">
+              <p className="text-slate-600 dark:text-slate-400">{lang === 'ar' ? 'لا توجد دورات.' : 'No courses found.'}</p>
             </div>
           ) : (
-            <div className="flex flex-col gap-8 max-w-6xl mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="flex flex-col gap-8 max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {currentCourses.map((course, index) => (
                   <motion.div 
                     key={course.id}
@@ -218,30 +218,50 @@ export default function Academy() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="glass-card hover-lift card-3d rounded-2xl overflow-hidden border border-slate-700/50 hover:border-teal-500/50 group flex flex-col"
+                    className="group cursor-pointer relative rounded-2xl overflow-hidden aspect-square border border-slate-200 dark:border-slate-700/50 hover:border-teal-500/50 shadow-lg hover:shadow-[0_0_30px_rgba(20,184,166,0.2)] transition-all bg-white dark:bg-slate-900"
+                    onClick={() => startCourse(course)}
                   >
-                    <div className="h-48 overflow-hidden relative">
-                      <img src={course.thumbnail} alt="Course Thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <div className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur px-3 py-1 rounded-full border border-teal-500/30 text-teal-300 text-xs font-bold">
-                        {course.track}
+                    {/* Background Image */}
+                    <img 
+                      src={course.thumbnail || 'https://via.placeholder.com/600x600?text=Course'} 
+                      alt="Course Thumbnail" 
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                    />
+                    
+                    {/* Dark Overlay Gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
+                    
+                    {/* Content */}
+                    <div className="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                      {/* Top Badges */}
+                      <div className="flex justify-between items-start">
+                        <div className="bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-teal-300 text-xs font-bold shadow-xl">
+                          {course.track}
+                        </div>
                       </div>
-                    </div>
-                    <div className="p-6 flex flex-col flex-1 bg-slate-900/50">
-                      <h3 className="text-xl font-bold text-white mb-2 font-orbitron group-hover:text-teal-300 transition-colors">
-                        {getLocalized(course, 'title', lang)}
-                      </h3>
-                      <p className="text-slate-400 text-sm mb-6 line-clamp-2">
-                        {getLocalized(course, 'description', lang)}
-                      </p>
-                      
-                      <div className="mt-auto">
-                        <button 
-                          onClick={() => startCourse(course)}
-                          className="w-full py-3 bg-teal-500 hover:bg-teal-400 text-white rounded-xl font-bold transition-all shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2"
-                        >
-                          <PlayCircle size={18} />
-                          {lang === 'ar' ? 'ابدأ التعلم' : 'Start Learning'}
-                        </button>
+
+                      {/* Bottom Reveal Content */}
+                      <div className="transform translate-y-8 group-hover:translate-y-0 transition-transform duration-300">
+                        <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 font-orbitron group-hover:text-teal-300 transition-colors drop-shadow-md">
+                          {getLocalized(course, 'title', lang)}
+                        </h3>
+                        
+                        <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                          {getLocalized(course, 'description', lang)}
+                        </p>
+                        
+                        <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-150">
+                          <button 
+                            className="w-full py-3 bg-teal-500 hover:bg-teal-400 text-white rounded-xl font-bold transition-all shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              startCourse(course);
+                            }}
+                          >
+                            <PlayCircle size={18} />
+                            {lang === 'ar' ? 'ابدأ التعلم' : 'Start Learning'}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
@@ -262,9 +282,9 @@ export default function Academy() {
               </p>
             </div>
           ) : books.length === 0 ? (
-            <div className="text-center py-20 bg-slate-900/50 rounded-2xl border border-slate-700/50">
+            <div className="text-center py-20 bg-white/ dark:bg-slate-900/ rounded-2xl border border-slate-200/ dark:border-slate-700/">
               <BookOpen className="w-16 h-16 text-slate-500 mx-auto mb-4 opacity-50" />
-              <p className="text-slate-400 text-lg">{lang === 'ar' ? 'لا توجد كتب مطابقة لبحثك.' : 'No books found for your search.'}</p>
+              <p className="text-slate-600 dark:text-slate-400 text-lg">{lang === 'ar' ? 'لا توجد كتب مطابقة لبحثك.' : 'No books found for your search.'}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
@@ -278,20 +298,20 @@ export default function Academy() {
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.05 }}
-                    className="glass-card hover-lift card-3d rounded-2xl overflow-hidden border border-slate-700/50 hover:border-indigo-500/50 group flex flex-col bg-slate-900/50"
+                    className="glass-card hover-lift card-3d rounded-2xl overflow-hidden border border-slate-200/ dark:border-slate-700/ hover:border-indigo-500/50 group flex flex-col bg-white/ dark:bg-slate-900/"
                   >
-                    <div className="h-56 bg-slate-800 flex items-center justify-center p-4 relative overflow-hidden">
+                    <div className="h-56 bg-slate-50 dark:bg-slate-800 flex items-center justify-center p-4 relative overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent z-10" />
                       <img src={thumbnail} alt={info.title} className="max-h-full max-w-full object-contain relative z-0 group-hover:scale-110 transition-transform duration-500" />
                     </div>
-                    <div className="p-5 flex flex-col flex-1 relative z-20 -mt-6 bg-slate-900/90 backdrop-blur-md rounded-t-2xl border-t border-slate-700/50">
+                    <div className="p-5 flex flex-col flex-1 relative z-20 -mt-6 bg-white/ dark:bg-slate-900/ backdrop-blur-md rounded-t-2xl border-t border-slate-200/ dark:border-slate-700/">
                       <h3 className="text-lg font-bold text-white mb-1 line-clamp-2 group-hover:text-indigo-300 transition-colors" title={info.title}>
                         {info.title}
                       </h3>
                       <p className="text-indigo-400 text-xs font-medium mb-3 truncate">
                         {info.authors ? info.authors.join(', ') : 'Unknown Author'}
                       </p>
-                      <p className="text-slate-400 text-xs line-clamp-3 mb-4 flex-1">
+                      <p className="text-slate-600 dark:text-slate-400 text-xs line-clamp-3 mb-4 flex-1">
                         {info.description || (lang === 'ar' ? 'لا يوجد وصف متاح لهذا الكتاب.' : 'No description available for this book.')}
                       </p>
                       <a 
@@ -326,7 +346,7 @@ export default function Academy() {
           <h2 className="font-bold text-[#1e3a5f] dark:text-white line-clamp-1" title={lang === 'ar' ? activeCourse.title_ar : activeCourse.title_en}>
             {lang === 'ar' ? activeCourse.title_ar : activeCourse.title_en}
           </h2>
-          <button onClick={closeCourse} className="text-slate-400 hover:text-rose-500 transition-colors"><X size={20}/></button>
+          <button onClick={closeCourse} className="text-slate-600 dark:text-slate-400 hover:text-rose-500 transition-colors"><X size={20}/></button>
         </div>
         
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
@@ -342,16 +362,16 @@ export default function Academy() {
                 onClick={() => setCurrentModuleIndex(idx)}
                 className={`w-full text-left p-4 rounded-xl flex items-center gap-3 transition-all ${
                   isActive ? 'bg-cyan-50 dark:bg-cyan-900/30 border border-cyan-200 dark:border-cyan-800' 
-                  : isUnlocked ? 'bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800' 
+                  : isUnlocked ? 'bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-50 dark:bg-slate-800' 
                   : 'opacity-50 cursor-not-allowed'
                 }`}
               >
                 {isCompleted ? (
                   <CheckCircle size={20} className="text-emerald-500 shrink-0" />
                 ) : isUnlocked ? (
-                  <PlayCircle size={20} className={isActive ? 'text-cyan-500' : 'text-slate-400'} shrink-0 />
+                  <PlayCircle size={20} className={isActive ? 'text-cyan-500' : 'text-slate-600 dark:text-slate-400'} shrink-0 />
                 ) : (
-                  <Lock size={20} className="text-slate-400 shrink-0" />
+                  <Lock size={20} className="text-slate-600 dark:text-slate-400 shrink-0" />
                 )}
                 
                 <span className={`text-sm font-semibold line-clamp-2 ${isActive ? 'text-cyan-700 dark:text-cyan-400' : 'text-slate-600 dark:text-slate-300'}`}>

@@ -203,10 +203,10 @@ const ArchitectureBuilder = () => {
                     className="w-full p-3 rounded-lg border border-[#3A506B]/20 dark:border-white/5 hover:border-[#00E5FF]/40 bg-[#e0fcfc]/5 hover:bg-[#00E5FF]/5 transition-all text-right rtl:text-right ltr:text-left flex justify-between items-center group text-xs font-semibold"
                   >
                     <div>
-                      <span className="text-[10px] text-slate-400 dark:text-cyber-muted block font-mono uppercase">{template.type}</span>
+                      <span className="text-[10px] text-slate-600 dark:text-slate-400 dark:text-cyber-muted block font-mono uppercase">{template.type}</span>
                       <span className="text-[#1e3a5f] dark:text-white group-hover:text-[#00E5FF] font-bold">{template.name.split(' ')[0]}</span>
                     </div>
-                    <Plus size={14} className="text-slate-400 group-hover:text-[#00E5FF]" />
+                    <Plus size={14} className="text-slate-600 dark:text-slate-400 group-hover:text-[#00E5FF]" />
                   </button>
                 ))}
               </div>
@@ -287,7 +287,7 @@ const ArchitectureBuilder = () => {
                   }`}
                 >
                   <div>
-                    <span className="text-[8px] font-mono text-slate-400 font-bold block uppercase tracking-wider mb-1">
+                    <span className="text-[8px] font-mono text-slate-600 dark:text-slate-400 font-bold block uppercase tracking-wider mb-1">
                       {node.type}
                     </span>
                     <h4 className="text-xs font-bold text-white truncate">{node.name}</h4>

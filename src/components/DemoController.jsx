@@ -42,7 +42,7 @@ const DemoController = () => {
       <div className="flex items-center justify-between border-b border-cyan-300 dark:border-white/5 pb-2 mb-3">
         <button 
           onClick={() => setIsCollapsed(true)} 
-          className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+          className="text-slate-600 dark:text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
         >
           <Minimize2 size={14} />
         </button>
@@ -68,7 +68,7 @@ const DemoController = () => {
                   : 'bg-cyan-50 dark:bg-[#e0fcfc]/5 border-transparent text-[#2d507b] dark:text-cyber-muted hover:bg-cyan-100 dark:hover:bg-[#e0fcfc]/10 hover:text-[#0B132B] dark:hover:text-white'
               }`}
             >
-              <span className="font-mono text-[8px] uppercase tracking-wider text-slate-400 dark:text-cyber-muted">
+              <span className="font-mono text-[8px] uppercase tracking-wider text-slate-600 dark:text-slate-400 dark:text-cyber-muted">
                 {role.id}
               </span>
               <span className="truncate">{role.label.split(' / ')[0]}</span>

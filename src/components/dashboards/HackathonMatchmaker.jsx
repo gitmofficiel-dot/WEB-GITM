@@ -89,7 +89,7 @@ export default function HackathonMatchmaker() {
                        : 'bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-indigo-300 disabled:opacity-50'
                    }`}
                  >
-                   <skill.icon size={20} className={isSelected ? 'text-indigo-500' : 'text-slate-400'} />
+                   <skill.icon size={20} className={isSelected ? 'text-indigo-500' : 'text-slate-600 dark:text-slate-400'} />
                    <span className="text-xs font-bold text-center">{skill.name}</span>
                  </button>
                );
@@ -116,7 +116,7 @@ export default function HackathonMatchmaker() {
            <div className="flex-1 overflow-y-auto pr-2 space-y-4">
              <AnimatePresence>
                {!isSearching && matches.length === 0 && (
-                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full flex flex-col items-center justify-center text-slate-400 gap-4 opacity-50">
+                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full flex flex-col items-center justify-center text-slate-600 dark:text-slate-400 gap-4 opacity-50">
                     <Users size={48} />
                     <p className="font-bold">{lang === 'ar' ? 'حدد المهارات واضغط على بحث' : 'Select skills and click search'}</p>
                  </motion.div>
@@ -154,7 +154,7 @@ export default function HackathonMatchmaker() {
                    <div className="flex flex-col items-end gap-2 shrink-0">
                      <div className="flex flex-col items-center">
                         <span className="text-lg font-bold text-indigo-500">{user.matchScore}%</span>
-                        <span className="text-[10px] text-slate-400 uppercase">Match</span>
+                        <span className="text-[10px] text-slate-600 dark:text-slate-400 uppercase">Match</span>
                      </div>
                      <button className="p-2 bg-slate-100 hover:bg-indigo-50 dark:bg-slate-700 dark:hover:bg-indigo-500/20 text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-300 rounded-lg transition-colors">
                        <UserPlus size={16} />

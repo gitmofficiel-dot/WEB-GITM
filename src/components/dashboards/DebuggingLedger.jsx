@@ -58,7 +58,7 @@ export default function DebuggingLedger() {
       </div>
 
       <div className="relative mb-8 max-w-2xl mx-auto w-full">
-         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-400" size={20} />
          <input 
            type="text" 
            value={search}
@@ -86,7 +86,7 @@ export default function DebuggingLedger() {
                   onClick={() => setExpandedId(isExpanded ? null : entry.id)}
                 >
                   <div className="flex flex-col items-center gap-1 shrink-0 w-12 pt-1">
-                    <button className="text-slate-400 hover:text-emerald-500 transition-colors"><ChevronUp size={24}/></button>
+                    <button className="text-slate-600 dark:text-slate-400 hover:text-emerald-500 transition-colors"><ChevronUp size={24}/></button>
                     <span className="font-bold text-slate-600 dark:text-slate-300">{entry.votes}</span>
                   </div>
                   
@@ -130,7 +130,7 @@ export default function DebuggingLedger() {
                           </div>
                         </div>
 
-                        <div className="flex justify-between items-center text-xs text-slate-400 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <div className="flex justify-between items-center text-xs text-slate-600 dark:text-slate-400 pt-4 border-t border-slate-200 dark:border-slate-700">
                           <span>Documented by: <strong className="text-slate-600 dark:text-slate-300">{entry.author}</strong></span>
                           <button className="flex items-center gap-1 hover:text-emerald-500 transition-colors"><MessageSquare size={14}/> Reply/Discuss</button>
                         </div>

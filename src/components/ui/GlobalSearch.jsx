@@ -97,7 +97,7 @@ export default function GlobalSearch() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={lang === 'ar' ? 'ابحث عن الكورسات، الأخبار، المشاريع...' : 'Search courses, news, projects...'}
-                  className="flex-1 bg-transparent border-none outline-none text-lg text-slate-800 dark:text-white placeholder:text-slate-400"
+                  className="flex-1 bg-transparent border-none outline-none text-lg text-slate-800 dark:text-white placeholder:text-slate-600 dark:text-slate-400"
                 />
                 <button onClick={() => setIsOpen(false)} className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400">
                   <X size={20} />
@@ -127,14 +127,14 @@ export default function GlobalSearch() {
                             <p className="text-xs text-slate-500 capitalize">{result.type}</p>
                           </div>
                         </div>
-                        <ArrowRight className="text-slate-300 dark:text-slate-600 group-hover:text-cyan-500 transition-colors rtl:rotate-180" size={18} />
+                        <ArrowRight className="text-slate-600 dark:text-slate-300 dark:text-slate-600 group-hover:text-cyan-500 transition-colors rtl:rotate-180" size={18} />
                       </button>
                     ))}
                   </div>
                 )}
                 
                 {query.length === 0 && (
-                  <div className="p-8 text-center text-slate-400 text-sm">
+                  <div className="p-8 text-center text-slate-600 dark:text-slate-400 text-sm">
                     {lang === 'ar' ? 'اكتب ما تبحث عنه للبدء' : 'Type to start searching'}
                   </div>
                 )}

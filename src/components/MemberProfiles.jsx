@@ -168,9 +168,9 @@ export default function MemberProfiles() {
                 </div>
 
                 <div className="flex gap-4 pt-4 border-t border-slate-200 dark:border-slate-800 w-full justify-center">
-                  {member.social.github && <a href={member.social.github} className="text-slate-400 hover:text-[#1e3a5f] dark:hover:text-white transition-colors"><Github size={18} /></a>}
-                  {member.social.linkedin && <a href={member.social.linkedin} className="text-slate-400 hover:text-blue-600 transition-colors"><Linkedin size={18} /></a>}
-                  {member.social.twitter && <a href={member.social.twitter} className="text-slate-400 hover:text-cyan-500 transition-colors"><Twitter size={18} /></a>}
+                  {member.social.github && <a href={member.social.github} className="text-slate-600 dark:text-slate-400 hover:text-[#1e3a5f] dark:hover:text-white transition-colors"><Github size={18} /></a>}
+                  {member.social.linkedin && <a href={member.social.linkedin} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors"><Linkedin size={18} /></a>}
+                  {member.social.twitter && <a href={member.social.twitter} className="text-slate-600 dark:text-slate-400 hover:text-cyan-500 transition-colors"><Twitter size={18} /></a>}
                 </div>
 
               </div>

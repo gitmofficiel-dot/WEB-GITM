@@ -96,7 +96,7 @@ export default function CollaborationBoard() {
             <button
               key={tool.id}
               onClick={() => setActiveTool(tool.id)}
-              className={`p-3 rounded-xl transition-colors ${activeTool === tool.id ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30' : 'text-slate-500 hover:bg-cyan-100 dark:hover:bg-slate-800'}`}
+              className={`p-3 rounded-xl transition-colors ${activeTool === tool.id ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30' : 'text-slate-500 hover:bg-cyan-100 dark:hover:bg-slate-50 dark:bg-slate-800'}`}
             >
               <tool.icon size={20} />
             </button>
@@ -145,7 +145,7 @@ export default function CollaborationBoard() {
           ))}
 
           {elements.length === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center text-slate-400 pointer-events-none">
+            <div className="absolute inset-0 flex items-center justify-center text-slate-600 dark:text-slate-400 pointer-events-none">
               <p className="font-medium bg-[#e0fcfc]/80 dark:bg-slate-900/80 px-4 py-2 rounded-lg backdrop-blur-sm">
                 {txt(lang, 'Select a tool to start drawing architecture.', 'اختر أداة لبدء رسم المخطط المعماري.', 'Sélectionnez un outil', '选择一个工具')}
               </p>

@@ -506,7 +506,7 @@ export default function ContentManagerDashboard() {
   const ConfirmDialogComponent = () => {
     if (!confirmDialog.isOpen) return null;
     return (
-      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-white/ dark:bg-slate-900/ backdrop-blur-sm animate-fade-in">
         <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-700 text-center">
           <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle size={32} />
@@ -546,7 +546,7 @@ export default function ContentManagerDashboard() {
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
                     activeTab === tab.id
                     ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/20'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-50 dark:bg-slate-800'
                   }`}
                 >
                   <Icon size={18} /> {tab.label}
@@ -907,8 +907,8 @@ export default function ContentManagerDashboard() {
                         <div className="p-3">
                           <p className="text-xs font-bold text-[#1e3a5f] dark:text-white truncate">{item.title}</p>
                           <div className="flex justify-between items-center mt-1">
-                            <span className="text-[10px] text-slate-400">{item.size}</span>
-                            <span className="text-[10px] text-slate-400">{item.date}</span>
+                            <span className="text-[10px] text-slate-600 dark:text-slate-400">{item.size}</span>
+                            <span className="text-[10px] text-slate-600 dark:text-slate-400">{item.date}</span>
                           </div>
                         </div>
                       </motion.div>
@@ -931,7 +931,7 @@ export default function ContentManagerDashboard() {
                           <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white">
                             {lang === 'ar' ? 'رفع وسائط جديدة' : 'Upload New Media'}
                           </h3>
-                          <button onClick={() => setShowMediaModal(false)} className="text-slate-400 hover:text-slate-600 p-1"><X size={20}/></button>
+                          <button onClick={() => setShowMediaModal(false)} className="text-slate-600 dark:text-slate-400 hover:text-slate-600 p-1"><X size={20}/></button>
                         </div>
                         <div className="space-y-4">
                           <div>

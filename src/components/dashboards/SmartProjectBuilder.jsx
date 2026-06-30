@@ -129,7 +129,7 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave }) {
                    <button onClick={() => handleRemoveMember(member.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg"><Trash2 size={18}/></button>
                  </div>
                ))}
-               <button onClick={handleAddMember} className="w-full py-2 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 font-bold hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors flex justify-center items-center gap-2">
+               <button onClick={handleAddMember} className="w-full py-2 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 font-bold hover:bg-slate-50 dark:hover:bg-white dark:bg-slate-900 transition-colors flex justify-center items-center gap-2">
                  <Plus size={18}/> Add Member
                </button>
              </div>

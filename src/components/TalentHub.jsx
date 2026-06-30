@@ -78,7 +78,7 @@ const TalentHub = () => {
         {/* Filters Controls */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10 items-center">
           <div className="md:col-span-6 p-3 rounded-xl glass border border-[#3A506B]/20 flex items-center space-x-2 rtl:space-x-reverse bg-cyan-50 dark:bg-black/20">
-            <Search className="text-slate-400 dark:text-cyber-muted" size={16} />
+            <Search className="text-slate-600 dark:text-slate-400 dark:text-cyber-muted" size={16} />
             <input
               type="text"
               placeholder={lang === 'ar' ? 'ابحث بالاسم أو المهارات (مثال: C++, ROS2)...' : 'Search by name or skills (e.g. C++, ROS2)...'}
@@ -143,7 +143,7 @@ const TalentHub = () => {
                 </div>
 
                 <div className="flex items-center space-x-2 shrink-0">
-                  <GraduationCap size={18} className="text-slate-400 dark:text-cyber-muted" />
+                  <GraduationCap size={18} className="text-slate-600 dark:text-slate-400 dark:text-cyber-muted" />
                   <span className="text-xs font-mono font-bold text-slate-600 dark:text-cyber-muted">
                     GPA: {student.gpa.split(' ')[0]}
                   </span>
@@ -169,7 +169,7 @@ const TalentHub = () => {
                 {/* Bio / Email */}
                 <div className="space-y-3 text-xs">
                   <div>
-                    <span className="text-slate-400 dark:text-[#8A99AD] block uppercase text-[9px] tracking-wider mb-0.5">{lang === 'ar' ? 'نبذة تعريفية' : 'About Candidate'}</span>
+                    <span className="text-slate-600 dark:text-slate-400 dark:text-[#8A99AD] block uppercase text-[9px] tracking-wider mb-0.5">{lang === 'ar' ? 'نبذة تعريفية' : 'About Candidate'}</span>
                     <p className="text-[#2d507b] dark:text-cyber-text leading-relaxed">{selectedStudent.bio}</p>
                   </div>
 
@@ -206,7 +206,7 @@ const TalentHub = () => {
 
                   <button
                     onClick={() => toast.info(lang === 'ar' ? `فتح الشهادة الرقمية للمترشح... الرمز: ${selectedStudent.certHash}` : `Opening verifiable document for student... ID: ${selectedStudent.certHash}`)}
-                    className="w-full py-2 bg-slate-900 border border-[#00E5FF]/20 hover:border-[#00E5FF]/60 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 rtl:space-x-reverse transition-all"
+                    className="w-full py-2 bg-white dark:bg-slate-900 border border-[#00E5FF]/20 hover:border-[#00E5FF]/60 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 rtl:space-x-reverse transition-all"
                   >
                     <ExternalLink size={12} className="text-[#00E5FF]" />
                     <span>{lang === 'ar' ? 'استعراض مستند الشهادة الموثقة' : 'View Verified Certificate'}</span>

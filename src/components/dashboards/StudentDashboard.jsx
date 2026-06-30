@@ -93,7 +93,7 @@ export default function StudentDashboard() {
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
                     activeTab === tab.id
                     ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/20'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-50 dark:bg-slate-800'
                   }`}
                 >
                   <Icon size={18} /> {tab.label}
@@ -259,15 +259,15 @@ export default function StudentDashboard() {
                       <div className="p-5">
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                           <div>
-                            <p className="text-xs text-slate-400 font-semibold mb-1">{lang === 'ar' ? 'رقم الشهادة' : 'Certificate ID'}</p>
+                            <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold mb-1">{lang === 'ar' ? 'رقم الشهادة' : 'Certificate ID'}</p>
                             <p className="font-mono text-sm font-bold text-[#1e3a5f] dark:text-white">{cert.id}</p>
                           </div>
                           <div>
-                            <p className="text-xs text-slate-400 font-semibold mb-1">{lang === 'ar' ? 'تاريخ الإصدار' : 'Issue Date'}</p>
+                            <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold mb-1">{lang === 'ar' ? 'تاريخ الإصدار' : 'Issue Date'}</p>
                             <p className="text-sm font-bold text-[#1e3a5f] dark:text-white flex items-center gap-1"><Calendar size={12}/> {cert.issueDate}</p>
                           </div>
                           <div>
-                            <p className="text-xs text-slate-400 font-semibold mb-1">{lang === 'ar' ? 'الحالة' : 'Status'}</p>
+                            <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold mb-1">{lang === 'ar' ? 'الحالة' : 'Status'}</p>
                             <p className="text-sm font-bold text-emerald-500 flex items-center gap-1"><CheckCircle size={12}/> {lang === 'ar' ? 'تم التحقق' : 'Verified'}</p>
                           </div>
                         </div>
@@ -337,14 +337,14 @@ export default function StudentDashboard() {
                             transition={{ delay: 0.3 + i * 0.05, duration: 0.5 }}
                             className="w-full bg-gradient-to-t from-blue-500 to-cyan-400 rounded-t-lg relative group cursor-pointer hover:from-blue-600 hover:to-cyan-500 transition-all min-h-[4px]"
                           >
-                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-50 dark:bg-slate-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
                               {hours}h
                             </div>
                           </motion.div>
                         </div>
                       ))}
                     </div>
-                    <div className="flex justify-between mt-2 text-[10px] text-slate-400 font-bold">
+                    <div className="flex justify-between mt-2 text-[10px] text-slate-600 dark:text-slate-400 font-bold">
                       {(lang === 'ar' ? ['أحد','إثن','ثلا','أرب','خمي','جمع','سبت'] : ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']).map(d => (
                         <span key={d} className="flex-1 text-center">{d}</span>
                       ))}
@@ -381,7 +381,7 @@ export default function StudentDashboard() {
                             <span className="text-2xl">🏆</span>
                             <div>
                               <p className="font-semibold text-sm text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'إجمالي النقاط' : 'Total Points'}</p>
-                              <p className="text-xs text-slate-400">{lang === 'ar' ? 'الترتيب: #' : 'Rank: #'}{learningStats.rank}</p>
+                              <p className="text-xs text-slate-600 dark:text-slate-400">{lang === 'ar' ? 'الترتيب: #' : 'Rank: #'}{learningStats.rank}</p>
                             </div>
                           </div>
                           <span className="text-xl font-bold text-amber-500">{learningStats.totalPoints}</span>

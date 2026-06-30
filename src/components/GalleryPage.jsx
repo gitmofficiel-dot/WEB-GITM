@@ -87,7 +87,7 @@ export default function GalleryPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-400 max-w-2xl mx-auto text-lg"
+            className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg"
           >
             {lang === 'ar' ? 'استكشف اللحظات من فعالياتنا ومشاريعنا الابتكارية عبر المغرب.' : 
              lang === 'fr' ? 'Explorez les moments de nos événements et projets innovants à travers le Maroc.' : 
@@ -109,7 +109,7 @@ export default function GalleryPage() {
               className={`px-5 py-2 rounded-full font-medium transition-all duration-300 ${
                 filter === f.id 
                   ? 'bg-teal-500 text-white shadow-[0_0_15px_rgba(13,148,136,0.5)]' 
-                  : 'glass text-slate-300 hover:text-teal-300 hover:bg-teal-500/10'
+                  : 'glass text-slate-600 dark:text-slate-300 hover:text-teal-300 hover:bg-teal-500/10'
               }`}
             >
               {f.label[lang] || f.label.en}
@@ -156,7 +156,7 @@ export default function GalleryPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                     <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                       <h3 className="text-xl font-bold text-white mb-2 font-orbitron">{getLocalized(item, 'title', lang)}</h3>
-                      <div className="flex items-center gap-4 text-sm text-slate-300">
+                      <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-300">
                         <span className="flex items-center gap-1"><MapPin className="w-4 h-4 text-teal-400"/> {getLocalized(item, 'location', lang)}</span>
                         <span className="flex items-center gap-1"><Calendar className="w-4 h-4 text-teal-400"/> {item.date}</span>
                       </div>
@@ -189,11 +189,11 @@ export default function GalleryPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-sm lightbox-overlay"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/ dark:bg-slate-900/ backdrop-blur-sm lightbox-overlay"
               onClick={() => setSelectedImg(null)}
             >
               <button 
-                className="absolute top-6 right-6 p-2 bg-slate-800/50 hover:bg-teal-500/20 rounded-full text-slate-300 hover:text-white transition-colors border border-slate-700 hover:border-teal-500/50"
+                className="absolute top-6 right-6 p-2 bg-slate-50/ dark:bg-slate-800/ hover:bg-teal-500/20 rounded-full text-slate-600 dark:text-slate-300 hover:text-white transition-colors border border-slate-200 dark:border-slate-700 hover:border-teal-500/50"
                 onClick={(e) => { e.stopPropagation(); setSelectedImg(null); }}
               >
                 <X className="w-6 h-6" />
@@ -208,11 +208,11 @@ export default function GalleryPage() {
                 <img 
                   src={selectedImg.imageUrl || selectedImg.url || selectedImg.image} 
                   alt={getLocalized(selectedImg, 'title', lang)}
-                  className="w-full max-h-[80vh] object-contain bg-slate-900/50"
+                  className="w-full max-h-[80vh] object-contain bg-white/ dark:bg-slate-900/"
                 />
-                <div className="p-6 bg-slate-900/80 backdrop-blur-md border-t border-teal-500/20">
+                <div className="p-6 bg-white/ dark:bg-slate-900/ backdrop-blur-md border-t border-teal-500/20">
                   <h3 className="text-2xl font-bold text-white mb-2 font-orbitron">{getLocalized(selectedImg, 'title', lang)}</h3>
-                  <div className="flex items-center gap-6 text-slate-300">
+                  <div className="flex items-center gap-6 text-slate-600 dark:text-slate-300">
                     <span className="flex items-center gap-2"><MapPin className="w-5 h-5 text-teal-400"/> {getLocalized(selectedImg, 'location', lang)}</span>
                     <span className="flex items-center gap-2"><Calendar className="w-5 h-5 text-teal-400"/> {selectedImg.date}</span>
                   </div>

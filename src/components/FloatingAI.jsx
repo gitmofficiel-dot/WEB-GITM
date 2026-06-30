@@ -156,7 +156,7 @@ export default function FloatingAI() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(!isOpen)}
-          className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-white transition-all duration-300 ${isOpen ? 'bg-slate-700 hover:bg-slate-800 rotate-90' : 'bg-gradient-to-r from-teal-500 to-cyan-500 hover:shadow-[0_0_20px_rgba(6,182,212,0.5)]'}`}
+          className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-white transition-all duration-300 ${isOpen ? 'bg-slate-700 hover:bg-slate-50 dark:bg-slate-800 rotate-90' : 'bg-gradient-to-r from-teal-500 to-cyan-500 hover:shadow-[0_0_20px_rgba(6,182,212,0.5)]'}`}
         >
           {isOpen ? <X className="w-6 h-6" /> : <Bot className="w-7 h-7" />}
           {!isOpen && (

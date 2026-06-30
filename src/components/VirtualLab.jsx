@@ -42,15 +42,15 @@ function TechNode({ position, color, label, icon: Icon, testData }) {
         {/* HTML Overlay attached to the 3D object */}
         {(hovered || active) && (
           <Html position={[0, 1.5, 0]} center>
-              <div className="bg-slate-900/80 backdrop-blur-md border border-cyan-500/30 text-white p-3 rounded-xl shadow-2xl w-48 animate-fade-in-up pointer-events-none">
+              <div className="bg-white/ dark:bg-slate-900/ backdrop-blur-md border border-cyan-500/30 text-white p-3 rounded-xl shadow-2xl w-48 animate-fade-in-up pointer-events-none">
                 <div className="flex items-center gap-2 mb-2 text-cyan-400">
                   <Icon size={16} />
                   <h4 className="font-bold text-sm font-orbitron">{label}</h4>
                 </div>
                 {active && testData ? (
-                  <div className="text-xs text-slate-300 space-y-1">
+                  <div className="text-xs text-slate-600 dark:text-slate-300 space-y-1">
                     <p className="text-emerald-400 font-bold mb-2">Status: Active & Streaming</p>
-                    <div className="font-mono bg-slate-800 p-2 rounded border border-slate-700 text-[10px] break-words overflow-y-auto max-h-32 scrollbar-thin scrollbar-thumb-slate-600">
+                    <div className="font-mono bg-slate-50 dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700 text-[10px] break-words overflow-y-auto max-h-32 scrollbar-thin scrollbar-thumb-slate-600">
                       <span className="text-pink-400">ID:</span> {testData.id} <br/>
                       {testData.title && <><span className="text-purple-400">Title:</span> {testData.title}<br/></>}
                       {testData.name && <><span className="text-blue-400">Name:</span> {testData.name}<br/></>}
@@ -60,7 +60,7 @@ function TechNode({ position, color, label, icon: Icon, testData }) {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-300">
+                  <p className="text-xs text-slate-600 dark:text-slate-300">
                     Click to activate node and view data streams.
                   </p>
                 )}
@@ -151,31 +151,31 @@ export default function VirtualLab() {
         </Canvas>
 
         {/* Bottom controls overlay */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 bg-slate-900/90 backdrop-blur-md px-8 py-4 rounded-3xl border border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.2)]">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 bg-white/ dark:bg-slate-900/ backdrop-blur-md px-8 py-4 rounded-3xl border border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.2)]">
           <div className="flex gap-2">
             <button 
               onClick={() => fetchData('posts')}
               disabled={loading}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'posts' ? 'bg-cyan-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)]' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'}`}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'posts' ? 'bg-cyan-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)]' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
             >
               Fetch Sensor Data
             </button>
             <button 
               onClick={() => fetchData('users')}
               disabled={loading}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'users' ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'}`}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'users' ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
             >
               Fetch User Auth
             </button>
             <button 
               onClick={() => fetchData('todos')}
               disabled={loading}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'todos' ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'}`}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'todos' ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
             >
               Fetch System Logs
             </button>
           </div>
-          <p className="text-xs font-medium text-slate-400">Left Click Node: View Data | Drag: Rotate | Scroll: Zoom</p>
+          <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Left Click Node: View Data | Drag: Rotate | Scroll: Zoom</p>
         </div>
       </div>
     </div>

@@ -222,7 +222,7 @@ const ProjectsHub = () => {
                             toast.info(`Redirecting to https://github.com/${proj.repo}`);
                             window.open(`https://github.com/${proj.repo}`, '_blank');
                           }}
-                          className="text-slate-400 hover:text-white"
+                          className="text-slate-600 dark:text-slate-400 hover:text-white"
                         >
                           <ExternalLink size={12} />
                         </button>
