@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
-import { BookOpen, Award, PlayCircle, Lock, CheckCircle, ChevronRight, X, Loader2 } from 'lucide-react';
+import { BookOpen, Award, PlayCircle, Lock, CheckCircle, ChevronRight, X, Loader2, Library, Search } from 'lucide-react';
 import LessonView from './academy/LessonView';
 import QuizEngine from './academy/QuizEngine';
 import { db } from '../config/firebase';
@@ -13,7 +13,10 @@ import Pagination from './ui/Pagination';
 export default function Academy() {
   const { lang } = useLanguage();
   const [courses, setCourses] = useState([]);
+  const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [booksLoading, setBooksLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('courses');
 
   const [activeCourse, setActiveCourse] = useState(null);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
@@ -42,6 +45,40 @@ export default function Academy() {
     };
     fetchCourses();
   }, []);
+
+  const fetchBooks = async (query = 'technology') => {
+    setBooksLoading(true);
+    try {
+      const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
+      if (!apiKey) return;
+      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=12&key=${apiKey}`);
+      const data = await res.json();
+      if (data.items) {
+        setBooks(data.items);
+      } else {
+        setBooks([]);
+      }
+    } catch (error) {
+      console.error('Error fetching books:', error);
+    } finally {
+      setBooksLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'library' && books.length === 0) {
+      fetchBooks('artificial intelligence technology');
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'library' && searchQuery) {
+      const timeoutId = setTimeout(() => {
+        fetchBooks(searchQuery);
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchQuery, activeTab]);
 
   const startCourse = (course) => {
     if (!course.modules || course.modules.length === 0) {
@@ -117,43 +154,105 @@ export default function Academy() {
           </p>
         </div>
 
-        {loading ? (
-          <div className="flex-1 flex flex-col items-center justify-center">
-            <Loader2 size={48} className="text-cyan-500 animate-spin mb-4" />
-            <p className="text-slate-500 font-bold">{lang === 'ar' ? 'جاري تحميل المقررات...' : 'Loading courses...'}</p>
+        {/* Tabs */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-slate-900/50 backdrop-blur-md p-1 rounded-2xl inline-flex border border-slate-700/50">
+            <button
+              onClick={() => { setActiveTab('courses'); setCurrentPage(1); setSearchQuery(''); }}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${
+                activeTab === 'courses' 
+                  ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/25' 
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <BookOpen className="w-5 h-5" />
+              {lang === 'ar' ? 'الدورات التدريبية' : 'Courses'}
+            </button>
+            <button
+              onClick={() => { setActiveTab('library'); setCurrentPage(1); setSearchQuery(''); }}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${
+                activeTab === 'library' 
+                  ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25' 
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Library className="w-5 h-5" />
+              {lang === 'ar' ? 'المكتبة الرقمية' : 'Digital Library'}
+            </button>
           </div>
-        ) : (
-          <div className="w-full max-w-6xl mx-auto flex flex-col flex-1">
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mb-12 w-full">
-              <SearchBar 
-                value={searchQuery}
-                onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
-                placeholder={lang === 'ar' ? 'ابحث في المقررات...' : 'Search courses...'}
-              />
-            </div>
+        </div>
 
-            {currentCourses.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center py-20">
-                <BookOpen size={48} className="text-slate-400 mb-4" />
-                <p className="text-slate-500 text-lg font-bold">
-                  {lang === 'ar' ? 'لا توجد مقررات.' : 'No courses found.'}
-                </p>
+        {/* Search */}
+        <div className="max-w-xl mx-auto mb-12">
+          <SearchBar 
+            value={searchQuery}
+            onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+            placeholder={
+              activeTab === 'courses'
+                ? (lang === 'ar' ? 'ابحث في المقررات...' : 'Search courses...')
+                : (lang === 'ar' ? 'ابحث عن الكتب (مثال: AI, React)...' : 'Search books (e.g. AI, React)...')
+            }
+          />
+        </div>
+
+        {/* Content Area */}
+        {activeTab === 'courses' ? (
+          loading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="w-12 h-12 text-teal-400 animate-spin mb-4" />
+              <p className="text-teal-300 font-orbitron animate-pulse">
+                {lang === 'ar' ? 'جاري التحميل...' : 'Loading...'}
+              </p>
+            </div>
+          ) : currentCourses.length === 0 ? (
+            <div className="text-center py-20 bg-slate-900/50 rounded-2xl border border-slate-700/50">
+              <p className="text-slate-400">{lang === 'ar' ? 'لا توجد دورات.' : 'No courses found.'}</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-8 max-w-6xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {currentCourses.map((course, index) => (
+                  <motion.div 
+                    key={course.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className="glass-card hover-lift card-3d rounded-2xl overflow-hidden border border-slate-700/50 hover:border-teal-500/50 group flex flex-col"
+                  >
+                    <div className="h-48 overflow-hidden relative">
+                      <img src={course.thumbnail} alt="Course Thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <div className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur px-3 py-1 rounded-full border border-teal-500/30 text-teal-300 text-xs font-bold">
+                        {course.track}
+                      </div>
+                    </div>
+                    <div className="p-6 flex flex-col flex-1 bg-slate-900/50">
+                      <h3 className="text-xl font-bold text-white mb-2 font-orbitron group-hover:text-teal-300 transition-colors">
+                        {getLocalized(course, 'title', lang)}
+                      </h3>
+                      <p className="text-slate-400 text-sm mb-6 line-clamp-2">
+                        {getLocalized(course, 'description', lang)}
+                      </p>
+                      
+                      <div className="mt-auto">
+                        <button 
+                          onClick={() => startCourse(course)}
+                          className="w-full py-3 bg-teal-500 hover:bg-teal-400 text-white rounded-xl font-bold transition-all shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2"
+                        >
+                          <PlayCircle size={18} />
+                          {lang === 'ar' ? 'ابدأ التعلم' : 'Start Learning'}
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            ) : (
-              <div className="flex flex-col gap-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
-                  {currentCourses.map((course) => (
-              <div key={course.id} className="glass-card rounded-3xl p-8 border border-slate-200 dark:border-slate-800 hover:border-cyan-500 transition-colors group flex flex-col">
-                {course.thumbnailUrl ? (
-                  <div className="w-full h-40 rounded-2xl mb-6 bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0">
-                    <img src={course.thumbnailUrl} alt={lang === 'ar' ? course.title_ar : course.title_en} className="w-full h-full object-cover" />
-                  </div>
-                ) : (
-                  <div className="w-16 h-16 rounded-2xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 mb-6 shrink-0">
-                    <BookOpen size={32} />
-                  </div>
-                )}
+              {totalPages > 1 && (
+                <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+              )}
+            </div>
+          )
+        ) : (
                 <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white mb-4 line-clamp-2">
                   {lang === 'ar' ? course.title_ar : course.title_en}
                 </h3>

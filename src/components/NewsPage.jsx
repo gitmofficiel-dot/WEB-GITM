@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Newspaper, Calendar, ChevronRight, User, Hash, Loader2 } from 'lucide-react';
+import { Newspaper, Calendar, ChevronRight, User, Hash, Loader2, Globe, MapPin } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../config/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
@@ -12,12 +12,32 @@ export default function NewsPage() {
   const { lang } = useLanguage();
   const navigate = useNavigate();
   const [newsList, setNewsList] = useState([]);
+  const [globalNews, setGlobalNews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('local');
   
   // Filtering & Pagination
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+
+  // Global News Fetch
+  useEffect(() => {
+    const fetchGlobalNews = async () => {
+      try {
+        const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
+        if (!apiKey) return;
+        const res = await fetch(`https://gnews.io/api/v4/top-headlines?category=technology&lang=${lang === 'ar' ? 'ar' : 'en'}&apikey=${apiKey}`);
+        const data = await res.json();
+        if (data && data.articles) {
+          setGlobalNews(data.articles);
+        }
+      } catch (error) {
+        console.error('Error fetching global news:', error);
+      }
+    };
+    fetchGlobalNews();
+  }, [lang]);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -51,13 +71,22 @@ export default function NewsPage() {
     return obj[field] || '';
   };
 
-  const filteredNews = newsList.filter(news => {
+  const activeNewsSource = activeTab === 'local' ? newsList : globalNews;
+
+  const filteredNews = activeNewsSource.filter(news => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
-    const title = getLocalized(news, 'title', lang).toLowerCase();
-    const summary = getLocalized(news, 'summary', lang).toLowerCase();
-    const category = (news.category || '').toLowerCase();
-    return title.includes(q) || summary.includes(q) || category.includes(q);
+    
+    if (activeTab === 'local') {
+      const title = getLocalized(news, 'title', lang).toLowerCase();
+      const summary = getLocalized(news, 'summary', lang).toLowerCase();
+      const category = (news.category || '').toLowerCase();
+      return title.includes(q) || summary.includes(q) || category.includes(q);
+    } else {
+      const title = (news.title || '').toLowerCase();
+      const summary = (news.description || '').toLowerCase();
+      return title.includes(q) || summary.includes(q);
+    }
   });
 
   const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
@@ -99,6 +128,34 @@ export default function NewsPage() {
           </motion.p>
         </div>
 
+        {/* Tabs */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-slate-900/50 backdrop-blur-md p-1 rounded-2xl inline-flex border border-slate-700/50">
+            <button
+              onClick={() => { setActiveTab('local'); setCurrentPage(1); }}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${
+                activeTab === 'local' 
+                  ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/25' 
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <MapPin className="w-5 h-5" />
+              {lang === 'ar' ? 'أخبار GITM المحلية' : 'Local GITM News'}
+            </button>
+            <button
+              onClick={() => { setActiveTab('global'); setCurrentPage(1); }}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${
+                activeTab === 'global' 
+                  ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/25' 
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Globe className="w-5 h-5" />
+              {lang === 'ar' ? 'الأخبار التقنية العالمية' : 'Global Tech News'}
+            </button>
+          </div>
+        </div>
+
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto mb-12">
           <SearchBar 
@@ -130,42 +187,72 @@ export default function NewsPage() {
             <div className="grid gap-8">
               {currentNews.map((news, index) => (
               <motion.div 
-                key={news.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                key={activeTab === 'local' ? news.id : (news.url || index)}
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="glass-card hover-lift card-3d p-1 rounded-2xl overflow-hidden group border border-slate-700/50 hover:border-teal-500/50 transition-colors"
+                transition={{ delay: index * 0.1, duration: 0.5, type: 'spring' }}
+                className={`glass-card hover-lift card-3d p-1 rounded-2xl overflow-hidden group border transition-all ${
+                  activeTab === 'local' ? 'border-slate-700/50 hover:border-teal-500/50 hover:shadow-[0_0_30px_rgba(20,184,166,0.15)]' : 'border-slate-700/50 hover:border-purple-500/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)]'
+                }`}
               >
-                <div className="flex flex-col md:flex-row gap-6 p-6 rounded-xl bg-slate-900/50">
-                  <div className="w-full md:w-1/3 h-48 md:h-auto rounded-xl overflow-hidden relative">
-                    <img src={news.imageUrl || news.image} alt="news" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur px-3 py-1 rounded-full border border-teal-500/30 flex items-center gap-1">
-                      <Hash className="w-3 h-3 text-teal-400" />
-                      <span className="text-xs font-medium text-teal-300">{news.category}</span>
+                <div className="flex flex-col md:flex-row gap-6 p-6 rounded-xl bg-slate-900/50 backdrop-blur-sm h-full">
+                  <div className="w-full md:w-1/3 h-48 md:h-auto rounded-xl overflow-hidden relative shrink-0">
+                    <img 
+                      src={activeTab === 'local' ? (news.imageUrl || news.image) : (news.image || 'https://via.placeholder.com/600x400?text=News')} 
+                      alt="news" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                    />
+                    <div className={`absolute top-3 left-3 bg-slate-900/80 backdrop-blur px-3 py-1 rounded-full border flex items-center gap-1 ${
+                      activeTab === 'local' ? 'border-teal-500/30' : 'border-purple-500/30'
+                    }`}>
+                      <Hash className={`w-3 h-3 ${activeTab === 'local' ? 'text-teal-400' : 'text-purple-400'}`} />
+                      <span className={`text-xs font-medium ${activeTab === 'local' ? 'text-teal-300' : 'text-purple-300'}`}>
+                        {activeTab === 'local' ? news.category : news.source?.name}
+                      </span>
                     </div>
                   </div>
                   <div className="w-full md:w-2/3 flex flex-col justify-between">
                     <div>
-                      <h2 className="text-2xl font-bold text-white mb-3 font-orbitron group-hover:text-teal-300 transition-colors">
-                        {getLocalized(news, 'title', lang)}
+                      <h2 className={`text-2xl font-bold text-white mb-3 font-orbitron transition-colors ${
+                        activeTab === 'local' ? 'group-hover:text-teal-300' : 'group-hover:text-purple-300'
+                      }`}>
+                        {activeTab === 'local' ? getLocalized(news, 'title', lang) : news.title}
                       </h2>
-                      <p className="text-slate-400 mb-6 line-clamp-3">
-                        {getLocalized(news, 'summary', lang)}
+                      <p className="text-slate-400 mb-6 line-clamp-3 leading-relaxed">
+                        {activeTab === 'local' ? getLocalized(news, 'summary', lang) : news.description}
                       </p>
                     </div>
                     <div className="flex flex-wrap items-center justify-between gap-4 mt-auto border-t border-slate-700/50 pt-4">
                       <div className="flex items-center gap-4 text-sm text-slate-400">
-                        <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-teal-500"/> {news.date}</span>
-                        <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-teal-500"/> {news.author}</span>
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className={`w-4 h-4 ${activeTab === 'local' ? 'text-teal-500' : 'text-purple-500'}`}/> 
+                          {activeTab === 'local' ? news.date : new Date(news.publishedAt).toLocaleDateString(lang === 'ar' ? 'ar-MA' : 'en-US')}
+                        </span>
+                        {activeTab === 'local' && (
+                          <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-teal-500"/> {news.author}</span>
+                        )}
                       </div>
-                      <button 
-                        onClick={() => navigate(`/news/${news.id}`)}
-                        className="flex items-center gap-2 text-teal-400 hover:text-teal-300 font-medium transition-colors"
-                      >
-                        {lang === 'ar' ? 'اقرأ المزيد' : lang === 'fr' ? 'Lire la suite' : 'Read Article'}
-                        <ChevronRight className={`w-4 h-4 ${lang === 'ar' ? 'rotate-180' : ''}`} />
-                      </button>
+                      
+                      {activeTab === 'local' ? (
+                        <button 
+                          onClick={() => navigate(`/news/${news.id}`)}
+                          className="flex items-center gap-2 text-teal-400 hover:text-teal-300 font-medium transition-colors"
+                        >
+                          {lang === 'ar' ? 'اقرأ المزيد' : lang === 'fr' ? 'Lire la suite' : 'Read Article'}
+                          <ChevronRight className={`w-4 h-4 ${lang === 'ar' ? 'rotate-180' : ''}`} />
+                        </button>
+                      ) : (
+                        <a 
+                          href={news.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                        >
+                          {lang === 'ar' ? 'اقرأ من المصدر' : lang === 'fr' ? 'Lire la source' : 'Read Source'}
+                          <ChevronRight className={`w-4 h-4 ${lang === 'ar' ? 'rotate-180' : ''}`} />
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>

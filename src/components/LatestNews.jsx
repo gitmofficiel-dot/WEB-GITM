@@ -14,18 +14,22 @@ const LatestNews = () => {
     .slice(0, 3);
 
   return (
-    <section className="py-16 bg-cyan-50 dark:bg-gray-900/50">
-      <div className="container mx-auto px-4">
+    <section className="py-24 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/10 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none" />
+      
+      <div className="container-custom relative z-10 px-4">
         <div className="flex justify-between items-end mb-10">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-[#0B132B] dark:text-white mb-2">
+            <h2 className="text-4xl font-bold font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-400 mb-2 drop-shadow-sm">
               {lang === 'ar' ? 'آخر الأخبار' : 'Latest News'}
             </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full"></div>
+            <div className="w-24 h-1.5 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full shadow-[0_0_10px_rgba(20,184,166,0.5)]"></div>
           </div>
           <button 
             onClick={() => navigate('/news')}
-            className="hidden sm:flex items-center gap-2 text-emerald-600 dark:text-cyan-400 hover:underline font-semibold"
+            className="hidden sm:flex items-center gap-2 px-6 py-2.5 rounded-xl border border-teal-500/30 text-teal-400 hover:bg-teal-500/10 hover:border-teal-500 transition-all font-semibold"
           >
             {lang === 'ar' ? 'عرض كل الأخبار' : 'View All News'} <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''} />
           </button>
@@ -34,25 +38,28 @@ const LatestNews = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {officialNews.map((item, index) => (
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
               key={item.id || index} 
-              className="glass-card card-3d group cursor-pointer bg-[#e0fcfc] dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700"
+              className="glass-card card-3d group cursor-pointer bg-slate-900/40 backdrop-blur-md rounded-2xl overflow-hidden shadow-lg hover:shadow-[0_0_30px_rgba(20,184,166,0.15)] transition-all duration-500 border border-slate-700/50 hover:border-teal-500/50"
             >
-              <div className="h-48 bg-gradient-to-br from-emerald-100 to-cyan-100 dark:from-emerald-900/40 dark:to-cyan-900/40 flex items-center justify-center text-6xl group-hover:scale-110 transition-transform duration-500">
-                {item.image || '📰'}
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
-                  <span className="flex items-center gap-1"><Calendar size={14} /> {item.date}</span>
-                  <span className="flex items-center gap-1 text-emerald-600 dark:text-cyan-400 bg-emerald-50 dark:bg-cyan-900/30 px-2 py-1 rounded-full whitespace-nowrap overflow-hidden text-ellipsis"><Tag size={12} /> {item.category || item.category?.en || 'News'}</span>
+              <div className="h-48 relative overflow-hidden bg-slate-800/50 flex items-center justify-center text-6xl">
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent z-10" />
+                <div className="group-hover:scale-110 transition-transform duration-700 relative z-0 flex items-center justify-center w-full h-full">
+                  {item.image ? <img src={item.image} alt="news" className="w-full h-full object-cover" /> : '📰'}
                 </div>
-                <h3 className="text-xl font-bold text-[#0B132B] dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-2">
+              </div>
+              <div className="p-6 relative z-20">
+                <div className="flex items-center gap-4 text-xs text-slate-400 mb-4">
+                  <span className="flex items-center gap-1.5"><Calendar size={14} className="text-teal-400" /> {item.date}</span>
+                  <span className="flex items-center gap-1.5 text-teal-300 bg-teal-500/10 border border-teal-500/20 px-3 py-1 rounded-full whitespace-nowrap overflow-hidden text-ellipsis"><Tag size={12} /> {item.category || item.category?.en || 'News'}</span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3 font-orbitron group-hover:text-teal-300 transition-colors line-clamp-2">
                   {item.title_ar || item.title_en || item.title?.en || item.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
+                <p className="text-slate-400 text-sm line-clamp-3 leading-relaxed">
                   {item.content_ar || item.content_en || item.summary?.en || item.summary || 'Click to read more...'}
                 </p>
               </div>

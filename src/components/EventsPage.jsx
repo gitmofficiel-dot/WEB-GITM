@@ -71,10 +71,10 @@ export default function EventsPage() {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-card border border-teal-500/30 mb-6"
+            className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full glass-card border border-teal-500/50 shadow-[0_0_20px_rgba(20,184,166,0.3)] mb-6"
           >
-            <CalendarIcon className="w-5 h-5 text-teal-400" />
-            <span className="font-orbitron text-teal-300 font-medium tracking-wide">
+            <CalendarIcon className="w-5 h-5 text-teal-400 animate-pulse" />
+            <span className="font-orbitron text-teal-300 font-bold tracking-widest uppercase text-sm">
               {lang === 'ar' ? 'فعالياتنا' : lang === 'fr' ? 'Nos Événements' : 'Our Events'}
             </span>
           </motion.div>
@@ -130,18 +130,22 @@ export default function EventsPage() {
               {currentEvents.map((evt, index) => (
               <motion.div
                 key={evt.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="glass-card card-3d rounded-2xl overflow-hidden flex flex-col border border-slate-700/50 hover:border-teal-500/50 transition-colors group"
+                transition={{ delay: index * 0.1, duration: 0.5, type: 'spring' }}
+                className="glass-card card-3d rounded-2xl overflow-hidden flex flex-col border border-slate-700/50 hover:border-teal-500/50 hover:shadow-[0_0_40px_rgba(20,184,166,0.15)] transition-all duration-500 group bg-slate-900/40 backdrop-blur-md"
               >
-                <div className="h-48 relative overflow-hidden">
-                  <img src={evt.imageUrl || evt.image} alt="Event" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+                <div className="h-56 relative overflow-hidden">
+                  <img src={evt.imageUrl || evt.image} alt="Event" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
+                  
+                  {/* Decorative glow */}
+                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-teal-500/20 blur-3xl rounded-full group-hover:bg-teal-500/40 transition-colors" />
+
                   {!evt.isRegistrationOpen && (
-                    <div className="absolute top-4 right-4 bg-slate-900/80 backdrop-blur text-slate-300 text-xs font-bold px-3 py-1 rounded-full border border-slate-700">
+                    <div className="absolute top-4 right-4 bg-rose-500/20 backdrop-blur-md text-rose-300 text-xs font-bold px-4 py-1.5 rounded-full border border-rose-500/30 flex items-center gap-2">
+                      <Lock className="w-3 h-3" />
                       {lang === 'ar' ? 'مغلق / مكتمل' : lang === 'fr' ? 'Fermé' : 'Closed / Full'}
                     </div>
                   )}
@@ -153,33 +157,41 @@ export default function EventsPage() {
                 </div>
                 
                 <div className="p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-bold text-white mb-4 font-orbitron group-hover:text-teal-300 transition-colors">
+                  <h3 className="text-2xl font-bold text-white mb-4 font-orbitron group-hover:text-teal-300 transition-colors drop-shadow-md">
                     {getLocalized(evt, 'title', lang)}
                   </h3>
                   
-                  <div className="space-y-3 mb-8 flex-grow">
-                    <div className="flex items-center gap-3 text-slate-400 text-sm">
-                      <CalendarIcon className="w-4 h-4 text-teal-500" />
-                      <span>{evt.startDate}</span>
+                  <div className="space-y-4 mb-8 flex-grow">
+                    <div className="flex items-center gap-4 text-slate-300 bg-slate-800/30 p-2.5 rounded-lg border border-slate-700/30">
+                      <div className="p-2 bg-teal-500/10 rounded-md">
+                        <CalendarIcon className="w-4 h-4 text-teal-400" />
+                      </div>
+                      <span className="font-medium">{evt.startDate}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-slate-400 text-sm">
-                      <Clock className="w-4 h-4 text-teal-500" />
-                      <span>{evt.startTime}</span>
+                    <div className="flex items-center gap-4 text-slate-300 bg-slate-800/30 p-2.5 rounded-lg border border-slate-700/30">
+                      <div className="p-2 bg-teal-500/10 rounded-md">
+                        <Clock className="w-4 h-4 text-teal-400" />
+                      </div>
+                      <span className="font-medium">{evt.startTime}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-slate-400 text-sm">
-                      <MapPin className="w-4 h-4 text-teal-500" />
-                      <span>{evt.mode === 'Online' ? 'عن بُعد' : evt.location}</span>
+                    <div className="flex items-center gap-4 text-slate-300 bg-slate-800/30 p-2.5 rounded-lg border border-slate-700/30">
+                      <div className="p-2 bg-teal-500/10 rounded-md">
+                        <MapPin className="w-4 h-4 text-teal-400" />
+                      </div>
+                      <span className="font-medium">{evt.mode === 'Online' ? 'عن بُعد' : evt.location}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-slate-400 text-sm">
-                      <Users className="w-4 h-4 text-teal-500" />
-                      <span>{evt.maxCapacity} {lang === 'ar' ? 'مقعد' : lang === 'fr' ? 'Places' : 'Seats'}</span>
+                    <div className="flex items-center gap-4 text-slate-300 bg-slate-800/30 p-2.5 rounded-lg border border-slate-700/30">
+                      <div className="p-2 bg-teal-500/10 rounded-md">
+                        <Users className="w-4 h-4 text-teal-400" />
+                      </div>
+                      <span className="font-medium">{evt.maxCapacity} {lang === 'ar' ? 'مقعد' : lang === 'fr' ? 'Places' : 'Seats'}</span>
                     </div>
                   </div>
 
                   {evt.isRegistrationOpen ? (
-                    <button onClick={() => setSelectedEvent(evt)} className="w-full btn-primary py-3 rounded-xl flex items-center justify-center gap-2 group/btn">
+                    <button onClick={() => setSelectedEvent(evt)} className="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-400 hover:to-cyan-500 text-white shadow-[0_0_20px_rgba(20,184,166,0.3)] hover:shadow-[0_0_30px_rgba(20,184,166,0.5)] transition-all flex items-center justify-center gap-2 group/btn">
                       {lang === 'ar' ? 'سجل الآن' : lang === 'fr' ? 'S\'inscrire' : 'Register Now'}
-                      <ArrowRight className={`w-4 h-4 group-hover/btn:translate-x-1 transition-transform ${lang === 'ar' ? 'rotate-180 group-hover/btn:-translate-x-1' : ''}`} />
+                      <ArrowRight className={`w-5 h-5 group-hover/btn:translate-x-1 transition-transform ${lang === 'ar' ? 'rotate-180 group-hover/btn:-translate-x-1' : ''}`} />
                     </button>
                   ) : (
                     <button disabled className="w-full py-3 rounded-xl glass text-slate-400 font-medium cursor-not-allowed">
