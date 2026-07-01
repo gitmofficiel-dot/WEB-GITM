@@ -459,11 +459,13 @@ export default function Academy() {
              </h2>
              
              <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-               <button onClick={() => setActiveTab('courses')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'courses' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>
-                 Courses
+               <button onClick={() => setActiveTab('courses')} className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'courses' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>
+                 <PlayCircle size={16} />
+                 {lang === 'ar' ? 'الدورات' : 'Courses'}
                </button>
-               <button onClick={() => setActiveTab('library')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'library' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>
-                 Books
+               <button onClick={() => setActiveTab('library')} className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'library' ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>
+                 <BookOpen size={16} />
+                 {lang === 'ar' ? 'المكتبة والكتب' : 'Library & Books'}
                </button>
              </div>
           </div>

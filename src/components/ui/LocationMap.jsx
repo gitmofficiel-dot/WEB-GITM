@@ -32,6 +32,11 @@ export default function LocationMap({ lat, lng, title, locationName }) {
     }
   }, []);
 
+  const tomtomKey = import.meta.env.VITE_TOMTOM_API_KEY;
+  const tileUrl = tomtomKey 
+    ? `https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=${tomtomKey}`
+    : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
   return (
     <div className="w-full h-full min-h-[300px] rounded-2xl overflow-hidden relative border border-slate-200 dark:border-slate-800 shadow-xl z-0">
       <MapContainer 
@@ -41,8 +46,8 @@ export default function LocationMap({ lat, lng, title, locationName }) {
         style={{ height: '100%', width: '100%', minHeight: '300px' }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.tomtom.com/">TomTom</a>'
+          url={tileUrl}
         />
         <Marker position={position}>
           <Popup>

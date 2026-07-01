@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { 
   Briefcase, GraduationCap, Github, Linkedin, Twitter, ExternalLink, 
   MapPin, Mail, Calendar, Code, Zap, Award, BookOpen, Heart, Activity,
-  ChevronLeft
+  ChevronLeft, Share2, Check
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { teamData } from '../data/teamData';
@@ -13,6 +13,15 @@ export default function PublicProfile() {
   const { id } = useParams();
   const { lang } = useLanguage();
   const navigate = useNavigate();
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   const member = teamData.find(m => m.id.toString() === id);
 
@@ -100,10 +109,18 @@ export default function PublicProfile() {
                   </div>
                 </div>
                 
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 items-center">
                   {profile.social.github && profile.social.github !== '#' && <a href={profile.social.github} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"><Github size={20}/></a>}
                   {profile.social.linkedin && profile.social.linkedin !== '#' && <a href={profile.social.linkedin} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"><Linkedin size={20}/></a>}
                   {profile.social.twitter && profile.social.twitter !== '#' && <a href={profile.social.twitter} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-900/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors"><Twitter size={20}/></a>}
+                  
+                  <button 
+                    onClick={handleShare}
+                    className="flex items-center gap-2 px-4 py-2 ml-auto rtl:ml-0 rtl:mr-auto bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-cyan-500/30"
+                  >
+                    {copied ? <Check size={18} /> : <Share2 size={18} />}
+                    {copied ? (lang === 'ar' ? 'تم النسخ!' : 'Copied!') : (lang === 'ar' ? 'مشاركة الملف' : 'Share Profile')}
+                  </button>
                 </div>
               </div>
 

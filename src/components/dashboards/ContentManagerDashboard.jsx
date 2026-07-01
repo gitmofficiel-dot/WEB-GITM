@@ -17,6 +17,8 @@ import SmartEventEditor from './SmartEventEditor';
 import SmartCourseBuilder from './SmartCourseBuilder';
 import SmartProjectBuilder from './SmartProjectBuilder';
 import VisitorAnalytics from './VisitorAnalytics';
+import MembersDashboard from './MembersDashboard';
+import ActivityLog from './ActivityLog';
 
 export default function ContentManagerDashboard() {
   const { lang } = useLanguage();
@@ -492,6 +494,8 @@ export default function ContentManagerDashboard() {
     { id: 'events', icon: Calendar, label: lang === 'ar' ? 'إدارة الفعاليات' : 'Events' },
     { id: 'projects', icon: Rocket, label: lang === 'ar' ? 'إدارة المشاريع' : 'Projects' },
     { id: 'courses', icon: BookOpen, label: lang === 'ar' ? 'هيكلة التداريب' : 'Courses' },
+    { id: 'members', icon: Users, label: lang === 'ar' ? 'إدارة الأعضاء' : 'Members' },
+    { id: 'activity', icon: Activity, label: lang === 'ar' ? 'سجل النشاطات' : 'Activity Log' },
     { id: 'media', icon: ImageIcon, label: lang === 'ar' ? 'مكتبة الوسائط' : 'Media Library' },
     { id: 'seo', icon: Search, label: lang === 'ar' ? 'أدوات SEO' : 'SEO Tools' },
     { id: 'queue', icon: ListChecks, label: lang === 'ar' ? 'طابور النشر' : 'Publishing Queue' },
@@ -860,6 +864,20 @@ export default function ContentManagerDashboard() {
                     )}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* ═══════════════ MEMBERS TAB ═══════════════ */}
+            {activeTab === 'members' && (
+              <div className="space-y-6">
+                <MembersDashboard />
+              </div>
+            )}
+
+            {/* ═══════════════ ACTIVITY TAB ═══════════════ */}
+            {activeTab === 'activity' && (
+              <div className="space-y-6">
+                <ActivityLog />
               </div>
             )}
 
