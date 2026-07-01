@@ -278,12 +278,12 @@ export default function EventDetails() {
                     <div>
                       <label className="text-sm font-bold text-slate-500 mb-2 block">
                         <Users size={18} className="inline mr-2 rtl:ml-2"/> 
-                        {lang === 'ar' ? 'أعضاء الفريق وأدوارهم' : 'Team Members & Roles'}
+                        {lang === 'ar' ? 'أعضاء الفريق والاختصاصات التقنية' : 'Team Members & Technical Roles'}
                       </label>
                       <textarea 
                         value={teamMembers} 
                         onChange={e=>setTeamMembers(e.target.value)} 
-                        placeholder={lang === 'ar' ? 'مثال: أحمد (مبرمج)، سارة (مصممة)' : 'e.g. Ahmed (Developer), Sara (Designer)'}
+                        placeholder={lang === 'ar' ? 'مثال: أحمد (مهندس برمجيات)، سارة (مصممة واجهات UI/UX)' : 'e.g. Ahmed (Software Engineer), Sara (UI/UX Designer)'}
                         className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[100px]" 
                       />
                     </div>
@@ -291,7 +291,7 @@ export default function EventDetails() {
                     <div>
                       <label className="text-sm font-bold text-slate-500 mb-2 block">
                         <FileText size={18} className="inline mr-2 rtl:ml-2"/> 
-                        {lang === 'ar' ? 'اشرح مشروعك / فكرتك' : 'Explain your Project/Idea'}
+                        {lang === 'ar' ? 'الملخص التنفيذي وفكرة المشروع' : 'Executive Summary & Project Pitch'}
                       </label>
                       <textarea 
                         value={projectExplanation} 
@@ -305,7 +305,7 @@ export default function EventDetails() {
                       <div>
                         <label className="text-sm font-bold text-slate-500 mb-2 block">
                           <Lightbulb size={18} className="inline mr-2 rtl:ml-2"/>
-                          {lang === 'ar' ? 'ماذا ستستفيد من هذا المشروع؟' : 'Personal Benefit'}
+                          {lang === 'ar' ? 'الأهداف المرجوة والأثر الشخصي' : 'Expected Impact & Learning Goals'}
                         </label>
                         <textarea 
                           value={personalBenefit} 
@@ -317,7 +317,7 @@ export default function EventDetails() {
                       <div>
                         <label className="text-sm font-bold text-slate-500 mb-2 block">
                           <Globe size={18} className="inline mr-2 rtl:ml-2"/>
-                          {lang === 'ar' ? 'ماذا ستستفيد الأمة / المجتمع؟' : 'National/Community Benefit'}
+                          {lang === 'ar' ? 'الأثر المجتمعي وقابلية التوسع (Scalability)' : 'Social Impact & Scalability'}
                         </label>
                         <textarea 
                           value={nationalBenefit} 
@@ -331,7 +331,7 @@ export default function EventDetails() {
                     <div>
                       <label className="text-sm font-bold text-slate-500 mb-2 block">
                         <Upload size={18} className="inline mr-2 rtl:ml-2"/>
-                        {lang === 'ar' ? 'رفع ملف المشروع (PDF, PPTX, ZIP)' : 'Upload Project File'}
+                        {lang === 'ar' ? 'العرض التقديمي (Pitch Deck) أو المخطط التقني' : 'Pitch Deck or Technical Architecture'}
                       </label>
                       <div className="w-full p-6 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center cursor-pointer group">
                         <input 
@@ -344,7 +344,7 @@ export default function EventDetails() {
                         <label htmlFor="project-upload" className="cursor-pointer flex flex-col items-center">
                           <Upload className="w-10 h-10 text-slate-400 mb-3 group-hover:text-cyan-500 transition-colors" />
                           <span className="text-base text-slate-600 dark:text-slate-400 font-bold">
-                            {projectFile ? projectFile.name : (lang === 'ar' ? 'انقر هنا لرفع الملف الخاص بمشروعك' : 'Click to upload your project file')}
+                            {projectFile ? projectFile.name : (lang === 'ar' ? 'انقر هنا لرفع الملف (PDF, PPTX, ZIP)' : 'Click to upload your file (PDF, PPTX, ZIP)')}
                           </span>
                         </label>
                       </div>
