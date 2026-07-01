@@ -14,6 +14,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '../../utils/toast';
 import VisitorAnalytics from './VisitorAnalytics';
+import SmartProjectBuilder from './SmartProjectBuilder';
 
 export default function PresidentDashboard() {
   const navigate = useNavigate();
@@ -62,13 +63,15 @@ export default function PresidentDashboard() {
   const [courses, setCourses] = useState([]);
   const [events, setEvents] = useState([]);
   const [gallery, setGallery] = useState([]);
+  const [projects, setProjects] = useState([]);
 
   useEffect(() => {
     const unsubNews = onSnapshot(collection(db, 'news'), snap => setNews(snap.docs.map(d => ({id: d.id, ...d.data()}))));
     const unsubCourses = onSnapshot(collection(db, 'courses'), snap => setCourses(snap.docs.map(d => ({id: d.id, ...d.data()}))));
     const unsubEvents = onSnapshot(collection(db, 'events'), snap => setEvents(snap.docs.map(d => ({id: d.id, ...d.data()}))));
     const unsubGallery = onSnapshot(collection(db, 'gallery'), snap => setGallery(snap.docs.map(d => ({id: d.id, ...d.data()}))));
-    return () => { unsubNews(); unsubCourses(); unsubEvents(); unsubGallery(); };
+    const unsubProjects = onSnapshot(collection(db, 'projects'), snap => setProjects(snap.docs.map(d => ({id: d.id, ...d.data()}))));
+    return () => { unsubNews(); unsubCourses(); unsubEvents(); unsubGallery(); unsubProjects(); };
   }, []);
 
   const [aiSettings, setAiSettings] = useState({
@@ -85,6 +88,34 @@ export default function PresidentDashboard() {
 
   const confirmAction = (title, message, onConfirm) => {
     setConfirmDialog({ isOpen: true, title, message, onConfirm });
+  };
+
+  const [showProjectEditor, setShowProjectEditor] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
+
+  const handleSaveProjectFromEditor = async (projectData) => {
+    try {
+      const dataToSave = {
+        ...projectData,
+        updatedAt: serverTimestamp(),
+      };
+
+      if (editingProject) {
+        const projectRef = doc(db, 'projects', editingProject.id);
+        await updateDoc(projectRef, dataToSave);
+        toast.success(lang === 'ar' ? 'تم تحديث المشروع بنجاح' : 'Project updated successfully');
+      } else {
+        dataToSave.createdAt = serverTimestamp();
+        await addDoc(collection(db, 'projects'), dataToSave);
+        toast.success(lang === 'ar' ? 'تم حفظ المشروع بنجاح' : 'Project saved successfully');
+      }
+      
+      setShowProjectEditor(false);
+      setEditingProject(null);
+    } catch (error) {
+      console.error('Error saving project:', error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving project');
+    }
   };
 
   // --- CRUD Handlers ---
@@ -128,6 +159,7 @@ export default function PresidentDashboard() {
         const colName = type === 'event' ? 'events' : 
                         type === 'course' ? 'courses' : 
                         type === 'news' ? 'news' : 
+                        type === 'project' ? 'projects' : 
                         type === 'gallery' ? 'gallery' : null;
         if (colName) {
           try {
@@ -686,46 +718,59 @@ export default function PresidentDashboard() {
             {/* PROJECTS TAB */}
             {activeTab === 'projects' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <Rocket className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة المشاريع وفرق العمل' : 'Projects & Teams Management'}
-                    </h3>
-                  </div>
-
-                  <div className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h4 className="font-bold text-xl text-[#1e3a5f] dark:text-white">Smart Irrigation System</h4>
-                        <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-full mt-2 inline-block">Active Project</span>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-slate-500">{lang === 'ar' ? 'أنت منشئ هذا المشروع' : 'You are the Creator'}</p>
-                      </div>
+                {!showProjectEditor ? (
+                  <div className="glass-card rounded-3xl p-6">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                        <Rocket className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة المشاريع وفرق العمل' : 'Projects & Teams Management'}
+                      </h3>
+                      <button onClick={() => { setEditingProject(null); setShowProjectEditor(true); }} className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:scale-105 transition-transform">
+                        <Plus size={16}/> {lang === 'ar' ? 'مشروع جديد' : 'New Project'}
+                      </button>
                     </div>
 
-                    {/* PROJECT CREATOR EXCLUSIVE UI */}
-                    <div className="mt-6 border-t border-slate-200 dark:border-slate-700 pt-6">
-                      <h5 className="font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2"><UserPlus size={18}/> {lang === 'ar' ? 'إضافة أعضاء لفريق مشروعك' : 'Add Team Members to Your Project'}</h5>
-                      <div className="flex gap-2">
-                        <div className="relative flex-1">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-400" size={18}/>
-                          <input 
-                            type="text" 
-                            placeholder={lang === 'ar' ? 'ابحث بالاسم أو رقم العضوية...' : 'Search registered members by name or ID...'}
-                            className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                          />
+                    <div className="space-y-4">
+                      {projects.map(project => (
+                        <div key={project.id} className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h4 className="font-bold text-xl text-[#1e3a5f] dark:text-white">{project.titleAr || project.title}</h4>
+                              <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-full mt-2 inline-block uppercase">{project.status}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <button onClick={() => { setEditingProject(project); setShowProjectEditor(true); }} className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors"><Edit size={16}/></button>
+                              <button onClick={() => handleDelete('project', project.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
+                            </div>
+                          </div>
+
+                          {/* PROJECT CREATOR EXCLUSIVE UI */}
+                          <div className="mt-6 border-t border-slate-200 dark:border-slate-700 pt-6">
+                            <h5 className="font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2"><UserPlus size={18}/> {lang === 'ar' ? 'إضافة أعضاء لفريق مشروعك' : 'Add Team Members to Your Project'}</h5>
+                            <div className="flex gap-2">
+                              <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-400" size={18}/>
+                                <input 
+                                  type="text" 
+                                  placeholder={lang === 'ar' ? 'ابحث بالاسم أو رقم العضوية...' : 'Search registered members by name or ID...'}
+                                  className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                />
+                              </div>
+                              <button className="bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-white dark:bg-slate-900 dark:hover:bg-slate-600 transition-colors">
+                                {lang === 'ar' ? 'إضافة' : 'Add Member'}
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                        <button className="bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-white dark:bg-slate-900 dark:hover:bg-slate-600 transition-colors">
-                          {lang === 'ar' ? 'إضافة' : 'Add Member'}
-                        </button>
-                      </div>
-                      <p className="text-xs text-slate-500 mt-2">
-                        {lang === 'ar' ? '* هذه الخاصية تظهر فقط لمنشئ المشروع.' : '* This feature is exclusive to the project creator.'}
-                      </p>
+                      ))}
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <SmartProjectBuilder 
+                    initialData={editingProject} 
+                    onCancel={() => { setShowProjectEditor(false); setEditingProject(null); }} 
+                    onSave={handleSaveProjectFromEditor} 
+                  />
+                )}
               </div>
             )}
 
