@@ -23,6 +23,7 @@ export default function Academy() {
   const [unlockedModules, setUnlockedModules] = useState([0]); 
   const [courseCompleted, setCourseCompleted] = useState(false);
   const [isCourseStarted, setIsCourseStarted] = useState(false);
+  const [showCourseIntro, setShowCourseIntro] = useState(false);
 
   // Pagination & Search
   const [searchQuery, setSearchQuery] = useState('');
@@ -114,16 +115,21 @@ export default function Academy() {
     }
   }, [searchQuery, activeTab]);
 
-  const startCourse = (course) => {
-    setActiveCourse(course);
-    setCurrentModuleIndex(0);
-    setUnlockedModules([0]);
-    setCourseCompleted(false);
-    setIsCourseStarted(false);
+  const startCourseFlow = () => {
+    setIsCourseStarted(true);
+    if (activeCourse.courseIntroVideo || activeCourse.courseIntroText) {
+      setShowCourseIntro(true);
+    } else {
+      setShowCourseIntro(false);
+    }
   };
 
   const closeCourse = () => {
     setActiveCourse(null);
+    setIsCourseStarted(false);
+    setShowCourseIntro(false);
+    setCurrentModuleIndex(0);
+    setUnlockedModules([0]);
   };
 
   const handleLessonComplete = () => {
@@ -207,7 +213,7 @@ export default function Academy() {
               <div className="flex gap-4">
                 {!isCourseStarted ? (
                   <button 
-                    onClick={() => setIsCourseStarted(true)}
+                    onClick={startCourseFlow}
                     className="px-8 py-4 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-xl shadow-lg transition-all"
                   >
                     {lang === 'ar' ? 'سجل مجاناً وابدأ الدورة' : 'Enroll & Start Course'}
@@ -276,12 +282,43 @@ export default function Academy() {
                   {lang === 'ar' ? 'سيتم إضافة محتوى الفيديو قريباً. يرجى العودة لاحقاً.' : 'Video content will be uploaded soon. Please check back later.'}
                 </p>
              </div>
+           ) : showCourseIntro ? (
+             <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-2xl border border-slate-200 dark:border-slate-800 text-center">
+                <h2 className="text-3xl font-bold mb-6 text-slate-800 dark:text-white">
+                  {lang === 'ar' ? 'مقدمة التدريب' : 'Course Introduction'}
+                </h2>
+                
+                {activeCourse.courseIntroVideo && (
+                  <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden mb-8 shadow-lg">
+                    <iframe 
+                      src={activeCourse.courseIntroVideo} 
+                      className="w-full h-full" 
+                      allowFullScreen 
+                      title="Course Intro Video"
+                    />
+                  </div>
+                )}
+                
+                {activeCourse.courseIntroText && (
+                  <div className="prose dark:prose-invert max-w-none text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-10 text-justify px-4">
+                    {activeCourse.courseIntroText}
+                  </div>
+                )}
+
+                <button 
+                  onClick={() => setShowCourseIntro(false)}
+                  className="px-10 py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all text-lg hover:scale-105"
+                >
+                  {lang === 'ar' ? 'ابدأ الدرس الأول' : 'Start First Lesson'}
+                </button>
+             </div>
            ) : (
              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
                   <LessonView 
                     lesson={activeCourse.modules[currentModuleIndex]}
                     onComplete={handleLessonComplete}
+                    lang={lang}
                   />
                 </div>
                 <div className="lg:col-span-1">

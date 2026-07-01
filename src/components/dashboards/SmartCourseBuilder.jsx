@@ -159,6 +159,8 @@ export default function SmartCourseBuilder({ initialData, onCancel, onSave }) {
   const [track, setTrack] = useState(initialData?.track || 'Edge AI'); // Edge AI, Robotics, IoT Cloud
   const [level, setLevel] = useState(initialData?.level || 'Beginner');
   const [description, setDescription] = useState(initialData?.description || '');
+  const [courseIntroVideo, setCourseIntroVideo] = useState(initialData?.courseIntroVideo || '');
+  const [courseIntroText, setCourseIntroText] = useState(initialData?.courseIntroText || '');
   
   const [coverImage, setCoverImage] = useState(initialData?.coverImage || '');
   const [fbVideo, setFbVideo] = useState(initialData?.fbVideo || '');
@@ -203,6 +205,10 @@ export default function SmartCourseBuilder({ initialData, onCancel, onSave }) {
   const addLesson = (moduleId) => {
     setModules(modules.map(m => {
       if (m.id === moduleId) {
+        if (m.lessons.length >= 30) {
+          alert(lang === 'ar' ? 'الحد الأقصى هو 30 درساً في الوحدة' : 'Maximum is 30 lessons per module');
+          return m;
+        }
         return {
           ...m,
           lessons: [...m.lessons, { id: `les-${Date.now()}`, title: '', axes: [] }]
@@ -219,6 +225,10 @@ export default function SmartCourseBuilder({ initialData, onCancel, onSave }) {
           ...m,
           lessons: m.lessons.map(l => {
             if (l.id === lessonId) {
+              if ((l.axes || []).length >= 12) {
+                alert(lang === 'ar' ? 'الحد الأقصى هو 12 محوراً للدرس' : 'Maximum is 12 axes per lesson');
+                return l;
+              }
               return {
                 ...l,
                 axes: [...(l.axes || []), { id: `axis-${Date.now()}`, title: '', type: 'video', content: '', videoUrl: '' }]
@@ -308,6 +318,7 @@ export default function SmartCourseBuilder({ initialData, onCancel, onSave }) {
     const courseData = {
       title, track, level, description, modules,
       coverImage, fbVideo, ytVideo, attachments,
+      courseIntroVideo, courseIntroText,
       status: 'Published',
       enrolledCount: 0
     };
@@ -422,11 +433,31 @@ export default function SmartCourseBuilder({ initialData, onCancel, onSave }) {
            </div>
         </div>
 
+         {/* Course Intro */}
+         <div className="glass-card rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 mt-6">
+           <h3 className="text-lg font-bold text-[#1e3a5f] dark:text-white mb-4">{lang === 'ar' ? 'مقدمة التدريب (لا تحتسب كدرس)' : 'Course Introduction (Not counted as a lesson)'}</h3>
+           <div className="space-y-4">
+             <div>
+               <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'فيديو المقدمة (رابط يوتيوب أو فيسبوك)' : 'Intro Video URL'}</label>
+               <input type="text" value={courseIntroVideo} onChange={e=>setCourseIntroVideo(e.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-teal-500 text-sm" placeholder="https://..." dir="ltr" />
+             </div>
+             <div>
+               <label className="text-sm font-bold text-slate-500 mb-1 block">{lang === 'ar' ? 'نص المقدمة' : 'Intro Text'}</label>
+               <textarea value={courseIntroText} onChange={e=>setCourseIntroText(e.target.value)} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-teal-500 text-sm h-24 resize-none" placeholder={lang === 'ar' ? 'ماذا سيتعلم الطالب في هذا التدريب؟...' : 'What will the student learn?...'} />
+             </div>
+           </div>
+         </div>
+
         {/* Modules Builder (Drag & Drop) */}
-        <div className="mt-4">
-          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2">
-            <BookOpen size={20} className="text-teal-500"/> {lang === 'ar' ? 'هيكلة المنهج (Curriculum Builder)' : 'Curriculum Builder'}
-          </h3>
+        <div className="mt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+              <BookOpen size={20} className="text-teal-500"/> {lang === 'ar' ? 'هيكلة المنهج (Curriculum Builder)' : 'Curriculum Builder'}
+            </h3>
+            <div className="text-xs font-bold text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800">
+              {lang === 'ar' ? 'الحد الأقصى: 30 درساً، 12 محوراً للدرس' : 'Max limits: 30 lessons, 12 axes per lesson'}
+            </div>
+          </div>
 
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={modules.map(m => m.id)} strategy={verticalListSortingStrategy}>

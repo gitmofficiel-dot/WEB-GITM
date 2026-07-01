@@ -25,7 +25,20 @@ export default function About() {
             mission_en: 'Providing an advanced research environment for Moroccan talents to build smart systems with national support.',
             history_ar: 'تأسست GITM في عام 2024 لتوحيد جهود المهندسين المغاربة. قمنا بتأسيس نادي الألعاب وعقدنا شراكات مع المركز الجهوي للاستثمار.',
             history_en: 'Founded in 2024, GITM unites Moroccan engineers. We established the Gaming Club and partnered with CRI.',
-            stats: { founded: '2024', projects: '15+', members: '500+' }
+            stats: { founded: '2024', projects: '15+', members: '500+' },
+            team: {
+              official: [
+                { id: 1, name: 'Dr. Yassine', name_ar: 'د. ياسين', role: 'President & Founder', role_ar: 'الرئيس والمؤسس', projectsCount: 12, image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400' },
+                { id: 2, name: 'Eng. Fatima', name_ar: 'م. فاطمة', role: 'Head of Robotics', role_ar: 'رئيسة قسم الروبوتات', projectsCount: 8, image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400' },
+                { id: 3, name: 'Prof. Ahmed', name_ar: 'أ. أحمد', role: 'Academic Director', role_ar: 'المدير الأكاديمي', projectsCount: 5, image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400' }
+              ],
+              internal: [
+                { id: 4, name: 'Karim', name_ar: 'كريم', role: 'AI Researcher', role_ar: 'باحث في الذكاء الاصطناعي', projectsCount: 15, image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400' },
+                { id: 5, name: 'Sara', name_ar: 'سارة', role: 'UI/UX Lead', role_ar: 'قائدة تصميم الواجهات', projectsCount: 10, image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400' },
+                { id: 6, name: 'Omar', name_ar: 'عمر', role: 'Cloud Engineer', role_ar: 'مهندس سحابي', projectsCount: 7, image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400' },
+                { id: 7, name: 'Meryem', name_ar: 'مريم', role: 'Content Manager', role_ar: 'مديرة المحتوى', projectsCount: 4, image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400' }
+              ]
+            }
           });
         }
       } catch (error) {
@@ -148,6 +161,77 @@ export default function About() {
             </div>
           </div>
         </motion.div>
+
+        {/* Team Section */}
+        <div className="mt-32">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-5xl font-bold text-gitm-textLight dark:text-white mb-6">
+              {lang === 'ar' ? 'فريقنا المتميز' : 'Our Exceptional Team'}
+            </h2>
+            <p className="text-xl text-gitm-mutedLight dark:text-gitm-mutedDark max-w-2xl mx-auto">
+              {lang === 'ar' ? 'نخبة من المهندسين والباحثين الذين يقودون رؤية GITM إلى أرض الواقع.' : 'An elite group of engineers and researchers turning GITM vision into reality.'}
+            </p>
+          </motion.div>
+
+          {/* Official Team */}
+          <div className="mb-20">
+            <h3 className="text-2xl font-bold text-gitm-textLight dark:text-white mb-8 border-b border-gray-200 dark:border-gray-800 pb-4">
+              {lang === 'ar' ? 'أعضاء الفريق الرسميين' : 'Official Team Members'}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {aboutData?.team?.official?.map((member, i) => (
+                <motion.div key={member.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                  className="bg-white dark:bg-gitm-cardDark rounded-2xl overflow-hidden shadow-soft border border-gray-100 dark:border-gray-800 group hover:-translate-y-2 transition-transform duration-300"
+                >
+                  <div className="aspect-[4/5] overflow-hidden relative">
+                    <img src={member.image} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  <div className="p-6">
+                    <h4 className="text-xl font-bold text-gitm-textLight dark:text-white mb-1">{lang === 'ar' ? member.name_ar : member.name}</h4>
+                    <p className="text-gitm-red font-medium text-sm mb-4">{lang === 'ar' ? member.role_ar : member.role}</p>
+                    <div className="flex items-center gap-2 text-sm text-gitm-mutedLight dark:text-gitm-mutedDark bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg">
+                      <Activity size={16} className="text-gitm-green" />
+                      <span className="font-bold">{member.projectsCount}</span>
+                      <span>{lang === 'ar' ? 'مشاريع شارك فيها' : 'Projects Participated'}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Internal Team */}
+          <div>
+            <h3 className="text-2xl font-bold text-gitm-textLight dark:text-white mb-8 border-b border-gray-200 dark:border-gray-800 pb-4">
+              {lang === 'ar' ? 'أعضاء الفريق الداخلي' : 'Internal Team'}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {aboutData?.team?.internal?.map((member, i) => (
+                <motion.div key={member.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                  className="bg-white dark:bg-gitm-cardDark rounded-2xl overflow-hidden shadow-soft border border-gray-100 dark:border-gray-800 group hover:-translate-y-2 transition-transform duration-300"
+                >
+                  <div className="aspect-[4/5] overflow-hidden relative">
+                    <img src={member.image} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  <div className="p-6">
+                    <h4 className="text-xl font-bold text-gitm-textLight dark:text-white mb-1">{lang === 'ar' ? member.name_ar : member.name}</h4>
+                    <p className="text-gitm-green font-medium text-sm mb-4">{lang === 'ar' ? member.role_ar : member.role}</p>
+                    <div className="flex items-center gap-2 text-sm text-gitm-mutedLight dark:text-gitm-mutedDark bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg">
+                      <Activity size={16} className="text-gitm-red" />
+                      <span className="font-bold">{member.projectsCount}</span>
+                      <span>{lang === 'ar' ? 'مشاريع شارك فيها' : 'Projects Participated'}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
 
       </div>
     </div>
