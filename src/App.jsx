@@ -21,7 +21,6 @@ const EventDetails = lazy(() => import('./components/EventDetails'));
 const TechProjectsPage = lazy(() => import('./components/TechProjectsPage'));
 const Academy = lazy(() => import('./components/Academy'));
 const ClassroomTheater = lazy(() => import('./components/academy/ClassroomTheater'));
-const MemberProfiles = lazy(() => import('./components/MemberProfiles'));
 const PublicProfile = lazy(() => import('./components/PublicProfile'));
 const About = lazy(() => import('./components/About'));
 const ProjectsHub = lazy(() => import('./components/ProjectsHub'));
@@ -87,7 +86,6 @@ const AppContent = () => {
         <Route path="/projects" element={<TechProjectsPage />} />
         <Route path="/academy" element={<Academy />} />
         <Route path="/academy/course/:id" element={<ClassroomTheater />} />
-        <Route path="/about" element={<MemberProfiles />} />
         <Route path="/about-us" element={<About />} />
         <Route path="/projects-hub" element={<ProjectsHub />} />
         <Route path="/profile/:id" element={<PublicProfile />} />

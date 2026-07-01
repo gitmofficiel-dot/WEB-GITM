@@ -4,6 +4,7 @@ import { Target, Flag, History, ChevronRight, Activity, Users, Globe, Zap, Loade
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import TeamShowcase from './TeamShowcase';
 
 export default function About() {
   const { lang } = useLanguage();
@@ -144,40 +145,9 @@ export default function About() {
           </div>
         </motion.div>
 
-        {/* Meet the Team */}
-        <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-3 mt-16 relative z-10">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-white mb-4 font-orbitron drop-shadow-md">
-              {lang === 'ar' ? 'أعضاء الفريق' : 'Meet The Team'}
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg">
-              {lang === 'ar' 
-                ? 'تعرف على العقول المبدعة وراء نجاح المجموعة المغربية للابتكار التكنولوجي.' 
-                : 'Meet the creative minds behind the success of the Moroccan Group for Technological Innovation.'}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { role: lang === 'ar' ? 'الرئيس' : 'President', name: 'Mounir G', img: 'https://via.placeholder.com/400x400?text=MG' },
-              { role: lang === 'ar' ? 'نائب الرئيس' : 'Vice President', name: 'Ahmed A', img: 'https://via.placeholder.com/400x400?text=AA' },
-              { role: lang === 'ar' ? 'مدير المحتوى' : 'Content Manager', name: 'Sara K', img: 'https://via.placeholder.com/400x400?text=SK' },
-              { role: lang === 'ar' ? 'المدير التقني' : 'CTO', name: 'Youssef B', img: 'https://via.placeholder.com/400x400?text=YB' }
-            ].map((member, idx) => (
-              <div key={idx} className="glass-card p-6 rounded-3xl border border-slate-200/ dark:border-slate-700/ hover:border-cyan-500/50 transition-all text-center group">
-                <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-slate-800 group-hover:border-cyan-500 transition-colors relative">
-                  <img src={member.img} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2 font-orbitron">{member.name}</h3>
-                <p className="text-cyan-400 font-medium mb-4">{member.role}</p>
-                <div className="flex justify-center gap-3">
-                  <a href="#" className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-cyan-500 hover:text-white transition-colors">
-                    <Globe size={16} />
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Meet the Team Showcase */}
+        <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-3 mt-16 w-full max-w-[100vw] overflow-hidden -mx-4 px-4">
+           <TeamShowcase />
         </motion.div>
 
       </motion.div>
