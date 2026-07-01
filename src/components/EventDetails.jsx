@@ -54,18 +54,29 @@ export default function EventDetails() {
     );
   }
 
-  // Adding mock image if not present
+  // Adding mock image and default type if not present
   const viewDetailsEvent = {
     ...ev,
-    image: ev.image || IMAGES[parseInt(id) % IMAGES.length]
+    image: ev.image || IMAGES[parseInt(id) % IMAGES.length],
+    type: ev.type || (ev.scope ? 'competition' : 'event')
   };
+
+  const isHackathon = viewDetailsEvent.type === 'hackathon';
+
+  const nextStep = () => setStep(s => s + 1);
+  const prevStep = () => setStep(s => s - 1);
 
   const handleRegisterSubmit = (e) => {
     e.preventDefault();
+    if (isHackathon && step < 4) {
+      nextStep();
+      return;
+    }
+    
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
-      setStep(2);
+      setStep(5); // Success step
       toast.success(txt(lang, 'Registration Confirmed', 'تم تأكيد التسجيل بنجاح', 'Inscription confirmée', '注册确认'));
     }, 1500);
   };
@@ -242,117 +253,196 @@ export default function EventDetails() {
             {/* Registration Section */}
             {(viewDetailsEvent.status === 'upcoming' || viewDetailsEvent.status === 'open') && (
               <div className="mt-12 bg-white dark:bg-slate-800 rounded-2xl p-8 border border-cyan-200 dark:border-slate-700 shadow-lg" id="registration-section">
-                <h3 className="text-2xl font-bold mb-6 flex items-center gap-2 text-[#1e3a5f] dark:text-white border-b border-slate-100 dark:border-slate-700 pb-4">
-                  <Ticket className="text-cyan-500" /> {txt(lang, 'Event Registration', 'التسجيل في الفعالية', 'Inscription', '注册活动')}
-                </h3>
+                <div className="flex justify-between items-center mb-6 border-b border-slate-100 dark:border-slate-700 pb-4">
+                  <h3 className="text-2xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                    <Ticket className="text-cyan-500" /> {txt(lang, 'Event Registration', 'التسجيل في الفعالية', 'Inscription', '注册活动')}
+                  </h3>
+                  {isHackathon && step < 5 && (
+                    <span className="bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200 py-1 px-3 rounded-full text-sm font-bold shadow-sm">
+                      {lang === 'ar' ? `الخطوة ${step} من 4` : `Step ${step} of 4`}
+                    </span>
+                  )}
+                </div>
 
-                {step === 1 ? (
+                {step < 5 ? (
                   <form onSubmit={handleRegisterSubmit} className="space-y-6">
-                    {isMember ? (
-                      <div className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 p-4 rounded-xl flex items-start gap-3 border border-emerald-100 dark:border-emerald-800/50">
-                        <CheckCircle className="shrink-0 mt-0.5" size={20} />
-                        <p className="text-sm font-bold">
-                          {lang === 'ar' ? 'مرحباً بك! سيتم تسجيل حضورك بحسابك الرسمي.' : 'Welcome back! Your attendance will be linked to your account.'}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 p-4 rounded-xl flex items-start gap-3 border border-blue-100 dark:border-blue-800/50">
-                        <AlertTriangle className="shrink-0 mt-0.5" size={20} />
-                        <p className="text-sm font-bold">
-                          {lang === 'ar' ? 'أنت تسجل كضيف. يمكنك التسجيل في المنصة لاحقاً.' : 'You are registering as a guest.'}
-                        </p>
+                    {/* Hackathon Wizard Indicator */}
+                    {isHackathon && (
+                      <div className="flex justify-between items-center mb-8 relative">
+                        <div className="absolute left-0 right-0 top-1/2 h-1 bg-slate-200 dark:bg-slate-700 -z-10 -translate-y-1/2"></div>
+                        <div className={`absolute left-0 top-1/2 h-1 bg-cyan-500 -z-10 -translate-y-1/2 transition-all duration-500`} style={{width: `${((step-1)/3)*100}%`}}></div>
+                        
+                        {[1,2,3,4].map(num => (
+                          <div key={num} className={`w-10 h-10 rounded-full flex items-center justify-center font-bold border-4 transition-all duration-300 ${step >= num ? 'bg-cyan-500 border-cyan-200 text-white shadow-lg shadow-cyan-500/40' : 'bg-slate-100 border-slate-200 text-slate-400 dark:bg-slate-800 dark:border-slate-700'}`}>
+                            {step > num ? <CheckCircle size={16} /> : num}
+                          </div>
+                        ))}
                       </div>
                     )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الاسم الكامل' : 'Full Name'}</label>
-                        <input type="text" required value={name} onChange={e=>setName(e.target.value)} disabled={isMember} className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 disabled:opacity-60" />
-                      </div>
-                      <div>
-                        <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'البريد الإلكتروني' : 'Email Address'}</label>
-                        <input type="email" required value={email} onChange={e=>setEmail(e.target.value)} disabled={isMember} className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 disabled:opacity-60" />
-                      </div>
-                    </div>
+                    {/* ALWAYS SHOW PERSONAL INFO (Step 1 for Hackathon, only step for others) */}
+                    {(!isHackathon || step === 1) && (
+                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                        {isMember ? (
+                          <div className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 p-4 rounded-xl flex items-start gap-3 border border-emerald-100 dark:border-emerald-800/50">
+                            <CheckCircle className="shrink-0 mt-0.5" size={20} />
+                            <p className="text-sm font-bold">
+                              {lang === 'ar' ? 'مرحباً بك! سيتم تسجيل حضورك بحسابك الرسمي.' : 'Welcome back! Your attendance will be linked to your account.'}
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 p-4 rounded-xl flex items-start gap-3 border border-blue-100 dark:border-blue-800/50">
+                            <AlertTriangle className="shrink-0 mt-0.5" size={20} />
+                            <p className="text-sm font-bold">
+                              {lang === 'ar' ? 'أنت تسجل كضيف. يمكنك التسجيل في المنصة لاحقاً.' : 'You are registering as a guest.'}
+                            </p>
+                          </div>
+                        )}
 
-                    <div>
-                      <label className="text-sm font-bold text-slate-500 mb-2 block">
-                        <Users size={18} className="inline mr-2 rtl:ml-2"/> 
-                        {lang === 'ar' ? 'أعضاء الفريق والاختصاصات التقنية' : 'Team Members & Technical Roles'}
-                      </label>
-                      <textarea 
-                        value={teamMembers} 
-                        onChange={e=>setTeamMembers(e.target.value)} 
-                        placeholder={lang === 'ar' ? 'مثال: أحمد (مهندس برمجيات)، سارة (مصممة واجهات UI/UX)' : 'e.g. Ahmed (Software Engineer), Sara (UI/UX Designer)'}
-                        className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[100px]" 
-                      />
-                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الاسم الكامل' : 'Full Name'}</label>
+                            <input type="text" required value={name} onChange={e=>setName(e.target.value)} disabled={isMember} className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 disabled:opacity-60" />
+                          </div>
+                          <div>
+                            <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'البريد الإلكتروني' : 'Email Address'}</label>
+                            <input type="email" required value={email} onChange={e=>setEmail(e.target.value)} disabled={isMember} className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 disabled:opacity-60" />
+                          </div>
+                        </div>
+                        
+                        {isHackathon && (
+                          <div>
+                            <label className="text-sm font-bold text-slate-500 mb-2 block">
+                              <Users size={18} className="inline mr-2 rtl:ml-2"/> 
+                              {lang === 'ar' ? 'أعضاء الفريق والاختصاصات التقنية' : 'Team Members & Technical Roles'}
+                            </label>
+                            <textarea 
+                              value={teamMembers} 
+                              onChange={e=>setTeamMembers(e.target.value)} 
+                              required
+                              placeholder={lang === 'ar' ? 'مثال: أحمد (مهندس برمجيات)، سارة (مصممة واجهات UI/UX)' : 'e.g. Ahmed (Software Engineer), Sara (UI/UX Designer)'}
+                              className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[100px]" 
+                            />
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
 
-                    <div>
-                      <label className="text-sm font-bold text-slate-500 mb-2 block">
-                        <FileText size={18} className="inline mr-2 rtl:ml-2"/> 
-                        {lang === 'ar' ? 'الملخص التنفيذي وفكرة المشروع' : 'Executive Summary & Project Pitch'}
-                      </label>
-                      <textarea 
-                        value={projectExplanation} 
-                        onChange={e=>setProjectExplanation(e.target.value)} 
-                        required
-                        className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[120px]" 
-                      />
-                    </div>
+                    {/* HACKATHON STEP 2: PITCH & IMPACT */}
+                    {(isHackathon && step === 2) && (
+                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                        <div>
+                          <label className="text-sm font-bold text-slate-500 mb-2 block">
+                            <FileText size={18} className="inline mr-2 rtl:ml-2"/> 
+                            {lang === 'ar' ? 'الملخص التنفيذي وفكرة المشروع' : 'Executive Summary & Project Pitch'}
+                          </label>
+                          <textarea 
+                            value={projectExplanation} 
+                            onChange={e=>setProjectExplanation(e.target.value)} 
+                            required
+                            className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[120px]" 
+                          />
+                        </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="text-sm font-bold text-slate-500 mb-2 block">
-                          <Lightbulb size={18} className="inline mr-2 rtl:ml-2"/>
-                          {lang === 'ar' ? 'الأهداف المرجوة والأثر الشخصي' : 'Expected Impact & Learning Goals'}
-                        </label>
-                        <textarea 
-                          value={personalBenefit} 
-                          onChange={e=>setPersonalBenefit(e.target.value)} 
-                          required
-                          className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[100px]" 
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-bold text-slate-500 mb-2 block">
-                          <Globe size={18} className="inline mr-2 rtl:ml-2"/>
-                          {lang === 'ar' ? 'الأثر المجتمعي وقابلية التوسع (Scalability)' : 'Social Impact & Scalability'}
-                        </label>
-                        <textarea 
-                          value={nationalBenefit} 
-                          onChange={e=>setNationalBenefit(e.target.value)} 
-                          required
-                          className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[100px]" 
-                        />
-                      </div>
-                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <label className="text-sm font-bold text-slate-500 mb-2 block">
+                              <Lightbulb size={18} className="inline mr-2 rtl:ml-2"/>
+                              {lang === 'ar' ? 'الأهداف المرجوة والأثر الشخصي' : 'Expected Impact & Learning Goals'}
+                            </label>
+                            <textarea 
+                              value={personalBenefit} 
+                              onChange={e=>setPersonalBenefit(e.target.value)} 
+                              required
+                              className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[100px]" 
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-bold text-slate-500 mb-2 block">
+                              <Globe size={18} className="inline mr-2 rtl:ml-2"/>
+                              {lang === 'ar' ? 'الأثر المجتمعي وقابلية التوسع (Scalability)' : 'Social Impact & Scalability'}
+                            </label>
+                            <textarea 
+                              value={nationalBenefit} 
+                              onChange={e=>setNationalBenefit(e.target.value)} 
+                              required
+                              className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[100px]" 
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
 
-                    <div>
-                      <label className="text-sm font-bold text-slate-500 mb-2 block">
-                        <Upload size={18} className="inline mr-2 rtl:ml-2"/>
-                        {lang === 'ar' ? 'العرض التقديمي (Pitch Deck) أو المخطط التقني' : 'Pitch Deck or Technical Architecture'}
-                      </label>
-                      <div className="w-full p-6 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center cursor-pointer group">
-                        <input 
-                          type="file" 
-                          onChange={e=>setProjectFile(e.target.files[0])} 
-                          className="hidden" 
-                          id="project-upload" 
-                          accept=".pdf,.pptx,.zip,.rar"
-                        />
-                        <label htmlFor="project-upload" className="cursor-pointer flex flex-col items-center">
-                          <Upload className="w-10 h-10 text-slate-400 mb-3 group-hover:text-cyan-500 transition-colors" />
-                          <span className="text-base text-slate-600 dark:text-slate-400 font-bold">
-                            {projectFile ? projectFile.name : (lang === 'ar' ? 'انقر هنا لرفع الملف (PDF, PPTX, ZIP)' : 'Click to upload your file (PDF, PPTX, ZIP)')}
-                          </span>
-                        </label>
-                      </div>
-                    </div>
+                    {/* HACKATHON STEP 3: FILE UPLOADS */}
+                    {(isHackathon && step === 3) && (
+                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                        <div>
+                          <label className="text-sm font-bold text-slate-500 mb-2 block">
+                            <Upload size={18} className="inline mr-2 rtl:ml-2"/>
+                            {lang === 'ar' ? 'العرض التقديمي (Pitch Deck) أو المخطط التقني أو صور المخطط' : 'Pitch Deck, Technical Architecture, or Wireframes'}
+                          </label>
+                          <div className="w-full p-8 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center cursor-pointer group">
+                            <input 
+                              type="file" 
+                              onChange={e=>setProjectFile(e.target.files[0])} 
+                              className="hidden" 
+                              id="project-upload" 
+                              required
+                              accept=".pdf,.pptx,.zip,.rar,.jpg,.jpeg,.png"
+                            />
+                            <label htmlFor="project-upload" className="cursor-pointer flex flex-col items-center">
+                              <Upload className="w-12 h-12 text-slate-400 mb-4 group-hover:text-cyan-500 transition-colors" />
+                              <span className="text-lg text-slate-600 dark:text-slate-400 font-bold mb-2">
+                                {projectFile ? projectFile.name : (lang === 'ar' ? 'انقر لرفع الملفات (PDF, PPTX, صور، ZIP)' : 'Click to upload files (PDF, PPTX, Images, ZIP)')}
+                              </span>
+                              {!projectFile && (
+                                <span className="text-sm text-slate-400 text-center px-4">
+                                  {lang === 'ar' ? 'يمكنك رفع الصور مباشرة (JPG, PNG) أو المستندات.' : 'You can upload images (JPG, PNG) directly or documents.'}
+                                </span>
+                              )}
+                            </label>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
 
-                    <button type="submit" disabled={isSubmitting} className="w-full md:w-auto px-10 bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-4 rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/30 transition-all flex justify-center items-center gap-2 text-lg">
-                      {isSubmitting ? <span className="animate-pulse">{lang === 'ar' ? 'جاري التأكيد...' : 'Confirming...'}</span> : <>{lang === 'ar' ? 'تأكيد التسجيل ورفع المشروع' : 'Confirm Registration & Upload'} <CheckCircle size={20}/></>}
-                    </button>
+                    {/* HACKATHON STEP 4: REVIEW */}
+                    {(isHackathon && step === 4) && (
+                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+                        <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-700">
+                          <h4 className="font-bold text-lg mb-4 text-[#1e3a5f] dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2">
+                            {lang === 'ar' ? 'مراجعة بيانات التسجيل' : 'Review Registration Data'}
+                          </h4>
+                          <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                            <li><strong className="text-slate-800 dark:text-slate-100">{lang === 'ar' ? 'الاسم:' : 'Name:'}</strong> {name}</li>
+                            <li><strong className="text-slate-800 dark:text-slate-100">{lang === 'ar' ? 'البريد:' : 'Email:'}</strong> {email}</li>
+                            <li><strong className="text-slate-800 dark:text-slate-100">{lang === 'ar' ? 'أعضاء الفريق:' : 'Team Members:'}</strong> {teamMembers}</li>
+                            <li><strong className="text-slate-800 dark:text-slate-100">{lang === 'ar' ? 'الفكرة:' : 'Pitch:'}</strong> {projectExplanation?.substring(0,50)}...</li>
+                            <li><strong className="text-slate-800 dark:text-slate-100">{lang === 'ar' ? 'الملف المرفق:' : 'Attached File:'}</strong> {projectFile ? projectFile.name : '-'}</li>
+                          </ul>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Form Controls */}
+                    <div className={`flex ${isHackathon && step > 1 ? 'justify-between' : 'justify-end'} pt-4 mt-6 border-t border-slate-100 dark:border-slate-700`}>
+                      {isHackathon && step > 1 && (
+                        <button type="button" onClick={prevStep} disabled={isSubmitting} className="px-6 py-3 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                          {lang === 'ar' ? 'السابق' : 'Previous'}
+                        </button>
+                      )}
+                      
+                      <button type="submit" disabled={isSubmitting} className="px-10 bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/30 transition-all flex items-center gap-2">
+                        {isSubmitting ? (
+                          <span className="animate-pulse">{lang === 'ar' ? 'جاري المعالجة...' : 'Processing...'}</span>
+                        ) : (
+                          <>
+                            {(!isHackathon || step === 4) ? (lang === 'ar' ? 'تأكيد التسجيل النهائي' : 'Confirm Registration') : (lang === 'ar' ? 'التالي' : 'Next Step')} 
+                            {(!isHackathon || step === 4) ? <CheckCircle size={18}/> : <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''}/>}
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </form>
                 ) : (
                   <div className="text-center space-y-6 py-12">

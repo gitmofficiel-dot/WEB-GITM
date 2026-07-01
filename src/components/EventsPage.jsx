@@ -33,10 +33,10 @@ export default function EventsPage() {
           setEvents(fetchedEvents);
         } else {
           setEvents([
-            { id: '1', title_ar: 'القمة التقنية 2026', title_en: 'Tech Summit 2026', location: 'الرباط', mode: 'Offline', startDate: '2026-10-15', startTime: '09:00 AM', maxCapacity: 500, isRegistrationOpen: true, image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800' },
-            { id: '2', title_ar: 'ورشة عمل الذكاء الاصطناعي', title_en: 'AI Workshop', location: 'الدار البيضاء', mode: 'Offline', startDate: '2026-11-20', startTime: '10:00 AM', maxCapacity: 100, isRegistrationOpen: true, image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800' },
-            { id: '3', title_ar: 'هاكاثون الويب 3', title_en: 'Web3 Hackathon', location: 'Online', mode: 'Online', startDate: '2026-12-05', startTime: '08:00 AM', maxCapacity: 1000, isRegistrationOpen: false, image: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?w=800' },
-            { id: '4', title_ar: 'مؤتمر الأمن السيبراني', title_en: 'Cybersecurity Conference', location: 'مراكش', mode: 'Offline', startDate: '2027-01-15', startTime: '09:00 AM', maxCapacity: 300, isRegistrationOpen: true, image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800' }
+            { id: '1', type: 'conference', title_ar: 'القمة التقنية 2026', title_en: 'Tech Summit 2026', location: 'الرباط', mode: 'Offline', startDate: '2026-10-15', startTime: '09:00 AM', maxCapacity: 500, isRegistrationOpen: true, image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800' },
+            { id: '2', type: 'workshop', title_ar: 'ورشة عمل الذكاء الاصطناعي', title_en: 'AI Workshop', location: 'الدار البيضاء', mode: 'Offline', startDate: '2026-11-20', startTime: '10:00 AM', maxCapacity: 100, isRegistrationOpen: true, image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800' },
+            { id: '3', type: 'hackathon', title_ar: 'هاكاثون الويب 3', title_en: 'Web3 Hackathon', location: 'Online', mode: 'Online', startDate: '2026-12-05', startTime: '08:00 AM', maxCapacity: 1000, isRegistrationOpen: false, image: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?w=800' },
+            { id: '4', type: 'conference', title_ar: 'مؤتمر الأمن السيبراني', title_en: 'Cybersecurity Conference', location: 'مراكش', mode: 'Offline', startDate: '2027-01-15', startTime: '09:00 AM', maxCapacity: 300, isRegistrationOpen: true, image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800' }
           ]);
         }
       } catch (error) {
@@ -53,6 +53,19 @@ export default function EventsPage() {
     if (obj[`${field}_${l}`]) return obj[`${field}_${l}`];
     if (obj[field] && typeof obj[field] === 'object') return obj[field][l] || obj[field].en || '';
     return obj[field] || '';
+  };
+
+  const getBadgeInfo = (type) => {
+    switch (type) {
+      case 'hackathon':
+        return { text: lang === 'ar' ? 'هاكاثون' : 'Hackathon', color: 'bg-red-500 text-white' };
+      case 'competition':
+        return { text: lang === 'ar' ? 'مسابقة' : 'Competition', color: 'bg-orange-500 text-white' };
+      case 'workshop':
+        return { text: lang === 'ar' ? 'ورشة عمل' : 'Workshop', color: 'bg-green-500 text-white' };
+      default:
+        return { text: lang === 'ar' ? 'فعالية' : 'Event', color: 'bg-blue-500 text-white' };
+    }
   };
 
   const filteredEvents = events.filter(evt => {
@@ -129,6 +142,13 @@ export default function EventsPage() {
                     
                     {/* Gradient Overlay for Text Visibility */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
+                    
+                    {/* Badge */}
+                    <div className="absolute top-4 right-4 z-10">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-md ${getBadgeInfo(evt.type).color}`}>
+                        {getBadgeInfo(evt.type).text}
+                      </span>
+                    </div>
                     
                     {/* Title overlay */}
                     <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
