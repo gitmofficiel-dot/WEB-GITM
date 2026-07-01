@@ -3,9 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { teamData } from '../data/teamData';
 import { Github, Linkedin, Twitter } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function TeamShowcase() {
   const { lang } = useLanguage();
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('all');
 
   const filters = [
@@ -48,7 +50,8 @@ export default function TeamShowcase() {
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
               key={member.id}
-              className="tilt-card group overflow-hidden flex flex-col shadow-soft"
+              onClick={() => navigate(`/profile/${member.id}`)}
+              className="tilt-card group overflow-hidden flex flex-col shadow-soft cursor-pointer hover:shadow-2xl transition-shadow"
             >
               {/* Colorful Image Header */}
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100 dark:bg-[#1a1a1a]">
@@ -60,19 +63,22 @@ export default function TeamShowcase() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
                 {/* Social Links on Hover */}
-                <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                <div 
+                  className="absolute bottom-4 left-0 right-0 flex justify-center gap-3 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"
+                  onClick={(e) => e.stopPropagation()} // Prevent navigating when clicking social links
+                >
                   {member.socials?.linkedin && (
-                    <a href={member.socials.linkedin} className="w-10 h-10 rounded-full bg-gitm-red flex items-center justify-center text-white hover:bg-red-700 transition-colors shadow-lg">
+                    <a href={member.socials.linkedin} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gitm-red flex items-center justify-center text-white hover:bg-red-700 transition-colors shadow-lg">
                       <Linkedin size={18} />
                     </a>
                   )}
                   {member.socials?.github && (
-                    <a href={member.socials.github} className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white hover:bg-gray-800 transition-colors shadow-lg">
+                    <a href={member.socials.github} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white hover:bg-gray-800 transition-colors shadow-lg">
                       <Github size={18} />
                     </a>
                   )}
                   {member.socials?.twitter && (
-                    <a href={member.socials.twitter} className="w-10 h-10 rounded-full bg-gitm-green flex items-center justify-center text-white hover:bg-green-700 transition-colors shadow-lg">
+                    <a href={member.socials.twitter} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gitm-green flex items-center justify-center text-white hover:bg-green-700 transition-colors shadow-lg">
                       <Twitter size={18} />
                     </a>
                   )}
