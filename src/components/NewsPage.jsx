@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Newspaper, AlertCircle, Loader2 } from 'lucide-react';
+import { Newspaper, AlertCircle, Loader2, Calendar as CalendarIcon } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../config/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
@@ -94,8 +94,8 @@ export default function NewsPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-10 items-center">
-          <div className="max-w-5xl w-full mx-auto">
-            <motion.div layout className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="max-w-6xl w-full mx-auto">
+            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <AnimatePresence>
               {currentNews.map((news) => (
                 <motion.div
@@ -103,27 +103,28 @@ export default function NewsPage() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
+                  whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.3 }}
                   key={news.id}
                   onClick={() => navigate(`/news/${news.id}`)}
-                  className="group relative w-full pt-[100%] rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+                  className="group flex flex-col w-full rounded-3xl overflow-hidden cursor-pointer bg-white dark:bg-slate-800 shadow-lg hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 transition-all duration-300 border border-transparent hover:border-cyan-200 dark:hover:border-slate-600"
                 >
-                  <div className="absolute inset-0 w-full h-full">
+                  <div className="relative aspect-video w-full overflow-hidden">
                     {/* Background Image */}
                     <img 
                       src={news.imageUrl || news.image || 'https://via.placeholder.com/600x600?text=GITM+News'} 
                       alt={getLocalized(news, 'title', lang)} 
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
+                  </div>
+
+                  <div className="p-6 flex flex-col flex-grow">
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-3 line-clamp-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                      {getLocalized(news, 'title', lang)}
+                    </h3>
                     
-                    {/* Gradient Overlay for Text Visibility */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
-                    
-                    {/* Title overlay */}
-                    <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      <h3 className="text-xl md:text-2xl font-bold text-white mb-2 line-clamp-2">
-                        {getLocalized(news, 'title', lang)}
-                      </h3>
+                    <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 mt-auto pt-4 border-t border-slate-100 dark:border-slate-700">
+                       <div className="flex items-center gap-1.5 font-medium"><CalendarIcon size={16} className="text-cyan-500"/> {news.date || 'TBA'}</div>
                     </div>
                   </div>
                 </motion.div>

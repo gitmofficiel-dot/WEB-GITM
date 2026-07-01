@@ -392,8 +392,8 @@ export default function Academy() {
               </div>
             ) : (
               <div className="flex flex-col gap-6 items-center">
-                <div className="max-w-5xl w-full mx-auto">
-                  <motion.div layout className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                <div className="max-w-6xl w-full mx-auto">
+                  <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <AnimatePresence>
                     {currentCourses.map((course) => (
                       <motion.div
@@ -401,27 +401,29 @@ export default function Academy() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
+                        whileTap={{ scale: 0.98 }}
                         transition={{ duration: 0.3 }}
                         key={course.id}
                         onClick={() => startCourse(course)}
-                        className="group relative w-full pt-[100%] rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+                        className="group flex flex-col w-full rounded-3xl overflow-hidden cursor-pointer bg-white dark:bg-slate-800 shadow-lg hover:shadow-2xl hover:shadow-teal-500/20 hover:-translate-y-2 transition-all duration-300 border border-transparent hover:border-teal-200 dark:hover:border-slate-600"
                       >
-                        <div className="absolute inset-0 w-full h-full">
+                        <div className="relative aspect-video w-full overflow-hidden">
                           {/* Background Image */}
                           <img 
                             src={course.thumbnail || 'https://via.placeholder.com/600x600?text=GITM+Academy'} 
                             alt={getLocalized(course, 'title', lang)} 
-                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                           />
+                        </div>
+
+                        <div className="p-6 flex flex-col flex-grow">
+                          <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-3 line-clamp-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+                            {getLocalized(course, 'title', lang)}
+                          </h3>
                           
-                          {/* Gradient Overlay for Text Visibility */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
-                          
-                          {/* Title overlay */}
-                          <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                            <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">
-                              {getLocalized(course, 'title', lang)}
-                            </h3>
+                          <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 mt-auto pt-4 border-t border-slate-100 dark:border-slate-700">
+                             {course.duration && <div className="flex items-center gap-1.5 font-medium">{course.duration}</div>}
+                             {course.level && <div className="flex items-center gap-1.5 font-medium border-l border-slate-300 dark:border-slate-600 pl-4 rtl:pr-4 rtl:pl-0 rtl:border-l-0 rtl:border-r">{course.level}</div>}
                           </div>
                         </div>
                       </motion.div>
@@ -440,23 +442,32 @@ export default function Academy() {
           ) : (
             /* Library View */
             <div className="flex flex-col gap-6 items-center">
-              <div className="max-w-5xl w-full mx-auto">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              <div className="max-w-6xl w-full mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                    {booksLoading ? (
                      <div className="col-span-full py-20 text-center"><Loader2 className="w-10 h-10 text-indigo-500 animate-spin mx-auto" /></div>
                    ) : books.map((book, idx) => {
                      const info = book.volumeInfo;
                      const thumbnail = info.imageLinks?.thumbnail || 'https://via.placeholder.com/600x600?text=No+Cover';
                      return (
-                       <div key={book.id} onClick={() => window.open(info.previewLink, '_blank')} className="group relative w-full pt-[100%] rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-                         <div className="absolute inset-0 w-full h-full">
-                           <img src={thumbnail} alt={info.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
-                           <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                               <h3 className="text-lg md:text-xl font-bold text-white mb-2 line-clamp-2">{info.title}</h3>
-                           </div>
+                       <motion.div 
+                         key={book.id} 
+                         whileTap={{ scale: 0.98 }}
+                         onClick={() => window.open(info.previewLink, '_blank')} 
+                         className="group flex flex-col w-full rounded-3xl overflow-hidden cursor-pointer bg-white dark:bg-slate-800 shadow-lg hover:shadow-2xl hover:shadow-indigo-500/20 hover:-translate-y-2 transition-all duration-300 border border-transparent hover:border-indigo-200 dark:hover:border-slate-600"
+                       >
+                         <div className="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-slate-900 flex items-center justify-center p-4">
+                           <img src={thumbnail} alt={info.title} className="h-full object-contain transition-transform duration-700 group-hover:scale-105 drop-shadow-xl" />
                          </div>
-                       </div>
+                         <div className="p-6 flex flex-col flex-grow">
+                             <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-3 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{info.title}</h3>
+                             {info.authors && (
+                               <p className="text-sm text-slate-500 dark:text-slate-400 mt-auto pt-4 border-t border-slate-100 dark:border-slate-700 line-clamp-1">
+                                 {info.authors.join(', ')}
+                               </p>
+                             )}
+                         </div>
+                       </motion.div>
                      )
                    })}
                 </div>
