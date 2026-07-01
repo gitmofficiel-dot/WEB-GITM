@@ -1,48 +1,55 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { 
   Briefcase, GraduationCap, Github, Linkedin, Twitter, ExternalLink, 
-  MapPin, Mail, Calendar, Code, Zap, Award, BookOpen, Heart, Activity
+  MapPin, Mail, Calendar, Code, Zap, Award, BookOpen, Heart, Activity,
+  ChevronLeft
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { teamData } from '../data/teamData';
 
 export default function PublicProfile() {
   const { id } = useParams();
   const { lang } = useLanguage();
+  const navigate = useNavigate();
 
-  // Mock data for the specific user ID
-  // In a real app, you would fetch this using the `id` from the backend
+  const member = teamData.find(m => m.id.toString() === id);
+
+  if (!member) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-cyan-50 dark:bg-[#0B132B]">
+        <h2 className="text-2xl font-bold text-red-500 mb-4">{lang === 'ar' ? 'الملف الشخصي غير موجود' : 'Profile not found'}</h2>
+        <button onClick={() => navigate(-1)} className="btn-primary px-6 py-2 rounded-full flex items-center gap-2">
+          <ChevronLeft className={lang === 'ar' ? 'rotate-180' : ''} /> {lang === 'ar' ? 'العودة' : 'Go Back'}
+        </button>
+      </div>
+    );
+  }
+
   const profile = {
-    id: id || 'GITM-PRE-001',
-    name: 'M. President',
-    title: lang === 'ar' ? 'الرئيس والمؤسس' : 'President & Founder',
-    email: 'president@gitm.ma',
-    location: lang === 'ar' ? 'الدار البيضاء، المغرب' : 'Casablanca, Morocco',
-    bio: lang === 'ar' 
-      ? 'مهندس ذكاء اصطناعي شغوف بتطوير الأنظمة المعقدة. مؤسس GITM ومهتم بنقل التكنولوجيا وبناء قدرات الشباب المغربي في مجالات البرمجة والروبوتيك.' 
-      : 'AI Engineer passionate about developing complex systems. Founder of GITM, dedicated to technology transfer and capacity building for Moroccan youth in programming and robotics.',
-    avatar: 'M',
-    badges: ['leadership', 'ai_visionary', 'legal'],
+    name: lang === 'ar' ? member.nameAr : member.nameEn,
+    title: lang === 'ar' ? member.roleAr : member.roleEn,
+    email: member.email || 'contact@gitm.ma',
+    location: lang === 'ar' ? 'المغرب' : 'Morocco',
+    bio: lang === 'ar' ? member.bioAr : member.bioEn,
+    avatar: member.image,
+    badges: ['leadership', 'ai_visionary'],
     stats: {
-      projects: 15,
-      certifications: 8,
-      volunteerHours: 320
+      projects: Math.floor(Math.random() * 20) + 5,
+      certifications: Math.floor(Math.random() * 10) + 2,
+      volunteerHours: Math.floor(Math.random() * 200) + 50
     },
-    social: {
-      github: 'https://github.com/gitmofficiel-dot',
-      linkedin: 'https://linkedin.com',
-      twitter: 'https://twitter.com'
-    },
+    social: member.socials || {},
     skills: ['Python', 'TensorFlow', 'React', 'Robotics', 'Embedded Systems', 'Leadership', 'System Architecture'],
     interests: ['AI Ethics', 'Quantum Computing', 'Green Tech', 'Space Exploration'],
     academicPath: [
-      { year: '2023 - Present', title: lang === 'ar' ? 'ماجستير في الذكاء الاصطناعي' : 'Master in AI', institution: 'UM5 Rabat' },
-      { year: '2019 - 2023', title: lang === 'ar' ? 'إجازة في علوم الحاسوب' : 'Bachelor in Computer Science', institution: 'FST Settat' }
+      { year: '2023 - Present', title: lang === 'ar' ? 'دراسات عليا' : 'Postgraduate Studies', institution: 'University' },
+      { year: '2019 - 2023', title: lang === 'ar' ? 'إجازة' : 'Bachelor Degree', institution: 'University' }
     ],
     projects: [
-      { name: 'Smart Irrigation System', role: 'Lead Architect', type: 'IoT & AI' },
-      { name: 'GITM LMS Platform', role: 'Fullstack Dev', type: 'Web App' }
+      { name: 'Smart System', role: 'Lead', type: 'IoT & AI' },
+      { name: 'Platform', role: 'Developer', type: 'Web App' }
     ]
   };
 
@@ -62,17 +69,21 @@ export default function PublicProfile() {
       
       <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-5xl mx-auto space-y-8">
         
+        {/* Back Button */}
+        <button onClick={() => navigate(-1)} className="mb-2 flex items-center text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 font-medium transition-colors w-fit">
+          <ChevronLeft size={20} className={lang === 'ar' ? 'rotate-180' : ''} />
+          {lang === 'ar' ? 'العودة' : 'Back'}
+        </button>
+
         {/* Header Section */}
         <motion.div variants={itemVariants} className="glass-card rounded-3xl p-8 relative overflow-hidden border-t-4 border-cyan-500">
           <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
             
             <div className="relative">
-              <div className="w-32 h-32 rounded-3xl bg-gradient-to-tr from-cyan-400 to-blue-600 p-1 shadow-2xl">
-                <div className="w-full h-full bg-white dark:bg-slate-900 rounded-2xl flex items-center justify-center text-5xl font-bold text-[#1e3a5f] dark:text-white">
-                  {profile.avatar}
-                </div>
+              <div className="w-32 h-32 rounded-3xl overflow-hidden bg-gradient-to-tr from-cyan-400 to-blue-600 p-1 shadow-2xl">
+                <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover rounded-2xl" />
               </div>
-              <div className="absolute -bottom-3 -right-3 bg-emerald-500 text-white p-2 rounded-full border-4 border-white dark:border-slate-900 shadow-lg">
+              <div className="absolute -bottom-3 -right-3 rtl:left-[-12px] rtl:right-auto bg-emerald-500 text-white p-2 rounded-full border-4 border-white dark:border-slate-900 shadow-lg">
                 <Award size={20} />
               </div>
             </div>
@@ -90,9 +101,9 @@ export default function PublicProfile() {
                 </div>
                 
                 <div className="flex gap-2">
-                  {profile.social.github && <a href={profile.social.github} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"><Github size={20}/></a>}
-                  {profile.social.linkedin && <a href={profile.social.linkedin} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"><Linkedin size={20}/></a>}
-                  {profile.social.twitter && <a href={profile.social.twitter} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-900/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors"><Twitter size={20}/></a>}
+                  {profile.social.github && profile.social.github !== '#' && <a href={profile.social.github} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"><Github size={20}/></a>}
+                  {profile.social.linkedin && profile.social.linkedin !== '#' && <a href={profile.social.linkedin} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"><Linkedin size={20}/></a>}
+                  {profile.social.twitter && profile.social.twitter !== '#' && <a href={profile.social.twitter} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-900/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors"><Twitter size={20}/></a>}
                 </div>
               </div>
 

@@ -26,7 +26,7 @@ export default function Academy() {
   // Pagination & Search
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 8;
 
   // Filters
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -44,9 +44,10 @@ export default function Academy() {
         // Add mock data if empty for demonstration
         if (coursesData.length === 0) {
           const mockCourses = [
-            { id: '1', title_en: 'Advanced AI & Machine Learning', title_ar: 'الذكاء الاصطناعي المتقدم', description_en: 'Master neural networks and deep learning.', description_ar: 'تعلم الشبكات العصبية والتعلم العميق.', track: 'AI', level: 'Advanced', rating: 4.9, students: 12500, duration: '12 Weeks' },
-            { id: '2', title_en: 'Full-Stack React Development', title_ar: 'تطوير تطبيقات الويب باستخدام رياكت', description_en: 'Build modern web apps from scratch.', description_ar: 'ابن تطبيقات ويب حديثة من الصفر.', track: 'Web Dev', level: 'Intermediate', rating: 4.8, students: 8400, duration: '8 Weeks' },
-            { id: '3', title_en: 'Cybersecurity Fundamentals', title_ar: 'أساسيات الأمن السيبراني', description_en: 'Protect systems against modern threats.', description_ar: 'حماية الأنظمة من التهديدات الحديثة.', track: 'Security', level: 'Beginner', rating: 4.7, students: 15300, duration: '6 Weeks' }
+            { id: '1', title_en: 'Advanced AI & Machine Learning', title_ar: 'الذكاء الاصطناعي المتقدم', description_en: 'Master neural networks and deep learning.', description_ar: 'تعلم الشبكات العصبية والتعلم العميق.', track: 'AI', level: 'Advanced', rating: 4.9, students: 12500, duration: '12 Weeks', thumbnail: 'https://images.unsplash.com/photo-1555255707-c07966088b7b?w=800' },
+            { id: '2', title_en: 'Full-Stack React Development', title_ar: 'تطوير تطبيقات الويب باستخدام رياكت', description_en: 'Build modern web apps from scratch.', description_ar: 'ابن تطبيقات ويب حديثة من الصفر.', track: 'Web Dev', level: 'Intermediate', rating: 4.8, students: 8400, duration: '8 Weeks', thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800' },
+            { id: '3', title_en: 'Cybersecurity Fundamentals', title_ar: 'أساسيات الأمن السيبراني', description_en: 'Protect systems against modern threats.', description_ar: 'حماية الأنظمة من التهديدات الحديثة.', track: 'Security', level: 'Beginner', rating: 4.7, students: 15300, duration: '6 Weeks', thumbnail: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800' },
+            { id: '4', title_en: 'Cloud Computing Architecture', title_ar: 'هندسة الحوسبة السحابية', description_en: 'Design scalable cloud systems.', description_ar: 'تصميم أنظمة سحابية قابلة للتطوير.', track: 'Cloud', level: 'Advanced', rating: 4.8, students: 9200, duration: '10 Weeks', thumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800' }
           ];
           setCourses(mockCourses);
         } else {
@@ -96,7 +97,6 @@ export default function Academy() {
   }, [searchQuery, activeTab]);
 
   const startCourse = (course) => {
-    // If no real modules exist yet, we still open the course view to show the Coursera style intro
     setActiveCourse(course);
     setCurrentModuleIndex(0);
     setUnlockedModules([0]);
@@ -188,7 +188,6 @@ export default function Academy() {
               <div className="flex gap-4">
                 <button 
                   onClick={() => {
-                    // Logic to jump to player
                     toast.success(lang === 'ar' ? 'تم استئناف الدورة' : 'Course resumed');
                   }}
                   className="px-8 py-4 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-xl shadow-lg transition-all"
@@ -229,7 +228,6 @@ export default function Academy() {
            ) : (
              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
-                  {/* The actual lesson player would go here, currently handled by LessonView component if modules exist */}
                   <LessonView 
                     lesson={activeCourse.modules[currentModuleIndex]}
                     onComplete={handleLessonComplete}
@@ -370,7 +368,6 @@ export default function Academy() {
                <span className="text-slate-400 text-sm ml-3 font-normal">({filteredCourses.length} results)</span>
              </h2>
              
-             {/* Simple Tabs to switch to Library if needed */}
              <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
                <button onClick={() => setActiveTab('courses')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'courses' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>
                  Courses
@@ -394,59 +391,42 @@ export default function Academy() {
                 </button>
               </div>
             ) : (
-              <div className="flex flex-col gap-6">
-                {currentCourses.map((course, idx) => (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.05 }}
-                    key={course.id}
-                    onClick={() => startCourse(course)}
-                    className="flex flex-col sm:flex-row bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-xl hover:border-teal-500/30 transition-all cursor-pointer group"
-                  >
-                    <div className="w-full sm:w-72 h-48 sm:h-auto relative overflow-hidden shrink-0">
-                      <img src={course.thumbnail || 'https://via.placeholder.com/400x300'} alt="Course Thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    </div>
-                    
-                    <div className="p-6 flex flex-col justify-between flex-1">
-                       <div>
-                         <div className="flex items-center gap-2 mb-2">
-                           <span className="text-xs font-bold px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-md">
-                             {course.track || 'Tech'}
-                           </span>
-                           <span className="text-xs font-bold px-2 py-1 bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-md">
-                             {course.level || 'Intermediate'}
-                           </span>
-                         </div>
-                         <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
-                           {getLocalized(course, 'title', lang)}
-                         </h3>
-                         <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">
-                           {getLocalized(course, 'description', lang)}
-                         </p>
-                       </div>
-                       
-                       <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4 mt-auto">
-                          <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                             <div className="flex items-center gap-1 font-bold text-slate-700 dark:text-slate-200">
-                               <Star size={16} className="text-yellow-400" fill="currentColor" />
-                               {course.rating || '4.8'}
-                             </div>
-                             <div className="flex items-center gap-1">
-                               <Users size={16} />
-                               {(course.students || 0).toLocaleString()}
-                             </div>
-                          </div>
-                          
-                          <div className="text-teal-600 dark:text-teal-400 font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform rtl:group-hover:-translate-x-1">
-                            {lang === 'ar' ? 'عرض التفاصيل' : 'View Details'}
-                            <ArrowRight size={16} className="rtl:rotate-180" />
-                          </div>
-                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+              <div className="flex flex-col gap-6 items-center">
+                <div className="max-w-5xl w-full mx-auto">
+                  <motion.div layout className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                    <AnimatePresence>
+                    {currentCourses.map((course) => (
+                      <motion.div
+                        layout
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.3 }}
+                        key={course.id}
+                        onClick={() => startCourse(course)}
+                        className="group relative aspect-square rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+                      >
+                        {/* Background Image */}
+                        <img 
+                          src={course.thumbnail || 'https://via.placeholder.com/600x600?text=GITM+Academy'} 
+                          alt={getLocalized(course, 'title', lang)} 
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        
+                        {/* Gradient Overlay for Text Visibility */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
+                        
+                        {/* Title overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                          <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">
+                            {getLocalized(course, 'title', lang)}
+                          </h3>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </motion.div>
+                </div>
                 
                 {totalPages > 1 && (
                   <div className="mt-8">
@@ -457,31 +437,26 @@ export default function Academy() {
             )
           ) : (
             /* Library View */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-               {booksLoading ? (
-                 <div className="col-span-full py-20 text-center"><Loader2 className="w-10 h-10 text-indigo-500 animate-spin mx-auto" /></div>
-               ) : books.map((book, idx) => {
-                 const info = book.volumeInfo;
-                 const thumbnail = info.imageLinks?.thumbnail || 'https://via.placeholder.com/150x200?text=No+Cover';
-                 return (
-                   <div key={book.id} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-xl transition-all flex flex-col">
-                      <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden mb-4 bg-slate-100 dark:bg-slate-800">
-                        <img src={thumbnail} alt={info.title} className="w-full h-full object-cover" />
-                      </div>
-                      <h4 className="font-bold text-slate-800 dark:text-white line-clamp-2 mb-1">{info.title}</h4>
-                      <p className="text-xs text-slate-500 mb-4">{info.authors?.join(', ') || 'Unknown Author'}</p>
-                      
-                      <a 
-                        href={info.previewLink} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="mt-auto block w-full py-2.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-center font-bold rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
-                      >
-                        {lang === 'ar' ? 'تصفح الكتاب' : 'Read Preview'}
-                      </a>
-                   </div>
-                 )
-               })}
+            <div className="flex flex-col gap-6 items-center">
+              <div className="max-w-5xl w-full mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                   {booksLoading ? (
+                     <div className="col-span-full py-20 text-center"><Loader2 className="w-10 h-10 text-indigo-500 animate-spin mx-auto" /></div>
+                   ) : books.map((book, idx) => {
+                     const info = book.volumeInfo;
+                     const thumbnail = info.imageLinks?.thumbnail || 'https://via.placeholder.com/600x600?text=No+Cover';
+                     return (
+                       <div key={book.id} onClick={() => window.open(info.previewLink, '_blank')} className="group relative aspect-square rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                         <img src={thumbnail} alt={info.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
+                         <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                             <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">{info.title}</h3>
+                         </div>
+                       </div>
+                     )
+                   })}
+                </div>
+              </div>
             </div>
           )}
         </div>

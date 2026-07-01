@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Code, Github, ExternalLink, Cpu, Database, Layers, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../config/firebase';
 import { collection, getDocs, query } from 'firebase/firestore';
-import LiveGithubStats from './ui/LiveGithubStats';
+import { useNavigate } from 'react-router-dom';
 
 const ICON_MAP = {
   Database,
@@ -17,16 +17,52 @@ export default function TechProjectsPage() {
   const { lang } = useLanguage();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const q = query(collection(db, 'projects'));
         const querySnapshot = await getDocs(q);
-        const fetchedProjects = querySnapshot.docs.map(doc => ({
+        let fetchedProjects = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
+        
+        // Add mock if empty
+        if (fetchedProjects.length === 0) {
+           fetchedProjects = [
+            {
+              id: 'smartTraffic',
+              title: lang === 'ar' ? 'إدارة المرور الذكية عبر الدرونز' : 'Smart Traffic via Drones',
+              description: lang === 'ar' ? 'فكرة مبتكرة لاستخدام الطائرات بدون طيار لتنظيم حركة السير...' : 'Innovative idea using drones to manage traffic...',
+              image: 'https://images.unsplash.com/photo-1527443195645-1133f7f28990?w=800&q=80',
+              category: 'Robotics',
+            },
+            {
+              id: 'swarmNav',
+              title: lang === 'ar' ? 'نظام الملاحة الآلي للأسراب' : 'Autonomous Swarm Navigation',
+              description: lang === 'ar' ? 'مفهوم رياضي لخوارزمية تجنب الاصطدام للأجسام المتعددة.' : 'Mathematical concept for multi-agent collision avoidance algorithm.',
+              image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80',
+              category: 'AI',
+            },
+            {
+              id: 'telemetryHub',
+              title: lang === 'ar' ? 'محطة قياس البيانات عن بُعد' : 'Remote Telemetry Station',
+              description: lang === 'ar' ? 'مشروع تصميم محطة رصد مناخية تعتمد على تقنيات إنترنت الأشياء.' : 'IoT-based climate monitoring station design project.',
+              image: 'https://images.unsplash.com/photo-1531297172867-4f50fcc2cb26?w=800&q=80',
+              category: 'IoT',
+            },
+            {
+              id: 'edgeHardware',
+              title: lang === 'ar' ? 'خوارزميات التشفير السحابي' : 'Cloud Encryption Algorithms',
+              description: lang === 'ar' ? 'أفكار حول بناء خوارزمية تشفير جديدة تعتمد على الحوسبة الكمية.' : 'Ideas on building a new quantum-based encryption algorithm.',
+              image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',
+              category: 'Web',
+            }
+          ];
+        }
+
         setProjects(fetchedProjects);
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -35,7 +71,7 @@ export default function TechProjectsPage() {
       }
     };
     fetchProjects();
-  }, []);
+  }, [lang]);
 
   const getLocalizedTitle = (proj, l) => {
     if (!proj) return '';
@@ -47,14 +83,6 @@ export default function TechProjectsPage() {
     if (!proj) return '';
     if (l === 'ar') return proj.descriptionAr || proj.descriptionEn || proj.description || '';
     return proj.descriptionEn || proj.descriptionAr || proj.description || '';
-  };
-
-  const getIcon = (iconName) => {
-    if (typeof iconName === 'string') {
-      const IconComp = ICON_MAP[iconName] || Code;
-      return <IconComp className="w-8 h-8 text-teal-400" />;
-    }
-    return iconName || <Code className="w-8 h-8 text-teal-400" />;
   };
 
   const emptyMessage = {
@@ -93,9 +121,9 @@ export default function TechProjectsPage() {
             transition={{ delay: 0.2 }}
             className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg"
           >
-            {lang === 'ar' ? 'استكشف المشاريع المفتوحة المصدر والمبادرات التقنية التي يطورها أعضاء مجتمعنا.' : 
-             lang === 'fr' ? 'Explorez les projets open-source et les initiatives technologiques développées par les membres de notre communauté.' : 
-             'Explore open-source projects and tech initiatives developed by our community members.'}
+            {lang === 'ar' ? 'استكشف الأفكار المفتوحة المصدر والمبادرات التقنية التي يطورها أعضاء مجتمعنا.' : 
+             lang === 'fr' ? 'Explorez les idées open-source et les initiatives technologiques développées par les membres de notre communauté.' : 
+             'Explore open-source ideas and tech initiatives developed by our community members.'}
           </motion.p>
         </div>
 
@@ -117,76 +145,42 @@ export default function TechProjectsPage() {
             <h3 className="text-2xl font-orbitron text-white mb-2">{emptyMessage[lang] || emptyMessage.en}</h3>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((proj, index) => (
-              <motion.div
-                key={proj.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="glass-card card-3d hover-lift rounded-2xl overflow-hidden flex flex-col border border-slate-200/ dark:border-slate-700/ hover:border-teal-500/50 group"
-              >
-                <div className="h-48 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-white/ dark:bg-slate-900/ backdrop-blur-sm z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="flex gap-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      <a href={proj.githubUrl || proj.github || '#'} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-full hover:bg-teal-500 text-white transition-colors">
-                        <Github className="w-6 h-6" />
-                      </a>
-                      <a href={proj.link || '#'} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-full hover:bg-teal-500 text-white transition-colors">
-                        <ExternalLink className="w-6 h-6" />
-                      </a>
-                    </div>
-                  </div>
-                  <img src={proj.coverImage || proj.imageUrl || proj.image} alt="Project" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                  <div className="absolute top-4 left-4 z-0 bg-white/ dark:bg-slate-900/ p-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg">
-                    {getIcon(proj.icon)}
-                  </div>
-                </div>
-
-                <div className="p-6 flex flex-col flex-grow bg-white/ dark:bg-slate-900/">
-                  <h3 className="text-xl font-bold text-white mb-3 font-orbitron group-hover:text-teal-300 transition-colors">
-                    {getLocalizedTitle(proj, lang)}
-                  </h3>
-                  <div className="text-slate-600 dark:text-slate-400 mb-6 text-sm leading-relaxed flex-grow prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: getLocalizedDesc(proj, lang) }} />
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <AnimatePresence>
+              {projects.map((proj, index) => (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  key={proj.id}
+                  onClick={() => navigate(`/project-details/${proj.id}`)}
+                  className="group relative aspect-square rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+                >
+                  <img 
+                    src={proj.image || proj.coverImage || proj.imageUrl || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80'} 
+                    alt={getLocalizedTitle(proj, lang)} 
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
                   
-                  {/* Progress & Team */}
-                  <div className="mb-4">
-                    <div className="flex justify-between text-xs text-slate-500 mb-1 font-bold">
-                      <span className="uppercase text-teal-500">{proj.status}</span>
-                      <span>{proj.progress || 0}%</span>
-                    </div>
-                    <div className="w-full h-1 bg-slate-50 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-teal-500" style={{ width: `${proj.progress || 0}%` }} />
-                    </div>
-                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
                   
-                  {/* GitHub Stats */}
-                  <div className="mb-4">
-                    <LiveGithubStats repoUrl={proj.githubUrl || proj.github} />
-                  </div>
+                  {proj.category && (
+                    <div className="absolute top-4 right-4 bg-teal-500/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full">
+                      {proj.category}
+                    </div>
+                  )}
 
-                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-200/ dark:border-slate-700/">
-                    <div className="flex flex-wrap gap-2 flex-1">
-                      {(proj.techStack || proj.tech || []).slice(0,3).map((t, i) => (
-                        <span key={i} className="px-2.5 py-1 text-[10px] font-bold text-teal-300 bg-teal-500/10 border border-teal-500/20 rounded-md">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                    
-                    <div className="flex -space-x-2 shrink-0">
-                      {(proj.teamMembers || []).slice(0,3).map((m, i) => (
-                        <div key={i} className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-900 flex items-center justify-center text-[10px] font-bold text-slate-600 dark:text-slate-300" title={m.name}>
-                          {m.initials || '?'}
-                        </div>
-                      ))}
-                    </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                    <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">
+                      {getLocalizedTitle(proj, lang)}
+                    </h3>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         )}
       </div>
     </div>

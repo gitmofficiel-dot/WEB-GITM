@@ -9,6 +9,7 @@ import { db } from '../config/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import LocationMap from './ui/LocationMap';
 import { sendEmailNotification } from '../utils/emailjs';
+import EventRegistrationModal from './EventRegistrationModal';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
@@ -24,7 +25,7 @@ export default function EventDetails() {
   const navigate = useNavigate();
   const { lang, events, competitions } = useLanguage();
   const { currentUser } = useAuth();
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const allEventsAndComps = [...events, ...competitions];
   const ev = allEventsAndComps.find(e => e.id.toString() === id);
@@ -46,55 +47,17 @@ export default function EventDetails() {
     image: ev.image || IMAGES[parseInt(id) % IMAGES.length]
   };
 
-  const handleRegister = async () => {
-    if (!currentUser) {
-      toast.info(txt(lang, 'Please log in to register.', 'يرجى تسجيل الدخول أولاً للتسجيل.', 'Veuillez vous connecter.', '请先登录。'));
-      navigate('/login');
-      return;
-    }
-
-    try {
-      setIsRegistering(true);
-      const q = query(
-        collection(db, 'event_registrations'), 
-        where('eventId', '==', id), 
-        where('userEmail', '==', currentUser.email)
-      );
-      const snapshot = await getDocs(q);
-      
-      if (!snapshot.empty) {
-        toast.warning(txt(lang, 'You are already registered!', 'أنت مسجل بالفعل في هذه الفعالية!', 'Vous êtes déjà inscrit!', '您已注册！'));
-        return;
-      }
-
-      await addDoc(collection(db, 'event_registrations'), {
-        eventId: id,
-        eventTitle: ev.title_en || ev.title_ar || 'Event',
-        userEmail: currentUser.email,
-        userName: currentUser.name || '',
-        registeredAt: serverTimestamp()
-      });
-
-      // Send Email Notification
-      await sendEmailNotification('template_event_registration', {
-        to_email: currentUser.email,
-        to_name: currentUser.name,
-        event_title: ev.title_en || ev.title_ar || 'GITM Event',
-        event_date: ev.date,
-        event_location: ev.location
-      });
-
-      toast.success(txt(lang, 'Registered successfully! An email confirmation has been sent. 🎉', 'تم تسجيلك بنجاح! تم إرسال بريد إلكتروني للتأكيد. 🎉', 'Inscription réussie ! Un email de confirmation a été envoyé. 🎉', '注册成功！已发送确认电子邮件。🎉'));
-    } catch (err) {
-      console.error(err);
-      toast.error(txt(lang, 'Registration failed.', 'فشل التسجيل. حاول مرة أخرى.', 'Échec.', '失败。'));
-    } finally {
-      setIsRegistering(false);
-    }
+  const handleRegisterClick = () => {
+    setIsModalOpen(true);
   };
 
   return (
     <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-[#1e3a5f] dark:text-slate-200 transition-colors duration-300">
+      
+      {isModalOpen && (
+        <EventRegistrationModal event={viewDetailsEvent} onClose={() => setIsModalOpen(false)} />
+      )}
+      
       <div className="max-w-4xl mx-auto relative z-10 animate-fade-in-up">
         
         <button onClick={() => navigate('/events')} className="mb-6 flex items-center gap-2 text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 font-medium transition-colors w-fit">
@@ -142,42 +105,67 @@ export default function EventDetails() {
 
                 {/* Media & Resources Section */}
                 <div className="bg-cyan-50/50 dark:bg-slate-800/30 p-6 rounded-2xl border border-cyan-100 dark:border-slate-700/50 mt-6">
-                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                  <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
                     <Video className="text-cyan-500" /> {txt(lang, 'Media & Resources', 'الوسائط والموارد', 'Médias et ressources', '媒体与资源')}
                   </h3>
                   
-                  {/* Video Placeholder */}
-                  <div className="mb-6 relative rounded-xl overflow-hidden aspect-video bg-white dark:bg-slate-900 group cursor-pointer shadow-lg">
-                    <img src={viewDetailsEvent.image || IMAGES[1]} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" alt="Video cover" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 bg-cyan-500/80 backdrop-blur rounded-full flex items-center justify-center group-hover:bg-cyan-400 transition-colors">
-                        <PlayCircle size={32} className="text-white ml-1" />
-                      </div>
+                  {/* Promotional Videos */}
+                  <div className="mb-8">
+                    <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-slate-200 mb-4">{txt(lang, 'Promotional Videos', 'فيديوهات ترويجية', 'Vidéos promotionnelles', '宣传片')}</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {[IMAGES[1], IMAGES[2]].map((img, idx) => (
+                        <div key={idx} className="relative rounded-xl overflow-hidden aspect-video bg-white dark:bg-slate-900 group cursor-pointer shadow-md border border-slate-200 dark:border-slate-700">
+                          <img src={img} className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-500" alt={`Promo Video ${idx+1}`} />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-12 h-12 bg-cyan-500/90 backdrop-blur rounded-full flex items-center justify-center group-hover:bg-cyan-400 transition-colors shadow-lg">
+                              <PlayCircle size={24} className="text-white ml-1" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-2 right-2 bg-black/60 px-2 py-1 rounded text-xs text-white">
+                            0{idx+2}:45
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Image Gallery */}
+                  <div className="mb-8">
+                    <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-slate-200 mb-4">{txt(lang, 'Image Gallery', 'معرض الصور', 'Galerie d\'images', '图片库')}</h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {IMAGES.map((img, idx) => (
+                        <div key={idx} className="aspect-square rounded-xl overflow-hidden cursor-pointer group shadow-sm border border-slate-200 dark:border-slate-700">
+                          <img src={img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={`Gallery ${idx+1}`} />
+                        </div>
+                      ))}
                     </div>
                   </div>
 
                   {/* Documents List */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-red-100 dark:bg-red-900/20 text-red-500 rounded-lg"><FileText size={20} /></div>
-                        <div>
-                          <p className="font-bold text-sm text-[#1e3a5f] dark:text-slate-200">{txt(lang, 'Event Agenda', 'برنامج الفعالية', 'Programme', '日程安排')}.pdf</p>
-                          <p className="text-xs text-slate-500">2.4 MB</p>
+                  <div>
+                    <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-slate-200 mb-4">{txt(lang, 'Presentation Files', 'ملفات التقديم', 'Fichiers de présentation', '演示文件')}</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-red-100 dark:bg-red-900/20 text-red-500 rounded-lg"><FileText size={20} /></div>
+                          <div>
+                            <p className="font-bold text-sm text-[#1e3a5f] dark:text-slate-200">{txt(lang, 'Project Presentation Template', 'قالب تقديم المشروع', 'Modèle de présentation', '项目演示模板')}.pptx</p>
+                            <p className="text-xs text-slate-500">5.2 MB</p>
+                          </div>
                         </div>
+                        <button className="text-cyan-600 dark:text-cyan-400 text-sm font-bold hover:underline">{txt(lang, 'Download', 'تحميل', 'Télécharger', '下载')}</button>
                       </div>
-                      <button className="text-cyan-600 dark:text-cyan-400 text-sm font-bold hover:underline">{txt(lang, 'Download', 'تحميل', 'Télécharger', '下载')}</button>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-100 dark:bg-blue-900/20 text-blue-500 rounded-lg"><FileText size={20} /></div>
-                        <div>
-                          <p className="font-bold text-sm text-[#1e3a5f] dark:text-slate-200">{txt(lang, 'Guidelines & Rules', 'القواعد والإرشادات', 'Règlement', '指南与规则')}.docx</p>
-                          <p className="text-xs text-slate-500">1.1 MB</p>
+                      
+                      <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-100 dark:bg-blue-900/20 text-blue-500 rounded-lg"><FileText size={20} /></div>
+                          <div>
+                            <p className="font-bold text-sm text-[#1e3a5f] dark:text-slate-200">{txt(lang, 'Guidelines & Rules', 'القواعد والإرشادات', 'Règlement', '指南与规则')}.pdf</p>
+                            <p className="text-xs text-slate-500">1.1 MB</p>
+                          </div>
                         </div>
+                        <button className="text-cyan-600 dark:text-cyan-400 text-sm font-bold hover:underline">{txt(lang, 'Download', 'تحميل', 'Télécharger', '下载')}</button>
                       </div>
-                      <button className="text-cyan-600 dark:text-cyan-400 text-sm font-bold hover:underline">{txt(lang, 'Download', 'تحميل', 'Télécharger', '下载')}</button>
                     </div>
                   </div>
                 </div>
@@ -226,11 +214,10 @@ export default function EventDetails() {
 
                 {(viewDetailsEvent.status === 'upcoming' || viewDetailsEvent.status === 'open') && (
                   <button 
-                    onClick={handleRegister} 
-                    disabled={isRegistering}
-                    className="w-full btn-primary py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:shadow-[0_0_30px_rgba(0,229,255,0.6)] transition-all disabled:opacity-50"
+                    onClick={handleRegisterClick} 
+                    className="w-full btn-primary py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:shadow-[0_0_30px_rgba(0,229,255,0.6)] transition-all"
                   >
-                    {isRegistering ? '...' : txt(lang, 'Official Registration', 'تسجيل رسمي', 'Inscription', '注册')} {!isRegistering && <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''} />}
+                    {txt(lang, 'Official Registration', 'تسجيل رسمي', 'Inscription', '注册')} <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''} />
                   </button>
                 )}
               </div>

@@ -4,13 +4,13 @@ import { motion } from 'framer-motion';
 import { Building2, Gamepad2, GraduationCap, Briefcase, Landmark } from 'lucide-react';
 
 const partners = [
-  { id: 1, nameAr: "مجموعة OCP", nameEn: "OCP Group", icon: <Building2 size={32} className="text-gitm-green" /> },
-  { id: 2, nameAr: "المركز الجهوي للاستثمار بني ملال-خنيفرة", nameEn: "CRI Beni Mellal-Khenifra", icon: <Landmark size={32} className="text-gitm-red" /> },
-  { id: 3, nameAr: "نادي الألعاب الإلكترونية", nameEn: "Gaming Club", icon: <Gamepad2 size={32} className="text-purple-500" /> },
-  { id: 4, nameAr: "جامعة محمد السادس", nameEn: "UM6P", icon: <GraduationCap size={32} className="text-blue-600" /> },
-  { id: 5, nameAr: "جامعة هارفارد (رؤية)", nameEn: "Harvard (Vision)", icon: <Landmark size={32} className="text-amber-600" /> },
-  { id: 6, nameAr: "جامعة لندن (رؤية)", nameEn: "University of London (Vision)", icon: <GraduationCap size={32} className="text-indigo-600" /> },
-  { id: 7, nameAr: "الوزارة المنتدبة للانتقال الرقمي", nameEn: "Digital Transition Ministry", icon: <Briefcase size={32} className="text-gitm-red" /> },
+  { id: 1, nameAr: "مؤسسة الابتكار الوطني", nameEn: "National Innovation Foundation", icon: <Building2 size={32} className="text-gitm-green" /> },
+  { id: 2, nameAr: "مراكز الاستثمار الجهوية", nameEn: "Regional Investment Centers", icon: <Landmark size={32} className="text-gitm-red" /> },
+  { id: 3, nameAr: "نادي الألعاب الإلكترونية", nameEn: "Gaming & AI Club", icon: <Gamepad2 size={32} className="text-purple-500" /> },
+  { id: 4, nameAr: "رواد البحث العلمي", nameEn: "Scientific Research Pioneers", icon: <GraduationCap size={32} className="text-blue-600" /> },
+  { id: 5, nameAr: "حاضنات التكنولوجيا", nameEn: "Tech Incubators", icon: <Building2 size={32} className="text-amber-600" /> },
+  { id: 6, nameAr: "مختبرات الذكاء الاصطناعي", nameEn: "AI Laboratories", icon: <Briefcase size={32} className="text-indigo-600" /> },
+  { id: 7, nameAr: "الهيئات الرقمية", nameEn: "Digital Authorities", icon: <Landmark size={32} className="text-gitm-red" /> },
 ];
 
 export default function PartnersSlider() {

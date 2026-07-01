@@ -19,8 +19,8 @@ export default function About() {
           setAboutData(docSnap.data());
         } else {
           setAboutData({
-            vision_ar: 'الريادة في تطوير الذكاء الاصطناعي المغربي وتصديره للعالم نحو جامعات مثل هارفارد ولندن.',
-            vision_en: 'Leading the development of Moroccan AI and exporting it globally to universities like Harvard and London.',
+            vision_ar: 'الريادة في تطوير الذكاء الاصطناعي المغربي وتصديره للعالم، وبناء جسور متينة للإبداع التكنولوجي المبتكر والأكاديمي المتألق.',
+            vision_en: 'Leading the development of Moroccan AI and exporting it globally, building strong bridges for innovative tech creativity and academic brilliance.',
             mission_ar: 'توفير بيئة بحثية متقدمة للمواهب المغربية، وتمكينهم من بناء أنظمة ذكية تحل مشاكل واقعية بدعم من المؤسسات الوطنية.',
             mission_en: 'Providing an advanced research environment for Moroccan talents to build smart systems with national support.',
             history_ar: 'تأسست GITM في عام 2024 لتوحيد جهود المهندسين المغاربة. قمنا بتأسيس نادي الألعاب وعقدنا شراكات مع المركز الجهوي للاستثمار.',

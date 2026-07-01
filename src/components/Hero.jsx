@@ -133,8 +133,8 @@ export default function Hero() {
 
           <p className="text-lg md:text-2xl text-gray-200 max-w-4xl mx-auto mb-12 leading-relaxed font-semibold drop-shadow-lg">
             {lang === 'ar' 
-              ? 'نجمع نخبة المهندسين والمبدعين لتطوير مشاريع رائدة تسهم في التحول الرقمي والتكنولوجي، برؤية وطنية طموحة وبصمة عالمية مؤثرة انطلاقاً من وادي زم إلى العالم.' 
-              : 'Uniting elite engineers and creators to develop pioneering projects contributing to digital and technological transformation, with an ambitious national vision from Oued Zem to the world.'}
+              ? 'نجمع نخبة المهندسين والمبدعين لتطوير مشاريع رائدة تسهم في التحول الرقمي والتكنولوجي، برؤية وطنية طموحة وبصمة عالمية مؤثرة تصنع المستقبل.' 
+              : 'Uniting elite engineers and creators to develop pioneering projects contributing to digital and technological transformation, with an ambitious national vision shaping the future globally.'}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
