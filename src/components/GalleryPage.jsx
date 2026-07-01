@@ -24,7 +24,20 @@ export default function GalleryPage() {
           id: doc.id,
           ...doc.data()
         }));
-        setGallery(fetchedGallery);
+        
+        if (fetchedGallery.length > 0) {
+          setGallery(fetchedGallery);
+        } else {
+          // Mock data
+          setGallery([
+            { id: '1', title_ar: 'مؤتمر الذكاء الاصطناعي 2026', title_en: 'AI Conference 2026', category: 'conference', imageUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800', location_ar: 'الرباط', location_en: 'Rabat', date: '2026-06-15' },
+            { id: '2', title_ar: 'هاكاثون الابتكار', title_en: 'Innovation Hackathon', category: 'hackathon', imageUrl: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800', location_ar: 'الدار البيضاء', location_en: 'Casablanca', date: '2026-07-20' },
+            { id: '3', title_ar: 'ورشة عمل روبوتات', title_en: 'Robotics Workshop', category: 'workshop', imageUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800', location_ar: 'مراكش', location_en: 'Marrakesh', date: '2026-08-10' },
+            { id: '4', title_ar: 'معرض تقنيات المستقبل', title_en: 'Future Tech Expo', category: 'event', imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800', location_ar: 'طنجة', location_en: 'Tangier', date: '2026-09-05' },
+            { id: '5', title_ar: 'لقاء المطورين', title_en: 'Developers Meetup', category: 'event', imageUrl: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800', location_ar: 'أكادير', location_en: 'Agadir', date: '2026-05-12' },
+            { id: '6', title_ar: 'تدريب الأمن السيبراني', title_en: 'Cybersecurity Training', category: 'workshop', imageUrl: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=800', location_ar: 'فاس', location_en: 'Fez', date: '2026-04-18' }
+          ]);
+        }
       } catch (error) {
         console.error('Error fetching gallery:', error);
       } finally {

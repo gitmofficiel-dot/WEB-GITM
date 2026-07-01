@@ -28,7 +28,16 @@ export default function EventsPage() {
           id: doc.id,
           ...doc.data()
         }));
-        setEvents(fetchedEvents);
+        
+        if (fetchedEvents.length > 0) {
+          setEvents(fetchedEvents);
+        } else {
+          setEvents([
+            { id: '1', title_ar: 'القمة التقنية 2026', title_en: 'Tech Summit 2026', location: 'الرباط', mode: 'Offline', startDate: '2026-10-15', startTime: '09:00 AM', maxCapacity: 500, isRegistrationOpen: true, image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800' },
+            { id: '2', title_ar: 'ورشة عمل الذكاء الاصطناعي', title_en: 'AI Workshop', location: 'الدار البيضاء', mode: 'Offline', startDate: '2026-11-20', startTime: '10:00 AM', maxCapacity: 100, isRegistrationOpen: true, image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800' },
+            { id: '3', title_ar: 'هاكاثون الويب 3', title_en: 'Web3 Hackathon', location: 'Online', mode: 'Online', startDate: '2026-12-05', startTime: '08:00 AM', maxCapacity: 1000, isRegistrationOpen: false, image: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?w=800' }
+          ]);
+        }
       } catch (error) {
         console.error('Error fetching events:', error);
       } finally {

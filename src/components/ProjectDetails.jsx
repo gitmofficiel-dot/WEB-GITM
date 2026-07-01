@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Download, PlayCircle, Github, Lightbulb, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Download, PlayCircle, Github, Facebook, Youtube, Lightbulb, Image as ImageIcon } from 'lucide-react';
 
 export default function ProjectDetails() {
   const { lang } = useLanguage();
@@ -25,6 +25,7 @@ export default function ProjectDetails() {
     ytVideo: 'https://www.youtube.com/embed/dQw4w9WgXcQ', // Embed link
     githubUrl: 'https://github.com/gitmofficiel-dot',
     youtubeUrl: 'https://youtube.com',
+    facebookUrl: 'https://facebook.com/gitmofficiel',
     gallery: [
       'https://images.unsplash.com/photo-1527443195645-1133f7f28990?w=800&q=80',
       'https://images.unsplash.com/photo-1531297172867-4f50fcc2cb26?w=800&q=80',
@@ -65,14 +66,19 @@ export default function ProjectDetails() {
 
         {/* Action Links */}
         <div className="flex flex-wrap gap-4 mb-10 justify-center md:justify-start">
-          {project.ytVideo && (
-            <a href={project.youtubeUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-lg">
-              <PlayCircle size={20} /> {lang === 'ar' ? 'مشاهدة على يوتيوب' : 'Watch on YouTube'}
+          {project.youtubeUrl && (
+            <a href={project.youtubeUrl} target="_blank" rel="noreferrer" title={lang === 'ar' ? 'يوتيوب' : 'YouTube'} className="flex items-center justify-center w-12 h-12 bg-red-600 hover:bg-red-700 text-white rounded-full transition-transform hover:-translate-y-1 shadow-lg">
+              <Youtube size={24} />
             </a>
           )}
           {project.githubUrl && (
-            <a href={project.githubUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-black text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-lg">
-              <Github size={20} /> {lang === 'ar' ? 'استكشف على GitHub' : 'Explore on GitHub'}
+            <a href={project.githubUrl} target="_blank" rel="noreferrer" title="GitHub" className="flex items-center justify-center w-12 h-12 bg-gray-900 hover:bg-black text-white rounded-full transition-transform hover:-translate-y-1 shadow-lg">
+              <Github size={24} />
+            </a>
+          )}
+          {project.facebookUrl && (
+            <a href={project.facebookUrl} target="_blank" rel="noreferrer" title={lang === 'ar' ? 'فيسبوك' : 'Facebook'} className="flex items-center justify-center w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-transform hover:-translate-y-1 shadow-lg">
+              <Facebook size={24} />
             </a>
           )}
         </div>
