@@ -1,105 +1,82 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
+import { ArrowRight } from 'lucide-react';
+
 import Hero from './Hero';
 import LatestNews from './LatestNews';
-import AcademySlider from './AcademySlider';
 import TechExhibitions from './TechExhibitions';
-import PartnersSlider from './PartnersSlider';
+import AcademySlider from './AcademySlider';
 import TeamShowcase from './TeamShowcase';
-import { useLanguage } from '../context/LanguageContext';
-import { ArrowRight, Newspaper, Cpu } from 'lucide-react';
-
-const section = {
-  hidden: { opacity: 0, y: 60 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] } }
-};
+import PartnersSlider from './PartnersSlider';
 
 const Home = () => {
   const { lang } = useLanguage();
 
   return (
-    <div className="flex flex-col w-full bg-white dark:bg-slate-950 overflow-hidden">
-      {/* 1. Hero */}
+    <div className="flex flex-col w-full bg-[var(--color-bg-light)] dark:bg-[var(--color-bg-dark)]">
+      
+      {/* 1. Typography Hero */}
       <Hero />
 
-      {/* 2. News & Exhibitions — Bento Grid */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-24">
-        {/* Section Header */}
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={section}
-          className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12"
-        >
-          <div>
-            <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-2">
-              {lang === 'ar' ? 'ابقَ على اطلاع' : 'Stay Updated'}
-            </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
-              {lang === 'ar' ? 'آخر الأخبار والفعاليات' : 'Latest News & Events'}
+      {/* 2. Structured Section: News & Events */}
+      <section className="w-full border-t border-minimal">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-24">
+          <div className="flex items-end justify-between mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+              {lang === 'ar' ? 'الأخبار والفعاليات.' : 'News & Events.'}
             </h2>
+            <a href="/news" className="flex items-center gap-2 text-sm font-bold text-[#F97316] hover:gap-3 transition-all">
+              {lang === 'ar' ? 'عرض الكل' : 'View All'} <ArrowRight size={16} className={lang === 'ar' ? 'rotate-180' : ''} />
+            </a>
           </div>
-          <a href="/news" className="flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:gap-3 transition-all">
-            {lang === 'ar' ? 'عرض الكل' : 'View All'} <ArrowRight size={16} className={lang === 'ar' ? 'rotate-180' : ''} />
-          </a>
-        </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <motion.div
-            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={section}
-            className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
-          >
-            <div className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Newspaper size={18} className="text-indigo-500" />
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ar' ? 'أخبار محلية' : 'Local News'}</span>
-              </div>
-              <div className="max-h-[520px] overflow-hidden">
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="border-minimal bg-white dark:bg-[#0a0a0a] p-8">
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">
+                {lang === 'ar' ? 'أخبار محلية' : 'Local News'}
+              </h3>
+              <div className="h-[400px] overflow-hidden">
                 <LatestNews />
               </div>
             </div>
-          </motion.div>
 
-          <motion.div
-            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={section}
-            className="lg:col-span-5 bg-slate-50 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
-          >
-            <div className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Cpu size={18} className="text-violet-500" />
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{lang === 'ar' ? 'تداريب وفعاليات' : 'Training & Events'}</span>
-              </div>
-              <div className="max-h-[520px] overflow-hidden">
+            <div className="border-minimal bg-white dark:bg-[#0a0a0a] p-8">
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">
+                {lang === 'ar' ? 'تداريب' : 'Trainings'}
+              </h3>
+              <div className="h-[400px] overflow-hidden">
                 <TechExhibitions />
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* 3. Academy Showcase */}
-      <section className="w-full bg-slate-50 dark:bg-slate-900/50 py-24">
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={section}
-          className="max-w-7xl mx-auto px-4 sm:px-6"
-        >
-          <AcademySlider />
-        </motion.div>
+      {/* 3. Structured Section: Academy */}
+      <section className="w-full border-t border-minimal bg-slate-50 dark:bg-[#050505]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-24">
+          <div className="mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+              {lang === 'ar' ? 'الأكاديمية.' : 'The Academy.'}
+            </h2>
+          </div>
+          <div className="border-minimal bg-white dark:bg-black p-4">
+            <AcademySlider />
+          </div>
+        </div>
       </section>
 
-      {/* 4. Partners & Supporters */}
-      <motion.div
-        initial="hidden" whileInView="visible" viewport={{ once: true }} variants={section}
-        className="w-full"
-      >
+      {/* 4. Structured Section: Partners */}
+      <section className="w-full border-t border-minimal">
         <PartnersSlider />
-      </motion.div>
+      </section>
 
-      {/* 5. Team */}
-      <motion.div
-        initial="hidden" whileInView="visible" viewport={{ once: true }} variants={section}
-        className="w-full"
-      >
+      {/* 5. Structured Section: Team */}
+      <section className="w-full border-t border-minimal">
         <TeamShowcase />
-      </motion.div>
+      </section>
+
     </div>
   );
 };
