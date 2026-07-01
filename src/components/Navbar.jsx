@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { Sun, Moon, Globe, ChevronDown, Menu, X, LayoutDashboard, LogOut, User } from 'lucide-react';
+import { Sun, Moon, Globe, Menu, X, LayoutDashboard, LogOut, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
@@ -16,7 +16,7 @@ const Navbar = () => {
   const [profileDropdown, setProfileDropdown] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -35,132 +35,158 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
-        <motion.nav 
-          initial={{ y: -100 }}
-          animate={{ y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="pointer-events-auto floating-pill flex items-center justify-between px-6 py-3 rounded-full w-full max-w-5xl"
-        >
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'glass-nav py-3 shadow-soft dark:shadow-soft-dark' : 'bg-transparent py-5'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+          
           {/* Logo */}
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-black dark:bg-white text-white dark:text-black flex items-center justify-center rounded-full font-bold text-xs tracking-tighter transition-transform group-hover:scale-105">
+          <button onClick={() => navigate('/')} className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gitm-blue to-gitm-cyan text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-gitm-cyan/30 group-hover:scale-105 transition-transform">
               GT
             </div>
-            <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white hidden sm:block">
+            <span className="font-bold text-xl tracking-tight text-gitm-textLight dark:text-gitm-textDark">
               GITM
             </span>
           </button>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1 mx-8">
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-1">
             {navItems.map(item => {
               const isActive = currentPath === item.path;
               return (
                 <button
                   key={item.id}
                   onClick={() => navigate(item.path)}
-                  className={`relative px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  className={`relative px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
                     isActive 
-                      ? 'text-black dark:text-white' 
-                      : 'text-slate-500 dark:text-slate-400 hover:text-black dark:hover:text-white'
+                      ? 'text-gitm-blue dark:text-gitm-cyan' 
+                      : 'text-gitm-mutedLight dark:text-gitm-mutedDark hover:text-gitm-textLight dark:hover:text-gitm-textDark hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  {isActive && (
-                    <motion.div 
-                      layoutId="navPill"
-                      className="absolute inset-0 bg-slate-100 dark:bg-white/10 rounded-full -z-10"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                  )}
                   {lang === 'ar' ? item.label.ar : item.label.en}
                 </button>
               );
             })}
-          </div>
+          </nav>
 
-          {/* Controls */}
+          {/* Right Controls */}
           <div className="flex items-center gap-2">
-            <button onClick={toggleTheme} className="p-2 text-slate-500 hover:text-black dark:hover:text-white transition-colors">
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            
+            <button onClick={toggleTheme} className="p-2.5 rounded-lg text-gitm-mutedLight dark:text-gitm-mutedDark hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
             
-            <div className="relative">
+            <div className="relative hidden sm:block">
               <button 
                 onClick={() => { setLangDropdown(!langDropdown); setProfileDropdown(false); }}
-                className="p-2 text-slate-500 hover:text-black dark:hover:text-white transition-colors text-xs font-bold uppercase flex items-center gap-1"
+                className="flex items-center gap-1 p-2.5 rounded-lg text-sm font-semibold text-gitm-mutedLight dark:text-gitm-mutedDark hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
-                <Globe size={16} />
-                <span className="hidden sm:inline">{lang}</span>
+                <Globe size={18} />
+                <span className="uppercase ml-1">{lang}</span>
+                <ChevronDown size={14} className="ml-1 opacity-50" />
               </button>
-              {langDropdown && (
-                <>
-                  <div className="fixed inset-0" onClick={() => setLangDropdown(false)} />
-                  <div className="absolute top-full mt-4 right-0 w-32 bg-white dark:bg-[#111] border-minimal rounded-xl shadow-xl overflow-hidden py-1 z-50">
-                    <button onClick={() => {changeLanguage('ar'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-white/5">العربية</button>
-                    <button onClick={() => {changeLanguage('en'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-white/5">English</button>
-                  </div>
-                </>
-              )}
+              
+              <AnimatePresence>
+                {langDropdown && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setLangDropdown(false)} />
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                      className="absolute top-full mt-2 right-0 w-32 bg-white dark:bg-gitm-cardDark border border-slate-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden py-1"
+                    >
+                      <button onClick={() => {changeLanguage('ar'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800">العربية</button>
+                      <button onClick={() => {changeLanguage('en'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800">English</button>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
             </div>
 
             {user ? (
               <div className="relative">
                 <button 
                   onClick={() => { setProfileDropdown(!profileDropdown); setLangDropdown(false); }}
-                  className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full border-minimal hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                  className="flex items-center gap-2 pl-3 pr-1 py-1.5 ml-2 rounded-full border border-slate-200 dark:border-gitm-borderDark hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 >
-                  <span className="text-xs font-bold truncate max-w-[80px] hidden sm:block">{user.name}</span>
-                  <div className="w-6 h-6 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] font-bold">
+                  <span className="text-sm font-semibold hidden sm:block">{user.name}</span>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-gitm-blue to-gitm-cyan text-white flex items-center justify-center text-xs font-bold">
                     {user.name?.[0]?.toUpperCase() || 'U'}
                   </div>
                 </button>
-                {profileDropdown && (
-                  <>
-                    <div className="fixed inset-0" onClick={() => setProfileDropdown(false)} />
-                    <div className="absolute top-full mt-4 right-0 w-48 bg-white dark:bg-[#111] border-minimal rounded-xl shadow-xl overflow-hidden py-1 z-50">
-                      <button onClick={() => {navigate('/dashboard/user'); setProfileDropdown(false)}} className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-white/5"><LayoutDashboard size={14}/> Dashboard</button>
-                      <button onClick={() => {logoutUser(); setProfileDropdown(false)}} className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"><LogOut size={14}/> Logout</button>
-                    </div>
-                  </>
-                )}
+                <AnimatePresence>
+                  {profileDropdown && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setProfileDropdown(false)} />
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                        className="absolute top-full mt-2 right-0 w-56 bg-white dark:bg-gitm-cardDark border border-slate-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden py-2"
+                      >
+                        <div className="px-4 py-2 border-b border-slate-100 dark:border-gitm-borderDark mb-2">
+                          <p className="font-bold text-sm">{user.name}</p>
+                          <p className="text-xs text-gitm-mutedLight dark:text-gitm-mutedDark truncate">{user.email}</p>
+                        </div>
+                        <button onClick={() => {navigate('/dashboard/user'); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800">
+                          <LayoutDashboard size={16} className="text-gitm-blue"/> {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
+                        </button>
+                        <button onClick={() => {logoutUser(); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 mt-1">
+                          <LogOut size={16}/> {lang === 'ar' ? 'تسجيل الخروج' : 'Logout'}
+                        </button>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               <button 
                 onClick={() => navigate('/login')}
-                className="btn-primary px-4 py-1.5 rounded-full text-xs font-bold ml-2"
+                className="btn-primary px-5 py-2 text-sm ml-2"
               >
-                {lang === 'ar' ? 'دخول' : 'Log In'}
+                {lang === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
               </button>
             )}
 
-            <button className="md:hidden p-2 text-slate-500" onClick={() => setMobileOpen(true)}>
-              <Menu size={20} />
+            {/* Mobile Menu Toggle */}
+            <button className="lg:hidden p-2 ml-1 text-gitm-textLight dark:text-gitm-textDark" onClick={() => setMobileOpen(true)}>
+              <Menu size={24} />
             </button>
           </div>
-        </motion.nav>
-      </div>
+        </div>
+      </header>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-white dark:bg-black p-6 flex flex-col"
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+            className="fixed inset-0 z-[60] bg-gitm-light dark:bg-gitm-dark flex flex-col"
           >
-            <div className="flex justify-between items-center mb-12">
-              <span className="font-bold">GITM</span>
-              <button onClick={() => setMobileOpen(false)} className="p-2"><X size={24} /></button>
+            <div className="p-4 flex justify-between items-center border-b border-slate-200 dark:border-gitm-borderDark">
+              <span className="font-bold text-xl">GITM Menu</span>
+              <button onClick={() => setMobileOpen(false)} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full">
+                <X size={20} />
+              </button>
             </div>
-            <div className="flex flex-col gap-6 text-2xl font-bold">
-              <button onClick={() => navigate('/')} className="text-left rtl:text-right">{lang === 'ar' ? 'الرئيسية' : 'Home'}</button>
+            <div className="p-6 flex flex-col gap-4 overflow-y-auto">
+              <button onClick={() => navigate('/')} className="text-lg font-bold text-left rtl:text-right p-4 rounded-xl bg-slate-50 dark:bg-gitm-cardDark">
+                {lang === 'ar' ? 'الرئيسية' : 'Home'}
+              </button>
               {navItems.map(item => (
-                <button key={item.id} onClick={() => navigate(item.path)} className="text-left rtl:text-right">
+                <button 
+                  key={item.id} 
+                  onClick={() => navigate(item.path)} 
+                  className="text-lg font-bold text-left rtl:text-right p-4 rounded-xl bg-slate-50 dark:bg-gitm-cardDark"
+                >
                   {lang === 'ar' ? item.label.ar : item.label.en}
                 </button>
               ))}
+              
+              <div className="mt-8 pt-8 border-t border-slate-200 dark:border-gitm-borderDark flex justify-between">
+                <button onClick={() => changeLanguage('ar')} className={`flex-1 py-3 text-center rounded-lg ${lang === 'ar' ? 'bg-gitm-blue text-white' : 'bg-slate-100 dark:bg-slate-800'}`}>العربية</button>
+                <div className="w-4"></div>
+                <button onClick={() => changeLanguage('en')} className={`flex-1 py-3 text-center rounded-lg ${lang === 'en' ? 'bg-gitm-blue text-white' : 'bg-slate-100 dark:bg-slate-800'}`}>English</button>
+              </div>
             </div>
           </motion.div>
         )}

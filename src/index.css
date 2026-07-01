@@ -3,22 +3,7 @@
 @tailwind utilities;
 
 /* ========================================
-   GITM ULTRA-MINIMALIST DESIGN SYSTEM
-   Linear/Vercel Inspired
-   ======================================== */
-
-:root {
-  --color-bg-dark: #000000;
-  --color-bg-light: #ffffff;
-  
-  --border-light: rgba(0, 0, 0, 0.08);
-  --border-dark: rgba(255, 255, 255, 0.1);
-  
-  --accent-color: #F97316; /* Clean Orange accent */
-}
-
-/* ========================================
-   BASE STYLES
+   GITM Corporate Tech Design System
    ======================================== */
 
 * {
@@ -34,16 +19,16 @@ html {
 }
 
 body {
-  font-family: 'Inter', 'Outfit', 'Cairo', system-ui, sans-serif;
+  font-family: 'Inter', 'Outfit', system-ui, sans-serif;
   overflow-x: hidden;
   transition: background-color 0.2s ease, color 0.2s ease;
-  background-color: var(--color-bg-light);
-  color: #111827;
+  background-color: theme('colors.gitm.light');
+  color: theme('colors.gitm.textLight');
 }
 
 .dark body {
-  background-color: var(--color-bg-dark);
-  color: #F9FAFB;
+  background-color: theme('colors.gitm.dark');
+  color: theme('colors.gitm.textDark');
 }
 
 html[dir="rtl"] body {
@@ -51,12 +36,12 @@ html[dir="rtl"] body {
 }
 
 /* ========================================
-   SCROLLBAR - CUSTOM (Minimal)
+   SCROLLBAR 
    ======================================== */
 
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -64,89 +49,95 @@ html[dir="rtl"] body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  background: theme('colors.slate.300');
   border-radius: 4px;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: theme('colors.slate.700');
 }
 
 /* ========================================
-   MINIMALIST UTILITIES
+   COMPONENTS
    ======================================== */
 
-/* Thin borders for that "technical doc" feel */
-.border-minimal {
-  border: 1px solid var(--border-light);
+/* Soft Cards */
+.soft-card {
+  background-color: theme('colors.gitm.cardLight');
+  border: 1px solid theme('colors.gitm.borderLight');
+  box-shadow: theme('boxShadow.soft');
+  border-radius: 1.5rem; /* rounded-3xl */
+  transition: all 0.3s ease;
 }
 
-.dark .border-minimal {
-  border: 1px solid var(--border-dark);
+.dark .soft-card {
+  background-color: theme('colors.gitm.cardDark');
+  border: 1px solid theme('colors.gitm.borderDark');
+  box-shadow: theme('boxShadow.soft-dark');
 }
 
-/* Grayscale image effect for team cards */
-.img-grayscale {
-  filter: grayscale(100%);
-  transition: filter 0.5s ease;
+.soft-card:hover {
+  box-shadow: theme('boxShadow.hover');
+  transform: translateY(-2px);
 }
 
-.img-grayscale:hover, .group:hover .img-grayscale {
-  filter: grayscale(0%);
+.dark .soft-card:hover {
+  box-shadow: theme('boxShadow.hover-dark');
 }
 
-/* Floating Pill */
-.floating-pill {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border-light);
-  box-shadow: 0 4px 24px -6px rgba(0, 0, 0, 0.05);
+/* Glass Header / Nav */
+.glass-nav {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid theme('colors.gitm.borderLight');
 }
 
-.dark .floating-pill {
-  background: rgba(10, 10, 10, 0.7);
-  border: 1px solid var(--border-dark);
-  box-shadow: 0 4px 24px -6px rgba(0, 0, 0, 0.5);
+.dark .glass-nav {
+  background: rgba(2, 6, 23, 0.85);
+  border-bottom: 1px solid theme('colors.gitm.borderDark');
 }
 
-/* Clean Button */
+/* Primary Button */
 .btn-primary {
-  background: #111827;
-  color: #fff;
-  border: 1px solid transparent;
+  background-color: theme('colors.gitm.textLight');
+  color: theme('colors.gitm.cardLight');
   transition: all 0.2s ease;
+  font-weight: 600;
+  border-radius: 9999px; /* full */
 }
 
 .dark .btn-primary {
-  background: #fff;
-  color: #000;
+  background-color: theme('colors.gitm.textDark');
+  color: theme('colors.gitm.cardDark');
 }
 
 .btn-primary:hover {
-  background: #000;
   transform: translateY(-1px);
+  box-shadow: 0 4px 14px 0 rgba(0,0,0,0.1);
 }
 
-.dark .btn-primary:hover {
-  background: #e5e5e5;
+/* Accent Button */
+.btn-accent {
+  background: linear-gradient(135deg, theme('colors.gitm.blue'), theme('colors.gitm.cyan'));
+  color: white;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  border-radius: 9999px;
+  box-shadow: 0 4px 14px 0 rgba(0, 229, 255, 0.39);
 }
 
-/* Dot Grid Background (Ultra subtle) */
-.bg-dot-grid {
-  background-image: radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+.btn-accent:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(0, 229, 255, 0.5);
+}
+
+/* Dot Grid Background (Corporate) */
+.bg-corporate-grid {
+  background-image: radial-gradient(theme('colors.slate.300') 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
-.dark .bg-dot-grid {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-}
-
-/* Massive Typography Letter Spacing overrides */
-.tracking-tighter-xl {
-  letter-spacing: -0.04em;
-}
-
-html[dir="rtl"] .tracking-tighter-xl {
-  letter-spacing: normal; /* Arabic fonts don't look good with extreme negative tracking */
+.dark .bg-corporate-grid {
+  background-image: radial-gradient(theme('colors.slate.800') 1px, transparent 1px);
 }
