@@ -4,8 +4,8 @@ import {
   Rocket, Save, X, ArrowLeft, Image as ImageIcon, Github, Users, Activity, Plus, Trash2, Percent
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 export default function SmartProjectBuilder({ initialData, onCancel, onSave }) {
   const { lang } = useLanguage();
