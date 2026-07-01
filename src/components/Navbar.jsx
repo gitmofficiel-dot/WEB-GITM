@@ -25,11 +25,14 @@ const Navbar = () => {
     setMobileOpen(false);
   }, [currentPath]);
 
+  // Restored full navigation items as requested
   const navItems = [
+    { id: 'home', path: '/', label: { ar: 'الرئيسية', en: 'Home' } },
     { id: 'news', path: '/news', label: { ar: 'الأخبار', en: 'News' } },
     { id: 'academy', path: '/academy', label: { ar: 'الأكاديمية', en: 'Academy' } },
     { id: 'projects-hub', path: '/projects-hub', label: { ar: 'المشاريع', en: 'Projects' } },
     { id: 'events', path: '/events', label: { ar: 'الفعاليات', en: 'Events' } },
+    { id: 'gallery', path: '/gallery', label: { ar: 'المعرض', en: 'Gallery' } },
     { id: 'about-us', path: '/about-us', label: { ar: 'من نحن', en: 'About Us' } }
   ];
 
@@ -38,25 +41,13 @@ const Navbar = () => {
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'glass-nav py-3 shadow-soft' : 'bg-transparent py-5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           
-          {/* Logo - Restored Original Image */}
+          {/* Restored Clean Logo */}
           <button onClick={() => navigate('/')} className="flex items-center gap-3 group">
             <img 
               src="/logo.png" 
               alt="GITM Logo" 
-              className="h-10 object-contain group-hover:scale-105 transition-transform" 
-              onError={(e) => {
-                // Fallback in case logo.png doesn't exist at root
-                e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'flex';
-              }}
+              className="h-10 md:h-12 object-contain group-hover:scale-105 transition-transform" 
             />
-            {/* Fallback box if image fails to load */}
-            <div className="hidden w-10 h-10 rounded-xl bg-gradient-to-br from-gitm-blue to-gitm-red text-white items-center justify-center font-bold text-lg shadow-lg">
-              GT
-            </div>
-            <span className="font-bold text-xl tracking-tight text-gitm-textLight dark:text-gitm-textDark hidden sm:block">
-              GITM
-            </span>
           </button>
 
           {/* Desktop Navigation */}
@@ -69,8 +60,8 @@ const Navbar = () => {
                   onClick={() => navigate(item.path)}
                   className={`relative px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
                     isActive 
-                      ? 'text-gitm-blue dark:text-gitm-cyan' 
-                      : 'text-gitm-mutedLight dark:text-gitm-mutedDark hover:text-gitm-textLight dark:hover:text-gitm-textDark hover:bg-gray-100 dark:hover:bg-gray-800'
+                      ? 'text-gitm-blue dark:text-gitm-cyan bg-blue-50/50 dark:bg-blue-900/20' 
+                      : 'text-gitm-textLight dark:text-gitm-textDark hover:text-gitm-blue dark:hover:text-gitm-cyan hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
                   }`}
                 >
                   {lang === 'ar' ? item.label.ar : item.label.en}
@@ -119,11 +110,10 @@ const Navbar = () => {
                   className="flex items-center gap-2 pl-3 pr-1 py-1.5 ml-2 rounded-full border border-gray-200 dark:border-gitm-borderDark hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   <span className="text-sm font-semibold hidden sm:block">{user.name}</span>
-                  {/* Restored Google Profile Picture */}
                   {user.photoURL ? (
                     <img src={user.photoURL} alt={user.name} className="w-8 h-8 rounded-full object-cover border border-gray-200" />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-gitm-blue to-gitm-cyan text-white flex items-center justify-center text-xs font-bold">
+                    <div className="w-8 h-8 rounded-full bg-gitm-blue text-white flex items-center justify-center text-xs font-bold">
                       {user.name?.[0]?.toUpperCase() || 'U'}
                     </div>
                   )}
@@ -152,7 +142,7 @@ const Navbar = () => {
                         <button onClick={() => {navigate('/dashboard/user'); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
                           <LayoutDashboard size={16} className="text-gitm-blue"/> {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
                         </button>
-                        <button onClick={() => {logoutUser(); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium text-gitm-red hover:bg-red-50 dark:hover:bg-red-900/20 mt-1">
+                        <button onClick={() => {logoutUser(); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 mt-1">
                           <LogOut size={16}/> {lang === 'ar' ? 'تسجيل الخروج' : 'Logout'}
                         </button>
                       </motion.div>
@@ -194,9 +184,6 @@ const Navbar = () => {
               </button>
             </div>
             <div className="p-6 flex flex-col gap-4 overflow-y-auto">
-              <button onClick={() => navigate('/')} className="text-lg font-bold text-left rtl:text-right p-4 rounded-xl bg-gray-50 dark:bg-gitm-cardDark">
-                {lang === 'ar' ? 'الرئيسية' : 'Home'}
-              </button>
               {navItems.map(item => (
                 <button 
                   key={item.id} 

@@ -7,37 +7,37 @@ import { motion, AnimatePresence } from 'framer-motion';
 const titles = {
   ar: [
     "الواجهة التقنية لعاصمة الابتكار.",
-    "نربط مدينة وزان بأكبر الجامعات العالمية.",
     "نبني أنظمة الذكاء الاصطناعي للمستقبل.",
     "رؤية وطنية بأبعاد تكنولوجية عالمية.",
     "منصة المهندسين المغاربة للإبداع.",
     "نصمم خوارزميات الغد اليوم.",
-    "نحو شراكات استراتيجية مع هارفارد.",
-    "جامعة محمد السادس متعددة التخصصات كملهم لنا.",
     "دعم الأبحاث العلمية المتقدمة.",
     "تطوير روبوتات تخدم المجتمع.",
     "نؤسس نادي الألعاب الإلكترونية والتطوير.",
     "نتعاون مع المركز الجهوي للاستثمار.",
     "منصات سحابية تعزز الاقتصاد الرقمي.",
     "نحو مستقبل تقني مستدام.",
-    "الفيدرالية المغربية لخبراء التكنولوجيا."
+    "الفيدرالية المغربية لخبراء التكنولوجيا.",
+    "نصنع جيلاً جديداً من المبدعين.",
+    "نبتكر حلولاً للتحديات المعاصرة.",
+    "التميز في الهندسة والبرمجيات."
   ],
   en: [
     "The Technical Interface for Innovation.",
-    "Connecting Ouezzane to Global Universities.",
     "Building AI Systems for the Future.",
     "A National Vision with Global Tech Dimensions.",
     "The Platform for Moroccan Engineers.",
     "Designing Tomorrow's Algorithms Today.",
-    "Towards Strategic Partnerships with Harvard.",
-    "UM6P as Our Inspiration.",
     "Supporting Advanced Scientific Research.",
     "Developing Robotics for Society.",
     "Founding the Gaming & Development Club.",
     "Collaborating with the Regional Investment Center.",
     "Cloud Platforms Boosting the Digital Economy.",
     "Towards a Sustainable Tech Future.",
-    "Moroccan Federation of Technology Experts."
+    "Moroccan Federation of Technology Experts.",
+    "Creating a New Generation of Innovators.",
+    "Innovating Solutions for Modern Challenges.",
+    "Excellence in Engineering and Software."
   ]
 };
 
@@ -59,11 +59,11 @@ export default function Hero() {
   useEffect(() => {
     const titleInterval = setInterval(() => {
       setTitleIndex((prev) => (prev + 1) % 15);
-    }, 4000); // Change title every 4 seconds
+    }, 4000);
 
     const bgInterval = setInterval(() => {
       setBgIndex((prev) => (prev + 1) % bgImages.length);
-    }, 8000); // Change bg every 8 seconds
+    }, 8000);
 
     return () => {
       clearInterval(titleInterval);
@@ -74,8 +74,8 @@ export default function Hero() {
   const handleMouseMove = (e) => {
     const { clientX, clientY } = e;
     const { innerWidth, innerHeight } = window;
-    const x = (clientX / innerWidth - 0.5) * 20; 
-    const y = (clientY / innerHeight - 0.5) * -20;
+    const x = (clientX / innerWidth - 0.5) * 15; 
+    const y = (clientY / innerHeight - 0.5) * -15;
     setMousePosition({ x, y });
   };
 
@@ -84,12 +84,11 @@ export default function Hero() {
       className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden"
       onMouseMove={handleMouseMove}
     >
-      {/* Clear Dynamic Background Slider (No obscuring overlays) */}
       <AnimatePresence mode="popLayout">
         <motion.img
           key={bgIndex}
           initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
+          animate={{ opacity: 0.8, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.5 }}
           src={bgImages[bgIndex]}
@@ -97,7 +96,9 @@ export default function Hero() {
         />
       </AnimatePresence>
 
-      {/* Main 3D Container */}
+      <div className="absolute inset-0 bg-gradient-to-t from-gitm-light dark:from-gitm-dark via-transparent to-transparent z-[1]" />
+      <div className="absolute inset-0 bg-black/40 z-[2]" />
+
       <motion.div 
         className="container mx-auto px-4 z-10 perspective-1000"
         animate={{ 
@@ -106,14 +107,14 @@ export default function Hero() {
         }}
         transition={{ type: "spring", stiffness: 75, damping: 15 }}
       >
-        <div className="max-w-5xl mx-auto text-center tilt-card p-10 md:p-16 border-t-4 border-t-gitm-blue border-b-4 border-b-gitm-red bg-white/70 dark:bg-black/70 backdrop-blur-xl shadow-3d relative">
+        {/* Removed the black background card completely. Text floats freely. */}
+        <div className="max-w-5xl mx-auto text-center p-4">
           
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gitm-blue text-white font-bold text-sm mb-8 shadow-md">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 backdrop-blur-md text-blue-100 font-bold text-sm mb-8 border border-blue-400/30 shadow-lg">
             <Globe size={18} />
             {lang === 'ar' ? 'واجهة عالمية للابتكار' : 'Global Interface for Innovation'}
           </div>
 
-          {/* Typewriter Rotator */}
           <div className="h-32 sm:h-40 md:h-48 flex items-center justify-center mb-6">
             <AnimatePresence mode="wait">
               <motion.h1
@@ -122,23 +123,24 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
-                className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-gitm-textLight dark:text-white drop-shadow-md"
+                className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight text-white drop-shadow-2xl"
+                style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}
               >
                 {lang === 'ar' ? titles.ar[titleIndex] : titles.en[titleIndex]}
               </motion.h1>
             </AnimatePresence>
           </div>
 
-          <p className="text-lg md:text-xl text-gitm-textLight dark:text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed font-medium">
+          <p className="text-lg md:text-2xl text-gray-200 max-w-4xl mx-auto mb-12 leading-relaxed font-semibold drop-shadow-lg">
             {lang === 'ar' 
-              ? 'نبني جسوراً تكنولوجية من وزان إلى هارفارد ولندن وجامعة محمد السادس، لنصنع جيلاً جديداً من الأنظمة الذكية المدعومة برؤية المركز الجهوي للاستثمار والشركاء الوطنيين.' 
-              : 'Building technological bridges from Ouezzane to Harvard, London, and UM6P, shaping a new generation of intelligent systems backed by CRI and national partners.'}
+              ? 'نجمع نخبة المهندسين والمبدعين لتطوير مشاريع رائدة تسهم في التحول الرقمي والتكنولوجي، برؤية وطنية طموحة وبصمة عالمية مؤثرة انطلاقاً من وادي زم إلى العالم.' 
+              : 'Uniting elite engineers and creators to develop pioneering projects contributing to digital and technological transformation, with an ambitious national vision from Oued Zem to the world.'}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
             <button 
               onClick={() => navigate('/projects-hub')}
-              className="w-full sm:w-auto bg-gitm-blue hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:-translate-y-1"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:-translate-y-1"
             >
               <Cpu size={22} />
               {lang === 'ar' ? 'اكتشف التقنيات' : 'Discover Tech'}
@@ -147,7 +149,7 @@ export default function Hero() {
             
             <button 
               onClick={() => setIsVideoOpen(true)}
-              className="w-full sm:w-auto bg-gitm-red hover:bg-red-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:-translate-y-1"
+              className="w-full sm:w-auto bg-white/10 hover:bg-white/20 border border-white/30 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all backdrop-blur-md hover:-translate-y-1"
             >
               <Play fill="currentColor" size={20} />
               {lang === 'ar' ? 'شاهد الفيديو التعريفي' : 'Watch Intro Video'}
@@ -178,7 +180,6 @@ export default function Hero() {
               exit={{ scale: 0.9, y: 20 }}
               className="w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl shadow-gitm-red/20 border border-white/10"
             >
-              {/* YouTube Embed Placeholder */}
               <iframe 
                 width="100%" 
                 height="100%" 
