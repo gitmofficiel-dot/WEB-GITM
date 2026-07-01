@@ -16,6 +16,7 @@ import { toast } from '../../utils/toast';
 import VisitorAnalytics from './VisitorAnalytics';
 import SmartProjectBuilder from './SmartProjectBuilder';
 import SmartArticleEditor from './SmartArticleEditor';
+import SmartEventEditor from './SmartEventEditor';
 
 export default function PresidentDashboard() {
   const navigate = useNavigate();
@@ -97,6 +98,9 @@ export default function PresidentDashboard() {
   const [showArticleEditor, setShowArticleEditor] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
 
+  const [showEventEditor, setShowEventEditor] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
+
   const handleSaveProjectFromEditor = async (projectData) => {
     try {
       const dataToSave = {
@@ -154,6 +158,38 @@ export default function PresidentDashboard() {
     } catch (error) {
       console.error('Error saving article:', error);
       toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving article');
+    }
+  };
+
+  const handleSaveEventFromEditor = async (data, imageFile) => {
+    try {
+      let imageUrl = editingEvent?.imageUrl || '';
+      // Mocking image upload since uploadToCloudinary might not be imported/available globally here
+      if (imageFile) {
+        imageUrl = URL.createObjectURL(imageFile); 
+      }
+      
+      const eventData = {
+        ...data,
+        imageUrl,
+        updatedAt: serverTimestamp(),
+      };
+
+      if (editingEvent) {
+        const eventRef = doc(db, 'events', editingEvent.id);
+        await updateDoc(eventRef, eventData);
+        toast.success(lang === 'ar' ? 'تم تحديث الفعالية بنجاح' : 'Event updated successfully');
+      } else {
+        eventData.createdAt = serverTimestamp();
+        await addDoc(collection(db, 'events'), eventData);
+        toast.success(lang === 'ar' ? 'تم نشر الفعالية بنجاح' : 'Event published successfully');
+      }
+      
+      setShowEventEditor(false);
+      setEditingEvent(null);
+    } catch (error) {
+      console.error('Error saving event:', error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving event');
     }
   };
 
@@ -816,29 +852,39 @@ export default function PresidentDashboard() {
             {/* EVENTS TAB */}
             {activeTab === 'events' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <Calendar className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة الفعاليات والهاكاثونات' : 'Events & Hackathons Management'}
-                    </h3>
-                    <button onClick={() => openModal('event')} className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'حدث جديد' : 'New Event'}</button>
-                  </div>
-                  <div className="space-y-4">
-                    {events.map(event => (
-                      <div key={event.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800">
-                        <div>
-                          <h4 className="font-bold text-[#1e3a5f] dark:text-white text-lg">{event.title}</h4>
-                          <p className="text-sm text-slate-500 flex items-center gap-2"><Calendar size={14}/> {event.date} • <Users size={14}/> {event.attendees} Registered</p>
+                {!showEventEditor ? (
+                  <div className="glass-card rounded-3xl p-6">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                        <Calendar className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة الفعاليات والهاكاثونات' : 'Events & Hackathons Management'}
+                      </h3>
+                      <button onClick={() => {setEditingEvent(null); setShowEventEditor(true);}} className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'حدث جديد' : 'New Event'}</button>
+                    </div>
+                    <div className="space-y-4">
+                      {events.map(event => (
+                        <div key={event.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800">
+                          <div>
+                            <h4 className="font-bold text-[#1e3a5f] dark:text-white text-lg">{event.titleAr || event.title}</h4>
+                            <p className="text-sm text-slate-500 flex items-center gap-2"><Calendar size={14}/> {event.startDate || event.date} • <Users size={14}/> {event.attendees || 0} Registered</p>
+                          </div>
+                          <div className="flex items-center gap-3 mt-4 md:mt-0">
+                            <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold">{event.status || 'Published'}</span>
+                            <button onClick={() => {setEditingEvent(event); setShowEventEditor(true);}} className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors"><Edit size={16}/></button>
+                            <button onClick={() => handleDelete('event', event.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3 mt-4 md:mt-0">
-                          <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold">{event.status}</span>
-                          <button onClick={() => openModal('event', event)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors"><Edit size={16}/></button>
-                          <button onClick={() => handleDelete('event', event.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="glass-card rounded-3xl p-6">
+                    <SmartEventEditor 
+                      initialData={editingEvent}
+                      onCancel={() => { setShowEventEditor(false); setEditingEvent(null); }}
+                      onSave={handleSaveEventFromEditor}
+                    />
+                  </div>
+                )}
 
                 <div className="glass-card rounded-3xl p-6">
                   <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">

@@ -50,12 +50,16 @@ export default function EventsPage() {
 
   const getLocalized = (obj, field, l) => {
     if (!obj) return '';
+    if (l === 'ar' && obj[`${field}Ar`]) return obj[`${field}Ar`];
+    if (l === 'en' && obj[`${field}En`]) return obj[`${field}En`];
+    if (l === 'fr' && obj[`${field}Fr`]) return obj[`${field}Fr`];
     if (obj[`${field}_${l}`]) return obj[`${field}_${l}`];
     if (obj[field] && typeof obj[field] === 'object') return obj[field][l] || obj[field].en || '';
     return obj[field] || '';
   };
 
-  const getBadgeInfo = (type) => {
+  const getBadgeInfo = (t) => {
+    const type = (t || '').toLowerCase();
     switch (type) {
       case 'hackathon':
         return { text: lang === 'ar' ? 'هاكاثون' : 'Hackathon', color: 'bg-red-500 text-white' };
@@ -63,6 +67,12 @@ export default function EventsPage() {
         return { text: lang === 'ar' ? 'مسابقة' : 'Competition', color: 'bg-orange-500 text-white' };
       case 'workshop':
         return { text: lang === 'ar' ? 'ورشة عمل' : 'Workshop', color: 'bg-green-500 text-white' };
+      case 'training':
+        return { text: lang === 'ar' ? 'تدريب' : 'Training', color: 'bg-purple-500 text-white' };
+      case 'meetup':
+        return { text: lang === 'ar' ? 'لقاء' : 'Meetup', color: 'bg-pink-500 text-white' };
+      case 'conference':
+        return { text: lang === 'ar' ? 'مؤتمر' : 'Conference', color: 'bg-indigo-500 text-white' };
       default:
         return { text: lang === 'ar' ? 'فعالية' : 'Event', color: 'bg-blue-500 text-white' };
     }
@@ -143,8 +153,8 @@ export default function EventsPage() {
                     
                     {/* Badge */}
                     <div className="absolute top-4 right-4 z-10">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-md ${getBadgeInfo(evt.type).color}`}>
-                        {getBadgeInfo(evt.type).text}
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-md ${getBadgeInfo(evt.eventType || evt.type).color}`}>
+                        {getBadgeInfo(evt.eventType || evt.type).text}
                       </span>
                     </div>
                   </div>
