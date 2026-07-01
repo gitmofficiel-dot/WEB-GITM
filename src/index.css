@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ========================================
-   GITM Corporate Tech Design System
+   GITM 3D Moroccan Vision
    ======================================== */
 
 * {
@@ -31,8 +31,14 @@ body {
   color: theme('colors.gitm.textDark');
 }
 
+/* FIX RTL PADDING ISSUES (Eye Strain Fix) */
 html[dir="rtl"] body {
   font-family: 'Cairo', 'Inter', system-ui, sans-serif;
+}
+html[dir="rtl"] .container, 
+html[dir="rtl"] .max-w-7xl {
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
 }
 
 /* ========================================
@@ -49,95 +55,51 @@ html[dir="rtl"] body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: theme('colors.slate.300');
+  background: theme('colors.gitm.red');
   border-radius: 4px;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: theme('colors.slate.700');
+  background: theme('colors.gitm.green');
 }
 
 /* ========================================
    COMPONENTS
    ======================================== */
 
-/* Soft Cards */
-.soft-card {
+/* 3D Tilt Card Base */
+.tilt-card {
   background-color: theme('colors.gitm.cardLight');
   border: 1px solid theme('colors.gitm.borderLight');
-  box-shadow: theme('boxShadow.soft');
-  border-radius: 1.5rem; /* rounded-3xl */
-  transition: all 0.3s ease;
+  border-radius: 1.5rem;
+  transition: all 0.2s ease-out;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
-.dark .soft-card {
+.dark .tilt-card {
   background-color: theme('colors.gitm.cardDark');
   border: 1px solid theme('colors.gitm.borderDark');
-  box-shadow: theme('boxShadow.soft-dark');
+  box-shadow: 0 4px 30px rgba(0,0,0,0.5);
 }
 
-.soft-card:hover {
-  box-shadow: theme('boxShadow.hover');
-  transform: translateY(-2px);
-}
-
-.dark .soft-card:hover {
-  box-shadow: theme('boxShadow.hover-dark');
-}
-
-/* Glass Header / Nav */
+/* Glass Nav */
 .glass-nav {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid theme('colors.gitm.borderLight');
 }
 
 .dark .glass-nav {
-  background: rgba(2, 6, 23, 0.85);
+  background: rgba(10, 10, 10, 0.85);
   border-bottom: 1px solid theme('colors.gitm.borderDark');
 }
 
-/* Primary Button */
-.btn-primary {
-  background-color: theme('colors.gitm.textLight');
-  color: theme('colors.gitm.cardLight');
-  transition: all 0.2s ease;
-  font-weight: 600;
-  border-radius: 9999px; /* full */
+/* Math & Tech Overlay Background */
+.bg-math-overlay {
+  background-image: url('data:image/svg+xml;utf8,<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg"><text x="20" y="40" fill="rgba(0,0,0,0.03)" font-family="monospace" font-size="14">∑(x_i - μ)² / N</text><text x="200" y="100" fill="rgba(0,0,0,0.03)" font-family="monospace" font-size="14">E = mc²</text><text x="50" y="200" fill="rgba(0,0,0,0.03)" font-family="monospace" font-size="14">function() { return true; }</text><text x="250" y="300" fill="rgba(0,0,0,0.03)" font-family="monospace" font-size="14">∇ × E = -∂B/∂t</text><text x="100" y="350" fill="rgba(0,0,0,0.03)" font-family="monospace" font-size="14">git commit -m "innovation"</text></svg>');
 }
 
-.dark .btn-primary {
-  background-color: theme('colors.gitm.textDark');
-  color: theme('colors.gitm.cardDark');
-}
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px 0 rgba(0,0,0,0.1);
-}
-
-/* Accent Button */
-.btn-accent {
-  background: linear-gradient(135deg, theme('colors.gitm.blue'), theme('colors.gitm.cyan'));
-  color: white;
-  transition: all 0.2s ease;
-  font-weight: 600;
-  border-radius: 9999px;
-  box-shadow: 0 4px 14px 0 rgba(0, 229, 255, 0.39);
-}
-
-.btn-accent:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px 0 rgba(0, 229, 255, 0.5);
-}
-
-/* Dot Grid Background (Corporate) */
-.bg-corporate-grid {
-  background-image: radial-gradient(theme('colors.slate.300') 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-.dark .bg-corporate-grid {
-  background-image: radial-gradient(theme('colors.slate.800') 1px, transparent 1px);
+.dark .bg-math-overlay {
+  background-image: url('data:image/svg+xml;utf8,<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg"><text x="20" y="40" fill="rgba(255,255,255,0.03)" font-family="monospace" font-size="14">∑(x_i - μ)² / N</text><text x="200" y="100" fill="rgba(255,255,255,0.03)" font-family="monospace" font-size="14">E = mc²</text><text x="50" y="200" fill="rgba(255,255,255,0.03)" font-family="monospace" font-size="14">const ai = new Agent();</text><text x="250" y="300" fill="rgba(255,255,255,0.03)" font-family="monospace" font-size="14">∇ × E = -∂B/∂t</text><text x="100" y="350" fill="rgba(255,255,255,0.03)" font-family="monospace" font-size="14">NeuralNetwork.train()</text></svg>');
 }

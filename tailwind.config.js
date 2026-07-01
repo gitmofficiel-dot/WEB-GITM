@@ -9,25 +9,24 @@ export default {
     extend: {
       colors: {
         gitm: {
-          /* Primary Dark Blue - extracted from logo vibe */
-          dark: '#020617', // Very deep blue-black for dark mode bg
-          cardDark: '#0f172a', // Slightly lighter blue-black for dark mode cards
-          borderDark: '#1e293b', 
+          /* Moroccan Flag Palette & Dark Theme Focus */
+          red: '#c1272d', // Moroccan Red
+          green: '#006233', // Moroccan Green
           
-          /* Primary Light */
-          light: '#f8fafc', // Off-white for light mode bg
-          cardLight: '#ffffff', // Pure white for light mode cards
-          borderLight: '#e2e8f0',
+          /* Dark backgrounds to avoid the "blinding white" issue */
+          dark: '#0a0a0a', // Deep black background
+          cardDark: '#141414', // Slightly lighter for cards
+          borderDark: '#262626',
+          
+          /* For the "light" mode, we'll keep it very soft gray, not pure white */
+          light: '#e5e7eb', // Soft gray
+          cardLight: '#f3f4f6', 
+          borderLight: '#d1d5db',
 
-          /* Accents */
-          cyan: '#00E5FF',
-          blue: '#3b82f6',
-          teal: '#0ea5e9',
-          
-          textDark: '#f1f5f9',
-          textLight: '#0f172a',
-          mutedDark: '#94a3b8',
-          mutedLight: '#64748b'
+          textDark: '#f8fafc',
+          textLight: '#111827',
+          mutedDark: '#9ca3af',
+          mutedLight: '#4b5563'
         }
       },
       fontFamily: {
@@ -35,16 +34,21 @@ export default {
         heading: ['Outfit', 'Cairo', 'sans-serif'],
       },
       boxShadow: {
+        '3d': '0 20px 40px -10px rgba(0,0,0,0.5), 0 0 20px rgba(193, 39, 45, 0.1)',
+        '3d-hover': '0 30px 60px -15px rgba(0,0,0,0.6), 0 0 30px rgba(0, 98, 51, 0.2)',
         'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-        'soft-dark': '0 4px 20px -2px rgba(0, 0, 0, 0.4)',
-        'hover': '0 10px 30px -5px rgba(0, 0, 0, 0.1)',
-        'hover-dark': '0 10px 30px -5px rgba(0, 0, 0, 0.5)',
       },
       animation: {
+        'marquee': 'marquee 40s linear infinite',
         'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'fade-in': 'fadeIn 0.5s ease-out forwards',
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
         fadeInUp: {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
