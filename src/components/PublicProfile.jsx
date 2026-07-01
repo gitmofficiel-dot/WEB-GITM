@@ -115,15 +115,6 @@ export default function PublicProfile() {
     academicPath: firebaseMember.academicPaths || [],
     projects: []
   };
-        <h2 className="text-2xl font-bold text-red-500 mb-4">{lang === 'ar' ? 'الملف الشخصي غير موجود' : 'Profile not found'}</h2>
-        <button onClick={() => navigate(-1)} className="btn-primary px-6 py-2 rounded-full flex items-center gap-2">
-          <ChevronLeft className={lang === 'ar' ? 'rotate-180' : ''} /> {lang === 'ar' ? 'العودة' : 'Go Back'}
-        </button>
-      </div>
-    );
-  }
-
-
 
   const containerVariants = {
     hidden: { opacity: 0 },
