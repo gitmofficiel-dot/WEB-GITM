@@ -17,6 +17,7 @@ import VisitorAnalytics from './VisitorAnalytics';
 import SmartProjectBuilder from './SmartProjectBuilder';
 import SmartArticleEditor from './SmartArticleEditor';
 import SmartEventEditor from './SmartEventEditor';
+import SmartCourseBuilder from './SmartCourseBuilder';
 
 export default function PresidentDashboard() {
   const navigate = useNavigate();
@@ -100,6 +101,9 @@ export default function PresidentDashboard() {
 
   const [showEventEditor, setShowEventEditor] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
+
+  const [showCourseEditor, setShowCourseEditor] = useState(false);
+  const [editingCourse, setEditingCourse] = useState(null);
 
   const handleSaveProjectFromEditor = async (projectData) => {
     try {
@@ -190,6 +194,34 @@ export default function PresidentDashboard() {
     } catch (error) {
       console.error('Error saving event:', error);
       toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving event');
+    }
+  };
+
+  const handleSaveCourseFromEditor = async (data) => {
+    try {
+      const courseData = {
+        ...data,
+        status: 'Active',
+        enrolled: data.enrolled || 0,
+        instructor: user?.displayName || 'Admin',
+        updatedAt: serverTimestamp(),
+      };
+
+      if (editingCourse) {
+        const courseRef = doc(db, 'courses', editingCourse.id);
+        await updateDoc(courseRef, courseData);
+        toast.success(lang === 'ar' ? 'تم تحديث الدورة بنجاح' : 'Course updated successfully');
+      } else {
+        courseData.createdAt = serverTimestamp();
+        await addDoc(collection(db, 'courses'), courseData);
+        toast.success(lang === 'ar' ? 'تم نشر الدورة بنجاح' : 'Course published successfully');
+      }
+      
+      setShowCourseEditor(false);
+      setEditingCourse(null);
+    } catch (error) {
+      console.error('Error saving course:', error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving course');
     }
   };
 
@@ -761,32 +793,42 @@ export default function PresidentDashboard() {
             {/* ACADEMY TAB */}
             {activeTab === 'academy' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <GraduationCap className="text-purple-500" size={24}/> {lang === 'ar' ? 'الإدارة الأكاديمية والتداريب' : 'Academy & Training Management'}
-                    </h3>
-                    <button onClick={() => openModal('course')} className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-purple-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'دورة جديدة' : 'New Course'}</button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {courses.map(course => (
-                      <div key={course.id} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 hover:border-purple-300 dark:hover:border-purple-900 transition-colors">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-bold text-[#1e3a5f] dark:text-white">{course.title}</h4>
-                          <span className={`px-2 py-1 text-[10px] rounded uppercase font-bold ${course.status === 'Active' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>{course.status}</span>
-                        </div>
-                        <p className="text-sm text-slate-500 mb-4 flex items-center gap-2"><Users size={14}/> {course.enrolled} {lang==='ar'?'طالب مسجل':'Students Enrolled'}</p>
-                        <div className="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800">
-                          <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Inst: {course.instructor}</span>
-                          <div className="flex gap-2">
-                              <button onClick={() => openModal('course', course)} className="text-blue-500 p-1 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded"><Edit size={16}/></button>
-                              <button onClick={() => handleDelete('course', course.id)} className="text-red-500 p-1 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"><Trash2 size={16}/></button>
+                {!showCourseEditor ? (
+                  <div className="glass-card rounded-3xl p-6">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                        <GraduationCap className="text-purple-500" size={24}/> {lang === 'ar' ? 'الإدارة الأكاديمية والتداريب' : 'Academy & Training Management'}
+                      </h3>
+                      <button onClick={() => {setEditingCourse(null); setShowCourseEditor(true);}} className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-purple-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'دورة جديدة' : 'New Course'}</button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {courses.map(course => (
+                        <div key={course.id} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 hover:border-purple-300 dark:hover:border-purple-900 transition-colors">
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-bold text-[#1e3a5f] dark:text-white">{course.title}</h4>
+                            <span className={`px-2 py-1 text-[10px] rounded uppercase font-bold ${course.status === 'Active' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>{course.status}</span>
+                          </div>
+                          <p className="text-sm text-slate-500 mb-4 flex items-center gap-2"><Users size={14}/> {course.enrolled || 0} {lang==='ar'?'طالب مسجل':'Students Enrolled'}</p>
+                          <div className="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800">
+                            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Inst: {course.instructor || 'Admin'}</span>
+                            <div className="flex gap-2">
+                                <button onClick={() => {setEditingCourse(course); setShowCourseEditor(true);}} className="text-blue-500 p-1 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded"><Edit size={16}/></button>
+                                <button onClick={() => handleDelete('course', course.id)} className="text-red-500 p-1 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"><Trash2 size={16}/></button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="glass-card rounded-3xl p-6">
+                    <SmartCourseBuilder 
+                      initialData={editingCourse}
+                      onCancel={() => { setShowCourseEditor(false); setEditingCourse(null); }}
+                      onSave={handleSaveCourseFromEditor}
+                    />
+                  </div>
+                )}
               </div>
             )}
 

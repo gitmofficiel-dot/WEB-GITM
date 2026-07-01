@@ -158,6 +158,9 @@ export default function Academy() {
 
   const getLocalized = (obj, field, l) => {
     if (!obj) return '';
+    if (l === 'ar' && obj[`${field}Ar`]) return obj[`${field}Ar`];
+    if (l === 'en' && obj[`${field}En`]) return obj[`${field}En`];
+    if (l === 'fr' && obj[`${field}Fr`]) return obj[`${field}Fr`];
     if (obj[`${field}_${l}`]) return obj[`${field}_${l}`];
     if (obj[field] && typeof obj[field] === 'object') return obj[field][l] || obj[field].en || '';
     return obj[field] || '';
