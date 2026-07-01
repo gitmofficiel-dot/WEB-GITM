@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar as CalendarIcon, MapPin, Clock, Users, ArrowRight, PlayCircle, Megaphone, X, Mail, ChevronLeft, CheckCircle2, Trophy, Globe, ExternalLink, FileText, Video, CheckCircle, Upload, AlertTriangle, Lightbulb, Ticket, Calendar } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, Clock, Users, ArrowRight, PlayCircle, Megaphone, X, Mail, ChevronLeft, CheckCircle2, Trophy, Globe, ExternalLink, FileText, Video, CheckCircle, Upload, AlertTriangle, Lightbulb, Ticket, Calendar, Award, Target } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -121,9 +121,47 @@ export default function EventDetails() {
                   <h3 className="text-xl font-bold mb-3 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
                     <Megaphone className="text-cyan-500" /> {txt(lang, 'About The Event', 'حول الفعالية', 'À propos', '关于')}
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg">
+                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg mb-6">
                     {lang === 'ar' ? viewDetailsEvent.description_ar : viewDetailsEvent.description_en}
                   </p>
+
+                  {isHackathon && (
+                    <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-6">
+                      <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2">
+                        {lang === 'ar' ? 'معلومات الهاكاثون الشاملة' : 'Comprehensive Hackathon Details'}
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                          <p className="text-sm text-slate-500 font-bold mb-2 flex items-center gap-2"><Award size={16} className="text-yellow-500"/>{lang === 'ar' ? 'الجوائز الكبرى' : 'Grand Prizes'}</p>
+                          <ul className="list-disc list-inside text-slate-700 dark:text-slate-300 space-y-1 text-sm font-medium">
+                             <li>{lang === 'ar' ? 'المركز الأول: 10,000 دولار' : '1st Place: $10,000'}</li>
+                             <li>{lang === 'ar' ? 'المركز الثاني: 5,000 دولار' : '2nd Place: $5,000'}</li>
+                             <li>{lang === 'ar' ? 'المركز الثالث: 2,500 دولار' : '3rd Place: $2,500'}</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="text-sm text-slate-500 font-bold mb-2 flex items-center gap-2"><Target size={16} className="text-cyan-500"/>{lang === 'ar' ? 'مسارات الهاكاثون' : 'Hackathon Tracks'}</p>
+                          <ul className="list-disc list-inside text-slate-700 dark:text-slate-300 space-y-1 text-sm font-medium">
+                             <li>{lang === 'ar' ? 'الذكاء الاصطناعي' : 'Artificial Intelligence'}</li>
+                             <li>{lang === 'ar' ? 'المدن الذكية والاستدامة' : 'Smart Cities & Sustainability'}</li>
+                             <li>{lang === 'ar' ? 'التقنيات المالية والتعليمية' : 'FinTech & EdTech'}</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="text-sm text-slate-500 font-bold mb-2 flex items-center gap-2"><FileText size={16} className="text-blue-500"/>{lang === 'ar' ? 'شروط التقديم' : 'Submission Rules'}</p>
+                          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                             {lang === 'ar' ? 'يجب أن يكون المشروع نموذجاً أولياً قابلاً للعمل (MVP). يجب رفع العرض التقديمي (Pitch Deck)، فيديو قصير يشرح الفكرة، وبيانات فريق العمل المكون من 2 إلى 5 أعضاء.' : 'Must be a working MVP. You must submit a Pitch Deck, a short demo video, and the details of your 2-5 member team.'}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-slate-500 font-bold mb-2 flex items-center gap-2"><Globe size={16} className="text-emerald-500"/>{lang === 'ar' ? 'الفائدة المجتمعية (ماذا ستستفيد الأمة؟)' : 'Societal Impact'}</p>
+                          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                             {lang === 'ar' ? 'سيتم تقييم المشاريع بشكل أساسي على مدى قدرتها على حل مشكلات حقيقية وتقديم قيمة مضافة وفوائد مستدامة للمجتمع وللأمة.' : 'Projects will be judged heavily on their ability to solve real-world problems and provide sustainable value and benefits to society.'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 {viewDetailsEvent.status === 'completed' && (

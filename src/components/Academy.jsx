@@ -22,6 +22,7 @@ export default function Academy() {
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [unlockedModules, setUnlockedModules] = useState([0]); 
   const [courseCompleted, setCourseCompleted] = useState(false);
+  const [isCourseStarted, setIsCourseStarted] = useState(false);
 
   // Pagination & Search
   const [searchQuery, setSearchQuery] = useState('');
@@ -101,6 +102,7 @@ export default function Academy() {
     setCurrentModuleIndex(0);
     setUnlockedModules([0]);
     setCourseCompleted(false);
+    setIsCourseStarted(false);
   };
 
   const closeCourse = () => {
@@ -186,14 +188,20 @@ export default function Academy() {
               </div>
               
               <div className="flex gap-4">
-                <button 
-                  onClick={() => {
-                    toast.success(lang === 'ar' ? 'تم استئناف الدورة' : 'Course resumed');
-                  }}
-                  className="px-8 py-4 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-xl shadow-lg transition-all"
-                >
-                  {lang === 'ar' ? 'سجل مجاناً وابدأ الآن' : 'Enroll for Free & Start'}
-                </button>
+                {!isCourseStarted ? (
+                  <button 
+                    onClick={() => setIsCourseStarted(true)}
+                    className="px-8 py-4 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-xl shadow-lg transition-all"
+                  >
+                    {lang === 'ar' ? 'سجل مجاناً وابدأ الدورة' : 'Enroll & Start Course'}
+                  </button>
+                ) : (
+                  <button 
+                    className="px-8 py-4 bg-emerald-500 text-white font-bold rounded-xl shadow-lg cursor-default flex items-center gap-2"
+                  >
+                    <CheckCircle size={20} /> {lang === 'ar' ? 'أنت مسجل في الدورة' : 'Enrolled'}
+                  </button>
+                )}
                 <button onClick={closeCourse} className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-md transition-all">
                   {lang === 'ar' ? 'العودة للمقررات' : 'Back to Catalog'}
                 </button>
@@ -215,7 +223,33 @@ export default function Academy() {
 
         {/* Course Curriculum & Player Area */}
         <div className="max-w-7xl mx-auto px-4 py-12">
-           {!activeCourse.modules || activeCourse.modules.length === 0 ? (
+           {!isCourseStarted ? (
+             <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-sm border border-slate-200 dark:border-slate-800">
+               <h2 className="text-2xl font-bold mb-6 text-slate-800 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-4 flex items-center gap-2">
+                 <Library className="text-teal-500" /> {lang === 'ar' ? 'حول هذه الدورة' : 'About this Course'}
+               </h2>
+               <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg mb-8">
+                 {getLocalized(activeCourse, 'longDescription', lang) || getLocalized(activeCourse, 'description', lang)}
+               </p>
+               
+               <h3 className="text-xl font-bold mb-4 text-slate-800 dark:text-white">
+                 {lang === 'ar' ? 'ماذا ستتعلم' : 'What you will learn'}
+               </h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                 {[
+                   lang === 'ar' ? 'اكتساب مهارات عملية قابلة للتطبيق مباشرة' : 'Gain hands-on practical skills',
+                   lang === 'ar' ? 'بناء مشاريع حقيقية لتعزيز سيرتك الذاتية' : 'Build real-world projects for your resume',
+                   lang === 'ar' ? 'التعلم من خبراء الصناعة' : 'Learn from industry experts',
+                   lang === 'ar' ? 'الحصول على شهادة معتمدة عند الإتمام' : 'Earn a verified certificate upon completion',
+                 ].map((item, idx) => (
+                   <div key={idx} className="flex items-start gap-3 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl">
+                     <CheckCircle className="text-teal-500 mt-0.5 shrink-0" size={20} />
+                     <span className="text-slate-700 dark:text-slate-300 font-medium">{item}</span>
+                   </div>
+                 ))}
+               </div>
+             </div>
+           ) : !activeCourse.modules || activeCourse.modules.length === 0 ? (
              <div className="text-center py-24 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800">
                 <Video className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
                 <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">
