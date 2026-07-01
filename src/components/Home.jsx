@@ -12,17 +12,33 @@ import TeamShowcase from './TeamShowcase';
 import PartnersSlider from './PartnersSlider';
 
 // Section Component for Moroccan Vision Design
-const Section = ({ title, subtitle, icon: Icon, children, bgClass, linkText, linkUrl, isRed }) => {
+const Section = ({ title, subtitle, icon: Icon, children, bgClass, linkText, linkUrl, colorTheme }) => {
   const { lang } = useLanguage();
   const navigate = useNavigate();
   
-  const accentColor = isRed ? 'text-gitm-red' : 'text-gitm-green';
-  const accentBg = isRed ? 'bg-gitm-red/10 dark:bg-gitm-red/20' : 'bg-gitm-green/10 dark:bg-gitm-green/20';
+  let accentColor, accentBg;
+  switch(colorTheme) {
+    case 'red':
+      accentColor = 'text-gitm-red';
+      accentBg = 'bg-gitm-red/10 dark:bg-gitm-red/20';
+      break;
+    case 'green':
+      accentColor = 'text-gitm-green';
+      accentBg = 'bg-gitm-green/10 dark:bg-gitm-green/20';
+      break;
+    case 'blue':
+      accentColor = 'text-gitm-blue';
+      accentBg = 'bg-gitm-blue/10 dark:bg-gitm-blue/20';
+      break;
+    default:
+      accentColor = 'text-gitm-red';
+      accentBg = 'bg-gitm-red/10 dark:bg-gitm-red/20';
+  }
   
   return (
-    <section className={`w-full py-24 relative ${bgClass}`}>
-      <div className="container mx-auto max-w-7xl relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+    <section className={`w-full py-20 relative ${bgClass}`}>
+      <div className="container mx-auto max-w-7xl relative z-10 px-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-4">
               <div className={`p-3 rounded-xl ${accentBg}`}>
@@ -33,7 +49,7 @@ const Section = ({ title, subtitle, icon: Icon, children, bgClass, linkText, lin
               </h2>
             </div>
             {subtitle && (
-              <p className="text-gitm-mutedLight dark:text-gitm-mutedDark text-lg max-w-3xl ml-16 rtl:mr-16 rtl:ml-0">
+              <p className="text-gitm-mutedLight dark:text-gitm-mutedDark text-lg max-w-3xl rtl:ml-0">
                 {subtitle}
               </p>
             )}
@@ -41,7 +57,7 @@ const Section = ({ title, subtitle, icon: Icon, children, bgClass, linkText, lin
           {linkText && linkUrl && (
             <button 
               onClick={() => navigate(linkUrl)}
-              className={`flex items-center gap-2 font-bold ${accentColor} hover:underline transition-all`}
+              className={`flex items-center gap-2 font-bold ${accentColor} hover:underline transition-all whitespace-nowrap`}
             >
               {linkText} <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''} />
             </button>
@@ -61,64 +77,62 @@ export default function Home() {
       
       <Hero />
 
-      {/* Math & Tech Background Overlay */}
-      <div className="fixed inset-0 pointer-events-none bg-math-overlay bg-repeat opacity-[0.03] dark:opacity-[0.02] z-0" />
-
-      {/* Partners Marquee at top of content */}
       <PartnersSlider />
 
+      {/* 1. News Section (Full Width) */}
       <Section 
-        title={lang === 'ar' ? 'الأخبار والفعاليات' : 'News & Events'}
-        subtitle={lang === 'ar' ? 'آخر التطورات التقنية والأنشطة في المركز الجهوي والمؤسسة.' : 'Latest tech developments and activities in the regional center and foundation.'}
+        title={lang === 'ar' ? 'أخبار المؤسسة' : 'Foundation News'}
+        subtitle={lang === 'ar' ? 'آخر التطورات التقنية والأنشطة الإدارية الخاصة بالمجموعة.' : 'Latest tech developments and administrative activities of the group.'}
         icon={Newspaper}
-        bgClass="bg-white dark:bg-gitm-cardDark"
-        isRed={true}
+        bgClass="bg-white dark:bg-gitm-dark border-b border-gray-100 dark:border-gitm-borderDark"
+        colorTheme="red"
+        linkText={lang === 'ar' ? 'تصفح كل الأخبار' : 'Browse All News'}
+        linkUrl="/news"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="tilt-card p-6 md:p-8 flex flex-col h-[550px] shadow-soft">
-            <div className="flex items-center justify-between mb-6 border-b border-gray-100 dark:border-gitm-borderDark pb-4">
-              <h3 className="text-2xl font-bold text-gitm-textLight dark:text-white">{lang === 'ar' ? 'أخبار المؤسسة' : 'Foundation News'}</h3>
-              <a href="/news" className="text-sm font-bold text-gitm-red hover:underline">{lang === 'ar' ? 'كل الأخبار' : 'All News'}</a>
-            </div>
-            <div className="flex-1 overflow-y-auto pr-2">
-              <LatestNews />
-            </div>
-          </div>
-
-          <div className="tilt-card p-6 md:p-8 flex flex-col h-[550px] shadow-soft">
-            <div className="flex items-center justify-between mb-6 border-b border-gray-100 dark:border-gitm-borderDark pb-4">
-              <h3 className="text-2xl font-bold text-gitm-textLight dark:text-white">{lang === 'ar' ? 'المعارض والتداريب' : 'Exhibitions & Training'}</h3>
-              <a href="/events" className="text-sm font-bold text-gitm-red hover:underline">{lang === 'ar' ? 'كل التداريب' : 'All Training'}</a>
-            </div>
-            <div className="flex-1 overflow-y-auto pr-2">
-              <TechExhibitions />
-            </div>
-          </div>
+        <div className="tilt-card p-6 md:p-8 shadow-soft">
+          <LatestNews />
         </div>
       </Section>
 
+      {/* 2. Events Section (Full Width) */}
+      <Section 
+        title={lang === 'ar' ? 'الفعاليات والمعارض' : 'Events & Exhibitions'}
+        subtitle={lang === 'ar' ? 'مشاركاتنا في المعارض الوطنية والدولية والفعاليات التقنية.' : 'Our participation in national and international tech exhibitions.'}
+        icon={Calendar}
+        bgClass="bg-gray-50 dark:bg-[#0f0f0f] border-b border-gray-100 dark:border-gitm-borderDark"
+        colorTheme="blue"
+        linkText={lang === 'ar' ? 'جدول الفعاليات' : 'Events Schedule'}
+        linkUrl="/events"
+      >
+        <div className="tilt-card p-6 md:p-8 shadow-soft">
+          <TechExhibitions />
+        </div>
+      </Section>
+
+      {/* 3. Academy Section (Full Width) */}
       <Section
-        title={lang === 'ar' ? 'الأكاديمية المتقدمة' : 'Advanced Academy'}
+        title={lang === 'ar' ? 'الأكاديمية والتداريب' : 'Academy & Training'}
         subtitle={lang === 'ar' ? 'برامج تدريبية تواكب مستوى الجامعات العالمية وتؤهلك للمستقبل.' : 'Training programs matching global universities to prepare you for the future.'}
         icon={GraduationCap}
-        bgClass="bg-gray-50 dark:bg-[#0a0a0a] border-y border-gray-200 dark:border-gitm-borderDark"
+        bgClass="bg-white dark:bg-gitm-dark border-b border-gray-100 dark:border-gitm-borderDark"
+        colorTheme="green"
         linkText={lang === 'ar' ? 'استكشف المناهج' : 'Explore Curriculum'}
         linkUrl="/academy"
-        isRed={false}
       >
         <div className="tilt-card p-6 md:p-10 shadow-soft">
           <AcademySlider />
         </div>
       </Section>
 
+      {/* 4. Team Section */}
       <Section
         title={lang === 'ar' ? 'قيادة الابتكار' : 'Innovation Leadership'}
         subtitle={lang === 'ar' ? 'نخبة المهندسين والخبراء المغاربة الذين يصنعون الفارق.' : 'The elite Moroccan engineers and experts making a difference.'}
         icon={Users}
-        bgClass="bg-white dark:bg-gitm-cardDark"
+        bgClass="bg-gray-50 dark:bg-[#0f0f0f]"
+        colorTheme="red"
         linkText={lang === 'ar' ? 'تعرف علينا' : 'About Us'}
         linkUrl="/about-us"
-        isRed={true}
       >
         <TeamShowcase />
       </Section>

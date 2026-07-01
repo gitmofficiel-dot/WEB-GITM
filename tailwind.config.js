@@ -9,19 +9,21 @@ export default {
     extend: {
       colors: {
         gitm: {
-          /* Moroccan Flag Palette & Dark Theme Focus */
+          /* Integrated Palette: Moroccan Flag + Tech Blue */
           red: '#c1272d', // Moroccan Red
           green: '#006233', // Moroccan Green
+          blue: '#2563eb', // Tech Blue
+          cyan: '#06b6d4', // Modern Tech Cyan
           
-          /* Dark backgrounds to avoid the "blinding white" issue */
-          dark: '#0a0a0a', // Deep black background
-          cardDark: '#141414', // Slightly lighter for cards
+          /* Dark backgrounds for Dark Mode */
+          dark: '#0a0a0a', 
+          cardDark: '#141414', 
           borderDark: '#262626',
           
-          /* For the "light" mode, we'll keep it very soft gray, not pure white */
-          light: '#e5e7eb', // Soft gray
-          cardLight: '#f3f4f6', 
-          borderLight: '#d1d5db',
+          /* Light backgrounds (Restoring pure white as base) */
+          light: '#ffffff', // Restored pure white base
+          cardLight: '#f9fafb', // Very subtle off-white for cards
+          borderLight: '#e5e7eb',
 
           textDark: '#f8fafc',
           textLight: '#111827',
@@ -34,8 +36,8 @@ export default {
         heading: ['Outfit', 'Cairo', 'sans-serif'],
       },
       boxShadow: {
-        '3d': '0 20px 40px -10px rgba(0,0,0,0.5), 0 0 20px rgba(193, 39, 45, 0.1)',
-        '3d-hover': '0 30px 60px -15px rgba(0,0,0,0.6), 0 0 30px rgba(0, 98, 51, 0.2)',
+        '3d': '0 20px 40px -10px rgba(0,0,0,0.2), 0 0 20px rgba(193, 39, 45, 0.05)',
+        '3d-hover': '0 30px 60px -15px rgba(0,0,0,0.3), 0 0 30px rgba(0, 98, 51, 0.1)',
         'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
       },
       animation: {

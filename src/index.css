@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ========================================
-   GITM 3D Moroccan Vision
+   GITM 3D Moroccan Vision (Restored & Cleaned)
    ======================================== */
 
 * {
@@ -31,7 +31,7 @@ body {
   color: theme('colors.gitm.textDark');
 }
 
-/* FIX RTL PADDING ISSUES (Eye Strain Fix) */
+/* FIX RTL PADDING ISSUES */
 html[dir="rtl"] body {
   font-family: 'Cairo', 'Inter', system-ui, sans-serif;
 }
@@ -60,7 +60,7 @@ html[dir="rtl"] .max-w-7xl {
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: theme('colors.gitm.green');
+  background: theme('colors.gitm.blue');
 }
 
 /* ========================================
@@ -95,11 +95,4 @@ html[dir="rtl"] .max-w-7xl {
   border-bottom: 1px solid theme('colors.gitm.borderDark');
 }
 
-/* Math & Tech Overlay Background */
-.bg-math-overlay {
-  background-image: url('data:image/svg+xml;utf8,<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg"><text x="20" y="40" fill="rgba(0,0,0,0.03)" font-family="monospace" font-size="14">∑(x_i - μ)² / N</text><text x="200" y="100" fill="rgba(0,0,0,0.03)" font-family="monospace" font-size="14">E = mc²</text><text x="50" y="200" fill="rgba(0,0,0,0.03)" font-family="monospace" font-size="14">function() { return true; }</text><text x="250" y="300" fill="rgba(0,0,0,0.03)" font-family="monospace" font-size="14">∇ × E = -∂B/∂t</text><text x="100" y="350" fill="rgba(0,0,0,0.03)" font-family="monospace" font-size="14">git commit -m "innovation"</text></svg>');
-}
-
-.dark .bg-math-overlay {
-  background-image: url('data:image/svg+xml;utf8,<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg"><text x="20" y="40" fill="rgba(255,255,255,0.03)" font-family="monospace" font-size="14">∑(x_i - μ)² / N</text><text x="200" y="100" fill="rgba(255,255,255,0.03)" font-family="monospace" font-size="14">E = mc²</text><text x="50" y="200" fill="rgba(255,255,255,0.03)" font-family="monospace" font-size="14">const ai = new Agent();</text><text x="250" y="300" fill="rgba(255,255,255,0.03)" font-family="monospace" font-size="14">∇ × E = -∂B/∂t</text><text x="100" y="350" fill="rgba(255,255,255,0.03)" font-family="monospace" font-size="14">NeuralNetwork.train()</text></svg>');
-}
+/* Removed bg-math-overlay as requested to prevent obscuring 3D elements */

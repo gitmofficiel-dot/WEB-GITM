@@ -38,12 +38,23 @@ const Navbar = () => {
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'glass-nav py-3 shadow-soft' : 'bg-transparent py-5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           
-          {/* Logo */}
+          {/* Logo - Restored Original Image */}
           <button onClick={() => navigate('/')} className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gitm-red to-gitm-green text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-gitm-red/30 group-hover:scale-105 transition-transform">
+            <img 
+              src="/logo.png" 
+              alt="GITM Logo" 
+              className="h-10 object-contain group-hover:scale-105 transition-transform" 
+              onError={(e) => {
+                // Fallback in case logo.png doesn't exist at root
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+            {/* Fallback box if image fails to load */}
+            <div className="hidden w-10 h-10 rounded-xl bg-gradient-to-br from-gitm-blue to-gitm-red text-white items-center justify-center font-bold text-lg shadow-lg">
               GT
             </div>
-            <span className="font-bold text-xl tracking-tight text-gitm-textLight dark:text-gitm-textDark">
+            <span className="font-bold text-xl tracking-tight text-gitm-textLight dark:text-gitm-textDark hidden sm:block">
               GITM
             </span>
           </button>
@@ -58,7 +69,7 @@ const Navbar = () => {
                   onClick={() => navigate(item.path)}
                   className={`relative px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
                     isActive 
-                      ? 'text-gitm-red dark:text-gitm-green' 
+                      ? 'text-gitm-blue dark:text-gitm-cyan' 
                       : 'text-gitm-mutedLight dark:text-gitm-mutedDark hover:text-gitm-textLight dark:hover:text-gitm-textDark hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
@@ -108,9 +119,14 @@ const Navbar = () => {
                   className="flex items-center gap-2 pl-3 pr-1 py-1.5 ml-2 rounded-full border border-gray-200 dark:border-gitm-borderDark hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   <span className="text-sm font-semibold hidden sm:block">{user.name}</span>
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-gitm-red to-gitm-green text-white flex items-center justify-center text-xs font-bold">
-                    {user.name?.[0]?.toUpperCase() || 'U'}
-                  </div>
+                  {/* Restored Google Profile Picture */}
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt={user.name} className="w-8 h-8 rounded-full object-cover border border-gray-200" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-gitm-blue to-gitm-cyan text-white flex items-center justify-center text-xs font-bold">
+                      {user.name?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                  )}
                 </button>
                 <AnimatePresence>
                   {profileDropdown && (
@@ -120,12 +136,21 @@ const Navbar = () => {
                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
                         className="absolute top-full mt-2 right-0 w-56 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden py-2"
                       >
-                        <div className="px-4 py-2 border-b border-gray-100 dark:border-gitm-borderDark mb-2">
-                          <p className="font-bold text-sm">{user.name}</p>
-                          <p className="text-xs text-gitm-mutedLight dark:text-gitm-mutedDark truncate">{user.email}</p>
+                        <div className="px-4 py-2 border-b border-gray-100 dark:border-gitm-borderDark mb-2 flex items-center gap-3">
+                          {user.photoURL ? (
+                            <img src={user.photoURL} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gitm-blue text-white flex items-center justify-center text-sm font-bold">
+                              {user.name?.[0]?.toUpperCase()}
+                            </div>
+                          )}
+                          <div className="overflow-hidden">
+                            <p className="font-bold text-sm truncate">{user.name}</p>
+                            <p className="text-xs text-gitm-mutedLight dark:text-gitm-mutedDark truncate">{user.email}</p>
+                          </div>
                         </div>
                         <button onClick={() => {navigate('/dashboard/user'); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
-                          <LayoutDashboard size={16} className="text-gitm-red"/> {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
+                          <LayoutDashboard size={16} className="text-gitm-blue"/> {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
                         </button>
                         <button onClick={() => {logoutUser(); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium text-gitm-red hover:bg-red-50 dark:hover:bg-red-900/20 mt-1">
                           <LogOut size={16}/> {lang === 'ar' ? 'تسجيل الخروج' : 'Logout'}
@@ -138,7 +163,7 @@ const Navbar = () => {
             ) : (
               <button 
                 onClick={() => navigate('/login')}
-                className="bg-gitm-red hover:bg-red-700 text-white px-5 py-2 rounded-full text-sm font-bold ml-2 transition-colors"
+                className="bg-gitm-blue hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-bold ml-2 transition-colors"
               >
                 {lang === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
               </button>
@@ -183,9 +208,9 @@ const Navbar = () => {
               ))}
               
               <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gitm-borderDark flex justify-between">
-                <button onClick={() => changeLanguage('ar')} className={`flex-1 py-3 text-center rounded-lg ${lang === 'ar' ? 'bg-gitm-red text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>العربية</button>
+                <button onClick={() => changeLanguage('ar')} className={`flex-1 py-3 text-center rounded-lg ${lang === 'ar' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>العربية</button>
                 <div className="w-4"></div>
-                <button onClick={() => changeLanguage('en')} className={`flex-1 py-3 text-center rounded-lg ${lang === 'en' ? 'bg-gitm-red text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>English</button>
+                <button onClick={() => changeLanguage('en')} className={`flex-1 py-3 text-center rounded-lg ${lang === 'en' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>English</button>
               </div>
             </div>
           </motion.div>

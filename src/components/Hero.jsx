@@ -74,7 +74,7 @@ export default function Hero() {
   const handleMouseMove = (e) => {
     const { clientX, clientY } = e;
     const { innerWidth, innerHeight } = window;
-    const x = (clientX / innerWidth - 0.5) * 20; // max tilt 20deg
+    const x = (clientX / innerWidth - 0.5) * 20; 
     const y = (clientY / innerHeight - 0.5) * -20;
     setMousePosition({ x, y });
   };
@@ -84,24 +84,18 @@ export default function Hero() {
       className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden"
       onMouseMove={handleMouseMove}
     >
-      {/* Dynamic Background Slider */}
+      {/* Clear Dynamic Background Slider (No obscuring overlays) */}
       <AnimatePresence mode="popLayout">
         <motion.img
           key={bgIndex}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 0.4, scale: 1 }}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.5 }}
           src={bgImages[bgIndex]}
           className="absolute inset-0 w-full h-full object-cover z-0"
         />
       </AnimatePresence>
-
-      {/* Math Overlay Pattern */}
-      <div className="absolute inset-0 bg-math-overlay bg-repeat z-[1] opacity-50 dark:opacity-30 mix-blend-overlay" />
-      
-      {/* Moroccan Flag Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gitm-dark/90 via-gitm-dark/80 to-gitm-red/20 z-[2]" />
 
       {/* Main 3D Container */}
       <motion.div 
@@ -112,9 +106,9 @@ export default function Hero() {
         }}
         transition={{ type: "spring", stiffness: 75, damping: 15 }}
       >
-        <div className="max-w-5xl mx-auto text-center tilt-card p-10 md:p-16 border-t-4 border-t-gitm-red border-b-4 border-b-gitm-green bg-white/10 dark:bg-black/40 backdrop-blur-xl shadow-3d">
+        <div className="max-w-5xl mx-auto text-center tilt-card p-10 md:p-16 border-t-4 border-t-gitm-blue border-b-4 border-b-gitm-red bg-white/70 dark:bg-black/70 backdrop-blur-xl shadow-3d relative">
           
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gitm-red/10 text-gitm-red dark:text-red-400 font-bold text-sm mb-8 border border-gitm-red/20">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gitm-blue text-white font-bold text-sm mb-8 shadow-md">
             <Globe size={18} />
             {lang === 'ar' ? 'واجهة عالمية للابتكار' : 'Global Interface for Innovation'}
           </div>
@@ -128,14 +122,14 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
-                className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white drop-shadow-lg"
+                className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-gitm-textLight dark:text-white drop-shadow-md"
               >
                 {lang === 'ar' ? titles.ar[titleIndex] : titles.en[titleIndex]}
               </motion.h1>
             </AnimatePresence>
           </div>
 
-          <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed font-medium">
+          <p className="text-lg md:text-xl text-gitm-textLight dark:text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed font-medium">
             {lang === 'ar' 
               ? 'نبني جسوراً تكنولوجية من وزان إلى هارفارد ولندن وجامعة محمد السادس، لنصنع جيلاً جديداً من الأنظمة الذكية المدعومة برؤية المركز الجهوي للاستثمار والشركاء الوطنيين.' 
               : 'Building technological bridges from Ouezzane to Harvard, London, and UM6P, shaping a new generation of intelligent systems backed by CRI and national partners.'}
@@ -144,7 +138,7 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
             <button 
               onClick={() => navigate('/projects-hub')}
-              className="w-full sm:w-auto bg-gitm-green hover:bg-green-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg shadow-gitm-green/30 hover:-translate-y-1"
+              className="w-full sm:w-auto bg-gitm-blue hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:-translate-y-1"
             >
               <Cpu size={22} />
               {lang === 'ar' ? 'اكتشف التقنيات' : 'Discover Tech'}
@@ -153,7 +147,7 @@ export default function Hero() {
             
             <button 
               onClick={() => setIsVideoOpen(true)}
-              className="w-full sm:w-auto bg-white/10 hover:bg-white/20 border border-white/30 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all backdrop-blur-sm hover:-translate-y-1"
+              className="w-full sm:w-auto bg-gitm-red hover:bg-red-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:-translate-y-1"
             >
               <Play fill="currentColor" size={20} />
               {lang === 'ar' ? 'شاهد الفيديو التعريفي' : 'Watch Intro Video'}
