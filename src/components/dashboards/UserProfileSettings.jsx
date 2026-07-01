@@ -8,7 +8,7 @@ import {
   User, Settings, Copy, Edit3, Camera, Globe, Mail, Briefcase, GraduationCap, CheckCircle, AlertCircle, Plus, Trash2, Github, Linkedin, Facebook, Instagram, Award, X, Share2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import toast from 'react-hot-toast';
+import { toast } from '../../utils/toast';
 
 const PREDEFINED_SKILLS = ['Python', 'JavaScript', 'React', 'Node.js', 'C++', 'Java', 'Machine Learning', 'Deep Learning', 'Computer Vision', 'NLP', 'Data Science', 'IoT', 'Robotics', 'Cybersecurity', 'Cloud Computing', 'AWS', 'Azure', 'Docker', 'Kubernetes', 'Linux', 'Git', 'Agile', 'UI/UX Design', '3D Modeling', 'AutoCAD', 'SolidWorks', 'Arduino', 'Raspberry Pi'];
 const PREDEFINED_INTERESTS = ['Artificial Intelligence', 'Robotics', 'Internet of Things (IoT)', 'Web Development', 'Mobile App Development', 'Game Development', 'Data Analysis', 'Blockchain', 'Quantum Computing', 'Space Tech', 'Green Tech', 'Bioinformatics', 'Entrepreneurship', 'Open Source', 'Hackathons'];
