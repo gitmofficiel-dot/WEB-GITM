@@ -17,7 +17,7 @@ const ProjectsHub = () => {
   // Pagination & Search
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 8;
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -131,7 +131,7 @@ const ProjectsHub = () => {
         </div>
       ) : (
         <div className="flex flex-col gap-10">
-          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <AnimatePresence>
               {currentProjects.map((proj) => (
                 <motion.div
