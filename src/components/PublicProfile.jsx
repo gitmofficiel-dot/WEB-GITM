@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import { 
   Briefcase, GraduationCap, Github, Linkedin, Twitter, ExternalLink, 
   MapPin, Mail, Calendar, Code, Zap, Award, BookOpen, Heart, Activity,
-  ChevronLeft, Share2, Check
+  ChevronLeft, Share2, Check, Loader2, User
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { teamData } from '../data/teamData';
@@ -14,6 +16,34 @@ export default function PublicProfile() {
   const { lang } = useLanguage();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const [firebaseMember, setFirebaseMember] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMember = async () => {
+      setLoading(true);
+      // First check local static data
+      const localMember = teamData.find(m => m.id.toString() === id);
+      if (localMember) {
+        setFirebaseMember({ isLocal: true, ...localMember });
+        setLoading(false);
+        return;
+      }
+      
+      // If not local, check Firebase
+      try {
+        const userRef = doc(db, 'users', id);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          setFirebaseMember({ id: userSnap.id, isLocal: false, ...userSnap.data() });
+        }
+      } catch (err) {
+        console.error('Error fetching profile from Firebase:', err);
+      }
+      setLoading(false);
+    };
+    fetchMember();
+  }, [id]);
 
   const handleShare = () => {
     const url = window.location.href;
@@ -23,9 +53,15 @@ export default function PublicProfile() {
     });
   };
 
-  const member = teamData.find(m => m.id.toString() === id);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-cyan-50 dark:bg-[#0B132B]">
+        <Loader2 className="animate-spin text-cyan-500" size={40} />
+      </div>
+    );
+  }
 
-  if (!member) {
+  if (!firebaseMember) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-cyan-50 dark:bg-[#0B132B]">
         <h2 className="text-2xl font-bold text-red-500 mb-4">{lang === 'ar' ? 'الملف الشخصي غير موجود' : 'Profile not found'}</h2>
@@ -36,20 +72,20 @@ export default function PublicProfile() {
     );
   }
 
-  const profile = {
-    name: lang === 'ar' ? member.nameAr : member.nameEn,
-    title: lang === 'ar' ? member.roleAr : member.roleEn,
-    email: member.email || 'contact@gitm.ma',
+  const profile = firebaseMember.isLocal ? {
+    name: lang === 'ar' ? firebaseMember.nameAr : firebaseMember.nameEn,
+    title: lang === 'ar' ? firebaseMember.roleAr : firebaseMember.roleEn,
+    email: firebaseMember.email || 'contact@gitm.ma',
     location: lang === 'ar' ? 'المغرب' : 'Morocco',
-    bio: lang === 'ar' ? member.bioAr : member.bioEn,
-    avatar: member.image,
+    bio: lang === 'ar' ? firebaseMember.bioAr : firebaseMember.bioEn,
+    avatar: firebaseMember.image,
     badges: ['leadership', 'ai_visionary'],
     stats: {
       projects: Math.floor(Math.random() * 20) + 5,
       certifications: Math.floor(Math.random() * 10) + 2,
       volunteerHours: Math.floor(Math.random() * 200) + 50
     },
-    social: member.socials || {},
+    social: firebaseMember.socials || {},
     skills: ['Python', 'TensorFlow', 'React', 'Robotics', 'Embedded Systems', 'Leadership', 'System Architecture'],
     interests: ['AI Ethics', 'Quantum Computing', 'Green Tech', 'Space Exploration'],
     academicPath: [
@@ -60,7 +96,34 @@ export default function PublicProfile() {
       { name: 'Smart System', role: 'Lead', type: 'IoT & AI' },
       { name: 'Platform', role: 'Developer', type: 'Web App' }
     ]
+  } : {
+    name: firebaseMember.nameLatin || firebaseMember.name || 'GITM Member',
+    title: firebaseMember.role === 'president' ? 'President' : firebaseMember.role === 'teacher' ? 'Teacher' : 'Student / Member',
+    email: firebaseMember.email || '',
+    location: lang === 'ar' ? 'المغرب' : 'Morocco',
+    bio: firebaseMember.bio || '',
+    avatar: firebaseMember.imageUrl || firebaseMember.photoURL || null,
+    badges: firebaseMember.badges || [],
+    stats: {
+      projects: 0,
+      certifications: 0,
+      volunteerHours: 0
+    },
+    social: firebaseMember.socialLinks || {},
+    skills: firebaseMember.skills || [],
+    interests: firebaseMember.interests || [],
+    academicPath: firebaseMember.academicPaths || [],
+    projects: []
   };
+        <h2 className="text-2xl font-bold text-red-500 mb-4">{lang === 'ar' ? 'الملف الشخصي غير موجود' : 'Profile not found'}</h2>
+        <button onClick={() => navigate(-1)} className="btn-primary px-6 py-2 rounded-full flex items-center gap-2">
+          <ChevronLeft className={lang === 'ar' ? 'rotate-180' : ''} /> {lang === 'ar' ? 'العودة' : 'Go Back'}
+        </button>
+      </div>
+    );
+  }
+
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -89,8 +152,12 @@ export default function PublicProfile() {
           <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
             
             <div className="relative">
-              <div className="w-32 h-32 rounded-3xl overflow-hidden bg-gradient-to-tr from-cyan-400 to-blue-600 p-1 shadow-2xl">
-                <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover rounded-2xl" />
+              <div className="w-32 h-32 rounded-3xl overflow-hidden bg-gradient-to-tr from-cyan-400 to-blue-600 p-1 shadow-2xl flex items-center justify-center bg-slate-800 text-white font-bold text-4xl">
+                {profile.avatar ? (
+                  <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover rounded-2xl bg-white dark:bg-slate-900" />
+                ) : (
+                  profile.name.charAt(0)
+                )}
               </div>
               <div className="absolute -bottom-3 -right-3 rtl:left-[-12px] rtl:right-auto bg-emerald-500 text-white p-2 rounded-full border-4 border-white dark:border-slate-900 shadow-lg">
                 <Award size={20} />
@@ -150,10 +217,10 @@ export default function PublicProfile() {
             </div>
           </div>
           <div className="glass-card rounded-2xl p-6 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-rose-600 dark:text-rose-400"><Heart size={24}/></div>
+            <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400"><Heart size={24}/></div>
             <div>
-              <p className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{profile.stats.volunteerHours}h</p>
-              <p className="text-sm font-semibold text-slate-500 uppercase">{lang === 'ar' ? 'ساعات تطوع' : 'Volunteer Hours'}</p>
+              <p className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{profile.stats.volunteerHours || 120}</p>
+              <p className="text-sm font-semibold text-slate-500 uppercase">{lang === 'ar' ? 'ساعات التطوع' : 'Volunteer Hours'}</p>
             </div>
           </div>
         </motion.div>
@@ -169,20 +236,17 @@ export default function PublicProfile() {
 
             <motion.div variants={itemVariants} className="glass-card rounded-3xl p-8">
               <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-6 flex items-center gap-2"><GraduationCap className="text-blue-500"/> {lang === 'ar' ? 'المسار الأكاديمي' : 'Academic Path'}</h3>
-              <div className="space-y-6">
-                {profile.academicPath.map((edu, idx) => (
-                  <div key={idx} className="flex gap-4">
-                    <div className="flex flex-col items-center">
-                      <div className="w-4 h-4 rounded-full bg-blue-500 border-4 border-blue-100 dark:border-blue-900"></div>
-                      {idx !== profile.academicPath.length - 1 && <div className="w-0.5 h-full bg-blue-100 dark:bg-slate-800 my-1"></div>}
-                    </div>
-                    <div className="pb-6">
-                      <p className="text-sm font-bold text-blue-500 mb-1">{edu.year}</p>
-                      <h4 className="text-lg font-bold text-[#1e3a5f] dark:text-white">{edu.title}</h4>
-                      <p className="text-slate-500">{edu.institution}</p>
-                    </div>
+              <div className="relative border-l-2 border-cyan-500 ml-4 rtl:ml-0 rtl:mr-4 rtl:border-r-2 rtl:border-l-0 pl-6 rtl:pl-0 rtl:pr-6 space-y-8">
+                {profile.academicPath.length > 0 ? profile.academicPath.map((path, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-8 rtl:-left-auto rtl:-right-8 top-1 w-4 h-4 rounded-full bg-cyan-500 border-4 border-white dark:border-[#0B132B]"></div>
+                    <h4 className="text-lg font-bold text-[#1e3a5f] dark:text-white">{path.title || path.degree}</h4>
+                    <p className="text-sm text-cyan-600 dark:text-cyan-400 font-semibold mb-2">{path.institution || 'University'}</p>
+                    <p className="text-xs font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 w-fit px-2 py-1 rounded-md">{path.year || `${path.startYear} - ${path.endYear || 'Present'}`}</p>
                   </div>
-                ))}
+                )) : (
+                  <p className="text-slate-500">{lang === 'ar' ? 'لم يتم إضافة مسار أكاديمي بعد' : 'No academic paths added yet'}</p>
+                )}
               </div>
             </motion.div>
 

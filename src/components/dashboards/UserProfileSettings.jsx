@@ -5,7 +5,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 import {
-  User, Settings, Copy, Edit3, Camera, Globe, Mail, Briefcase, GraduationCap, CheckCircle, AlertCircle, Plus, Trash2, Github, Linkedin, Facebook, Instagram, Award, X
+  User, Settings, Copy, Edit3, Camera, Globe, Mail, Briefcase, GraduationCap, CheckCircle, AlertCircle, Plus, Trash2, Github, Linkedin, Facebook, Instagram, Award, X, Share2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -142,6 +142,15 @@ export default function UserProfileSettings({ currentUser: propUser }) {
     navigator.clipboard.writeText(cvLink).then(() => {
       setCopyStatus('success');
       setTimeout(() => setCopyStatus(''), 3000);
+    });
+  };
+
+  const handleCopyProfileLink = () => {
+    const profileId = currentUser.uid || currentUser.id;
+    if (!profileId) return;
+    const profileLink = `${window.location.origin}/profile/${profileId}`;
+    navigator.clipboard.writeText(profileLink).then(() => {
+      toast.success(lang === 'ar' ? 'تم نسخ رابط الملف الشخصي' : 'Profile link copied');
     });
   };
 
@@ -360,9 +369,12 @@ export default function UserProfileSettings({ currentUser: propUser }) {
                 <User className="text-cyan-500" size={24}/> {lang === 'ar' ? 'معاينة السيرة الذاتية (CV)' : 'CV Preview'}
               </h3>
             </div>
-            <div className="flex items-center gap-3">
-              <button onClick={handleCopyCVLink} className="bg-slate-50 dark:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-700 transition-colors">
-                <Copy size={16}/> {lang === 'ar' ? 'نسخ رابط السيرة الذاتية' : 'Copy CV Link'}
+            <div className="flex flex-wrap items-center gap-3">
+              <button onClick={handleCopyProfileLink} className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors shadow-md">
+                <Share2 size={16}/> {lang === 'ar' ? 'مشاركة الملف الشخصي' : 'Share Profile'}
+              </button>
+              <button onClick={handleCopyCVLink} className="bg-slate-50 dark:bg-slate-800 text-[#1e3a5f] dark:text-white border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-sm">
+                <Copy size={16}/> {lang === 'ar' ? 'نسخ رابط CV' : 'Copy CV Link'}
               </button>
             </div>
           </div>
