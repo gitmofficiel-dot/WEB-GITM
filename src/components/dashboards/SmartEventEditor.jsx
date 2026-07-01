@@ -5,8 +5,8 @@ import {
   X, ArrowLeft, Bot, CheckCircle, Activity, Image as ImageIcon, Map
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 const EVENT_TYPES = ['Workshop', 'Hackathon', 'Training', 'Meetup', 'Conference'];
 
