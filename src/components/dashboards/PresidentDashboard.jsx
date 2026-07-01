@@ -9,7 +9,7 @@ import {
   Edit, Trash2, Bot, TrendingUp, AlertTriangle, Plus, Mail, Video, 
   Megaphone, CheckCircle, XCircle, LayoutDashboard, Settings, BrainCircuit,
   GraduationCap, Calendar, Database, Eye, Image, X, Save, Target, MapPin,
-  Link, UserPlus, Handshake, Info, Search, Zap
+  Link, UserPlus, Handshake, Info, Search, Zap, Rocket
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '../../utils/toast';
@@ -172,7 +172,8 @@ export default function PresidentDashboard() {
     { id: 'members', icon: Shield, label: lang === 'ar' ? 'إدارة التوظيف والصلاحيات' : 'Roles & Hiring' },
     { id: 'partners', icon: Handshake, label: lang === 'ar' ? 'الشركات والجمعيات' : 'Partners & NGOs' },
     { id: 'academy', icon: GraduationCap, label: lang === 'ar' ? 'الأكاديمية والتداريب' : 'Academy & Training' },
-    { id: 'events', icon: Calendar, label: lang === 'ar' ? 'الفعاليات والمشاريع' : 'Events & Projects' },
+    { id: 'projects', icon: Rocket, label: lang === 'ar' ? 'إدارة المشاريع' : 'Projects Management' },
+    { id: 'events', icon: Calendar, label: lang === 'ar' ? 'إدارة الفعاليات' : 'Events Management' },
     { id: 'news', icon: Newspaper, label: lang === 'ar' ? 'إدارة الأخبار' : 'News & Media' },
     { id: 'gallery', icon: Image, label: lang === 'ar' ? 'المعرض والصور' : 'Gallery & Media' },
     { id: 'ai', icon: BrainCircuit, label: lang === 'ar' ? 'إدارة الذكاء الاصطناعي' : 'AI Management' },
@@ -682,13 +683,13 @@ export default function PresidentDashboard() {
               </div>
             )}
 
-            {/* EVENTS & PROJECTS TAB (PROJECT CREATOR LOGIC INCLUDED HERE FOR ADMIN) */}
-            {activeTab === 'events' && (
+            {/* PROJECTS TAB */}
+            {activeTab === 'projects' && (
               <div className="space-y-6">
                 <div className="glass-card rounded-3xl p-6">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <Zap className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة المشاريع وفرق العمل' : 'Projects & Teams Management'}
+                      <Rocket className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة المشاريع وفرق العمل' : 'Projects & Teams Management'}
                     </h3>
                   </div>
 
@@ -725,10 +726,16 @@ export default function PresidentDashboard() {
                     </div>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* EVENTS TAB */}
+            {activeTab === 'events' && (
+              <div className="space-y-6">
                 <div className="glass-card rounded-3xl p-6">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <Calendar className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة الفعاليات والمشاريع' : 'Events & Projects Management'}
+                      <Calendar className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة الفعاليات والهاكاثونات' : 'Events & Hackathons Management'}
                     </h3>
                     <button onClick={() => openModal('event')} className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'حدث جديد' : 'New Event'}</button>
                   </div>
