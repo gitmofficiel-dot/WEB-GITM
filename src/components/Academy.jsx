@@ -404,23 +404,25 @@ export default function Academy() {
                         transition={{ duration: 0.3 }}
                         key={course.id}
                         onClick={() => startCourse(course)}
-                        className="group relative aspect-square rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+                        className="group relative w-full pt-[100%] rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
                       >
-                        {/* Background Image */}
-                        <img 
-                          src={course.thumbnail || 'https://via.placeholder.com/600x600?text=GITM+Academy'} 
-                          alt={getLocalized(course, 'title', lang)} 
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                        
-                        {/* Gradient Overlay for Text Visibility */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
-                        
-                        {/* Title overlay */}
-                        <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                          <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">
-                            {getLocalized(course, 'title', lang)}
-                          </h3>
+                        <div className="absolute inset-0 w-full h-full">
+                          {/* Background Image */}
+                          <img 
+                            src={course.thumbnail || 'https://via.placeholder.com/600x600?text=GITM+Academy'} 
+                            alt={getLocalized(course, 'title', lang)} 
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          />
+                          
+                          {/* Gradient Overlay for Text Visibility */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
+                          
+                          {/* Title overlay */}
+                          <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                            <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">
+                              {getLocalized(course, 'title', lang)}
+                            </h3>
+                          </div>
                         </div>
                       </motion.div>
                     ))}
@@ -446,11 +448,13 @@ export default function Academy() {
                      const info = book.volumeInfo;
                      const thumbnail = info.imageLinks?.thumbnail || 'https://via.placeholder.com/600x600?text=No+Cover';
                      return (
-                       <div key={book.id} onClick={() => window.open(info.previewLink, '_blank')} className="group relative aspect-square rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-                         <img src={thumbnail} alt={info.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
-                         <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                             <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">{info.title}</h3>
+                       <div key={book.id} onClick={() => window.open(info.previewLink, '_blank')} className="group relative w-full pt-[100%] rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                         <div className="absolute inset-0 w-full h-full">
+                           <img src={thumbnail} alt={info.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
+                           <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                               <h3 className="text-lg md:text-xl font-bold text-white mb-2 line-clamp-2">{info.title}</h3>
+                           </div>
                          </div>
                        </div>
                      )

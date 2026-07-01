@@ -106,23 +106,25 @@ export default function NewsPage() {
                   transition={{ duration: 0.3 }}
                   key={news.id}
                   onClick={() => navigate(`/news/${news.id}`)}
-                  className="group relative aspect-square rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+                  className="group relative w-full pt-[100%] rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
                 >
-                  {/* Background Image */}
-                  <img 
-                    src={news.imageUrl || news.image || 'https://via.placeholder.com/600x600?text=GITM+News'} 
-                    alt={getLocalized(news, 'title', lang)} 
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  
-                  {/* Gradient Overlay for Text Visibility */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
-                  
-                  {/* Title overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                    <h3 className="text-2xl font-bold text-white mb-2 line-clamp-2">
-                      {getLocalized(news, 'title', lang)}
-                    </h3>
+                  <div className="absolute inset-0 w-full h-full">
+                    {/* Background Image */}
+                    <img 
+                      src={news.imageUrl || news.image || 'https://via.placeholder.com/600x600?text=GITM+News'} 
+                      alt={getLocalized(news, 'title', lang)} 
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    
+                    {/* Gradient Overlay for Text Visibility */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
+                    
+                    {/* Title overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      <h3 className="text-xl md:text-2xl font-bold text-white mb-2 line-clamp-2">
+                        {getLocalized(news, 'title', lang)}
+                      </h3>
+                    </div>
                   </div>
                 </motion.div>
               ))}

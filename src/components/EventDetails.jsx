@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar as CalendarIcon, MapPin, Clock, Users, ArrowRight, PlayCircle, Megaphone, X, Mail, ChevronLeft, CheckCircle2, Trophy, Globe, ExternalLink, FileText, Video } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, Clock, Users, ArrowRight, PlayCircle, Megaphone, X, Mail, ChevronLeft, CheckCircle2, Trophy, Globe, ExternalLink, FileText, Video, CheckCircle, Upload, AlertTriangle, Lightbulb, Ticket, Calendar } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -9,7 +9,7 @@ import { db } from '../config/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import LocationMap from './ui/LocationMap';
 import { sendEmailNotification } from '../utils/emailjs';
-import EventRegistrationModal from './EventRegistrationModal';
+import { QRCodeSVG } from 'qrcode.react';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
@@ -25,7 +25,20 @@ export default function EventDetails() {
   const navigate = useNavigate();
   const { lang, events, competitions } = useLanguage();
   const { currentUser } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Registration Form States
+  const [step, setStep] = useState(1);
+  const [name, setName] = useState(currentUser?.name || '');
+  const [email, setEmail] = useState(currentUser?.email || '');
+  const [teamMembers, setTeamMembers] = useState('');
+  const [projectExplanation, setProjectExplanation] = useState('');
+  const [personalBenefit, setPersonalBenefit] = useState('');
+  const [nationalBenefit, setNationalBenefit] = useState('');
+  const [projectFile, setProjectFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isMember = !!currentUser;
+  const ticketId = `GITM-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
 
   const allEventsAndComps = [...events, ...competitions];
   const ev = allEventsAndComps.find(e => e.id.toString() === id);
@@ -47,18 +60,29 @@ export default function EventDetails() {
     image: ev.image || IMAGES[parseInt(id) % IMAGES.length]
   };
 
-  const handleRegisterClick = () => {
-    setIsModalOpen(true);
+  const handleRegisterSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setStep(2);
+      toast.success(txt(lang, 'Registration Confirmed', 'تم تأكيد التسجيل بنجاح', 'Inscription confirmée', '注册确认'));
+    }, 1500);
+  };
+
+  const handleAddToCalendar = () => {
+    const text = encodeURIComponent(viewDetailsEvent.title || viewDetailsEvent.titleEn || viewDetailsEvent.title_en || viewDetailsEvent.title_ar);
+    const details = encodeURIComponent(viewDetailsEvent.description?.replace(/<[^>]+>/g, '') || '');
+    const location = encodeURIComponent(viewDetailsEvent.mode === 'Online' ? viewDetailsEvent.virtualLink : viewDetailsEvent.location);
+    const dates = `${(viewDetailsEvent.startDate || '').replace(/-/g, '')}T${(viewDetailsEvent.startTime || '').replace(/:/g, '')}00Z/${viewDetailsEvent.endDate ? viewDetailsEvent.endDate.replace(/-/g, '') : (viewDetailsEvent.startDate || '').replace(/-/g, '')}T${viewDetailsEvent.endTime ? viewDetailsEvent.endTime.replace(/:/g, '') : (viewDetailsEvent.startTime || '').replace(/:/g, '')}00Z`;
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${dates}&details=${details}&location=${location}`;
+    window.open(url, '_blank');
   };
 
   return (
     <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8 grid-bg relative overflow-hidden text-[#1e3a5f] dark:text-slate-200 transition-colors duration-300">
       
-      {isModalOpen && (
-        <EventRegistrationModal event={viewDetailsEvent} onClose={() => setIsModalOpen(false)} />
-      )}
-      
-      <div className="max-w-4xl mx-auto relative z-10 animate-fade-in-up">
+      <div className="max-w-5xl mx-auto relative z-10 animate-fade-in-up">
         
         <button onClick={() => navigate('/events')} className="mb-6 flex items-center gap-2 text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 font-medium transition-colors w-fit">
           <ChevronLeft size={20} className={lang === 'ar' ? 'rotate-180' : ''} />
@@ -211,17 +235,156 @@ export default function EventDetails() {
                     </div>
                   )}
                 </div>
-
-                {(viewDetailsEvent.status === 'upcoming' || viewDetailsEvent.status === 'open') && (
-                  <button 
-                    onClick={handleRegisterClick} 
-                    className="w-full btn-primary py-4 rounded-xl font-bold flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(0,229,255,0.4)] hover:shadow-[0_0_30px_rgba(0,229,255,0.6)] transition-all"
-                  >
-                    {txt(lang, 'Official Registration', 'تسجيل رسمي', 'Inscription', '注册')} <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''} />
-                  </button>
-                )}
+                </div>
               </div>
             </div>
+
+            {/* Registration Section */}
+            {(viewDetailsEvent.status === 'upcoming' || viewDetailsEvent.status === 'open') && (
+              <div className="mt-12 bg-white dark:bg-slate-800 rounded-2xl p-8 border border-cyan-200 dark:border-slate-700 shadow-lg" id="registration-section">
+                <h3 className="text-2xl font-bold mb-6 flex items-center gap-2 text-[#1e3a5f] dark:text-white border-b border-slate-100 dark:border-slate-700 pb-4">
+                  <Ticket className="text-cyan-500" /> {txt(lang, 'Event Registration', 'التسجيل في الفعالية', 'Inscription', '注册活动')}
+                </h3>
+
+                {step === 1 ? (
+                  <form onSubmit={handleRegisterSubmit} className="space-y-6">
+                    {isMember ? (
+                      <div className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 p-4 rounded-xl flex items-start gap-3 border border-emerald-100 dark:border-emerald-800/50">
+                        <CheckCircle className="shrink-0 mt-0.5" size={20} />
+                        <p className="text-sm font-bold">
+                          {lang === 'ar' ? 'مرحباً بك! سيتم تسجيل حضورك بحسابك الرسمي.' : 'Welcome back! Your attendance will be linked to your account.'}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 p-4 rounded-xl flex items-start gap-3 border border-blue-100 dark:border-blue-800/50">
+                        <AlertTriangle className="shrink-0 mt-0.5" size={20} />
+                        <p className="text-sm font-bold">
+                          {lang === 'ar' ? 'أنت تسجل كضيف. يمكنك التسجيل في المنصة لاحقاً.' : 'You are registering as a guest.'}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الاسم الكامل' : 'Full Name'}</label>
+                        <input type="text" required value={name} onChange={e=>setName(e.target.value)} disabled={isMember} className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 disabled:opacity-60" />
+                      </div>
+                      <div>
+                        <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'البريد الإلكتروني' : 'Email Address'}</label>
+                        <input type="email" required value={email} onChange={e=>setEmail(e.target.value)} disabled={isMember} className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 disabled:opacity-60" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-bold text-slate-500 mb-2 block">
+                        <Users size={18} className="inline mr-2 rtl:ml-2"/> 
+                        {lang === 'ar' ? 'أعضاء الفريق وأدوارهم' : 'Team Members & Roles'}
+                      </label>
+                      <textarea 
+                        value={teamMembers} 
+                        onChange={e=>setTeamMembers(e.target.value)} 
+                        placeholder={lang === 'ar' ? 'مثال: أحمد (مبرمج)، سارة (مصممة)' : 'e.g. Ahmed (Developer), Sara (Designer)'}
+                        className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[100px]" 
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-bold text-slate-500 mb-2 block">
+                        <FileText size={18} className="inline mr-2 rtl:ml-2"/> 
+                        {lang === 'ar' ? 'اشرح مشروعك / فكرتك' : 'Explain your Project/Idea'}
+                      </label>
+                      <textarea 
+                        value={projectExplanation} 
+                        onChange={e=>setProjectExplanation(e.target.value)} 
+                        required
+                        className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[120px]" 
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="text-sm font-bold text-slate-500 mb-2 block">
+                          <Lightbulb size={18} className="inline mr-2 rtl:ml-2"/>
+                          {lang === 'ar' ? 'ماذا ستستفيد من هذا المشروع؟' : 'Personal Benefit'}
+                        </label>
+                        <textarea 
+                          value={personalBenefit} 
+                          onChange={e=>setPersonalBenefit(e.target.value)} 
+                          required
+                          className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[100px]" 
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-bold text-slate-500 mb-2 block">
+                          <Globe size={18} className="inline mr-2 rtl:ml-2"/>
+                          {lang === 'ar' ? 'ماذا ستستفيد الأمة / المجتمع؟' : 'National/Community Benefit'}
+                        </label>
+                        <textarea 
+                          value={nationalBenefit} 
+                          onChange={e=>setNationalBenefit(e.target.value)} 
+                          required
+                          className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-cyan-500 min-h-[100px]" 
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-bold text-slate-500 mb-2 block">
+                        <Upload size={18} className="inline mr-2 rtl:ml-2"/>
+                        {lang === 'ar' ? 'رفع ملف المشروع (PDF, PPTX, ZIP)' : 'Upload Project File'}
+                      </label>
+                      <div className="w-full p-6 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center cursor-pointer group">
+                        <input 
+                          type="file" 
+                          onChange={e=>setProjectFile(e.target.files[0])} 
+                          className="hidden" 
+                          id="project-upload" 
+                          accept=".pdf,.pptx,.zip,.rar"
+                        />
+                        <label htmlFor="project-upload" className="cursor-pointer flex flex-col items-center">
+                          <Upload className="w-10 h-10 text-slate-400 mb-3 group-hover:text-cyan-500 transition-colors" />
+                          <span className="text-base text-slate-600 dark:text-slate-400 font-bold">
+                            {projectFile ? projectFile.name : (lang === 'ar' ? 'انقر هنا لرفع الملف الخاص بمشروعك' : 'Click to upload your project file')}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <button type="submit" disabled={isSubmitting} className="w-full md:w-auto px-10 bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-4 rounded-xl font-bold hover:shadow-lg hover:shadow-cyan-500/30 transition-all flex justify-center items-center gap-2 text-lg">
+                      {isSubmitting ? <span className="animate-pulse">{lang === 'ar' ? 'جاري التأكيد...' : 'Confirming...'}</span> : <>{lang === 'ar' ? 'تأكيد التسجيل ورفع المشروع' : 'Confirm Registration & Upload'} <CheckCircle size={20}/></>}
+                    </button>
+                  </form>
+                ) : (
+                  <div className="text-center space-y-6 py-12">
+                    <div className="w-24 h-24 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <CheckCircle size={48} />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-bold text-slate-800 dark:text-white mb-3">{lang === 'ar' ? 'تم تأكيد تسجيلك بنجاح!' : 'Registration Confirmed!'}</h3>
+                      <p className="text-slate-500 text-lg">{lang === 'ar' ? 'تم إرسال نسخة من التذكرة وتفاصيل الفعالية إلى بريدك الإلكتروني.' : 'A copy of the ticket has been sent to your email.'}</p>
+                    </div>
+
+                    <div className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-700 relative overflow-hidden max-w-sm mx-auto shadow-inner">
+                      <div className="absolute left-[-15px] top-1/2 w-8 h-8 bg-white dark:bg-slate-800 rounded-full"></div>
+                      <div className="absolute right-[-15px] top-1/2 w-8 h-8 bg-white dark:bg-slate-800 rounded-full"></div>
+                      
+                      <div className="flex justify-center mb-6">
+                        <QRCodeSVG value={ticketId} size={180} level="H" includeMargin={true} className="rounded-xl border border-slate-200 shadow-sm" />
+                      </div>
+                      
+                      <p className="font-mono font-bold text-2xl text-slate-700 dark:text-slate-300 tracking-widest">{ticketId}</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 uppercase font-bold">Ticket ID</p>
+                    </div>
+
+                    <div className="flex justify-center pt-6">
+                      <button onClick={handleAddToCalendar} className="px-8 py-3 bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors text-base">
+                        <Calendar size={20}/> {lang === 'ar' ? 'أضف للتقويم' : 'Add to Calendar'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
