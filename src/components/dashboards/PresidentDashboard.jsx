@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '../../utils/toast';
 import VisitorAnalytics from './VisitorAnalytics';
 import SmartProjectBuilder from './SmartProjectBuilder';
+import SmartArticleEditor from './SmartArticleEditor';
 
 export default function PresidentDashboard() {
   const navigate = useNavigate();
@@ -92,6 +93,9 @@ export default function PresidentDashboard() {
 
   const [showProjectEditor, setShowProjectEditor] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
+  
+  const [showArticleEditor, setShowArticleEditor] = useState(false);
+  const [editingArticle, setEditingArticle] = useState(null);
 
   const handleSaveProjectFromEditor = async (projectData) => {
     try {
@@ -115,6 +119,41 @@ export default function PresidentDashboard() {
     } catch (error) {
       console.error('Error saving project:', error);
       toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving project');
+    }
+  };
+
+  const handleSaveArticleFromEditor = async (data) => {
+    try {
+      const articleData = {
+        title: data.titleAr || data.titleEn,
+        titleEn: data.titleEn || data.titleAr,
+        author: user?.displayName || 'President',
+        status: 'Published',
+        content: data.content,
+        category: data.category,
+        tags: data.tags || [],
+        attachments: data.attachments || [],
+        imageUrl: data.mainImage || '',
+        date: new Date().toISOString().split('T')[0],
+        updatedAt: serverTimestamp(),
+      };
+
+      if (editingArticle) {
+        const articleRef = doc(db, 'news', editingArticle.id);
+        await updateDoc(articleRef, articleData);
+        toast.success(lang === 'ar' ? 'تم تحديث المقال بنجاح' : 'Article updated successfully');
+      } else {
+        articleData.createdAt = serverTimestamp();
+        articleData.views = 0;
+        await addDoc(collection(db, 'news'), articleData);
+        toast.success(lang === 'ar' ? 'تم نشر المقال بنجاح' : 'Article published successfully');
+      }
+      
+      setShowArticleEditor(false);
+      setEditingArticle(null);
+    } catch (error) {
+      console.error('Error saving article:', error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving article');
     }
   };
 
@@ -831,30 +870,42 @@ export default function PresidentDashboard() {
 
             {/* NEWS TAB */}
             {activeTab === 'news' && (
-              <div className="glass-card rounded-3xl p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                    <Newspaper className="text-blue-500" size={24}/> {lang === 'ar' ? 'إدارة الأخبار والميديا' : 'News & Media Management'}
-                  </h3>
-                  <button onClick={() => openModal('news')} className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'مقال جديد' : 'Write Article'}</button>
-                </div>
-                <div className="space-y-4">
-                  {news.map(n => (
-                    <div key={n.id} className="flex justify-between items-center p-4 border border-slate-200 dark:border-slate-800 rounded-2xl hover:shadow-md transition-shadow bg-white dark:bg-slate-900/50">
-                      <div>
-                        <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{n.title}</h4>
-                        <p className="text-sm text-slate-500">{n.date}</p>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${n.status === 'Published' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>{n.status}</span>
-                        <div className="flex gap-2 border-l border-slate-200 dark:border-slate-700 pl-4">
-                          <button onClick={() => openModal('news', n)} className="text-slate-600 dark:text-slate-400 hover:text-blue-500 p-2 transition-colors"><Edit size={16}/></button>
-                          <button onClick={() => handleDelete('news', n.id)} className="text-slate-600 dark:text-slate-400 hover:text-red-500 p-2 transition-colors"><Trash2 size={16}/></button>
-                        </div>
-                      </div>
+              <div className="space-y-6">
+                {!showArticleEditor ? (
+                  <div className="glass-card rounded-3xl p-6">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                        <Newspaper className="text-blue-500" size={24}/> {lang === 'ar' ? 'إدارة الأخبار والميديا' : 'News & Media Management'}
+                      </h3>
+                      <button onClick={() => {setEditingArticle(null); setShowArticleEditor(true);}} className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'مقال جديد' : 'Write Article'}</button>
                     </div>
-                  ))}
-                </div>
+                    <div className="space-y-4">
+                      {news.map(n => (
+                        <div key={n.id} className="flex justify-between items-center p-4 border border-slate-200 dark:border-slate-800 rounded-2xl hover:shadow-md transition-shadow bg-white dark:bg-slate-900/50">
+                          <div>
+                            <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{n.title}</h4>
+                            <p className="text-sm text-slate-500">{n.date}</p>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${n.status === 'Published' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>{n.status}</span>
+                            <div className="flex gap-2 border-l border-slate-200 dark:border-slate-700 pl-4">
+                              <button onClick={() => {setEditingArticle(n); setShowArticleEditor(true);}} className="text-slate-600 dark:text-slate-400 hover:text-blue-500 p-2 transition-colors"><Edit size={16}/></button>
+                              <button onClick={() => handleDelete('news', n.id)} className="text-slate-600 dark:text-slate-400 hover:text-red-500 p-2 transition-colors"><Trash2 size={16}/></button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="glass-card rounded-3xl p-6">
+                    <SmartArticleEditor 
+                      initialData={editingArticle}
+                      onCancel={() => { setShowArticleEditor(false); setEditingArticle(null); }}
+                      onSave={handleSaveArticleFromEditor}
+                    />
+                  </div>
+                )}
               </div>
             )}
 

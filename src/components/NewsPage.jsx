@@ -98,8 +98,18 @@ export default function NewsPage() {
 
   const getLocalized = (obj, field, l) => {
     if (!obj) return '';
+    // Support new camelCase format (titleAr, titleEn) from SmartArticleEditor
+    if (l === 'ar' && obj[`${field}Ar`]) return obj[`${field}Ar`];
+    if (l === 'en' && obj[`${field}En`]) return obj[`${field}En`];
+    if (l === 'fr' && obj[`${field}Fr`]) return obj[`${field}Fr`];
+    
+    // Support old snake_case format (title_ar, title_en)
     if (obj[`${field}_${l}`]) return obj[`${field}_${l}`];
+    
+    // Support object format (title: {en: '', ar: ''})
     if (obj[field] && typeof obj[field] === 'object') return obj[field][l] || obj[field].en || '';
+    
+    // Fallback to base field
     return obj[field] || '';
   };
 
