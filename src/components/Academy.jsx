@@ -53,6 +53,8 @@ export default function Academy() {
               title_ar: 'تطوير تطبيقات الويب باستخدام رياكت', 
               description_en: 'Build modern web apps from scratch.', 
               description_ar: 'ابن تطبيقات ويب حديثة من الصفر.', 
+              courseIntroVideo: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+              courseIntroText: 'في هذا التدريب التجريبي، ستتعلم أساسيات بناء الواجهات المتقدمة. ستتعرف على كيفية عمل المكونات (Components) وكيفية إدارة الحالة (State).',
               track: 'Web Dev', level: 'Intermediate', rating: 4.8, students: 8400, duration: '8 Weeks', thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800',
               modules: [
                 {
