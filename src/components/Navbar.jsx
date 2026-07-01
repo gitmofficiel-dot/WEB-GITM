@@ -51,14 +51,14 @@ const Navbar = () => {
           </button>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-0.5">
             {navItems.map(item => {
               const isActive = currentPath === item.path;
               return (
                 <button
                   key={item.id}
                   onClick={() => navigate(item.path)}
-                  className={`relative px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  className={`relative px-2 lg:px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
                     isActive 
                       ? 'text-gitm-blue dark:text-gitm-cyan bg-blue-50/50 dark:bg-blue-900/20' 
                       : 'text-gitm-textLight dark:text-gitm-textDark hover:text-gitm-blue dark:hover:text-gitm-cyan hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
@@ -160,7 +160,7 @@ const Navbar = () => {
             )}
 
             {/* Mobile Menu Toggle */}
-            <button className="lg:hidden p-2 ml-1 text-gitm-textLight dark:text-gitm-textDark" onClick={() => setMobileOpen(true)}>
+            <button className="md:hidden p-2 ml-1 text-gitm-textLight dark:text-gitm-textDark" onClick={() => setMobileOpen(true)}>
               <Menu size={24} />
             </button>
           </div>
@@ -187,7 +187,7 @@ const Navbar = () => {
               {navItems.map(item => (
                 <button 
                   key={item.id} 
-                  onClick={() => navigate(item.path)} 
+                  onClick={() => { navigate(item.path); setMobileOpen(false); }} 
                   className="text-lg font-bold text-left rtl:text-right p-4 rounded-xl bg-gray-50 dark:bg-gitm-cardDark"
                 >
                   {lang === 'ar' ? item.label.ar : item.label.en}
