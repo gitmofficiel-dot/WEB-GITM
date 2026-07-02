@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, X, Send, User, Sparkles } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { streamChatCompletion, systemPrompt } from '../services/aiService';
 
 export default function FloatingAI() {
   const { lang } = useLanguage();
@@ -29,32 +30,44 @@ export default function FloatingAI() {
     }
   }, [messages, isOpen, isTyping]);
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const newMsg = { id: Date.now(), sender: 'user', text: input };
+    const userText = input.trim();
+    const newMsg = { id: Date.now(), sender: 'user', text: userText };
     setMessages(prev => [...prev, newMsg]);
     setInput('');
     setIsTyping(true);
 
-    // Simulate AI response based on keywords
-    setTimeout(() => {
-      let replyText = lang === 'ar' ? 'عذراً، لم أفهم طلبك بالكامل، لكن يمكنني مساعدتك في الأكاديمية أو المشاريع أو الفعاليات.' : 'Sorry, I didn\'t fully understand, but I can help you with Academy, Projects, or Events.';
-      
-      const lowerInput = newMsg.text.toLowerCase();
-      
-      if (lowerInput.includes('academy') || lowerInput.includes('أكاديمية') || lowerInput.includes('كورس') || lowerInput.includes('course')) {
-        replyText = lang === 'ar' ? 'يمكنك استكشاف مسارات الأكاديمية مثل الذكاء الاصطناعي وإنترنت الأشياء من خلال صفحة Academy من القائمة العلوية.' : 'You can explore our Academy tracks like Edge AI and IoT through the Academy page in the top menu.';
-      } else if (lowerInput.includes('project') || lowerInput.includes('مشروع')) {
-        replyText = lang === 'ar' ? 'لدينا العديد من المشاريع الرائعة في صفحة Tech Projects. هل تبحث عن مشروع معين؟' : 'We have many amazing projects in the Tech Projects page. Are you looking for a specific one?';
-      } else if (lowerInput.includes('certificat') || lowerInput.includes('شهادة')) {
-        replyText = lang === 'ar' ? 'يتم إصدار الشهادات تلقائياً عند إتمامك 100% من المسار التعليمي. يمكنك أيضاً التحقق منها عبر صفحة التحقق.' : 'Certificates are issued automatically upon 100% completion of a track. You can also verify them via the Verification page.';
-      }
+    const apiMessages = [
+      { role: 'system', content: lang === 'ar' ? systemPrompt.ar : systemPrompt.en },
+      ...messages.map(m => ({
+        role: m.sender === 'ai' ? 'assistant' : 'user',
+        content: m.text
+      })),
+      { role: 'user', content: userText }
+    ];
 
-      setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: replyText }]);
+    try {
+      const aiMsgId = Date.now() + 1;
+      setMessages(prev => [...prev, { id: aiMsgId, sender: 'ai', text: '' }]);
+      
+      await streamChatCompletion(apiMessages, (accumulatedText) => {
+        setIsTyping(false);
+        setMessages(prev => 
+          prev.map(msg => msg.id === aiMsgId ? { ...msg, text: accumulatedText } : msg)
+        );
+      });
+    } catch (error) {
+      console.error(error);
       setIsTyping(false);
-    }, 1500);
+      setMessages(prev => [...prev, { 
+        id: Date.now() + 2, 
+        sender: 'ai', 
+        text: lang === 'ar' ? 'عذراً، حدث خطأ أثناء الاتصال. يرجى التأكد من إضافة VITE_OPENROUTER_API_KEY.' : 'Sorry, a connection error occurred. Please ensure VITE_OPENROUTER_API_KEY is set.' 
+      }]);
+    }
   };
 
   return (
