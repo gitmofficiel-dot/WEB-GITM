@@ -302,8 +302,13 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
                    <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0">
                      {member.initials || '?'}
                    </div>
-                   <input type="text" placeholder="Name" value={member.name} onChange={e=>handleUpdateMember(member.id, 'name', e.target.value)} className="flex-1 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm"/>
-                   <input type="text" placeholder="Role (e.g. Lead Dev)" value={member.role} onChange={e=>handleUpdateMember(member.id, 'role', e.target.value)} className="flex-1 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm"/>
+                   <div className="flex-1 flex flex-col gap-2">
+                     <div className="flex gap-2">
+                       <input type="text" placeholder="Name" value={member.name} onChange={e=>handleUpdateMember(member.id, 'name', e.target.value)} className="flex-1 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm"/>
+                       <input type="text" placeholder="Role (e.g. Lead Dev)" value={member.role} onChange={e=>handleUpdateMember(member.id, 'role', e.target.value)} className="flex-1 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm"/>
+                     </div>
+                     <input type="text" placeholder="Profile URL (e.g. LinkedIn)" value={member.profileUrl || ''} onChange={e=>handleUpdateMember(member.id, 'profileUrl', e.target.value)} className="w-full p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm" dir="ltr"/>
+                   </div>
                    <button onClick={() => handleRemoveMember(member.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg"><Trash2 size={18}/></button>
                  </div>
                ))}

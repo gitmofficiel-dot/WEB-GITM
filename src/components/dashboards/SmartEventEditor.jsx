@@ -47,8 +47,8 @@ export default function SmartEventEditor({ initialData, onCancel, onSave, standa
   const [newAgendaItem, setNewAgendaItem] = useState({ time: '', title: '', desc: '' });
 
   // Speakers (Mocking selection for now, could be dynamic)
-  const [speakers, setSpeakers] = useState(initialData?.speakers || []);
-  const [speakerInput, setSpeakerInput] = useState('');
+  const normalizeSpeakers = (arr) => (arr || []).map(sp => typeof sp === 'string' ? { id: `sp-${Date.now()}-${Math.random()}`, name: sp, profileUrl: '' } : sp);
+  const [speakers, setSpeakers] = useState(normalizeSpeakers(initialData?.speakers || []));  const [speakerInput, setSpeakerInput] = useState('');
 
   // Image & Rich Media
   const [coverImage, setCoverImage] = useState(initialData?.imageUrl || null);
@@ -86,7 +86,7 @@ export default function SmartEventEditor({ initialData, onCancel, onSave, standa
             setMaxCapacity(data.maxCapacity || 50);
             setIsRegistrationOpen(data.isRegistrationOpen ?? true);
             setAgenda(data.agenda || []);
-            setSpeakers(data.speakers || []);
+            setSpeakers(normalizeSpeakers(data.speakers || []));
             setCoverImage(data.imageUrl || data.mainImage || null);
             setFbVideo(data.fbVideo || '');
             setYtVideo(data.ytVideo || '');
@@ -141,14 +141,16 @@ export default function SmartEventEditor({ initialData, onCancel, onSave, standa
     setAgenda(agenda.filter(a => a.id !== id));
   };
 
-  const handleAddSpeaker = (e) => {
-    if (e.key === 'Enter' && speakerInput.trim()) {
-      e.preventDefault();
-      if (!speakers.includes(speakerInput.trim())) {
-        setSpeakers([...speakers, speakerInput.trim()]);
-      }
-      setSpeakerInput('');
-    }
+  const handleAddSpeaker = () => {
+    setSpeakers([...speakers, { id: `sp-${Date.now()}`, name: '', profileUrl: '' }]);
+  };
+
+  const handleUpdateSpeaker = (id, field, value) => {
+    setSpeakers(speakers.map(sp => sp.id === id ? { ...sp, [field]: value } : sp));
+  };
+
+  const handleRemoveSpeaker = (id) => {
+    setSpeakers(speakers.filter(sp => sp.id !== id));
   };
 
   const handleGenerateMarketing = () => {
@@ -483,14 +485,20 @@ export default function SmartEventEditor({ initialData, onCancel, onSave, standa
           {/* Speakers */}
           <div className="glass-card rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
             <h3 className="font-bold text-[#1e3a5f] dark:text-white mb-4">{lang === 'ar' ? 'المتحدثون والمدربون' : 'Speakers & Trainers'}</h3>
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="space-y-3">
               {speakers.map(sp => (
-                <span key={sp} className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold rounded-lg flex items-center gap-1">
-                  {sp} <X size={12} className="cursor-pointer hover:text-red-500" onClick={() => setSpeakers(speakers.filter(s => s !== sp))} />
-                </span>
+                <div key={sp.id} className="flex gap-3 items-center bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div className="flex-1 flex flex-col md:flex-row gap-2">
+                    <input type="text" placeholder="Name" value={sp.name} onChange={e=>handleUpdateSpeaker(sp.id, 'name', e.target.value)} className="flex-1 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm"/>
+                    <input type="text" placeholder="Profile URL (e.g. LinkedIn)" value={sp.profileUrl || ''} onChange={e=>handleUpdateSpeaker(sp.id, 'profileUrl', e.target.value)} className="flex-1 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm" dir="ltr"/>
+                  </div>
+                  <button onClick={() => handleRemoveSpeaker(sp.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg"><Trash2 size={18}/></button>
+                </div>
               ))}
+              <button onClick={handleAddSpeaker} className="w-full py-2 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 font-bold hover:bg-slate-50 dark:hover:bg-white dark:bg-slate-900 transition-colors flex justify-center items-center gap-2">
+                <Plus size={18}/> {lang === 'ar' ? 'إضافة متحدث' : 'Add Speaker'}
+              </button>
             </div>
-            <input type="text" placeholder={lang === 'ar' ? 'ابحث عن عضو واضغط Enter' : 'Type name & press Enter'} value={speakerInput} onChange={e=>setSpeakerInput(e.target.value)} onKeyDown={handleAddSpeaker} className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm outline-none focus:border-indigo-500" dir="auto" />
           </div>
 
           {/* AI Marketing */}
