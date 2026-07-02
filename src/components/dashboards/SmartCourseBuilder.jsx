@@ -27,6 +27,173 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
+// --- Axis Editor Component ---
+const AxisEditor = ({ axis, moduleId, lessonId, axisIndex, onUpdateAxis, onRemoveAxis }) => {
+  const { lang } = useLanguage();
+  const [activeTab, setActiveTab] = useState('content'); // content, media, quiz
+
+  const handleUpdate = (field, value) => {
+    onUpdateAxis(moduleId, lessonId, axis.id, field, value);
+  };
+
+  const addQuizQuestion = () => {
+    const newQuestions = [...(axis.quiz || []), { id: `q-${Date.now()}`, question: '', options: ['', '', '', ''], correctIndex: 0 }];
+    handleUpdate('quiz', newQuestions);
+  };
+
+  const updateQuizQuestion = (qId, field, value) => {
+    const updated = (axis.quiz || []).map(q => q.id === qId ? { ...q, [field]: value } : q);
+    handleUpdate('quiz', updated);
+  };
+
+  const removeQuizQuestion = (qId) => {
+    handleUpdate('quiz', (axis.quiz || []).filter(q => q.id !== qId));
+  };
+
+  const updateQuizOption = (qId, optIndex, value) => {
+    const updated = (axis.quiz || []).map(q => {
+      if (q.id === qId) {
+        const newOptions = [...q.options];
+        newOptions[optIndex] = value;
+        return { ...q, options: newOptions };
+      }
+      return q;
+    });
+    handleUpdate('quiz', updated);
+  };
+
+  const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const newAttachments = files.map(file => ({
+      id: `file-${Date.now()}-${Math.random()}`,
+      name: file.name,
+      size: (file.size / 1024).toFixed(1) + ' KB',
+      type: file.type
+    }));
+    handleUpdate('attachments', [...(axis.attachments || []), ...newAttachments]);
+  };
+
+  const removeAttachment = (fileId) => {
+    handleUpdate('attachments', (axis.attachments || []).filter(a => a.id !== fileId));
+  };
+
+  return (
+    <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl relative flex flex-col gap-4 shadow-sm mb-3">
+      {/* Header */}
+      <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
+        <span className="font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+          <Activity size={16} className="text-teal-500"/> 
+          {lang === 'ar' ? `المحور ${axisIndex + 1}` : `Axis ${axisIndex + 1}`}
+        </span>
+        <button onClick={() => onRemoveAxis(moduleId, lessonId, axis.id)} className="text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-1.5 rounded-lg transition-colors">
+          <Trash2 size={16}/>
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2">
+        <button onClick={() => setActiveTab('content')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'content' ? 'bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
+          {lang === 'ar' ? 'المحتوى الأساسي' : 'Basic Content'}
+        </button>
+        <button onClick={() => setActiveTab('media')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'media' ? 'bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
+          {lang === 'ar' ? 'الوسائط والمرفقات' : 'Media & Files'}
+        </button>
+        <button onClick={() => setActiveTab('quiz')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'quiz' ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
+          {lang === 'ar' ? 'الاختبار (Quiz)' : 'Quiz'}
+        </button>
+      </div>
+
+      {/* Content Tab */}
+      {activeTab === 'content' && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-bold text-slate-500 block mb-1">{lang === 'ar' ? 'العنوان الرئيسي' : 'Main Title'}</label>
+              <input type="text" value={axis.title || ''} onChange={(e) => handleUpdate('title', e.target.value)} placeholder={lang === 'ar' ? 'مثال: مقدمة في الذكاء الاصطناعي' : 'e.g. Introduction to AI'} className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:border-teal-500" />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-500 block mb-1">{lang === 'ar' ? 'العنوان الفرعي' : 'Subtitle'}</label>
+              <input type="text" value={axis.subtitle || ''} onChange={(e) => handleUpdate('subtitle', e.target.value)} placeholder={lang === 'ar' ? 'مثال: نظرة عامة وتاريخ' : 'e.g. Overview & History'} className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:border-teal-500" />
+            </div>
+          </div>
+          <div>
+            <label className="text-xs font-bold text-slate-500 block mb-1">{lang === 'ar' ? 'الشرح النصي (الفقرات)' : 'Text Explanation'}</label>
+            <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+              <ReactQuill theme="snow" value={axis.content || ''} onChange={(val) => handleUpdate('content', val)} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 h-40 pb-10" placeholder={lang === 'ar' ? 'اكتب تفاصيل الدرس هنا...' : 'Write lesson details here...'}/>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Media Tab */}
+      {activeTab === 'media' && (
+        <div className="space-y-4 animate-fade-in">
+          <div>
+            <label className="text-xs font-bold text-slate-500 block mb-1">{lang === 'ar' ? 'رابط الفيديو (YouTube / Facebook)' : 'Video URL'}</label>
+            <div className="flex gap-2">
+              <div className="bg-slate-100 dark:bg-slate-800 p-2 rounded-lg text-slate-500 flex items-center justify-center shrink-0"><Video size={18}/></div>
+              <input type="text" value={axis.videoUrl || ''} onChange={(e) => handleUpdate('videoUrl', e.target.value)} placeholder="https://..." className="flex-1 p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:border-teal-500" dir="ltr" />
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
+            <label className="text-xs font-bold text-slate-500 block mb-2">{lang === 'ar' ? 'مرفقات المحور (صور، ملفات)' : 'Axis Attachments'}</label>
+            <div className="space-y-2 mb-3">
+              {(axis.attachments || []).map((file) => (
+                <div key={file.id} className="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
+                  <span className="text-xs font-medium flex items-center gap-2"><FileText size={14} className="text-blue-500"/> {file.name} <span className="text-slate-400">({file.size})</span></span>
+                  <button onClick={() => removeAttachment(file.id)} className="text-slate-400 hover:text-red-500"><X size={14}/></button>
+                </div>
+              ))}
+            </div>
+            <label className="w-full py-2 border border-dashed border-slate-300 dark:border-slate-600 rounded-lg text-slate-500 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+              <Plus size={14} /> {lang === 'ar' ? 'رفع ملفات أو صور' : 'Upload Files or Images'}
+              <input type="file" multiple onChange={handleFileUpload} className="hidden" />
+            </label>
+          </div>
+        </div>
+      )}
+
+      {/* Quiz Tab */}
+      {activeTab === 'quiz' && (
+        <div className="space-y-4 animate-fade-in">
+          <label className="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-xl cursor-pointer">
+            <input type="checkbox" checked={axis.hasQuiz || false} onChange={(e) => handleUpdate('hasQuiz', e.target.checked)} className="w-4 h-4 text-amber-500 rounded border-gray-300 focus:ring-amber-500" />
+            <span className="text-sm font-bold text-amber-800 dark:text-amber-400">{lang === 'ar' ? 'تضمين اختبار في هذا المحور؟' : 'Include a quiz in this axis?'}</span>
+          </label>
+
+          {axis.hasQuiz && (
+            <div className="space-y-6 mt-4">
+              {(axis.quiz || []).map((q, qIndex) => (
+                <div key={q.id} className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 relative">
+                  <div className="flex justify-between items-start mb-3">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Question {qIndex + 1}</span>
+                    <button onClick={() => removeQuizQuestion(q.id)} className="text-red-400 hover:text-red-500"><X size={16}/></button>
+                  </div>
+                  <input type="text" value={q.question} onChange={(e) => updateQuizQuestion(q.id, 'question', e.target.value)} placeholder={lang === 'ar' ? 'نص السؤال...' : 'Question text...'} className="w-full p-2 mb-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm outline-none focus:border-amber-500 font-bold" />
+                  
+                  <div className="space-y-2">
+                    <span className="text-xs font-bold text-slate-500 block">{lang === 'ar' ? 'الخيارات (حدد الإجابة الصحيحة)' : 'Options (Select correct answer)'}</span>
+                    {q.options.map((opt, optIndex) => (
+                      <div key={optIndex} className="flex gap-2 items-center">
+                        <input type="radio" name={`correct-${q.id}`} checked={q.correctIndex === optIndex} onChange={() => updateQuizQuestion(q.id, 'correctIndex', optIndex)} className="w-4 h-4 text-amber-500" />
+                        <input type="text" value={opt} onChange={(e) => updateQuizOption(q.id, optIndex, e.target.value)} placeholder={`Option ${optIndex + 1}`} className={`flex-1 p-2 rounded-lg border text-sm outline-none ${q.correctIndex === optIndex ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'}`} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              <button onClick={addQuizQuestion} className="w-full py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-lg transition-colors flex justify-center items-center gap-2 text-sm">
+                <Plus size={16}/> {lang === 'ar' ? 'إضافة سؤال' : 'Add Question'}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // --- Sortable Module Component ---
 const SortableModule = ({ module, onRemove, onAddLesson, onUpdateModule, onRemoveLesson, onUpdateLesson, onAddAxis, onUpdateAxis, onRemoveAxis }) => {
   const {
@@ -77,62 +244,15 @@ const SortableModule = ({ module, onRemove, onAddLesson, onUpdateModule, onRemov
              <div className="space-y-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-200 dark:border-slate-700/50">
                <h4 className="text-xs font-bold text-slate-500 uppercase">Lesson Axes (المحاور)</h4>
                {(lesson.axes || []).map((axis, axisIndex) => (
-                 <div key={axis.id} className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg relative flex flex-col gap-2">
-                   <div className="flex justify-between items-center">
-                     <span className="text-xs font-bold text-slate-400">Axis {axisIndex + 1}</span>
-                     <button onClick={() => onRemoveAxis(module.id, lesson.id, axis.id)} className="text-red-400 hover:text-red-500"><X size={14}/></button>
-                   </div>
-                   
-                   <input 
-                     type="text" 
-                     value={axis.title} 
-                     onChange={(e) => onUpdateAxis(module.id, lesson.id, axis.id, 'title', e.target.value)}
-                     placeholder="Axis Title (e.g. Introduction)" 
-                     className="w-full p-2 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:border-teal-500"
-                   />
-                   
-                   <div className="flex gap-2">
-                     <select 
-                       value={axis.type} 
-                       onChange={(e) => onUpdateAxis(module.id, lesson.id, axis.id, 'type', e.target.value)}
-                       className="p-2 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:border-teal-500 w-1/3"
-                     >
-                       <option value="video">Video</option>
-                       <option value="article">Article/Text</option>
-                       <option value="code">Coding Challenge</option>
-                     </select>
-                     
-                     {axis.type === 'video' && (
-                       <input 
-                         type="text" 
-                         value={axis.videoUrl || ''} 
-                         onChange={(e) => onUpdateAxis(module.id, lesson.id, axis.id, 'videoUrl', e.target.value)}
-                         placeholder="YouTube/Facebook Video URL" 
-                         className="flex-1 p-2 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:border-teal-500"
-                         dir="ltr"
-                       />
-                     )}
-                   </div>
-
-                   {axis.type === 'code' && (
-                     <textarea 
-                       value={axis.instructions || ''} 
-                       onChange={(e) => onUpdateAxis(module.id, lesson.id, axis.id, 'instructions', e.target.value)}
-                       placeholder="Coding instructions..." 
-                       className="w-full p-2 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:border-teal-500 h-16 resize-none"
-                     />
-                   )}
-                   
-                   {axis.type === 'article' && (
-                     <textarea 
-                       value={axis.content || ''} 
-                       onChange={(e) => onUpdateAxis(module.id, lesson.id, axis.id, 'content', e.target.value)}
-                       placeholder="Article HTML content..." 
-                       className="w-full p-2 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:border-teal-500 h-20 resize-none font-mono"
-                       dir="ltr"
-                     />
-                   )}
-                 </div>
+                 <AxisEditor 
+                   key={axis.id} 
+                   axis={axis} 
+                   moduleId={module.id} 
+                   lessonId={lesson.id} 
+                   axisIndex={axisIndex} 
+                   onUpdateAxis={onUpdateAxis} 
+                   onRemoveAxis={onRemoveAxis} 
+                 />
                ))}
                <button 
                  onClick={() => onAddAxis(module.id, lesson.id)}
@@ -297,7 +417,16 @@ export default function SmartCourseBuilder({ initialData, onCancel, onSave, stan
               }
               return {
                 ...l,
-                axes: [...(l.axes || []), { id: `axis-${Date.now()}`, title: '', type: 'video', content: '', videoUrl: '' }]
+                axes: [...(l.axes || []), { 
+                  id: `axis-${Date.now()}`, 
+                  title: '', 
+                  subtitle: '', 
+                  content: '', 
+                  videoUrl: '', 
+                  attachments: [], 
+                  hasQuiz: false, 
+                  quiz: [] 
+                }]
               };
             }
             return l;
