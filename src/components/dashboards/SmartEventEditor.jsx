@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calendar, MapPin, Video, Users, Clock, Plus, Trash2, Save, 
-  X, ArrowLeft, Bot, CheckCircle, Activity, Image as ImageIcon, Map, AlertCircle
+  X, ArrowLeft, Bot, CheckCircle, Activity, Image as ImageIcon, Map, AlertCircle, Sparkles
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import ReactQuill from 'react-quill-new';
