@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { Sun, Moon, Globe, Menu, X, LayoutDashboard, LogOut, ChevronDown } from 'lucide-react';
+import { Sun, Moon, Globe, Menu, X, LayoutDashboard, LogOut, ChevronDown, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
-  const { lang, changeLanguage, theme, toggleTheme, user, logoutUser } = useLanguage();
+  const { lang, changeLanguage, theme, toggleTheme, user, logoutUser, users } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -14,6 +14,22 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langDropdown, setLangDropdown] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    const q = searchQuery.toLowerCase();
+    const results = (users || []).filter(u => 
+      u.name.toLowerCase().includes(q) || 
+      (u.memberId && u.memberId.toLowerCase().includes(q))
+    );
+    setSearchResults(results);
+  }, [searchQuery, users]);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -71,7 +87,63 @@ const Navbar = () => {
           </nav>
 
           {/* Right Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 relative">
+            
+            {/* Search Bar */}
+            <div className="relative flex items-center">
+              <AnimatePresence>
+                {searchOpen && (
+                  <motion.div 
+                    initial={{ width: 0, opacity: 0 }} 
+                    animate={{ width: 200, opacity: 1 }} 
+                    exit={{ width: 0, opacity: 0 }}
+                    className="overflow-hidden mr-2"
+                  >
+                    <input 
+                      type="text" 
+                      placeholder={lang === 'ar' ? 'الاسم أو رقم العضوية...' : 'Name or Member ID...'}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full p-2 text-sm bg-gray-100 dark:bg-gray-800 border-none outline-none rounded-lg text-gitm-textLight dark:text-gitm-textDark focus:ring-2 focus:ring-gitm-blue"
+                      autoFocus
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <button 
+                onClick={() => { setSearchOpen(!searchOpen); setSearchQuery(''); }} 
+                className="p-2.5 rounded-lg text-gitm-mutedLight dark:text-gitm-mutedDark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                {searchOpen ? <X size={18} /> : <Search size={18} />}
+              </button>
+              
+              {/* Search Results Dropdown */}
+              <AnimatePresence>
+                {searchOpen && searchQuery && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                    className="absolute top-full mt-2 right-0 w-72 max-h-80 overflow-y-auto bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 py-2"
+                  >
+                    {searchResults.length > 0 ? (
+                      searchResults.map(res => (
+                        <button 
+                          key={res.id} 
+                          onClick={() => { navigate(`/profile/${res.id}`); setSearchOpen(false); setSearchQuery(''); }}
+                          className="w-full text-left rtl:text-right px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 flex flex-col border-b border-gray-100 dark:border-gray-800 last:border-0"
+                        >
+                          <span className="font-bold text-sm text-gitm-textLight dark:text-gitm-textDark">{res.name}</span>
+                          <span className="text-xs text-gitm-mutedLight dark:text-gitm-mutedDark">{res.memberId || 'N/A'} - {res.role}</span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-sm text-center text-gitm-mutedLight dark:text-gitm-mutedDark">
+                        {lang === 'ar' ? 'لا توجد نتائج' : 'No results found'}
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             
             <button onClick={toggleTheme} className="p-2.5 rounded-lg text-gitm-mutedLight dark:text-gitm-mutedDark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
