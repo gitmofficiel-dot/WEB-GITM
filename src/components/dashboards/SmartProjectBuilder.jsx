@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Rocket, Save, X, ArrowLeft, Image as ImageIcon, Github, Users, Activity, Plus, Trash2, Percent
+  Rocket, Save, X, ArrowLeft, Image as ImageIcon, Github, Users, Activity, Plus, Trash2, Percent, AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useParams, useNavigate } from 'react-router-dom';
+import { doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../config/firebase';
+import { toast } from '../../utils/toast';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
-export default function SmartProjectBuilder({ initialData, onCancel, onSave }) {
-  const { lang } = useLanguage();
+export default function SmartProjectBuilder({ initialData, onCancel, onSave, standalone }) {
+  const { lang, user } = useLanguage();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [showDraftModal, setShowDraftModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(standalone && !!id);
   
   const [formData, setFormData] = useState({
     titleAr: initialData?.titleAr || initialData?.title || '',
@@ -29,7 +37,106 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave }) {
   const [attachments, setAttachments] = useState(initialData?.attachments || []);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Fetch data if standalone and editing
+  React.useEffect(() => {
+    if (standalone && id) {
+      const fetchProject = async () => {
+        try {
+          const docRef = doc(db, 'projects', id);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setFormData({
+              titleAr: data.titleAr || data.title || '',
+              titleEn: data.titleEn || '',
+              descriptionAr: data.descriptionAr || data.description || '',
+              descriptionEn: data.descriptionEn || '',
+              status: data.status || 'in-progress',
+              category: data.category || 'Robotics',
+              githubUrl: data.githubUrl || '',
+              progress: data.progress || 0,
+              coverImage: data.coverImage || '',
+              fbVideo: data.fbVideo || '',
+              ytVideo: data.ytVideo || '',
+            });
+            setTeamMembers(data.teamMembers || []);
+            setTechStack(data.techStack?.join(', ') || '');
+            setAttachments(data.attachments || []);
+          }
+        } catch (error) {
+          console.error("Error fetching project:", error);
+          toast.error(lang === 'ar' ? 'فشل جلب بيانات المشروع' : 'Failed to fetch project');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchProject();
+    } else if (standalone && !id) {
+      // Load draft from local storage if new
+      const draft = localStorage.getItem('gitm_project_draft');
+      if (draft) {
+        try {
+          const parsed = JSON.parse(draft);
+          setFormData(parsed.formData || {});
+          setTeamMembers(parsed.teamMembers || []);
+          setTechStack(parsed.techStack || '');
+        } catch(e) { console.error(e); }
+      }
+    }
+  }, [standalone, id, lang]);
+
+  // Auto-save to local storage if standalone and new
+  React.useEffect(() => {
+    if (standalone && !id) {
+      const draft = { formData, teamMembers, techStack };
+      localStorage.setItem('gitm_project_draft', JSON.stringify(draft));
+    }
+  }, [formData, teamMembers, techStack, standalone, id]);
+
   const fileInputRef = React.useRef(null);
+
+  const handleCancelClick = () => {
+    if (standalone) {
+      setShowDraftModal(true);
+    } else {
+      if (onCancel) onCancel();
+    }
+  };
+
+  const handleConfirmDraft = async (saveAsDraft) => {
+    if (saveAsDraft) {
+      setIsSaving(true);
+      try {
+        const projectData = {
+          ...formData,
+          teamMembers,
+          attachments,
+          techStack: techStack.split(',').map(s => s.trim()).filter(Boolean),
+          status: 'draft', // Save as draft
+          updatedAt: serverTimestamp(),
+        };
+
+        if (id) {
+          await updateDoc(doc(db, 'projects', id), projectData);
+        } else {
+          projectData.createdAt = serverTimestamp();
+          await addDoc(collection(db, 'projects'), projectData);
+        }
+        toast.success(lang === 'ar' ? 'تم الحفظ كمسودة بنجاح' : 'Draft saved successfully');
+      } catch (error) {
+        console.error(error);
+        toast.error(lang === 'ar' ? 'فشل حفظ المسودة' : 'Failed to save draft');
+      } finally {
+        setIsSaving(false);
+      }
+    }
+    
+    // Clear local draft and close
+    if (standalone && !id) {
+      localStorage.removeItem('gitm_project_draft');
+    }
+    window.close(); // Close the tab
+  };
 
   const handleAddMember = () => {
     setTeamMembers([...teamMembers, { id: Date.now(), name: '', role: '', initials: '' }]);
@@ -53,7 +160,7 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave }) {
     setTeamMembers(teamMembers.filter(m => m.id !== id));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsSaving(true);
     const projectData = {
       ...formData,
@@ -61,7 +168,29 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave }) {
       attachments,
       techStack: techStack.split(',').map(s => s.trim()).filter(Boolean),
     };
-    onSave(projectData);
+
+    if (standalone) {
+      try {
+        projectData.updatedAt = serverTimestamp();
+        if (id) {
+          await updateDoc(doc(db, 'projects', id), projectData);
+          toast.success(lang === 'ar' ? 'تم تحديث المشروع' : 'Project updated');
+        } else {
+          projectData.createdAt = serverTimestamp();
+          await addDoc(collection(db, 'projects'), projectData);
+          toast.success(lang === 'ar' ? 'تم نشر المشروع' : 'Project published');
+        }
+        localStorage.removeItem('gitm_project_draft');
+        window.close();
+      } catch (error) {
+        console.error(error);
+        toast.error(lang === 'ar' ? 'خطأ في الحفظ' : 'Error saving');
+        setIsSaving(false);
+      }
+    } else {
+      if (onSave) onSave(projectData);
+      setIsSaving(false);
+    }
   };
 
   const handleFileUpload = (e) => {
@@ -74,12 +203,45 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave }) {
     setAttachments([...attachments, ...newAttachments]);
   };
 
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900"><Activity className="animate-spin text-indigo-500" size={32}/></div>;
+  }
+
   return (
     <div className="w-full bg-slate-50 dark:bg-slate-900 min-h-screen pb-12">
+      
+      {/* Draft Modal */}
+      {showDraftModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-slate-900/50 backdrop-blur-sm">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-2xl max-w-sm w-full">
+            <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle size={24} />
+            </div>
+            <h3 className="text-xl font-bold text-center text-slate-800 dark:text-white mb-2">
+              {lang === 'ar' ? 'حفظ كمسودة؟' : 'Save as Draft?'}
+            </h3>
+            <p className="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm">
+              {lang === 'ar' ? 'لديك تغييرات غير محفوظة. هل تريد حفظها كمسودة قبل المغادرة؟' : 'You have unsaved changes. Do you want to save as draft before leaving?'}
+            </p>
+            <div className="flex flex-col gap-2">
+              <button onClick={() => handleConfirmDraft(true)} className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-colors">
+                {lang === 'ar' ? 'حفظ كمسودة' : 'Save as Draft'}
+              </button>
+              <button onClick={() => handleConfirmDraft(false)} className="w-full py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl font-bold transition-colors">
+                {lang === 'ar' ? 'الخروج بدون حفظ' : 'Discard & Leave'}
+              </button>
+              <button onClick={() => setShowDraftModal(false)} className="w-full py-2.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-bold transition-colors">
+                {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* Topbar */}
       <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40 px-6 py-4 flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-4">
-          <button onClick={onCancel} className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 rounded-xl transition-colors">
+          <button onClick={handleCancelClick} className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 rounded-xl transition-colors">
              <ArrowLeft size={20} className="text-slate-700 dark:text-slate-300"/>
           </button>
           <div>

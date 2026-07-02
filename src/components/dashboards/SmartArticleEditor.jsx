@@ -4,14 +4,22 @@ import 'react-quill-new/dist/quill.snow.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Save, Eye, Maximize, Minimize, Bot, CheckCircle, Upload, 
-  Tag, X, Sparkles, FileText, Activity, Layers, ArrowLeft, Edit3, Globe
+  Tag, X, Sparkles, FileText, Activity, Layers, ArrowLeft, Edit3, Globe, AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useParams, useNavigate } from 'react-router-dom';
+import { doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../config/firebase';
+import { toast } from '../../utils/toast';
 
 const PREDEFINED_CATEGORIES = ['مشاريع الأنظمة المدمجة', 'أخبار الروبوت علي', 'تغطيات الهاكاثون', 'تحديثات NABD-X', 'ورشات عمل', 'أكاديمية GITM', 'Technology'];
 
-export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
-  const { lang } = useLanguage();
+export default function SmartArticleEditor({ initialData, onCancel, onSave, standalone }) {
+  const { lang, user } = useLanguage();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [showDraftModal, setShowDraftModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(standalone && !!id);
   
   // States
   const [titleAr, setTitleAr] = useState(initialData?.titleAr || initialData?.title || '');
@@ -38,25 +46,53 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
   const [aiLoading, setAiLoading] = useState(''); // 'intro', 'proofread', 'seo'
   const [seoScore, setSeoScore] = useState(null);
 
-  // --- Auto-Save Drafts ---
+  // --- Auto-Save Drafts & Standalone Load ---
   useEffect(() => {
-    const savedDraft = localStorage.getItem('gitm_article_draft');
-    if (savedDraft && !initialData) {
-      try {
-        const draft = JSON.parse(savedDraft);
-        if (draft.titleAr) setTitleAr(draft.titleAr);
-        if (draft.titleEn) setTitleEn(draft.titleEn);
-        if (draft.content) setContent(draft.content);
-        if (draft.tags) setTags(draft.tags);
-        if (draft.category) setSelectedCategory(draft.category);
-        if (draft.mainImage) setMainImage(draft.mainImage);
-        if (draft.fbVideo) setFbVideo(draft.fbVideo);
-        if (draft.ytVideo) setYtVideo(draft.ytVideo);
-      } catch (e) {
-        console.error('Failed to parse draft', e);
+    if (standalone && id) {
+      const fetchArticle = async () => {
+        try {
+          const docRef = doc(db, 'news', id);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setTitleAr(data.titleAr || data.title || '');
+            setTitleEn(data.titleEn || '');
+            setContent(data.content || '');
+            setTags(data.tags || []);
+            setSelectedCategory(data.category || '');
+            setMainImage(data.imageUrl || data.mainImage || '');
+            setFbVideo(data.fbVideo || '');
+            setYtVideo(data.ytVideo || '');
+            setAttachments(data.attachments || []);
+          }
+        } catch (error) {
+          console.error("Error fetching article:", error);
+          toast.error(lang === 'ar' ? 'فشل جلب المقال' : 'Failed to fetch article');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchArticle();
+    } else if (!initialData) {
+      const savedDraft = localStorage.getItem('gitm_article_draft');
+      if (savedDraft) {
+        try {
+          const draft = JSON.parse(savedDraft);
+          if (draft.titleAr) setTitleAr(draft.titleAr);
+          if (draft.titleEn) setTitleEn(draft.titleEn);
+          if (draft.content) setContent(draft.content);
+          if (draft.tags) setTags(draft.tags);
+          if (draft.category) setSelectedCategory(draft.category);
+          if (draft.mainImage) setMainImage(draft.mainImage);
+          if (draft.fbVideo) setFbVideo(draft.fbVideo);
+          if (draft.ytVideo) setYtVideo(draft.ytVideo);
+        } catch (e) {
+          console.error('Failed to parse draft', e);
+        }
       }
+      setIsLoading(false);
     }
-  }, []);
+  }, [standalone, id]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -113,6 +149,90 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
       type: file.type
     }));
     setAttachments([...attachments, ...newAttachments]);
+  };
+
+  const handleCancelClick = () => {
+    if (standalone) {
+      setShowDraftModal(true);
+    } else {
+      if (onCancel) onCancel();
+    }
+  };
+
+  const handleConfirmDraft = async (saveAsDraft) => {
+    if (saveAsDraft) {
+      setSaveStatus('saving');
+      try {
+        const articleData = {
+          titleAr,
+          titleEn,
+          title: titleAr || titleEn,
+          content,
+          tags,
+          category: selectedCategory,
+          attachments,
+          imageUrl: mainImage,
+          mainImage,
+          fbVideo,
+          ytVideo,
+          author: user?.displayName || 'Admin',
+          status: 'draft',
+          updatedAt: serverTimestamp(),
+        };
+
+        if (id) {
+          await updateDoc(doc(db, 'news', id), articleData);
+        } else {
+          articleData.createdAt = serverTimestamp();
+          articleData.views = 0;
+          await addDoc(collection(db, 'news'), articleData);
+        }
+        toast.success(lang === 'ar' ? 'تم الحفظ كمسودة بنجاح' : 'Draft saved successfully');
+      } catch (error) {
+        console.error(error);
+        toast.error(lang === 'ar' ? 'فشل حفظ المسودة' : 'Failed to save draft');
+      } finally {
+        setSaveStatus('');
+      }
+    }
+    
+    if (standalone && !id) localStorage.removeItem('gitm_article_draft');
+    window.close();
+  };
+
+  const handlePublish = async () => {
+    const articleData = { titleAr, titleEn, title: titleAr || titleEn, content, tags, category: selectedCategory, attachments, imageUrl: mainImage, mainImage, fbVideo, ytVideo };
+    localStorage.removeItem('gitm_article_draft');
+    
+    if (standalone) {
+      setSaveStatus('saving');
+      try {
+        const dataToSave = {
+          ...articleData,
+          author: user?.displayName || 'Admin',
+          status: 'Published',
+          date: new Date().toISOString().split('T')[0],
+          updatedAt: serverTimestamp(),
+        };
+
+        if (id) {
+          await updateDoc(doc(db, 'news', id), dataToSave);
+          toast.success(lang === 'ar' ? 'تم تحديث المقال بنجاح' : 'Article updated successfully');
+        } else {
+          dataToSave.createdAt = serverTimestamp();
+          dataToSave.views = 0;
+          await addDoc(collection(db, 'news'), dataToSave);
+          toast.success(lang === 'ar' ? 'تم نشر المقال بنجاح' : 'Article published successfully');
+        }
+        window.close();
+      } catch (error) {
+        console.error(error);
+        toast.error(lang === 'ar' ? 'حدث خطأ أثناء النشر' : 'Error publishing article');
+        setSaveStatus('');
+      }
+    } else {
+      if (onSave) onSave(articleData);
+    }
   };
 
   // --- Mock AI Functions ---
@@ -214,13 +334,46 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
     );
   }
 
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900"><Activity className="animate-spin text-blue-500" size={32}/></div>;
+  }
+
   return (
-    <div className={`transition-all duration-500 ${isZenMode ? 'fixed inset-0 z-50 bg-slate-50 dark:bg-slate-900 p-4 sm:p-8 overflow-y-auto' : 'w-full'}`}>
+    <div className={`transition-all duration-500 ${isZenMode ? 'fixed inset-0 z-50 bg-slate-50 dark:bg-slate-900 p-4 sm:p-8 overflow-y-auto' : 'w-full min-h-screen bg-slate-50 dark:bg-slate-900 pb-12'}`}>
+      
+      {/* Draft Modal */}
+      {showDraftModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-slate-900/50 backdrop-blur-sm">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-2xl max-w-sm w-full">
+            <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle size={24} />
+            </div>
+            <h3 className="text-xl font-bold text-center text-slate-800 dark:text-white mb-2">
+              {lang === 'ar' ? 'حفظ كمسودة؟' : 'Save as Draft?'}
+            </h3>
+            <p className="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm">
+              {lang === 'ar' ? 'لديك تغييرات غير محفوظة. هل تريد حفظها كمسودة قبل المغادرة؟' : 'You have unsaved changes. Do you want to save as draft before leaving?'}
+            </p>
+            <div className="flex flex-col gap-2">
+              <button onClick={() => handleConfirmDraft(true)} className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-colors">
+                {lang === 'ar' ? 'حفظ كمسودة' : 'Save as Draft'}
+              </button>
+              <button onClick={() => handleConfirmDraft(false)} className="w-full py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl font-bold transition-colors">
+                {lang === 'ar' ? 'الخروج بدون حفظ' : 'Discard & Leave'}
+              </button>
+              <button onClick={() => setShowDraftModal(false)} className="w-full py-2.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-bold transition-colors">
+                {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* Topbar */}
-      <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 ${isZenMode ? 'max-w-5xl mx-auto' : ''}`}>
+      <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 ${isZenMode ? 'max-w-5xl mx-auto' : 'px-6 pt-6'}`}>
         <div className="flex items-center gap-4">
-          {!isZenMode && onCancel && (
-             <button onClick={onCancel} className="p-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl transition-colors">
+          {!isZenMode && (standalone || onCancel) && (
+             <button onClick={handleCancelClick} className="p-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl transition-colors">
                <ArrowLeft size={20} className="text-slate-700 dark:text-slate-300"/>
              </button>
           )}
@@ -247,18 +400,16 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave }) {
             {isZenMode ? <Minimize size={20}/> : <Maximize size={20}/>}
           </button>
           <button 
-            onClick={() => {
-              localStorage.removeItem('gitm_article_draft');
-              onSave && onSave({ titleAr, titleEn, content, tags, category: selectedCategory, attachments, mainImage, fbVideo, ytVideo });
-            }}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl font-bold shadow-lg hover:shadow-cyan-500/30 hover:scale-105 transition-all"
+            onClick={handlePublish}
+            disabled={saveStatus === 'saving' || (!titleAr && !titleEn)}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl font-bold shadow-lg hover:shadow-cyan-500/30 hover:scale-105 transition-all disabled:opacity-50"
           >
             <Save size={18}/> {lang === 'ar' ? 'نشر المقال' : 'Publish'}
           </button>
         </div>
       </div>
 
-      <div className={`flex flex-col lg:flex-row gap-6 ${isZenMode ? 'max-w-5xl mx-auto' : ''}`}>
+      <div className={`flex flex-col lg:flex-row gap-6 ${isZenMode ? 'max-w-5xl mx-auto' : 'px-6'}`}>
         
         {/* Main Editor Area */}
         <div className="flex-1 flex flex-col gap-4">

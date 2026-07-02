@@ -42,6 +42,12 @@ const UniversityDashboard = lazy(() => import('./components/dashboards/Universit
 const ContentManagerDashboard = lazy(() => import('./components/dashboards/ContentManagerDashboard'));
 const SupervisorDashboard = lazy(() => import('./components/dashboards/SupervisorDashboard'));
 
+// Standalone Editors
+const SmartProjectBuilder = lazy(() => import('./components/dashboards/SmartProjectBuilder'));
+const SmartArticleEditor = lazy(() => import('./components/dashboards/SmartArticleEditor'));
+const SmartEventEditor = lazy(() => import('./components/dashboards/SmartEventEditor'));
+const SmartCourseBuilder = lazy(() => import('./components/dashboards/SmartCourseBuilder'));
+
 const LoadingFallback = () => (
   <div className="flex-1 flex items-center justify-center min-h-[60vh]">
     <div className="relative w-16 h-16">
@@ -98,6 +104,14 @@ const AppContent = () => {
         <Route path="/verify-certificate" element={<VerifyCertificate />} />
         <Route path="/library/book" element={<LibraryBookDetails />} />
         <Route path="/dashboard/:hash" element={renderDashboard()} />
+        <Route path="/editor/project/new" element={<SmartProjectBuilder standalone />} />
+        <Route path="/editor/project/edit/:id" element={<SmartProjectBuilder standalone />} />
+        <Route path="/editor/article/new" element={<SmartArticleEditor standalone />} />
+        <Route path="/editor/article/edit/:id" element={<SmartArticleEditor standalone />} />
+        <Route path="/editor/event/new" element={<SmartEventEditor standalone />} />
+        <Route path="/editor/event/edit/:id" element={<SmartEventEditor standalone />} />
+        <Route path="/editor/course/new" element={<SmartCourseBuilder standalone />} />
+        <Route path="/editor/course/edit/:id" element={<SmartCourseBuilder standalone />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     );

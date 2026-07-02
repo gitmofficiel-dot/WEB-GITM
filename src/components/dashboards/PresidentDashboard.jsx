@@ -14,10 +14,6 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '../../utils/toast';
 import VisitorAnalytics from './VisitorAnalytics';
-import SmartProjectBuilder from './SmartProjectBuilder';
-import SmartArticleEditor from './SmartArticleEditor';
-import SmartEventEditor from './SmartEventEditor';
-import SmartCourseBuilder from './SmartCourseBuilder';
 
 export default function PresidentDashboard() {
   const navigate = useNavigate();
@@ -93,137 +89,7 @@ export default function PresidentDashboard() {
     setConfirmDialog({ isOpen: true, title, message, onConfirm });
   };
 
-  const [showProjectEditor, setShowProjectEditor] = useState(false);
-  const [editingProject, setEditingProject] = useState(null);
-  
-  const [showArticleEditor, setShowArticleEditor] = useState(false);
-  const [editingArticle, setEditingArticle] = useState(null);
-
-  const [showEventEditor, setShowEventEditor] = useState(false);
-  const [editingEvent, setEditingEvent] = useState(null);
-
-  const [showCourseEditor, setShowCourseEditor] = useState(false);
-  const [editingCourse, setEditingCourse] = useState(null);
-
-  const handleSaveProjectFromEditor = async (projectData) => {
-    try {
-      const dataToSave = {
-        ...projectData,
-        updatedAt: serverTimestamp(),
-      };
-
-      if (editingProject) {
-        const projectRef = doc(db, 'projects', editingProject.id);
-        await updateDoc(projectRef, dataToSave);
-        toast.success(lang === 'ar' ? 'تم تحديث المشروع بنجاح' : 'Project updated successfully');
-      } else {
-        dataToSave.createdAt = serverTimestamp();
-        await addDoc(collection(db, 'projects'), dataToSave);
-        toast.success(lang === 'ar' ? 'تم حفظ المشروع بنجاح' : 'Project saved successfully');
-      }
-      
-      setShowProjectEditor(false);
-      setEditingProject(null);
-    } catch (error) {
-      console.error('Error saving project:', error);
-      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving project');
-    }
-  };
-
-  const handleSaveArticleFromEditor = async (data) => {
-    try {
-      const articleData = {
-        title: data.titleAr || data.titleEn,
-        titleEn: data.titleEn || data.titleAr,
-        author: user?.displayName || 'President',
-        status: 'Published',
-        content: data.content,
-        category: data.category,
-        tags: data.tags || [],
-        attachments: data.attachments || [],
-        imageUrl: data.mainImage || '',
-        date: new Date().toISOString().split('T')[0],
-        updatedAt: serverTimestamp(),
-      };
-
-      if (editingArticle) {
-        const articleRef = doc(db, 'news', editingArticle.id);
-        await updateDoc(articleRef, articleData);
-        toast.success(lang === 'ar' ? 'تم تحديث المقال بنجاح' : 'Article updated successfully');
-      } else {
-        articleData.createdAt = serverTimestamp();
-        articleData.views = 0;
-        await addDoc(collection(db, 'news'), articleData);
-        toast.success(lang === 'ar' ? 'تم نشر المقال بنجاح' : 'Article published successfully');
-      }
-      
-      setShowArticleEditor(false);
-      setEditingArticle(null);
-    } catch (error) {
-      console.error('Error saving article:', error);
-      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving article');
-    }
-  };
-
-  const handleSaveEventFromEditor = async (data, imageFile) => {
-    try {
-      let imageUrl = editingEvent?.imageUrl || '';
-      // Mocking image upload since uploadToCloudinary might not be imported/available globally here
-      if (imageFile) {
-        imageUrl = URL.createObjectURL(imageFile); 
-      }
-      
-      const eventData = {
-        ...data,
-        imageUrl,
-        updatedAt: serverTimestamp(),
-      };
-
-      if (editingEvent) {
-        const eventRef = doc(db, 'events', editingEvent.id);
-        await updateDoc(eventRef, eventData);
-        toast.success(lang === 'ar' ? 'تم تحديث الفعالية بنجاح' : 'Event updated successfully');
-      } else {
-        eventData.createdAt = serverTimestamp();
-        await addDoc(collection(db, 'events'), eventData);
-        toast.success(lang === 'ar' ? 'تم نشر الفعالية بنجاح' : 'Event published successfully');
-      }
-      
-      setShowEventEditor(false);
-      setEditingEvent(null);
-    } catch (error) {
-      console.error('Error saving event:', error);
-      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving event');
-    }
-  };
-
-  const handleSaveCourseFromEditor = async (data) => {
-    try {
-      const courseData = {
-        ...data,
-        status: 'Active',
-        enrolled: data.enrolled || 0,
-        instructor: user?.displayName || 'Admin',
-        updatedAt: serverTimestamp(),
-      };
-
-      if (editingCourse) {
-        const courseRef = doc(db, 'courses', editingCourse.id);
-        await updateDoc(courseRef, courseData);
-        toast.success(lang === 'ar' ? 'تم تحديث الدورة بنجاح' : 'Course updated successfully');
-      } else {
-        courseData.createdAt = serverTimestamp();
-        await addDoc(collection(db, 'courses'), courseData);
-        toast.success(lang === 'ar' ? 'تم نشر الدورة بنجاح' : 'Course published successfully');
-      }
-      
-      setShowCourseEditor(false);
-      setEditingCourse(null);
-    } catch (error) {
-      console.error('Error saving course:', error);
-      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الحفظ' : 'Error saving course');
-    }
-  };
+  // --- Editor Handlers Removed (Moved to Standalone Editors) ---
 
   // --- CRUD Handlers ---
   const handleSave = async (formData) => {
@@ -793,140 +659,112 @@ export default function PresidentDashboard() {
             {/* ACADEMY TAB */}
             {activeTab === 'academy' && (
               <div className="space-y-6">
-                {!showCourseEditor ? (
-                  <div className="glass-card rounded-3xl p-6">
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                        <GraduationCap className="text-purple-500" size={24}/> {lang === 'ar' ? 'الإدارة الأكاديمية والتداريب' : 'Academy & Training Management'}
-                      </h3>
-                      <button onClick={() => {setEditingCourse(null); setShowCourseEditor(true);}} className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-purple-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'دورة جديدة' : 'New Course'}</button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {courses.map(course => (
-                        <div key={course.id} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 hover:border-purple-300 dark:hover:border-purple-900 transition-colors">
-                          <div className="flex justify-between items-start mb-2">
-                            <h4 className="font-bold text-[#1e3a5f] dark:text-white">{course.title}</h4>
-                            <span className={`px-2 py-1 text-[10px] rounded uppercase font-bold ${course.status === 'Active' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>{course.status}</span>
-                          </div>
-                          <p className="text-sm text-slate-500 mb-4 flex items-center gap-2"><Users size={14}/> {course.enrolled || 0} {lang==='ar'?'طالب مسجل':'Students Enrolled'}</p>
-                          <div className="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800">
-                            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Inst: {course.instructor || 'Admin'}</span>
-                            <div className="flex gap-2">
-                                <button onClick={() => {setEditingCourse(course); setShowCourseEditor(true);}} className="text-blue-500 p-1 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded"><Edit size={16}/></button>
-                                <button onClick={() => handleDelete('course', course.id)} className="text-red-500 p-1 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"><Trash2 size={16}/></button>
-                            </div>
+                <div className="glass-card rounded-3xl p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <GraduationCap className="text-purple-500" size={24}/> {lang === 'ar' ? 'الإدارة الأكاديمية والتداريب' : 'Academy & Training Management'}
+                    </h3>
+                    <button onClick={() => window.open('/editor/course/new', '_blank')} className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-purple-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'دورة جديدة' : 'New Course'}</button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {courses.map(course => (
+                      <div key={course.id} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 hover:border-purple-300 dark:hover:border-purple-900 transition-colors">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-bold text-[#1e3a5f] dark:text-white">{course.title}</h4>
+                          <span className={`px-2 py-1 text-[10px] rounded uppercase font-bold ${course.status === 'Active' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>{course.status}</span>
+                        </div>
+                        <p className="text-sm text-slate-500 mb-4 flex items-center gap-2"><Users size={14}/> {course.enrolled || 0} {lang==='ar'?'طالب مسجل':'Students Enrolled'}</p>
+                        <div className="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800">
+                          <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Inst: {course.instructor || 'Admin'}</span>
+                          <div className="flex gap-2">
+                              <button onClick={() => window.open(`/editor/course/edit/${course.id}`, '_blank')} className="text-blue-500 p-1 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded"><Edit size={16}/></button>
+                              <button onClick={() => handleDelete('course', course.id)} className="text-red-500 p-1 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"><Trash2 size={16}/></button>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                ) : (
-                  <div className="glass-card rounded-3xl p-6">
-                    <SmartCourseBuilder 
-                      initialData={editingCourse}
-                      onCancel={() => { setShowCourseEditor(false); setEditingCourse(null); }}
-                      onSave={handleSaveCourseFromEditor}
-                    />
-                  </div>
-                )}
+                </div>
               </div>
             )}
 
             {/* PROJECTS TAB */}
             {activeTab === 'projects' && (
               <div className="space-y-6">
-                {!showProjectEditor ? (
-                  <div className="glass-card rounded-3xl p-6">
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                        <Rocket className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة المشاريع وفرق العمل' : 'Projects & Teams Management'}
-                      </h3>
-                      <button onClick={() => { setEditingProject(null); setShowProjectEditor(true); }} className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:scale-105 transition-transform">
-                        <Plus size={16}/> {lang === 'ar' ? 'مشروع جديد' : 'New Project'}
-                      </button>
-                    </div>
+                <div className="glass-card rounded-3xl p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Rocket className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة المشاريع وفرق العمل' : 'Projects & Teams Management'}
+                    </h3>
+                    <button onClick={() => window.open('/editor/project/new', '_blank')} className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:scale-105 transition-transform">
+                      <Plus size={16}/> {lang === 'ar' ? 'مشروع جديد' : 'New Project'}
+                    </button>
+                  </div>
 
-                    <div className="space-y-4">
-                      {projects.map(project => (
-                        <div key={project.id} className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
-                          <div className="flex justify-between items-start mb-4">
-                            <div>
-                              <h4 className="font-bold text-xl text-[#1e3a5f] dark:text-white">{project.titleAr || project.title}</h4>
-                              <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-full mt-2 inline-block uppercase">{project.status}</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <button onClick={() => { setEditingProject(project); setShowProjectEditor(true); }} className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors"><Edit size={16}/></button>
-                              <button onClick={() => handleDelete('project', project.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
-                            </div>
+                  <div className="space-y-4">
+                    {projects.map(project => (
+                      <div key={project.id} className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h4 className="font-bold text-xl text-[#1e3a5f] dark:text-white">{project.titleAr || project.title}</h4>
+                            <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-full mt-2 inline-block uppercase">{project.status}</span>
                           </div>
-
-                          {/* PROJECT CREATOR EXCLUSIVE UI */}
-                          <div className="mt-6 border-t border-slate-200 dark:border-slate-700 pt-6">
-                            <h5 className="font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2"><UserPlus size={18}/> {lang === 'ar' ? 'إضافة أعضاء لفريق مشروعك' : 'Add Team Members to Your Project'}</h5>
-                            <div className="flex gap-2">
-                              <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-400" size={18}/>
-                                <input 
-                                  type="text" 
-                                  placeholder={lang === 'ar' ? 'ابحث بالاسم أو رقم العضوية...' : 'Search registered members by name or ID...'}
-                                  className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                                />
-                              </div>
-                              <button className="bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-white dark:bg-slate-900 dark:hover:bg-slate-600 transition-colors">
-                                {lang === 'ar' ? 'إضافة' : 'Add Member'}
-                              </button>
-                            </div>
+                          <div className="flex items-center gap-3">
+                            <button onClick={() => window.open(`/editor/project/edit/${project.id}`, '_blank')} className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors"><Edit size={16}/></button>
+                            <button onClick={() => handleDelete('project', project.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
                           </div>
                         </div>
-                      ))}
-                    </div>
+
+                        {/* PROJECT CREATOR EXCLUSIVE UI */}
+                        <div className="mt-6 border-t border-slate-200 dark:border-slate-700 pt-6">
+                          <h5 className="font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2"><UserPlus size={18}/> {lang === 'ar' ? 'إضافة أعضاء لفريق مشروعك' : 'Add Team Members to Your Project'}</h5>
+                          <div className="flex gap-2">
+                            <div className="relative flex-1">
+                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-400" size={18}/>
+                              <input 
+                                type="text" 
+                                placeholder={lang === 'ar' ? 'ابحث بالاسم أو رقم العضوية...' : 'Search registered members by name or ID...'}
+                                className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                              />
+                            </div>
+                            <button className="bg-slate-50 dark:bg-slate-800 dark:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-white dark:bg-slate-900 dark:hover:bg-slate-600 transition-colors">
+                              {lang === 'ar' ? 'إضافة' : 'Add Member'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ) : (
-                  <SmartProjectBuilder 
-                    initialData={editingProject} 
-                    onCancel={() => { setShowProjectEditor(false); setEditingProject(null); }} 
-                    onSave={handleSaveProjectFromEditor} 
-                  />
-                )}
+                </div>
               </div>
             )}
 
             {/* EVENTS TAB */}
             {activeTab === 'events' && (
               <div className="space-y-6">
-                {!showEventEditor ? (
-                  <div className="glass-card rounded-3xl p-6">
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                        <Calendar className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة الفعاليات والهاكاثونات' : 'Events & Hackathons Management'}
-                      </h3>
-                      <button onClick={() => {setEditingEvent(null); setShowEventEditor(true);}} className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'حدث جديد' : 'New Event'}</button>
-                    </div>
-                    <div className="space-y-4">
-                      {events.map(event => (
-                        <div key={event.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800">
-                          <div>
-                            <h4 className="font-bold text-[#1e3a5f] dark:text-white text-lg">{event.titleAr || event.title}</h4>
-                            <p className="text-sm text-slate-500 flex items-center gap-2"><Calendar size={14}/> {event.startDate || event.date} • <Users size={14}/> {event.attendees || 0} Registered</p>
-                          </div>
-                          <div className="flex items-center gap-3 mt-4 md:mt-0">
-                            <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold">{event.status || 'Published'}</span>
-                            <button onClick={() => {setEditingEvent(event); setShowEventEditor(true);}} className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors"><Edit size={16}/></button>
-                            <button onClick={() => handleDelete('event', event.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
-                          </div>
+                <div className="glass-card rounded-3xl p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Calendar className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة الفعاليات والهاكاثونات' : 'Events & Hackathons Management'}
+                    </h3>
+                    <button onClick={() => window.open('/editor/event/new', '_blank')} className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'حدث جديد' : 'New Event'}</button>
+                  </div>
+                  <div className="space-y-4">
+                    {events.map(event => (
+                      <div key={event.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <div>
+                          <h4 className="font-bold text-[#1e3a5f] dark:text-white text-lg">{event.titleAr || event.title}</h4>
+                          <p className="text-sm text-slate-500 flex items-center gap-2"><Calendar size={14}/> {event.startDate || event.date} • <Users size={14}/> {event.attendees || 0} Registered</p>
                         </div>
-                      ))}
-                    </div>
+                        <div className="flex items-center gap-3 mt-4 md:mt-0">
+                          <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold">{event.status || 'Published'}</span>
+                          <button onClick={() => window.open(`/editor/event/edit/${event.id}`, '_blank')} className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors"><Edit size={16}/></button>
+                          <button onClick={() => handleDelete('event', event.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ) : (
-                  <div className="glass-card rounded-3xl p-6">
-                    <SmartEventEditor 
-                      initialData={editingEvent}
-                      onCancel={() => { setShowEventEditor(false); setEditingEvent(null); }}
-                      onSave={handleSaveEventFromEditor}
-                    />
-                  </div>
-                )}
+                </div>
 
                 <div className="glass-card rounded-3xl p-6">
                   <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
@@ -959,41 +797,31 @@ export default function PresidentDashboard() {
             {/* NEWS TAB */}
             {activeTab === 'news' && (
               <div className="space-y-6">
-                {!showArticleEditor ? (
-                  <div className="glass-card rounded-3xl p-6">
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                        <Newspaper className="text-blue-500" size={24}/> {lang === 'ar' ? 'إدارة الأخبار والميديا' : 'News & Media Management'}
-                      </h3>
-                      <button onClick={() => {setEditingArticle(null); setShowArticleEditor(true);}} className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'مقال جديد' : 'Write Article'}</button>
-                    </div>
-                    <div className="space-y-4">
-                      {news.map(n => (
-                        <div key={n.id} className="flex justify-between items-center p-4 border border-slate-200 dark:border-slate-800 rounded-2xl hover:shadow-md transition-shadow bg-white dark:bg-slate-900/50">
-                          <div>
-                            <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{n.title}</h4>
-                            <p className="text-sm text-slate-500">{n.date}</p>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${n.status === 'Published' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>{n.status}</span>
-                            <div className="flex gap-2 border-l border-slate-200 dark:border-slate-700 pl-4">
-                              <button onClick={() => {setEditingArticle(n); setShowArticleEditor(true);}} className="text-slate-600 dark:text-slate-400 hover:text-blue-500 p-2 transition-colors"><Edit size={16}/></button>
-                              <button onClick={() => handleDelete('news', n.id)} className="text-slate-600 dark:text-slate-400 hover:text-red-500 p-2 transition-colors"><Trash2 size={16}/></button>
-                            </div>
+                <div className="glass-card rounded-3xl p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Newspaper className="text-blue-500" size={24}/> {lang === 'ar' ? 'إدارة الأخبار والميديا' : 'News & Media Management'}
+                    </h3>
+                    <button onClick={() => window.open('/editor/article/new', '_blank')} className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'مقال جديد' : 'Write Article'}</button>
+                  </div>
+                  <div className="space-y-4">
+                    {news.map(n => (
+                      <div key={n.id} className="flex justify-between items-center p-4 border border-slate-200 dark:border-slate-800 rounded-2xl hover:shadow-md transition-shadow bg-white dark:bg-slate-900/50">
+                        <div>
+                          <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{n.title}</h4>
+                          <p className="text-sm text-slate-500">{n.date}</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${n.status === 'Published' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>{n.status}</span>
+                          <div className="flex gap-2 border-l border-slate-200 dark:border-slate-700 pl-4">
+                            <button onClick={() => window.open(`/editor/article/edit/${n.id}`, '_blank')} className="text-slate-600 dark:text-slate-400 hover:text-blue-500 p-2 transition-colors"><Edit size={16}/></button>
+                            <button onClick={() => handleDelete('news', n.id)} className="text-slate-600 dark:text-slate-400 hover:text-red-500 p-2 transition-colors"><Trash2 size={16}/></button>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                ) : (
-                  <div className="glass-card rounded-3xl p-6">
-                    <SmartArticleEditor 
-                      initialData={editingArticle}
-                      onCancel={() => { setShowArticleEditor(false); setEditingArticle(null); }}
-                      onSave={handleSaveArticleFromEditor}
-                    />
-                  </div>
-                )}
+                </div>
               </div>
             )}
 

@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  BookOpen, Plus, Trash2, Save, X, ArrowLeft, GripVertical, Video, FileText, Activity
+  BookOpen, Plus, Trash2, Save, X, ArrowLeft, GripVertical, Video, FileText, Activity, AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { useParams, useNavigate } from 'react-router-dom';
+import { doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../config/firebase';
+import { toast } from '../../utils/toast';
 import {
   DndContext,
   closestCenter,
@@ -152,8 +156,12 @@ const SortableModule = ({ module, onRemove, onAddLesson, onUpdateModule, onRemov
 };
 
 // --- Main Editor ---
-export default function SmartCourseBuilder({ initialData, onCancel, onSave }) {
-  const { lang } = useLanguage();
+export default function SmartCourseBuilder({ initialData, onCancel, onSave, standalone }) {
+  const { lang, user } = useLanguage();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [showDraftModal, setShowDraftModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(standalone && !!id);
   
   const [title, setTitle] = useState(initialData?.title || '');
   const [track, setTrack] = useState(initialData?.track || 'Edge AI'); // Edge AI, Robotics, IoT Cloud
@@ -173,6 +181,64 @@ export default function SmartCourseBuilder({ initialData, onCancel, onSave }) {
   ]);
   
   const [isSaving, setIsSaving] = useState(false);
+
+  // --- Auto-Save Drafts & Standalone Load ---
+  useEffect(() => {
+    if (standalone && id) {
+      const fetchCourse = async () => {
+        try {
+          const docRef = doc(db, 'courses', id);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setTitle(data.title || '');
+            setTrack(data.track || 'Edge AI');
+            setLevel(data.level || 'Beginner');
+            setDescription(data.description || '');
+            setCourseIntroVideo(data.courseIntroVideo || '');
+            setCourseIntroText(data.courseIntroText || '');
+            setCoverImage(data.coverImage || data.imageUrl || '');
+            setFbVideo(data.fbVideo || '');
+            setYtVideo(data.ytVideo || '');
+            setAttachments(data.attachments || []);
+            setModules(data.modules || []);
+          }
+        } catch (error) {
+          console.error("Error fetching course:", error);
+          toast.error(lang === 'ar' ? 'فشل جلب المسار' : 'Failed to fetch course');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchCourse();
+    } else if (!initialData) {
+      const savedDraft = localStorage.getItem('gitm_course_draft');
+      if (savedDraft) {
+        try {
+          const draft = JSON.parse(savedDraft);
+          if (draft.title) setTitle(draft.title);
+          if (draft.track) setTrack(draft.track);
+          if (draft.level) setLevel(draft.level);
+          if (draft.description) setDescription(draft.description);
+          if (draft.modules) setModules(draft.modules);
+        } catch (e) {
+          console.error('Failed to parse draft', e);
+        }
+      }
+      setIsLoading(false);
+    }
+  }, [standalone, id]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (title || description || modules.length > 1) {
+        localStorage.setItem('gitm_course_draft', JSON.stringify({ 
+          title, track, level, description, modules 
+        }));
+      }
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [title, track, level, description, modules]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -313,26 +379,129 @@ export default function SmartCourseBuilder({ initialData, onCancel, onSave }) {
     setAttachments([...attachments, ...newAttachments]);
   };
 
-  const handleSubmit = () => {
+  const handleCancelClick = () => {
+    if (standalone) {
+      setShowDraftModal(true);
+    } else {
+      if (onCancel) onCancel();
+    }
+  };
+
+  const handleConfirmDraft = async (saveAsDraft) => {
+    if (saveAsDraft) {
+      setIsSaving(true);
+      try {
+        const courseData = {
+          title, track, level, description, modules,
+          coverImage, imageUrl: coverImage, fbVideo, ytVideo, attachments,
+          courseIntroVideo, courseIntroText,
+          author: user?.displayName || 'Admin',
+          status: 'draft',
+          updatedAt: serverTimestamp(),
+        };
+
+        if (id) {
+          await updateDoc(doc(db, 'courses', id), courseData);
+        } else {
+          courseData.createdAt = serverTimestamp();
+          courseData.enrolledCount = 0;
+          await addDoc(collection(db, 'courses'), courseData);
+        }
+        toast.success(lang === 'ar' ? 'تم الحفظ كمسودة بنجاح' : 'Draft saved successfully');
+      } catch (error) {
+        console.error(error);
+        toast.error(lang === 'ar' ? 'فشل حفظ المسودة' : 'Failed to save draft');
+      } finally {
+        setIsSaving(false);
+      }
+    }
+    
+    if (standalone && !id) localStorage.removeItem('gitm_course_draft');
+    window.close();
+  };
+
+  const handleSubmit = async () => {
     setIsSaving(true);
     const courseData = {
       title, track, level, description, modules,
-      coverImage, fbVideo, ytVideo, attachments,
+      coverImage, imageUrl: coverImage, fbVideo, ytVideo, attachments,
       courseIntroVideo, courseIntroText,
       status: 'Published',
       enrolledCount: 0
     };
-    onSave(courseData);
+    
+    localStorage.removeItem('gitm_course_draft');
+
+    if (standalone) {
+      try {
+        const dataToSave = {
+          ...courseData,
+          author: user?.displayName || 'Admin',
+          updatedAt: serverTimestamp(),
+        };
+
+        if (id) {
+          await updateDoc(doc(db, 'courses', id), dataToSave);
+          toast.success(lang === 'ar' ? 'تم تحديث المسار بنجاح' : 'Course updated successfully');
+        } else {
+          dataToSave.createdAt = serverTimestamp();
+          await addDoc(collection(db, 'courses'), dataToSave);
+          toast.success(lang === 'ar' ? 'تم نشر المسار بنجاح' : 'Course published successfully');
+        }
+        window.close();
+      } catch (error) {
+        console.error(error);
+        toast.error(lang === 'ar' ? 'حدث خطأ أثناء النشر' : 'Error publishing course');
+        setIsSaving(false);
+      }
+    } else {
+      onSave(courseData);
+    }
   };
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900"><Activity className="animate-spin text-teal-500" size={32}/></div>;
+  }
 
   return (
     <div className="w-full bg-slate-50 dark:bg-slate-900 min-h-screen pb-12">
+      
+      {/* Draft Modal */}
+      {showDraftModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-slate-900/50 backdrop-blur-sm">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-2xl max-w-sm w-full">
+            <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle size={24} />
+            </div>
+            <h3 className="text-xl font-bold text-center text-slate-800 dark:text-white mb-2">
+              {lang === 'ar' ? 'حفظ كمسودة؟' : 'Save as Draft?'}
+            </h3>
+            <p className="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm">
+              {lang === 'ar' ? 'لديك تغييرات غير محفوظة. هل تريد حفظها كمسودة قبل المغادرة؟' : 'You have unsaved changes. Do you want to save as draft before leaving?'}
+            </p>
+            <div className="flex flex-col gap-2">
+              <button onClick={() => handleConfirmDraft(true)} className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold transition-colors">
+                {lang === 'ar' ? 'حفظ كمسودة' : 'Save as Draft'}
+              </button>
+              <button onClick={() => handleConfirmDraft(false)} className="w-full py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl font-bold transition-colors">
+                {lang === 'ar' ? 'الخروج بدون حفظ' : 'Discard & Leave'}
+              </button>
+              <button onClick={() => setShowDraftModal(false)} className="w-full py-2.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-bold transition-colors">
+                {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* Topbar */}
       <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40 px-6 py-4 flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-4">
-          <button onClick={onCancel} className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 rounded-xl transition-colors">
-             <ArrowLeft size={20} className="text-slate-700 dark:text-slate-300"/>
-          </button>
+          {(standalone || onCancel) && (
+            <button onClick={handleCancelClick} className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 rounded-xl transition-colors">
+               <ArrowLeft size={20} className="text-slate-700 dark:text-slate-300"/>
+            </button>
+          )}
           <div>
             <h2 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
               <BookOpen className="text-teal-500" size={24}/> 

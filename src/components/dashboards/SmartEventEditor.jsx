@@ -2,16 +2,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calendar, MapPin, Video, Users, Clock, Plus, Trash2, Save, 
-  X, ArrowLeft, Bot, CheckCircle, Activity, Image as ImageIcon, Map
+  X, ArrowLeft, Bot, CheckCircle, Activity, Image as ImageIcon, Map, AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { useParams, useNavigate } from 'react-router-dom';
+import { doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../config/firebase';
+import { toast } from '../../utils/toast';
 
 const EVENT_TYPES = ['Workshop', 'Hackathon', 'Training', 'Meetup', 'Conference'];
 
-export default function SmartEventEditor({ initialData, onCancel, onSave }) {
-  const { lang } = useLanguage();
+export default function SmartEventEditor({ initialData, onCancel, onSave, standalone }) {
+  const { lang, user } = useLanguage();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [showDraftModal, setShowDraftModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(standalone && !!id);
   
   // Basic Info
   const [title, setTitle] = useState(initialData?.title || '');
@@ -54,6 +62,73 @@ export default function SmartEventEditor({ initialData, onCancel, onSave }) {
   const [isSaving, setIsSaving] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [marketingCopy, setMarketingCopy] = useState('');
+
+  // --- Auto-Save Drafts & Standalone Load ---
+  useEffect(() => {
+    if (standalone && id) {
+      const fetchEvent = async () => {
+        try {
+          const docRef = doc(db, 'events', id);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setTitle(data.title || '');
+            setTitleEn(data.titleEn || '');
+            setDescription(data.description || '');
+            setEventType(data.eventType || 'Workshop');
+            setStartDate(data.startDate || '');
+            setStartTime(data.startTime || '');
+            setEndDate(data.endDate || '');
+            setEndTime(data.endTime || '');
+            setMode(data.mode || 'Offline');
+            setLocationStr(data.location || '');
+            setVirtualLink(data.virtualLink || '');
+            setMaxCapacity(data.maxCapacity || 50);
+            setIsRegistrationOpen(data.isRegistrationOpen ?? true);
+            setAgenda(data.agenda || []);
+            setSpeakers(data.speakers || []);
+            setCoverImage(data.imageUrl || data.mainImage || null);
+            setFbVideo(data.fbVideo || '');
+            setYtVideo(data.ytVideo || '');
+            setAttachments(data.attachments || []);
+          }
+        } catch (error) {
+          console.error("Error fetching event:", error);
+          toast.error(lang === 'ar' ? 'فشل جلب الفعالية' : 'Failed to fetch event');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchEvent();
+    } else if (!initialData) {
+      const savedDraft = localStorage.getItem('gitm_event_draft');
+      if (savedDraft) {
+        try {
+          const draft = JSON.parse(savedDraft);
+          if (draft.title) setTitle(draft.title);
+          if (draft.titleEn) setTitleEn(draft.titleEn);
+          if (draft.description) setDescription(draft.description);
+          if (draft.eventType) setEventType(draft.eventType);
+          if (draft.startDate) setStartDate(draft.startDate);
+          if (draft.mode) setMode(draft.mode);
+        } catch (e) {
+          console.error('Failed to parse draft', e);
+        }
+      }
+      setIsLoading(false);
+    }
+  }, [standalone, id]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (title || description) {
+        localStorage.setItem('gitm_event_draft', JSON.stringify({ 
+          title, titleEn, description, eventType, startDate, mode 
+        }));
+      }
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [title, titleEn, description, eventType, startDate, mode]);
 
   const handleAddAgenda = () => {
     if (newAgendaItem.time && newAgendaItem.title) {
@@ -103,7 +178,52 @@ export default function SmartEventEditor({ initialData, onCancel, onSave }) {
     setAttachments([...attachments, ...newAttachments]);
   };
 
-  const handleSubmit = () => {
+  const handleCancelClick = () => {
+    if (standalone) {
+      setShowDraftModal(true);
+    } else {
+      if (onCancel) onCancel();
+    }
+  };
+
+  const handleConfirmDraft = async (saveAsDraft) => {
+    if (saveAsDraft) {
+      setIsSaving(true);
+      try {
+        const eventData = {
+          title, titleEn, description, eventType, mode,
+          location: locationStr, virtualLink,
+          startDate, startTime, endDate, endTime,
+          maxCapacity: Number(maxCapacity),
+          isRegistrationOpen,
+          agenda, speakers,
+          fbVideo, ytVideo, attachments,
+          imageUrl: coverImage,
+          author: user?.displayName || 'Admin',
+          status: 'draft',
+          updatedAt: serverTimestamp(),
+        };
+
+        if (id) {
+          await updateDoc(doc(db, 'events', id), eventData);
+        } else {
+          eventData.createdAt = serverTimestamp();
+          await addDoc(collection(db, 'events'), eventData);
+        }
+        toast.success(lang === 'ar' ? 'تم الحفظ كمسودة بنجاح' : 'Draft saved successfully');
+      } catch (error) {
+        console.error(error);
+        toast.error(lang === 'ar' ? 'فشل حفظ المسودة' : 'Failed to save draft');
+      } finally {
+        setIsSaving(false);
+      }
+    }
+    
+    if (standalone && !id) localStorage.removeItem('gitm_event_draft');
+    window.close();
+  };
+
+  const handleSubmit = async () => {
     setIsSaving(true);
     const eventData = {
       title, titleEn, description, eventType, mode,
@@ -113,20 +233,82 @@ export default function SmartEventEditor({ initialData, onCancel, onSave }) {
       isRegistrationOpen,
       agenda, speakers,
       fbVideo, ytVideo, attachments,
+      imageUrl: coverImage,
       status: 'Published'
     };
-    // Call the parent save function
-    onSave(eventData, imageFile);
+    
+    localStorage.removeItem('gitm_event_draft');
+
+    if (standalone) {
+      try {
+        const dataToSave = {
+          ...eventData,
+          author: user?.displayName || 'Admin',
+          updatedAt: serverTimestamp(),
+        };
+
+        if (id) {
+          await updateDoc(doc(db, 'events', id), dataToSave);
+          toast.success(lang === 'ar' ? 'تم تحديث الفعالية بنجاح' : 'Event updated successfully');
+        } else {
+          dataToSave.createdAt = serverTimestamp();
+          await addDoc(collection(db, 'events'), dataToSave);
+          toast.success(lang === 'ar' ? 'تم نشر الفعالية بنجاح' : 'Event published successfully');
+        }
+        window.close();
+      } catch (error) {
+        console.error(error);
+        toast.error(lang === 'ar' ? 'حدث خطأ أثناء النشر' : 'Error publishing event');
+        setIsSaving(false);
+      }
+    } else {
+      onSave(eventData, imageFile);
+    }
   };
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900"><Activity className="animate-spin text-blue-500" size={32}/></div>;
+  }
 
   return (
     <div className="w-full bg-slate-50 dark:bg-slate-900 min-h-screen pb-12">
+      
+      {/* Draft Modal */}
+      {showDraftModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-slate-900/50 backdrop-blur-sm">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-2xl max-w-sm w-full">
+            <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle size={24} />
+            </div>
+            <h3 className="text-xl font-bold text-center text-slate-800 dark:text-white mb-2">
+              {lang === 'ar' ? 'حفظ كمسودة؟' : 'Save as Draft?'}
+            </h3>
+            <p className="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm">
+              {lang === 'ar' ? 'لديك تغييرات غير محفوظة. هل تريد حفظها كمسودة قبل المغادرة؟' : 'You have unsaved changes. Do you want to save as draft before leaving?'}
+            </p>
+            <div className="flex flex-col gap-2">
+              <button onClick={() => handleConfirmDraft(true)} className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold transition-colors">
+                {lang === 'ar' ? 'حفظ كمسودة' : 'Save as Draft'}
+              </button>
+              <button onClick={() => handleConfirmDraft(false)} className="w-full py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl font-bold transition-colors">
+                {lang === 'ar' ? 'الخروج بدون حفظ' : 'Discard & Leave'}
+              </button>
+              <button onClick={() => setShowDraftModal(false)} className="w-full py-2.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-bold transition-colors">
+                {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* Topbar */}
       <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40 px-6 py-4 flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-4">
-          <button onClick={onCancel} className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 rounded-xl transition-colors">
-             <ArrowLeft size={20} className="text-slate-700 dark:text-slate-300"/>
-          </button>
+          {(standalone || onCancel) && (
+            <button onClick={handleCancelClick} className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 rounded-xl transition-colors">
+               <ArrowLeft size={20} className="text-slate-700 dark:text-slate-300"/>
+            </button>
+          )}
           <div>
             <h2 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
               <Calendar className="text-rose-500" size={24}/> 

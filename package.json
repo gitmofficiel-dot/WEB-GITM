@@ -31,7 +31,7 @@
     "react-is": "^19.2.7",
     "react-leaflet": "^5.0.0",
     "react-quill-new": "^3.8.3",
-    "react-router-dom": "^7.18.0",
+    "react-router-dom": "^7.18.1",
     "recharts": "^3.9.1",
     "three": "^0.184.0"
   },
