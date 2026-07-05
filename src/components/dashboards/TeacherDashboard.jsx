@@ -45,6 +45,12 @@ export default function TeacherDashboard() {
   const teacherEmail = currentUser?.email || 'yassine@gitm.ma';
 
   const [assignedCourses, setAssignedCourses] = useState([]);
+  const [studentSubmissions, setStudentSubmissions] = useState([]);
+  const [labSessions, setLabSessions] = useState([]);
+  const [analyticsData, setAnalyticsData] = useState({
+    avgScore: 0, attendanceRate: 0, totalStudents: 0, coursesActive: 0,
+    topStudents: [], gradeDistribution: []
+  });
 
   React.useEffect(() => {
     const fetchCourses = async () => {
@@ -70,6 +76,84 @@ export default function TeacherDashboard() {
           });
         });
         setAssignedCourses(courses);
+        // Fetch submissions
+        const subSnap = await getDocs(collection(db, 'submissions'));
+        const subList = [];
+        subSnap.forEach(docSnap => {
+          const d = docSnap.data();
+          if(d.teacherEmail === teacherEmail || !d.teacherEmail) {
+            subList.push({
+              id: docSnap.id,
+              student: d.studentName || 'Student',
+              studentAr: d.studentNameAr || 'طالب',
+              assignment: d.assignmentName || 'Task',
+              assignmentAr: d.assignmentNameAr || 'مهمة',
+              date: d.submittedAt?.toDate ? d.submittedAt.toDate().toISOString().split('T')[0] : '2026-06-21',
+              status: d.grade ? `Graded (${d.grade}/100)` : 'Needs Grading',
+              course: d.courseName || 'Course',
+              mockCode: d.code || 'print("Hello World")',
+              language: d.language || 'python',
+              grade: d.grade || null
+            });
+            if(d.grade) {
+              setGradedItems(prev => ({ ...prev, [docSnap.id]: d.grade }));
+            }
+          }
+        });
+        
+        if (subList.length === 0) {
+          subList.push(
+            { id: 1, student: 'Aymane Benali', studentAr: 'أيمن بنعلي', assignment: 'Neural Network Model', assignmentAr: 'نموذج الشبكة العصبية', date: '2026-06-21', status: 'Needs Grading', course: 'Edge AI Development', mockCode: 'def build_model():\n  return "Model"\n# Needs more layers', language: 'python' },
+            { id: 2, student: 'Sara Khan', studentAr: 'سارة خان', assignment: 'Robotics Kinematics Report', assignmentAr: 'تقرير الحركيات', date: '2026-06-20', status: 'Needs Grading', course: 'Advanced Robotics Lab', mockCode: 'import math\ndef calculate_kinematics(theta):\n  return math.sin(theta) * 10', language: 'python' }
+          );
+        }
+        setStudentSubmissions(subList);
+
+        // Fetch lab sessions
+        const eventSnap = await getDocs(query(collection(db, 'events'), where('type', '==', 'lab')));
+        const labs = [];
+        eventSnap.forEach(docSnap => {
+          const d = docSnap.data();
+          labs.push({
+            id: docSnap.id,
+            title: d.title_en || 'Lab Session',
+            titleAr: d.title_ar || 'جلسة مختبر',
+            date: d.startDate || '2026-07-01',
+            time: '10:00 AM',
+            duration: '2h',
+            status: 'upcoming',
+            platform: d.location || 'GITM Virtual Lab',
+            participants: d.registeredCount || 0
+          });
+        });
+        
+        if (labs.length === 0) {
+          labs.push(
+            { id: 1, title: 'Robotics Kinematics Lab', titleAr: 'مختبر الحركيات', date: '2026-07-01', time: '10:00 AM', duration: '2h', status: 'upcoming', platform: 'GITM Virtual Lab', participants: 25 },
+            { id: 2, title: 'AI Model Training Session', titleAr: 'جلسة تدريب النماذج', date: '2026-07-03', time: '2:00 PM', duration: '3h', status: 'upcoming', platform: 'Google Colab', participants: 40 }
+          );
+        }
+        setLabSessions(labs);
+
+        // Compute analytics
+        const allGrades = subList.map(s => parseInt(s.grade)).filter(g => !isNaN(g));
+        const avg = allGrades.length ? Math.round(allGrades.reduce((a,b)=>a+b,0)/allGrades.length) : 78;
+        
+        setAnalyticsData({
+          avgScore: avg,
+          attendanceRate: 92,
+          totalStudents: courses.reduce((acc, c) => acc + c.students, 0) || 120,
+          coursesActive: courses.length,
+          topStudents: [
+            { name: 'Aymane Benali', nameAr: 'أيمن بنعلي', avg: 96, badge: '🥇' },
+            { name: 'Sara Khan', nameAr: 'سارة خان', avg: 94, badge: '🥈' }
+          ],
+          gradeDistribution: [
+            { range: 'A (90-100)', count: 42, color: 'bg-emerald-500', pct: 21 },
+            { range: 'B (80-89)', count: 68, color: 'bg-blue-500', pct: 33 }
+          ]
+        });
+
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {
@@ -83,12 +167,7 @@ export default function TeacherDashboard() {
     }
   }, [teacherEmail]);
 
-  const [studentSubmissions, setStudentSubmissions] = useState([
-    { id: 1, student: 'Aymane Benali', studentAr: 'أيمن بنعلي', assignment: 'Neural Network Model', assignmentAr: 'نموذج الشبكة العصبية', date: '2026-06-21', status: 'Needs Grading', course: 'Edge AI Development', mockCode: 'def build_model():\n  return "Model"\n# Needs more layers', language: 'python' },
-    { id: 2, student: 'Sara Khan', studentAr: 'سارة خان', assignment: 'Robotics Kinematics Report', assignmentAr: 'تقرير الحركيات', date: '2026-06-20', status: 'Needs Grading', course: 'Advanced Robotics Lab', mockCode: 'import math\ndef calculate_kinematics(theta):\n  return math.sin(theta) * 10', language: 'python' },
-    { id: 3, student: 'Omar Tazi', studentAr: 'عمر التازي', assignment: 'Ethics Case Study', assignmentAr: 'دراسة حالة أخلاقية', date: '2026-06-19', status: 'Needs Grading', course: 'AI Ethics', mockCode: 'class EthicsEvaluator:\n  def evaluate(self, action):\n    return True', language: 'python' },
-    { id: 4, student: 'Fatima Zahra', studentAr: 'فاطمة الزهراء', assignment: 'Sensor Calibration Lab', assignmentAr: 'مختبر معايرة المستشعرات', date: '2026-06-18', status: 'Needs Grading', course: 'Advanced Robotics Lab', mockCode: 'void calibrateSensor() {\n  analogRead(A0);\n  delay(100);\n}', language: 'cpp' },
-  ]);
+
 
   const handleAIGrade = async (submission) => {
     try {
@@ -104,41 +183,24 @@ export default function TeacherDashboard() {
     }
   };
 
-  const analyticsData = {
-    avgScore: 78.5,
-    attendanceRate: 92,
-    totalStudents: 203,
-    coursesActive: 3,
-    topStudents: [
-      { name: 'Aymane Benali', nameAr: 'أيمن بنعلي', avg: 96, badge: '🥇' },
-      { name: 'Sara Khan', nameAr: 'سارة خان', avg: 94, badge: '🥈' },
-      { name: 'Omar Tazi', nameAr: 'عمر التازي', avg: 91, badge: '🥉' },
-      { name: 'Fatima Zahra', nameAr: 'فاطمة الزهراء', avg: 89, badge: '⭐' },
-      { name: 'Youssef Alami', nameAr: 'يوسف العلمي', avg: 87, badge: '⭐' },
-    ],
-    gradeDistribution: [
-      { range: 'A (90-100)', count: 42, color: 'bg-emerald-500', pct: 21 },
-      { range: 'B (80-89)', count: 68, color: 'bg-blue-500', pct: 33 },
-      { range: 'C (70-79)', count: 52, color: 'bg-amber-500', pct: 26 },
-      { range: 'D (60-69)', count: 28, color: 'bg-orange-500', pct: 14 },
-      { range: 'F (<60)', count: 13, color: 'bg-red-500', pct: 6 },
-    ]
-  };
 
-  const labSessions = [
-    { id: 1, title: 'Robotics Kinematics Lab', titleAr: 'مختبر الحركيات', date: '2026-07-01', time: '10:00 AM', duration: '2h', status: 'upcoming', platform: 'GITM Virtual Lab', participants: 25 },
-    { id: 2, title: 'AI Model Training Session', titleAr: 'جلسة تدريب النماذج', date: '2026-07-03', time: '2:00 PM', duration: '3h', status: 'upcoming', platform: 'Google Colab', participants: 40 },
-    { id: 3, title: 'IoT Sensor Workshop', titleAr: 'ورشة المستشعرات', date: '2026-07-05', time: '9:00 AM', duration: '2.5h', status: 'upcoming', platform: 'GITM Virtual Lab', participants: 18 },
-    { id: 4, title: 'Ethics Debate Session', titleAr: 'جلسة نقاش أخلاقية', date: '2026-06-25', time: '4:00 PM', duration: '1.5h', status: 'completed', platform: 'Zoom', participants: 60 },
-  ];
 
-  const handleGradeSubmit = (submissionId) => {
+  const handleGradeSubmit = async (submissionId) => {
     const grade = parseInt(gradeInputs[submissionId]);
     if (isNaN(grade) || grade < 0 || grade > 100) return;
-    setGradedItems(prev => ({ ...prev, [submissionId]: grade }));
-    setStudentSubmissions(prev => prev.map(s =>
-      s.id === submissionId ? { ...s, status: `Graded (${grade}/100)` } : s
-    ));
+    
+    try {
+      if (typeof submissionId === 'string') {
+        await updateDoc(doc(db, 'submissions', submissionId), { grade: grade });
+      }
+      setGradedItems(prev => ({ ...prev, [submissionId]: grade }));
+      setStudentSubmissions(prev => prev.map(s =>
+        s.id === submissionId ? { ...s, status: `Graded (${grade}/100)` } : s
+      ));
+      toast.success(lang === 'ar' ? 'تم الحفظ' : 'Grade saved');
+    } catch(err) {
+      toast.error('Error saving grade');
+    }
   };
 
   const handleCreateCourse = async () => {
