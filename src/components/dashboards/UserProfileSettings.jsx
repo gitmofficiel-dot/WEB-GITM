@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 import {
@@ -188,14 +188,15 @@ export default function UserProfileSettings({ currentUser: propUser }) {
   const handleSaveProfile = async () => {
     setSaveStatus('loading');
     try {
-      if (currentUser?.membershipId) {
+      const profileId = currentUser?.membershipId || currentUser?.uid;
+      if (profileId) {
         let finalImageUrl = currentUser.imageUrl || '';
         if (selectedFile) {
           finalImageUrl = await uploadToCloudinary(selectedFile, 'image');
         }
 
-        const userRef = doc(db, 'users', currentUser.membershipId);
-        await updateDoc(userRef, {
+        const userRef = doc(db, 'users', profileId);
+        await setDoc(userRef, {
           imageUrl: finalImageUrl,
           nameLatin: formData.nameLatin,
           nameAr: formData.nameAr,
@@ -212,7 +213,7 @@ export default function UserProfileSettings({ currentUser: propUser }) {
           skills: skills,
           interests: interests,
           updatedAt: new Date().toISOString()
-        });
+        }, { merge: true });
         setSaveStatus('success');
       } else {
         await new Promise(resolve => setTimeout(resolve, 1000));

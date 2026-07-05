@@ -429,6 +429,7 @@ export default function StudentDashboard() {
                 name: studentName,
                 role: 'student',
                 email: studentEmail,
+                uid: currentUser?.uid,
                 badges: currentUser?.badges || ['developer'],
                 membershipId: currentUser?.membershipId || ''
               }} />
