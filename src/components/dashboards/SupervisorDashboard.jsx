@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -9,6 +9,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
+import { db } from '../../config/firebase';
+import { collection, getDocs, doc, updateDoc, query, where } from 'firebase/firestore';
+import { toast } from '../../utils/toast';
 
 export default function SupervisorDashboard() {
   const { lang } = useLanguage();
@@ -18,23 +21,69 @@ export default function SupervisorDashboard() {
   const supervisorName = currentUser?.name || (lang === 'ar' ? 'المشرف حمزة' : 'Supervisor Hamza');
   const supervisorEmail = currentUser?.email || 'hamza@gitm.ma';
 
-  const [teamMembers] = useState([
-    { id: 1, name: 'Aymane Benali', nameAr: 'أيمن بنعلي', role: 'developer', roleAr: 'مطور', status: 'online', lastActive: '2026-06-27', avatar: 'A', color: 'from-blue-500 to-cyan-500' },
-    { id: 2, name: 'Sara Khan', nameAr: 'سارة خان', role: 'designer', roleAr: 'مصممة', status: 'online', lastActive: '2026-06-27', avatar: 'S', color: 'from-pink-500 to-rose-500' },
-    { id: 3, name: 'Omar Tazi', nameAr: 'عمر التازي', role: 'developer', roleAr: 'مطور', status: 'offline', lastActive: '2026-06-26', avatar: 'O', color: 'from-emerald-500 to-teal-500' },
-    { id: 4, name: 'Fatima Zahra', nameAr: 'فاطمة الزهراء', role: 'content_manager', roleAr: 'مديرة محتوى', status: 'online', lastActive: '2026-06-27', avatar: 'F', color: 'from-purple-500 to-indigo-500' },
-    { id: 5, name: 'Youssef Alami', nameAr: 'يوسف العلمي', role: 'researcher', roleAr: 'باحث', status: 'offline', lastActive: '2026-06-25', avatar: 'Y', color: 'from-amber-500 to-orange-500' },
-    { id: 6, name: 'Khadija Brahim', nameAr: 'خديجة إبراهيم', role: 'teacher', roleAr: 'معلمة', status: 'online', lastActive: '2026-06-27', avatar: 'K', color: 'from-indigo-500 to-blue-500' },
-    { id: 7, name: 'Ahmed Ali', nameAr: 'أحمد علي', role: 'student', roleAr: 'طالب', status: 'offline', lastActive: '2026-06-24', avatar: 'AH', color: 'from-teal-500 to-emerald-500' },
-    { id: 8, name: 'Amine Benjelloun', nameAr: 'أمين بنجلون', role: 'teacher', roleAr: 'معلم', status: 'online', lastActive: '2026-06-27', avatar: 'AM', color: 'from-rose-500 to-red-500' },
-  ]);
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [progressReports, setProgressReports] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [progressReports] = useState([
-    { id: 1, project: 'Edge AI YOLOv8 Integration', projectAr: 'دمج YOLOv8 للذكاء الاصطناعي', progress: 78, deadline: '2026-07-15', status: 'on-track', lead: 'Aymane Benali', tasks: 24, completedTasks: 19, color: 'from-blue-500 to-cyan-500' },
-    { id: 2, project: 'Smart Drone Controller', projectAr: 'وحدة تحكم الطائرة الذكية', progress: 45, deadline: '2026-08-01', status: 'at-risk', lead: 'Omar Tazi', tasks: 18, completedTasks: 8, color: 'from-amber-500 to-orange-500' },
-    { id: 3, project: 'GITM Website Redesign', projectAr: 'إعادة تصميم موقع GITM', progress: 92, deadline: '2026-06-30', status: 'on-track', lead: 'Sara Khan', tasks: 30, completedTasks: 28, color: 'from-emerald-500 to-teal-500' },
-    { id: 4, project: 'IoT Cloud Platform v2', projectAr: 'منصة إنترنت الأشياء v2', progress: 15, deadline: '2026-09-15', status: 'delayed', lead: 'Amine Benjelloun', tasks: 42, completedTasks: 6, color: 'from-purple-500 to-indigo-500' },
-  ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch users for team members
+        const usersSnap = await getDocs(collection(db, 'users'));
+        const usersList = [];
+        usersSnap.forEach(docSnap => {
+          const data = docSnap.data();
+          if (data.email !== supervisorEmail) {
+            usersList.push({
+              id: docSnap.id,
+              name: data.name || data.firstName || 'Unknown',
+              nameAr: data.name || data.firstName || 'مجهول',
+              role: data.role || 'member',
+              roleAr: data.role || 'عضو',
+              status: Math.random() > 0.5 ? 'online' : 'offline', // simulated status
+              lastActive: new Date().toISOString().split('T')[0],
+              avatar: (data.name || data.firstName || 'U').charAt(0).toUpperCase(),
+              color: 'from-indigo-500 to-purple-500'
+            });
+          }
+        });
+        setTeamMembers(usersList);
+
+        // Fetch projects for progress reports
+        const projectsSnap = await getDocs(collection(db, 'projects'));
+        const projectsList = [];
+        projectsSnap.forEach(docSnap => {
+          const data = docSnap.data();
+          const tasks = data.tasks || [];
+          const completedTasks = tasks.filter(t => t.status === 'completed').length;
+          const totalTasks = tasks.length || 1; // avoid division by zero
+          const progress = Math.round((completedTasks / totalTasks) * 100);
+          let status = 'on-track';
+          if (progress < 30) status = 'delayed';
+          else if (progress < 60) status = 'at-risk';
+
+          projectsList.push({
+            id: docSnap.id,
+            project: data.title_en || 'Untitled',
+            projectAr: data.title_ar || data.title_en || 'مشروع بدون اسم',
+            progress: data.progress || progress,
+            deadline: data.deadline || '2026-12-31',
+            status: status,
+            lead: data.creatorName || 'Unknown',
+            tasks: totalTasks,
+            completedTasks: completedTasks,
+            color: 'from-blue-500 to-cyan-500'
+          });
+        });
+        setProgressReports(projectsList);
+      } catch (error) {
+        console.error("Error fetching supervisor data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [supervisorEmail]);
 
   const [approvalRequests, setApprovalRequests] = useState([
     { id: 1, type: 'member', typeAr: 'عضو جديد', title: 'New Member Request: Hamid El Ouardi', titleAr: 'طلب عضوية جديد: حميد الوردي', description: 'Computer Science student at ENSAM requesting to join as developer.', descriptionAr: 'طالب علوم حاسوب في ENSAM يطلب الانضمام كمطور.', submittedDate: '2026-06-26', priority: 'medium', icon: UserPlus },
@@ -56,10 +105,12 @@ export default function SupervisorDashboard() {
 
   const handleApprove = (id) => {
     setApprovalRequests(prev => prev.filter(r => r.id !== id));
+    toast.success(lang === 'ar' ? 'تمت الموافقة بنجاح' : 'Approved successfully');
   };
 
   const handleReject = (id) => {
     setApprovalRequests(prev => prev.filter(r => r.id !== id));
+    toast.error(lang === 'ar' ? 'تم الرفض' : 'Request rejected');
   };
 
   const statusConfig = {

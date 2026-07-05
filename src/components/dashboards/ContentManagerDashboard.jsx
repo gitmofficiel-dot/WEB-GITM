@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
   PenTool, Image as ImageIcon, BarChart2, Plus, Edit, Trash2, Eye, Calendar, Globe, Settings,
   Search, CheckCircle, XCircle, Clock, Upload, FileText, Link2, ArrowUpRight,
-  AlertTriangle, Send, Filter, X, Save, ListChecks, Loader2, MapPin, Users, BookOpen, Rocket
+  AlertTriangle, Send, Filter, X, Save, ListChecks, Loader2, MapPin, Users, BookOpen, Rocket, Activity
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';

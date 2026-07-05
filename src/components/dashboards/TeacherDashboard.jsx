@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import { useAI } from '../../hooks/useAI';
 import {
   BookOpen, Users, ClipboardCheck, Video, Settings, Edit3, FileText, Plus,

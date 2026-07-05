@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { 
@@ -7,6 +7,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
+import { db } from '../../config/firebase';
+import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import { toast } from '../../utils/toast';
 
 export default function PartnerDashboard() {
   const { lang } = useLanguage();
@@ -20,11 +23,67 @@ export default function PartnerDashboard() {
     satisfactionScore: 4.8
   };
 
-  const sharedProjects = [
-    { id: 1, title: lang === 'ar' ? 'مبادرة المدن الذكية المغربية' : 'Moroccan Smart Cities Initiative', status: 'Active', gitm_lead: 'Mourad', partner_lead: currentUser?.name || 'Partner Lead', progress: 68 },
-    { id: 2, title: lang === 'ar' ? 'برنامج احتضان الشركات الناشئة' : 'Startup Incubation Program', status: 'Planning', gitm_lead: 'Youssef Alaoui', partner_lead: currentUser?.name || 'Partner Lead', progress: 20 },
-    { id: 3, title: lang === 'ar' ? 'مختبر البحث في الذكاء الاصطناعي' : 'AI Research Lab Partnership', status: 'Completed', gitm_lead: 'Khadija Mansouri', partner_lead: currentUser?.name || 'Partner Lead', progress: 100 }
-  ];
+  const [sharedProjects, setSharedProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showProjectModal, setShowProjectModal] = useState(false);
+  const [newProject, setNewProject] = useState({ title: '', description: '' });
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const snap = await getDocs(collection(db, 'projects'));
+        const projectsList = [];
+        snap.forEach(doc => {
+          const data = doc.data();
+          if (data.isSharedWithPartner) {
+            projectsList.push({
+              id: doc.id,
+              title: lang === 'ar' && data.title_ar ? data.title_ar : (data.title_en || 'Untitled Project'),
+              status: data.progress === 100 ? 'Completed' : (data.progress > 0 ? 'Active' : 'Planning'),
+              gitm_lead: data.creatorName || 'GITM Team',
+              partner_lead: currentUser?.name || 'Partner Lead',
+              progress: data.progress || 0
+            });
+          }
+        });
+        
+        if (projectsList.length === 0) {
+          // Fallback static data if none in DB
+          projectsList.push(
+            { id: 1, title: lang === 'ar' ? 'مبادرة المدن الذكية المغربية' : 'Moroccan Smart Cities Initiative', status: 'Active', gitm_lead: 'Mourad', partner_lead: currentUser?.name || 'Partner Lead', progress: 68 },
+            { id: 2, title: lang === 'ar' ? 'برنامج احتضان الشركات الناشئة' : 'Startup Incubation Program', status: 'Planning', gitm_lead: 'Youssef Alaoui', partner_lead: currentUser?.name || 'Partner Lead', progress: 20 },
+            { id: 3, title: lang === 'ar' ? 'مختبر البحث في الذكاء الاصطناعي' : 'AI Research Lab Partnership', status: 'Completed', gitm_lead: 'Khadija Mansouri', partner_lead: currentUser?.name || 'Partner Lead', progress: 100 }
+          );
+        }
+        setSharedProjects(projectsList);
+      } catch (err) {
+        console.error("Error fetching partner projects:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
+  }, [currentUser, lang]);
+
+  const handleProposeProject = async () => {
+    if (!newProject.title) return;
+    try {
+      await addDoc(collection(db, 'projects'), {
+        title_en: newProject.title,
+        title_ar: newProject.title,
+        description_en: newProject.description,
+        isSharedWithPartner: true,
+        creatorName: currentUser?.name || 'Partner',
+        progress: 0,
+        createdAt: serverTimestamp()
+      });
+      setShowProjectModal(false);
+      setNewProject({ title: '', description: '' });
+      toast.success(lang === 'ar' ? 'تم تقديم الاقتراح بنجاح!' : 'Project proposed successfully!');
+    } catch(err) {
+      toast.error('Error proposing project');
+    }
+  };
 
   const communications = [
     { id: 1, from: 'Mourad (GITM President)', subject: lang === 'ar' ? 'اجتماع مراجعة الشراكة Q3' : 'Q3 Partnership Review Meeting', date: '2026-06-25', unread: true },
@@ -110,8 +169,27 @@ export default function PartnerDashboard() {
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2"><FolderOpen className="text-emerald-500"/>{lang==='ar'?'المشاريع المشتركة':'Shared Projects'}</h3>
-                  <button className="bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-emerald-600 transition-colors"><Plus size={16}/> {lang==='ar'?'اقتراح مشروع':'Propose Project'}</button>
+                  <button onClick={() => setShowProjectModal(true)} className="bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/20"><Plus size={16}/> {lang==='ar'?'اقتراح مشروع':'Propose Project'}</button>
                 </div>
+                
+                {/* Project Proposal Modal */}
+                <AnimatePresence>
+                  {showProjectModal && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                      <div className="glass-card rounded-2xl p-6 border border-emerald-200 dark:border-emerald-900/30">
+                        <h4 className="font-bold text-lg mb-4 text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'اقتراح مشروع جديد' : 'Propose New Project'}</h4>
+                        <div className="space-y-4">
+                          <input type="text" placeholder={lang === 'ar' ? 'عنوان المشروع' : 'Project Title'} value={newProject.title} onChange={e => setNewProject({...newProject, title: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-emerald-500 outline-none" />
+                          <textarea placeholder={lang === 'ar' ? 'تفاصيل المشروع وأهدافه' : 'Project details and objectives'} value={newProject.description} onChange={e => setNewProject({...newProject, description: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 min-h-[100px] focus:ring-2 focus:ring-emerald-500 outline-none" />
+                          <div className="flex justify-end gap-3">
+                            <button onClick={() => setShowProjectModal(false)} className="px-4 py-2 rounded-xl text-slate-500 font-bold hover:bg-slate-100 dark:hover:bg-slate-800">{lang === 'ar' ? 'إلغاء' : 'Cancel'}</button>
+                            <button onClick={handleProposeProject} className="bg-emerald-500 text-white px-6 py-2 rounded-xl font-bold hover:bg-emerald-600">{lang === 'ar' ? 'إرسال الاقتراح' : 'Submit Proposal'}</button>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
                 {sharedProjects.map(project => (
                   <div key={project.id} className="glass-card rounded-2xl p-6">
                     <div className="flex justify-between items-start mb-4">
