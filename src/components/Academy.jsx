@@ -43,36 +43,10 @@ export default function Academy() {
           coursesData.push({ id: doc.id, ...doc.data() });
         });
         
-        // Add mock data if empty for demonstration
-        if (coursesData.length === 0) {
-          const mockCourses = [
-            { id: '1', title_en: 'Advanced AI & Machine Learning', title_ar: 'الذكاء الاصطناعي المتقدم', description_en: 'Master neural networks and deep learning.', description_ar: 'تعلم الشبكات العصبية والتعلم العميق.', track: 'AI', level: 'Advanced', rating: 4.9, students: 12500, duration: '12 Weeks', thumbnail: 'https://images.unsplash.com/photo-1555255707-c07966088b7b?w=800' },
-            { 
-              id: '2', 
-              title_en: 'Full-Stack React Development', 
-              title_ar: 'تطوير تطبيقات الويب باستخدام رياكت', 
-              description_en: 'Build modern web apps from scratch.', 
-              description_ar: 'ابن تطبيقات ويب حديثة من الصفر.', 
-              courseIntroVideo: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-              courseIntroText: 'في هذا التدريب التجريبي، ستتعلم أساسيات بناء الواجهات المتقدمة. ستتعرف على كيفية عمل المكونات (Components) وكيفية إدارة الحالة (State).',
-              track: 'Web Dev', level: 'Intermediate', rating: 4.8, students: 8400, duration: '8 Weeks', thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800',
-              modules: [
-                {
-                  title: 'React Components Deep Dive',
-                  axes: [
-                    { type: 'video', title: 'Introduction to Components', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-                    { type: 'article', title: 'State and Props', content: '<h3>Understanding State</h3><p>State is local to the component...</p>' },
-                    { type: 'code', title: 'Build a Counter Component', instructions: 'Write a React component that increments a counter on click.', initialCode: 'import React, { useState } from "react";\n\nexport default function Counter() {\n  return <div>Count: 0</div>;\n}' }
-                  ]
-                }
-              ]
-            },
-            { id: '3', title_en: 'Cybersecurity Fundamentals', title_ar: 'أساسيات الأمن السيبراني', description_en: 'Protect systems against modern threats.', description_ar: 'حماية الأنظمة من التهديدات الحديثة.', track: 'Security', level: 'Beginner', rating: 4.7, students: 15300, duration: '6 Weeks', thumbnail: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800' },
-            { id: '4', title_en: 'Cloud Computing Architecture', title_ar: 'هندسة الحوسبة السحابية', description_en: 'Design scalable cloud systems.', description_ar: 'تصميم أنظمة سحابية قابلة للتطوير.', track: 'Cloud', level: 'Advanced', rating: 4.8, students: 9200, duration: '10 Weeks', thumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800' }
-          ];
-          setCourses(mockCourses);
-        } else {
+        if (coursesData.length > 0) {
           setCourses(coursesData);
+        } else {
+          setCourses([]);
         }
       } catch (error) {
         console.error("Error fetching courses:", error);

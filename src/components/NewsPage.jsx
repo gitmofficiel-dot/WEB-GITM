@@ -34,16 +34,10 @@ export default function NewsPage() {
           ...doc.data()
         }));
 
-        if (fetchedNews.length === 0) {
-          const mockNews = [
-            { id: '1', title_en: 'GITM Launches AI Research Hub', title_ar: 'GITM تطلق مركز أبحاث الذكاء الاصطناعي', date: '2026-07-01', image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800' },
-            { id: '2', title_en: 'National Robotics Hackathon Winners Announced', title_ar: 'الإعلان عن الفائزين في الهاكاثون الوطني للروبوتات', date: '2026-06-15', image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800' },
-            { id: '3', title_en: 'Partnership with Leading Global Tech Giants', title_ar: 'شراكة استراتيجية مع عمالقة التكنولوجيا العالمية', date: '2026-05-20', image: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800' },
-            { id: '4', title_en: 'New Cloud Architecture Course Added to Academy', title_ar: 'إضافة تدريب جديد في معمارية السحابة للأكاديمية', date: '2026-05-10', image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800' },
-          ];
-          setNewsList(mockNews);
-        } else {
+        if (fetchedNews.length > 0) {
           setNewsList(fetchedNews);
+        } else {
+          setNewsList([]);
         }
       } catch (error) {
         console.error('Error fetching news:', error);

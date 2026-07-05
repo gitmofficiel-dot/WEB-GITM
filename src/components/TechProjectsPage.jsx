@@ -29,40 +29,6 @@ export default function TechProjectsPage() {
           ...doc.data()
         }));
         
-        // Add mock if empty
-        if (fetchedProjects.length === 0) {
-           fetchedProjects = [
-            {
-              id: 'smartTraffic',
-              title: lang === 'ar' ? 'إدارة المرور الذكية عبر الدرونز' : 'Smart Traffic via Drones',
-              description: lang === 'ar' ? 'فكرة مبتكرة لاستخدام الطائرات بدون طيار لتنظيم حركة السير...' : 'Innovative idea using drones to manage traffic...',
-              image: 'https://images.unsplash.com/photo-1527443195645-1133f7f28990?w=800&q=80',
-              category: 'Robotics',
-            },
-            {
-              id: 'swarmNav',
-              title: lang === 'ar' ? 'نظام الملاحة الآلي للأسراب' : 'Autonomous Swarm Navigation',
-              description: lang === 'ar' ? 'مفهوم رياضي لخوارزمية تجنب الاصطدام للأجسام المتعددة.' : 'Mathematical concept for multi-agent collision avoidance algorithm.',
-              image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80',
-              category: 'AI',
-            },
-            {
-              id: 'telemetryHub',
-              title: lang === 'ar' ? 'محطة قياس البيانات عن بُعد' : 'Remote Telemetry Station',
-              description: lang === 'ar' ? 'مشروع تصميم محطة رصد مناخية تعتمد على تقنيات إنترنت الأشياء.' : 'IoT-based climate monitoring station design project.',
-              image: 'https://images.unsplash.com/photo-1531297172867-4f50fcc2cb26?w=800&q=80',
-              category: 'IoT',
-            },
-            {
-              id: 'edgeHardware',
-              title: lang === 'ar' ? 'خوارزميات التشفير السحابي' : 'Cloud Encryption Algorithms',
-              description: lang === 'ar' ? 'أفكار حول بناء خوارزمية تشفير جديدة تعتمد على الحوسبة الكمية.' : 'Ideas on building a new quantum-based encryption algorithm.',
-              image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',
-              category: 'Web',
-            }
-          ];
-        }
-
         setProjects(fetchedProjects);
       } catch (error) {
         console.error('Error fetching projects:', error);
