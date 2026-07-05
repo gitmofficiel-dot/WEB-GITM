@@ -5,8 +5,9 @@ import { useAuth } from '../../context/AuthContext';
 import {
   BookOpen, FileText, CheckCircle, Clock, Award, Star, Settings, PlayCircle,
   Download, Share2, Eye, BarChart3, Target, TrendingUp, Zap, Brain,
-  Calendar, Medal, GraduationCap, Flame, Copy, ExternalLink, Terminal
+  Calendar, Medal, GraduationCap, Flame, Copy, ExternalLink, Terminal, Printer, X
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
 import CodeSimulator from './CodeSimulator';
@@ -18,6 +19,7 @@ export default function StudentDashboard() {
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState('courses');
   const [copiedLink, setCopiedLink] = useState(null);
+  const [selectedCert, setSelectedCert] = useState(null);
 
   const studentName = currentUser?.name || (lang === 'ar' ? 'أيمن بنعلي' : 'Aymane Benali');
   const studentEmail = currentUser?.email || 'a.benali@gitm.ma';
@@ -273,7 +275,10 @@ export default function StudentDashboard() {
                         </div>
 
                         <div className="flex gap-3">
-                          <button className="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-[#1e3a5f] dark:text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                          <button 
+                            onClick={() => setSelectedCert(cert)}
+                            className="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-[#1e3a5f] dark:text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                          >
                             <Eye size={16}/> {lang === 'ar' ? 'عرض الشهادة' : 'View Certificate'}
                           </button>
                           <button
@@ -458,6 +463,95 @@ export default function StudentDashboard() {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Certificate Print Modal */}
+      {selectedCert && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 print:p-0 print:bg-white print:static print:inset-auto">
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }} 
+            animate={{ scale: 1, opacity: 1 }} 
+            className="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden print:shadow-none print:max-w-none print:rounded-none"
+          >
+            {/* Modal Actions (Hidden in Print) */}
+            <div className="p-4 flex justify-between items-center bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 print:hidden">
+              <h3 className="font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'عرض الشهادة' : 'Certificate View'}</h3>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => window.print()}
+                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold flex items-center gap-2 hover:shadow-lg transition-transform hover:scale-105"
+                >
+                  <Printer size={18} /> {lang === 'ar' ? 'طباعة الشهادة' : 'Print Certificate'}
+                </button>
+                <button 
+                  onClick={() => setSelectedCert(null)}
+                  className="p-2 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl hover:bg-red-500 hover:text-white transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Certificate Printable Area */}
+            <div id="printable-cert" className="p-10 md:p-16 relative bg-white text-slate-800 min-h-[600px] flex flex-col justify-center items-center text-center border-8 border-double border-teal-600 m-4 rounded-xl print:m-0 print:border-8 print:h-screen">
+              {/* Background watermark */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                <Medal size={400} className="text-teal-900" />
+              </div>
+              
+              <div className="mb-8">
+                <h1 className="text-4xl md:text-6xl font-black font-orbitron text-[#1e3a5f] mb-2 tracking-widest">CERTIFICATE</h1>
+                <h2 className="text-xl md:text-2xl text-teal-600 font-bold uppercase tracking-[0.2em]">Of Completion</h2>
+              </div>
+
+              <div className="space-y-6 z-10 w-full max-w-2xl mx-auto">
+                <p className="text-lg text-slate-500 uppercase tracking-widest">This is to certify that</p>
+                <h3 className="text-3xl md:text-5xl font-bold text-[#1e3a5f] border-b-2 border-teal-200 pb-4 mb-4">{studentName}</h3>
+                
+                <p className="text-lg text-slate-600">Has successfully completed the advanced course</p>
+                <h4 className="text-2xl md:text-3xl font-bold text-teal-700 my-4">{selectedCert.course}</h4>
+                
+                <div className="flex justify-center items-center gap-8 text-slate-600 pt-8 mt-8 border-t border-slate-100">
+                  <div className="text-center">
+                    <p className="font-bold text-lg text-[#1e3a5f]">{selectedCert.issueDate}</p>
+                    <p className="text-sm uppercase tracking-widest border-t border-slate-300 mt-1 pt-1">Date</p>
+                  </div>
+                  <div className="w-px h-12 bg-slate-300"></div>
+                  <div className="text-center">
+                    <p className="font-bold text-lg text-[#1e3a5f] signature-font italic">{selectedCert.instructor}</p>
+                    <p className="text-sm uppercase tracking-widest border-t border-slate-300 mt-1 pt-1">Instructor</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* QR Code Validation */}
+              <div className="absolute bottom-10 right-10 flex flex-col items-center">
+                <div className="bg-white p-2 border border-slate-200 rounded-lg shadow-sm">
+                  <QRCodeSVG 
+                    value={`https://gitm.ma/verify-certificate?id=${selectedCert.id}`} 
+                    size={80} 
+                    fgColor="#1e3a5f"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-500 font-mono mt-2">{selectedCert.id}</p>
+              </div>
+
+              {/* Logo */}
+              <div className="absolute bottom-10 left-10">
+                <h2 className="text-2xl font-black font-orbitron text-teal-600">GITM</h2>
+                <p className="text-xs text-slate-500 tracking-widest">ACADEMY</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+      
+      {/* Print CSS injection */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          body > *:not(.fixed) { display: none !important; }
+          .fixed { position: static !important; }
+        }
+      `}} />
     </div>
   );
 }

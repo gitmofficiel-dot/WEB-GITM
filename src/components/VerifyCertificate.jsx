@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle2, ShieldCheck, Search } from 'lucide-react';
@@ -7,22 +7,53 @@ import { ArrowLeft, CheckCircle2, ShieldCheck, Search } from 'lucide-react';
 export default function VerifyCertificate() {
   const { lang } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
   const [certId, setCertId] = useState('');
   const [status, setStatus] = useState('idle'); // idle, loading, valid, invalid
+  const [certData, setCertData] = useState(null);
 
-  const handleVerify = (e) => {
-    e.preventDefault();
-    if (!certId.trim()) return;
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const idFromUrl = params.get('id');
+    if (idFromUrl) {
+      setCertId(idFromUrl);
+      verifyId(idFromUrl);
+    }
+  }, [location.search]);
+
+  const verifyId = (idToVerify) => {
     setStatus('loading');
-    
     // Simulate API call
     setTimeout(() => {
-      if (certId.toUpperCase().startsWith('GITM-CERT-')) {
+      const upperId = idToVerify.toUpperCase();
+      if (upperId.startsWith('GITM-CERT-') || upperId.startsWith('CERT-GITM-')) {
+        // Parse mock data based on ID
+        const parts = upperId.split('-');
+        const year = parts[2] || '2026';
+        
+        let course = 'Technology & Innovation';
+        if (upperId.includes('0042')) course = 'Python for Robotics';
+        else if (upperId.includes('0089')) course = 'Data Structures & Algorithms';
+        else if (upperId.includes('0312')) course = 'Introduction to AI';
+        else if (upperId.includes('001')) course = 'Edge AI Architecture';
+
+        setCertData({
+          name: 'Soufiane El Alaoui', // Mock student name
+          course: course,
+          date: `15 June ${year}`,
+          id: upperId
+        });
         setStatus('valid');
       } else {
         setStatus('invalid');
       }
     }, 1500);
+  };
+
+  const handleVerify = (e) => {
+    e.preventDefault();
+    if (!certId.trim()) return;
+    verifyId(certId);
   };
 
   return (
@@ -73,17 +104,17 @@ export default function VerifyCertificate() {
           </div>
         )}
 
-        {status === 'valid' && (
+        {status === 'valid' && certData && (
           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 rounded-2xl p-6 text-left rtl:text-right">
             <div className="flex items-center gap-3 text-emerald-600 dark:text-emerald-400 mb-4 border-b border-emerald-200 dark:border-emerald-800 pb-3">
               <CheckCircle2 className="w-8 h-8 flex-shrink-0" />
               <h3 className="font-bold text-lg">{lang === 'ar' ? 'شهادة صالحة وموثقة' : 'Valid & Verified Certificate'}</h3>
             </div>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{lang === 'ar' ? 'اسم الطالب:' : 'Student Name:'}</span><strong className="text-[#1e3a5f] dark:text-white">Soufiane El Alaoui</strong></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{lang === 'ar' ? 'المسار التدريبي:' : 'Course Track:'}</span><strong className="text-[#1e3a5f] dark:text-white">Edge AI Architecture</strong></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{lang === 'ar' ? 'تاريخ الإصدار:' : 'Issue Date:'}</span><strong className="text-[#1e3a5f] dark:text-white">15 June 2026</strong></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{lang === 'ar' ? 'رمز التوثيق:' : 'Verification ID:'}</span><strong className="font-mono text-teal-600 dark:text-teal-400">{certId.toUpperCase()}</strong></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{lang === 'ar' ? 'اسم الطالب:' : 'Student Name:'}</span><strong className="text-[#1e3a5f] dark:text-white">{certData.name}</strong></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{lang === 'ar' ? 'المسار التدريبي:' : 'Course Track:'}</span><strong className="text-[#1e3a5f] dark:text-white">{certData.course}</strong></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{lang === 'ar' ? 'تاريخ الإصدار:' : 'Issue Date:'}</span><strong className="text-[#1e3a5f] dark:text-white">{certData.date}</strong></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{lang === 'ar' ? 'رمز التوثيق:' : 'Verification ID:'}</span><strong className="font-mono text-teal-600 dark:text-teal-400">{certData.id}</strong></div>
             </div>
           </motion.div>
         )}

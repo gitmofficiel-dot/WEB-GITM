@@ -5,8 +5,9 @@ import { doc, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 import {
-  User, Settings, Copy, Edit3, Camera, Globe, Mail, Briefcase, GraduationCap, CheckCircle, AlertCircle, Plus, Trash2, Github, Linkedin, Facebook, Instagram, Award, X, Share2
+  User, Settings, Copy, Edit3, Camera, Globe, Mail, Briefcase, GraduationCap, CheckCircle, AlertCircle, Plus, Trash2, Github, Linkedin, Facebook, Instagram, Award, X, Share2, QrCode
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '../../utils/toast';
 
@@ -361,6 +362,12 @@ export default function UserProfileSettings({ currentUser: propUser }) {
         >
           <Settings size={18}/> {lang === 'ar' ? 'الإعدادات' : 'Settings'}
         </button>
+        <button 
+          onClick={() => setActiveSubTab('membership')}
+          className={`flex items-center gap-2 px-4 py-2 font-bold transition-all border-b-2 whitespace-nowrap ${activeSubTab === 'membership' ? 'border-indigo-500 text-indigo-500 dark:text-indigo-400' : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-600 dark:text-slate-300'}`}
+        >
+          <QrCode size={18}/> {lang === 'ar' ? 'البطاقة الرقمية' : 'Digital ID Card'}
+        </button>
       </div>
 
       {activeSubTab === 'profile' && (
@@ -381,6 +388,61 @@ export default function UserProfileSettings({ currentUser: propUser }) {
             </div>
           </div>
           <CVPreview />
+        </motion.div>
+      )}
+
+      {activeSubTab === 'membership' && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-center p-4">
+          {currentUser.membershipId ? (
+            <div className="w-full max-w-sm bg-gradient-to-br from-[#1e3a5f] to-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-700 relative text-white">
+              {/* Card Header */}
+              <div className="bg-teal-500/20 px-6 py-4 flex justify-between items-center border-b border-white/10">
+                <h3 className="font-orbitron font-black text-xl text-teal-400 tracking-wider">GITM</h3>
+                <span className="text-xs uppercase tracking-widest font-bold text-slate-300">Member ID</span>
+              </div>
+              
+              {/* Card Body */}
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-1">{formData.nameLatin || currentUser.name}</h2>
+                    <p className="text-teal-400 text-sm font-semibold uppercase tracking-wider">{currentUser.role}</p>
+                  </div>
+                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-800 border-2 border-slate-600 flex-shrink-0">
+                    {profileImage ? (
+                      <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-slate-400">
+                        {(formData.nameLatin || currentUser.name).charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-6 mt-8 border-t border-white/10 pt-6">
+                  <div className="bg-white p-2 rounded-xl">
+                    <QRCodeSVG value={`https://gitm.ma/profile/${currentUser.uid || currentUser.id || currentUser.membershipId}`} size={70} fgColor="#1e3a5f" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-400 uppercase tracking-widest mb-1">ID Number</p>
+                    <p className="font-mono text-lg font-bold tracking-widest">{currentUser.membershipId}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="glass-card rounded-3xl p-8 text-center max-w-lg w-full">
+              <Award className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-2">
+                {lang === 'ar' ? 'لا توجد عضوية نشطة' : 'No Active Membership'}
+              </h3>
+              <p className="text-slate-500 dark:text-slate-400 mb-6">
+                {lang === 'ar' 
+                  ? 'لم يتم إصدار بطاقة عضوية رقمية لحسابك بعد. يرجى إكمال ملفك الشخصي والتواصل مع الإدارة.' 
+                  : 'A digital membership card has not been issued for your account yet. Please complete your profile and contact administration.'}
+              </p>
+            </div>
+          )}
         </motion.div>
       )}
 
