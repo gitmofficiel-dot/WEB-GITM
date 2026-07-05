@@ -493,19 +493,19 @@ export default function StudentDashboard() {
 
             {/* Certificate Printable Area */}
             <div id="printable-cert" 
-                 className="p-10 md:p-16 relative min-h-[600px] flex flex-col justify-center items-center text-center m-4 rounded-xl print:m-0 print:h-screen bg-cover bg-center overflow-hidden border-4 border-teal-800/30 shadow-inner"
+                 className="w-full aspect-video p-6 sm:p-10 md:p-16 relative flex flex-col justify-center items-center text-center mx-auto my-4 rounded-xl print:m-0 print:w-[297mm] print:h-[210mm] print:aspect-auto bg-cover bg-center overflow-hidden border-4 border-teal-800/30 shadow-inner"
                  style={{ backgroundImage: 'url(/certificate-bg.png)' }}>
               {/* Overlay to ensure text readability if needed */}
               <div className="absolute inset-0 bg-white/40 print:bg-white/40 pointer-events-none z-0"></div>
               
-              <div className="relative z-10 mb-8 mt-12">
-                <h1 className="text-4xl md:text-6xl font-black font-orbitron text-[#0a1f3d] mb-2 tracking-widest drop-shadow-md">CERTIFICATE</h1>
-                <h2 className="text-xl md:text-2xl text-teal-900 font-bold uppercase tracking-[0.2em] drop-shadow-sm">Of Completion</h2>
+              <div className="relative z-10 mb-4 sm:mb-8 mt-6 sm:mt-12">
+                <h1 className="text-3xl sm:text-4xl md:text-6xl font-black font-orbitron text-[#0a1f3d] mb-1 sm:mb-2 tracking-widest drop-shadow-md">CERTIFICATE</h1>
+                <h2 className="text-lg sm:text-xl md:text-2xl text-teal-900 font-bold uppercase tracking-[0.2em] drop-shadow-sm">Of Completion</h2>
               </div>
 
-              <div className="space-y-6 relative z-10 w-full max-w-2xl mx-auto">
-                <p className="text-lg text-slate-900 font-semibold uppercase tracking-widest drop-shadow-sm">This is to certify that</p>
-                <h3 className="text-3xl md:text-5xl font-black text-[#0a1f3d] border-b-2 border-[#0a1f3d]/40 pb-4 mb-4 drop-shadow-lg">{studentName}</h3>
+              <div className="space-y-4 sm:space-y-6 relative z-10 w-full max-w-2xl mx-auto">
+                <p className="text-sm sm:text-lg text-slate-900 font-semibold uppercase tracking-widest drop-shadow-sm">This is to certify that</p>
+                <h3 className="text-2xl sm:text-3xl md:text-5xl font-black text-[#0a1f3d] border-b-2 border-[#0a1f3d]/40 pb-2 sm:pb-4 mb-2 sm:mb-4 drop-shadow-lg">{studentName}</h3>
                 
                 <p className="text-lg text-slate-900 font-semibold drop-shadow-sm">Has successfully completed the advanced course</p>
                 <h4 className="text-2xl md:text-4xl font-black text-teal-900 my-4 drop-shadow-lg">{selectedCert.course}</h4>
