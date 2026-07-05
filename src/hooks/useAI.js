@@ -16,11 +16,11 @@ export const useAI = () => {
     'default': 'openai/gpt-oss-120b:free'
   };
 
-  const callOpenRouter = async (systemPrompt, userPrompt, jsonFormat = false, taskType = 'default') => {
+  const callOpenRouter = async (systemPrompt, userPrompt, jsonFormat = false, taskType = 'default', specificModel = null) => {
     setLoading(true);
     setError(null);
     try {
-      const selectedModel = MODEL_ROUTER[taskType] || MODEL_ROUTER.default;
+      const selectedModel = specificModel || MODEL_ROUTER[taskType] || MODEL_ROUTER.default;
       const response = await openRouterClient.chat.completions.create({
         model: selectedModel,
         messages: [
@@ -102,6 +102,34 @@ DO NOT return markdown blocks, only raw JSON.`;
     return JSON.parse(result);
   }, []);
 
+  const chatWithGitmai = useCallback(async (messages, selectedModelSlug) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const systemPrompt = `You are "GITM AI" (الذكاء الاصطناعي لـ GITM), a highly advanced AI developed entirely by the "GITM Team" (فريق GITM). 
+You MUST NOT mention OpenAI, Meta, Google, Qwen, Liquid, OpenRouter, or your original model name under any circumstances. 
+If asked who made you, you answer "I was developed by the GITM Team (فريق GITM)."
+You are helpful, professional, and knowledgeable about Technology, AI, IoT, and Robotics.`;
+
+      const formattedMessages = [
+        { role: 'system', content: systemPrompt },
+        ...messages
+      ];
+
+      const response = await openRouterClient.chat.completions.create({
+        model: selectedModelSlug,
+        messages: formattedMessages,
+      });
+      return response.choices[0].message.content;
+    } catch (err) {
+      console.error('GITM AI Chat Error:', err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     loading,
     error,
@@ -112,6 +140,7 @@ DO NOT return markdown blocks, only raw JSON.`;
     moderateContent,
     generateQuiz,
     evaluateCode,
-    simulateCodeExecution
+    simulateCodeExecution,
+    chatWithGitmai
   };
 };

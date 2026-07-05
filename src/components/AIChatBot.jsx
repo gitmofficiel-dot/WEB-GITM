@@ -2,8 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, Bot, User, Sparkles, Mic, MicOff } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { toast } from '../utils/toast';
+import { useAI } from '../hooks/useAI';
+
 const AIChatBot = () => {
   const { lang, t } = useLanguage();
+  const { chatWithGitmai } = useAI();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     { id: 1, sender: 'ai', text: lang === 'ar' ? 'مرحباً! أنا المساعد الذكي لـ GITM. كيف يمكنني مساعدتك اليوم؟' : 'Hello! I am the GITM AI Assistant. How can I help you today?', time: new Date() }
@@ -11,6 +14,17 @@ const AIChatBot = () => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  
+  const GITM_MODELS = [
+    { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'GITM Pro', desc: lang === 'ar' ? 'نموذج متطور جداً' : 'Advanced Model' },
+    { id: 'meta-llama/llama-3.2-3b-instruct:free', name: 'GITM Fast', desc: lang === 'ar' ? 'سريع وعملي' : 'Fast & Efficient' },
+    { id: 'qwen/qwen3-coder:free', name: 'GITM Coder', desc: lang === 'ar' ? 'مطور أكواد متخصص' : 'Specialized Coder' },
+    { id: 'nvidia/nemotron-nano-12b-2-vl:free', name: 'GITM Vision', desc: lang === 'ar' ? 'تحليل الرؤية' : 'Vision Analysis' },
+    { id: 'liquid/lfm2.5-1.2b-thinking:free', name: 'GITM Thinker', desc: lang === 'ar' ? 'تحليل عميق' : 'Deep Analysis' },
+    { id: 'nousresearch/hermes-3-405b-instruct:free', name: 'GITM Ultra', desc: lang === 'ar' ? 'القدرات القصوى' : 'Maximum Capabilities' }
+  ];
+
+  const [selectedModel, setSelectedModel] = useState(GITM_MODELS[0].id);
   const messagesEndRef = useRef(null);
 
   const startListening = () => {
@@ -54,39 +68,50 @@ const AIChatBot = () => {
     { id: 'contact', label: lang === 'ar' ? 'معلومات الاتصال' : 'Contact Info' },
   ];
 
-  const handleSend = (text = input) => {
+  const handleSend = async (text = input) => {
     if (!text.trim()) return;
 
     const newUserMsg = { id: Date.now(), sender: 'user', text, time: new Date() };
-    setMessages(prev => [...prev, newUserMsg]);
+    const updatedMessages = [...messages, newUserMsg];
+    setMessages(updatedMessages);
     setInput('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      let aiResponse = lang === 'ar' ? 'يمكنني مساعدتك في معلومات حول GITM وأكاديميتنا ومشاريعنا والمزيد!' : 'I can help with info about GITM, our academy, projects, and more!';
+    try {
+      // Hardcoded quick answers for specific triggers
       const lowerText = text.toLowerCase();
-
-      if (lowerText.includes('gitm') || lowerText.includes('ما هي')) {
-        aiResponse = lang === 'ar' ? 'GITM هي مجموعة الابتكار التكنولوجي المغربية، نركز على الأنظمة المدمجة، الذكاء الاصطناعي، وإنترنت الأشياء.' : 'GITM is the Moroccan Technology Innovation Group, focusing on embedded systems, AI, and IoT.';
-      } else if (lowerText.includes('مرحبا') || lowerText.includes('سلام') || lowerText.includes('hello') || lowerText.includes('hi')) {
-        aiResponse = lang === 'ar' ? 'أهلاً بك! وعليكم السلام. كيف يمكنني إفادتك اليوم؟' : 'Hello there! How can I help you today?';
-      } else if (lowerText.includes('مؤسس') || lowerText.includes('founder')) {
-        aiResponse = lang === 'ar' ? 'مؤسس GITM هو المهندس محمد غزاوني (Mohammed Rhzaouni)، ويهدف من خلال المجموعة إلى دفع عجلة الابتكار التكنولوجي في المغرب.' : 'The founder of GITM is engineer Mohammed Rhzaouni, aiming to drive technological innovation in Morocco.';
-      } else if (lowerText.includes('academy') || lowerText.includes('أكاديمية') || lowerText.includes('course')) {
-        aiResponse = lang === 'ar' ? 'نقدم 3 مسارات رئيسية: الذكاء الاصطناعي على الحافة، الروبوتات المستقلة، وأنظمة السحابة لإنترنت الأشياء.' : 'We offer 3 main tracks: Edge AI, Autonomous Robotics, and IoT Cloud Systems.';
-      } else if (lowerText.includes('contact') || lowerText.includes('اتصال') || lowerText.includes('تواصل')) {
-        aiResponse = lang === 'ar' ? 'يمكنك التواصل معنا عبر contact@gitm.ma أو زيارة مختبرنا في الدار البيضاء.' : 'You can reach us at contact@gitm.ma or visit our lab in Casablanca.';
-      } else if (lowerText.includes('dashboard') || lowerText.includes('لوحة')) {
-        aiResponse = lang === 'ar' ? 'جاري توجيهك إلى لوحة التحكم الخاصة بك...' : 'Redirecting you to your dashboard...';
-        setTimeout(() => window.location.hash = '#dashboard', 1000); // Trigger mock navigation
+      let hardcodedResponse = null;
+      if (lowerText.includes('dashboard') || lowerText.includes('لوحة')) {
+        hardcodedResponse = lang === 'ar' ? 'جاري توجيهك إلى لوحة التحكم الخاصة بك...' : 'Redirecting you to your dashboard...';
+        setTimeout(() => window.location.hash = '#dashboard', 1000);
       } else if (lowerText.includes('lab') || lowerText.includes('مختبر')) {
-         aiResponse = lang === 'ar' ? 'جاري توجيهك إلى المختبر الافتراضي 3D...' : 'Redirecting you to the 3D Virtual Lab...';
+         hardcodedResponse = lang === 'ar' ? 'جاري توجيهك إلى المختبر الافتراضي 3D...' : 'Redirecting you to the 3D Virtual Lab...';
          setTimeout(() => window.location.hash = '#virtual-lab', 1000);
       }
 
-      setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: aiResponse, time: new Date() }]);
+      if (hardcodedResponse) {
+        setTimeout(() => {
+          setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: hardcodedResponse, time: new Date() }]);
+          setIsTyping(false);
+        }, 1000);
+        return;
+      }
+
+      // Prepare history for AI
+      const history = updatedMessages.map(m => ({
+        role: m.sender === 'user' ? 'user' : 'assistant',
+        content: m.text
+      }));
+
+      // Call GITM AI
+      const responseText = await chatWithGitmai(history, selectedModel);
+      
+      setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: responseText, time: new Date() }]);
+    } catch (error) {
+      setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: lang === 'ar' ? 'عذراً، حدث خطأ أثناء الاتصال بالخادم.' : 'Sorry, an error occurred while connecting to the server.', time: new Date() }]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -105,14 +130,22 @@ const AIChatBot = () => {
           {/* Header */}
           <div className="px-5 py-4 bg-gradient-to-r from-teal-500 to-blue-600 text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border border-white/30 backdrop-blur-sm">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border border-white/30 backdrop-blur-sm relative group">
                 <Bot size={22} />
               </div>
-              <div>
-                <h3 className="text-sm font-bold font-orbitron drop-shadow-md">{lang === 'ar' ? 'المساعد الذكي لـ GITM' : 'GITM AI Assistant'}</h3>
+              <div className="flex flex-col">
+                <select 
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value)}
+                  className="bg-transparent text-white font-bold font-orbitron drop-shadow-md text-sm outline-none appearance-none cursor-pointer"
+                >
+                  {GITM_MODELS.map(m => (
+                    <option key={m.id} value={m.id} className="text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-800">{m.name}</option>
+                  ))}
+                </select>
                 <span className="flex items-center gap-1.5 text-[10px] text-teal-100 font-bold">
                   <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  {lang === 'ar' ? 'متصل الآن' : 'Online'}
+                  {GITM_MODELS.find(m => m.id === selectedModel)?.desc}
                 </span>
               </div>
             </div>
