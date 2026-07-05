@@ -492,53 +492,53 @@ export default function StudentDashboard() {
             </div>
 
             {/* Certificate Printable Area */}
-            <div id="printable-cert" className="p-10 md:p-16 relative bg-white text-slate-800 min-h-[600px] flex flex-col justify-center items-center text-center border-8 border-double border-teal-600 m-4 rounded-xl print:m-0 print:border-8 print:h-screen">
-              {/* Background watermark */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
-                <Medal size={400} className="text-teal-900" />
-              </div>
+            <div id="printable-cert" 
+                 className="p-10 md:p-16 relative min-h-[600px] flex flex-col justify-center items-center text-center m-4 rounded-xl print:m-0 print:h-screen bg-cover bg-center overflow-hidden border-4 border-teal-800/30 shadow-inner"
+                 style={{ backgroundImage: 'url(/certificate-bg.png)' }}>
+              {/* Overlay to ensure text readability if needed */}
+              <div className="absolute inset-0 bg-white/40 print:bg-white/40 pointer-events-none z-0"></div>
               
-              <div className="mb-8">
-                <h1 className="text-4xl md:text-6xl font-black font-orbitron text-[#1e3a5f] mb-2 tracking-widest">CERTIFICATE</h1>
-                <h2 className="text-xl md:text-2xl text-teal-600 font-bold uppercase tracking-[0.2em]">Of Completion</h2>
+              <div className="relative z-10 mb-8 mt-12">
+                <h1 className="text-4xl md:text-6xl font-black font-orbitron text-[#0a1f3d] mb-2 tracking-widest drop-shadow-md">CERTIFICATE</h1>
+                <h2 className="text-xl md:text-2xl text-teal-900 font-bold uppercase tracking-[0.2em] drop-shadow-sm">Of Completion</h2>
               </div>
 
-              <div className="space-y-6 z-10 w-full max-w-2xl mx-auto">
-                <p className="text-lg text-slate-500 uppercase tracking-widest">This is to certify that</p>
-                <h3 className="text-3xl md:text-5xl font-bold text-[#1e3a5f] border-b-2 border-teal-200 pb-4 mb-4">{studentName}</h3>
+              <div className="space-y-6 relative z-10 w-full max-w-2xl mx-auto">
+                <p className="text-lg text-slate-900 font-semibold uppercase tracking-widest drop-shadow-sm">This is to certify that</p>
+                <h3 className="text-3xl md:text-5xl font-black text-[#0a1f3d] border-b-2 border-[#0a1f3d]/40 pb-4 mb-4 drop-shadow-lg">{studentName}</h3>
                 
-                <p className="text-lg text-slate-600">Has successfully completed the advanced course</p>
-                <h4 className="text-2xl md:text-3xl font-bold text-teal-700 my-4">{selectedCert.course}</h4>
+                <p className="text-lg text-slate-900 font-semibold drop-shadow-sm">Has successfully completed the advanced course</p>
+                <h4 className="text-2xl md:text-4xl font-black text-teal-900 my-4 drop-shadow-lg">{selectedCert.course}</h4>
                 
-                <div className="flex justify-center items-center gap-8 text-slate-600 pt-8 mt-8 border-t border-slate-100">
+                <div className="flex justify-center items-center gap-8 text-slate-900 pt-8 mt-8 border-t border-[#0a1f3d]/30">
                   <div className="text-center">
-                    <p className="font-bold text-lg text-[#1e3a5f]">{selectedCert.issueDate}</p>
-                    <p className="text-sm uppercase tracking-widest border-t border-slate-300 mt-1 pt-1">Date</p>
+                    <p className="font-bold text-lg text-[#0a1f3d] drop-shadow-sm">{selectedCert.issueDate}</p>
+                    <p className="text-sm font-bold uppercase tracking-widest border-t border-[#0a1f3d]/40 mt-1 pt-1 drop-shadow-sm">Date</p>
                   </div>
-                  <div className="w-px h-12 bg-slate-300"></div>
+                  <div className="w-px h-12 bg-[#0a1f3d]/40"></div>
                   <div className="text-center">
-                    <p className="font-bold text-lg text-[#1e3a5f] signature-font italic">{selectedCert.instructor}</p>
-                    <p className="text-sm uppercase tracking-widest border-t border-slate-300 mt-1 pt-1">Instructor</p>
+                    <p className="font-bold text-lg text-[#0a1f3d] signature-font italic drop-shadow-sm">{selectedCert.instructor}</p>
+                    <p className="text-sm font-bold uppercase tracking-widest border-t border-[#0a1f3d]/40 mt-1 pt-1 drop-shadow-sm">Instructor</p>
                   </div>
                 </div>
               </div>
 
               {/* QR Code Validation */}
-              <div className="absolute bottom-10 right-10 flex flex-col items-center">
-                <div className="bg-white p-2 border border-slate-200 rounded-lg shadow-sm">
+              <div className="absolute bottom-12 right-12 flex flex-col items-center z-10">
+                <div className="bg-white p-2 border-2 border-teal-800 rounded-lg shadow-2xl">
                   <QRCodeSVG 
                     value={`https://gitm.ma/verify-certificate?id=${selectedCert.id}`} 
-                    size={80} 
-                    fgColor="#1e3a5f"
+                    size={90} 
+                    fgColor="#0a1f3d"
                   />
                 </div>
-                <p className="text-[10px] text-slate-500 font-mono mt-2">{selectedCert.id}</p>
+                <p className="text-[10px] text-white font-mono mt-2 bg-black/60 px-2 py-0.5 rounded drop-shadow-md">{selectedCert.id}</p>
               </div>
 
               {/* Logo */}
-              <div className="absolute bottom-10 left-10">
-                <h2 className="text-2xl font-black font-orbitron text-teal-600">GITM</h2>
-                <p className="text-xs text-slate-500 tracking-widest">ACADEMY</p>
+              <div className="absolute bottom-12 left-12 z-10 drop-shadow-xl bg-white/80 p-4 rounded-xl border border-white/50 backdrop-blur-sm">
+                <h2 className="text-3xl font-black font-orbitron text-teal-900">GITM</h2>
+                <p className="text-xs text-slate-900 font-bold tracking-widest">ACADEMY</p>
               </div>
             </div>
           </motion.div>
