@@ -116,11 +116,29 @@ You are helpful, professional, and knowledgeable about Technology, AI, IoT, and 
         ...messages
       ];
 
-      const response = await openRouterClient.chat.completions.create({
-        model: selectedModelSlug,
-        messages: formattedMessages,
-      });
-      return response.choices[0].message.content;
+      const FALLBACK_MODELS = [
+        'meta-llama/llama-3.2-3b-instruct:free',
+        'qwen/qwen3-coder:free',
+        'google/gemma-4-26b-a4b:free',
+        'nvidia/nemotron-nano-12b-2-vl:free'
+      ];
+      
+      const modelsToTry = [selectedModelSlug, ...FALLBACK_MODELS.filter(m => m !== selectedModelSlug)];
+      let lastError = null;
+
+      for (let i = 0; i < modelsToTry.length; i++) {
+        try {
+          const response = await openRouterClient.chat.completions.create({
+            model: modelsToTry[i],
+            messages: formattedMessages,
+          });
+          return response.choices[0].message.content;
+        } catch (err) {
+          console.warn(`Model ${modelsToTry[i]} failed. Trying next...`, err);
+          lastError = err;
+        }
+      }
+      throw lastError || new Error('All models failed');
     } catch (err) {
       console.error('GITM AI Chat Error:', err);
       setError(err.message);
