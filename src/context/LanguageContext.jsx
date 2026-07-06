@@ -62,6 +62,12 @@ export const LanguageProvider = ({ children }) => {
     ];
   });
 
+  // 6. Data States
+  const [tasks, setTasks] = useState(() => {
+    const saved = localStorage.getItem('gitm_tasks');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [courses, setCourses] = useState(() => {
     const saved = localStorage.getItem('gitm_courses');
     return saved ? JSON.parse(saved) : [
