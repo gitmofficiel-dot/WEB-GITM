@@ -9,11 +9,11 @@ export const useAI = () => {
   const [error, setError] = useState(null);
 
   const MODEL_ROUTER = {
-    'translation': 'qwen/qwen3-coder:free', // Fast and good at languages
-    'generation': 'qwen/qwen3-coder:free', // Cost-effective general text
-    'complex_json': 'openai/gpt-oss-120b:free', // Excellent at reasoning and JSON
-    'moderation': 'openai/gpt-oss-120b:free', // Deep reasoning
-    'default': 'openai/gpt-oss-120b:free'
+    'translation': 'google/gemma-2-9b-it:free', 
+    'generation': 'meta-llama/llama-3.2-3b-instruct:free', 
+    'complex_json': 'meta-llama/llama-3.3-70b-instruct:free', 
+    'moderation': 'meta-llama/llama-3.3-70b-instruct:free', 
+    'default': 'meta-llama/llama-3.3-70b-instruct:free'
   };
 
   const callOpenRouter = async (systemPrompt, userPrompt, jsonFormat = false, taskType = 'default', specificModel = null) => {
@@ -117,10 +117,10 @@ You are helpful, professional, and knowledgeable about Technology, AI, IoT, and 
       ];
 
       const FALLBACK_MODELS = [
+        'meta-llama/llama-3.3-70b-instruct:free',
+        'google/gemma-2-9b-it:free',
         'meta-llama/llama-3.2-3b-instruct:free',
-        'qwen/qwen3-coder:free',
-        'google/gemma-4-26b-a4b:free',
-        'nvidia/nemotron-nano-12b-2-vl:free'
+        'microsoft/phi-3-mini-128k-instruct:free'
       ];
       
       const modelsToTry = [selectedModelSlug, ...FALLBACK_MODELS.filter(m => m !== selectedModelSlug)];

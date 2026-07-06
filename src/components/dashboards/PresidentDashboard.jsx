@@ -63,6 +63,7 @@ export default function PresidentDashboard() {
   const [events, setEvents] = useState([]);
   const [gallery, setGallery] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [partners, setPartners] = useState([]);
 
   useEffect(() => {
     const unsubNews = onSnapshot(collection(db, 'news'), snap => setNews(snap.docs.map(d => ({id: d.id, ...d.data()}))));
@@ -70,12 +71,13 @@ export default function PresidentDashboard() {
     const unsubEvents = onSnapshot(collection(db, 'events'), snap => setEvents(snap.docs.map(d => ({id: d.id, ...d.data()}))));
     const unsubGallery = onSnapshot(collection(db, 'gallery'), snap => setGallery(snap.docs.map(d => ({id: d.id, ...d.data()}))));
     const unsubProjects = onSnapshot(collection(db, 'projects'), snap => setProjects(snap.docs.map(d => ({id: d.id, ...d.data()}))));
-    return () => { unsubNews(); unsubCourses(); unsubEvents(); unsubGallery(); unsubProjects(); };
+    const unsubPartners = onSnapshot(collection(db, 'partners'), snap => setPartners(snap.docs.map(d => ({id: d.id, ...d.data()}))));
+    return () => { unsubNews(); unsubCourses(); unsubEvents(); unsubGallery(); unsubProjects(); unsubPartners(); };
   }, []);
 
   const [aiSettings, setAiSettings] = useState({
-    moderation: { model: 'gemini-1.5-pro', actions: 1450, active: true },
-    predictive: { model: 'gemini-1.5-flash', threshold: 85, active: true }
+    moderation: { model: 'meta-llama/llama-3.3-70b-instruct', actions: 1450, active: true },
+    predictive: { model: 'google/gemma-2-9b-it', threshold: 85, active: true }
   });
 
   // --- Modal States ---
@@ -97,6 +99,7 @@ export default function PresidentDashboard() {
     const colName = modalState.type === 'event' ? 'events' : 
                     modalState.type === 'course' ? 'courses' : 
                     modalState.type === 'news' ? 'news' : 
+                    modalState.type === 'partner' ? 'partners' : 
                     modalState.type === 'gallery' ? 'gallery' : null;
 
     if (!colName) return closeModal();
@@ -108,6 +111,7 @@ export default function PresidentDashboard() {
         const extraData = modalState.type === 'event' ? { attendees: 0, status: 'Planning' } :
                           modalState.type === 'course' ? { enrolled: 0, status: 'Upcoming' } :
                           modalState.type === 'news' ? { date: new Date().toISOString().split('T')[0], status: 'Draft' } :
+                          modalState.type === 'partner' ? { status: 'Active' } :
                           modalState.type === 'gallery' ? { type: 'image' } : {};
         await addDoc(collection(db, colName), { ...formData, ...extraData, createdAt: serverTimestamp() });
       }
@@ -133,6 +137,7 @@ export default function PresidentDashboard() {
                         type === 'course' ? 'courses' : 
                         type === 'news' ? 'news' : 
                         type === 'project' ? 'projects' : 
+                        type === 'partner' ? 'partners' : 
                         type === 'gallery' ? 'gallery' : null;
         if (colName) {
           try {
@@ -224,6 +229,28 @@ export default function PresidentDashboard() {
                       <option value="Planning">Planning</option>
                       <option value="Confirmed">Confirmed</option>
                       <option value="Completed">Completed</option>
+                  </select>
+                  </>
+              )}
+            </>
+          );
+        case 'partner':
+          return (
+            <>
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"اسم الشريك / الجمعية":"Partner / NGO Name"}</label>
+              <input name="name" value={formData.name || ''} onChange={handleChange} placeholder={lang==='ar'?"الاسم":"Name"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"نوع الشراكة":"Partnership Type"}</label>
+              <select name="type" value={formData.type || 'corporate'} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                  <option value="corporate">{lang==='ar'?"شريك مؤسسي":"Corporate Partner"}</option>
+                  <option value="academic">{lang==='ar'?"شريك أكاديمي":"Academic Partner"}</option>
+                  <option value="ngo">{lang==='ar'?"جمعية":"NGO"}</option>
+              </select>
+              {isEdit && (
+                  <>
+                  <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الحالة":"Status"}</label>
+                  <select name="status" value={formData.status || ''} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
                   </select>
                   </>
               )}
@@ -634,23 +661,31 @@ export default function PresidentDashboard() {
                     <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
                       <Handshake className="text-emerald-500" size={24}/> {lang === 'ar' ? 'إدارة الشراكات والجمعيات' : 'Partnerships & NGOs'}
                     </h3>
-                    <button className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'إضافة شريك جديد' : 'Add Partner'}</button>
+                    <button onClick={() => openModal('partner')} className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'إضافة شريك جديد' : 'Add Partner'}</button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-5 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/50 flex justify-between items-center">
-                      <div>
-                        <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">OCP Group</h4>
-                        <p className="text-sm text-slate-500 flex items-center gap-1"><CheckCircle size={14} className="text-emerald-500"/> Verified Corporate Partner</p>
-                      </div>
-                      <span className="px-3 py-1 bg-emerald-100 text-emerald-700 font-bold text-xs rounded-full">Active</span>
-                    </div>
-                    <div className="p-5 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/50 flex justify-between items-center">
-                      <div>
-                        <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">UM5 University</h4>
-                        <p className="text-sm text-slate-500 flex items-center gap-1"><CheckCircle size={14} className="text-emerald-500"/> Verified Academic Partner</p>
-                      </div>
-                      <span className="px-3 py-1 bg-emerald-100 text-emerald-700 font-bold text-xs rounded-full">Active</span>
-                    </div>
+                    {partners.length === 0 ? (
+                      <p className="text-slate-500 text-sm">No partners added yet.</p>
+                    ) : (
+                      partners.map(partner => (
+                        <div key={partner.id} className="p-5 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/50 flex justify-between items-center hover:shadow-md transition-shadow">
+                          <div>
+                            <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{partner.name}</h4>
+                            <p className="text-sm text-slate-500 flex items-center gap-1">
+                              <CheckCircle size={14} className="text-emerald-500"/> 
+                              {partner.type === 'corporate' ? 'Corporate Partner' : partner.type === 'academic' ? 'Academic Partner' : 'NGO'}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className={`px-3 py-1 font-bold text-xs rounded-full ${partner.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{partner.status}</span>
+                            <div className="flex gap-2">
+                              <button onClick={() => openModal('partner', partner)} className="text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors p-1"><Edit size={16}/></button>
+                              <button onClick={() => handleDelete('partner', partner.id)} className="text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors p-1"><Trash2 size={16}/></button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               </div>
