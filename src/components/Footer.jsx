@@ -43,9 +43,7 @@ export default function Footer() {
           {/* Brand & About */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-500 flex items-center justify-center text-white font-orbitron font-bold text-xl shadow-[0_0_20px_rgba(6,182,212,0.4)]">
-                GITM
-              </div>
+              <img src="/logo.png" alt="GITM Logo" className="w-12 h-12 object-contain" />
               <h2 className="font-orbitron font-bold text-2xl text-white tracking-wider">GITM</h2>
             </div>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
@@ -101,15 +99,15 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-slate-600 dark:text-slate-400 text-sm">
                 <MapPin size={18} className="text-cyan-400 shrink-0 mt-0.5" />
-                <span>GITM Innovation Lab, Casablanca, Morocco</span>
+                <span>GITM Innovation Lab, OUED ZEM, Morocco</span>
               </li>
               <li className="flex items-center gap-3 text-slate-600 dark:text-slate-400 text-sm">
                 <Mail size={18} className="text-cyan-400 shrink-0" />
-                <span>contact@gitm.ma</span>
+                <span>gitm.officiel@gmail.com</span>
               </li>
               <li className="flex items-center gap-3 text-slate-600 dark:text-slate-400 text-sm">
                 <Phone size={18} className="text-cyan-400 shrink-0" />
-                <span dir="ltr">+212 5XX XX XX XX</span>
+                <span dir="ltr">+212 618941409</span>
               </li>
             </ul>
           </div>
