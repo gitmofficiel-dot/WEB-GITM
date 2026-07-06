@@ -8,7 +8,7 @@ import { db } from '../config/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const AIChatBot = () => {
-  const { lang, t } = useLanguage();
+  const { lang, t, users, courses, news, events } = useLanguage();
   const { chatWithGitmai } = useAI();
   const { currentUser } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -197,8 +197,16 @@ const AIChatBot = () => {
         };
       });
 
+      // Compile global context for AI
+      const globalContext = `
+      Team Members: ${users?.filter(u => u.isTeamMember).map(u => `${u.name || u.firstName} (${u.role}) - ${u.bio || ''}`).join(' | ') || 'None'}
+      Courses: ${courses?.map(c => `${c.title?.en || c.title_en || c.title_ar || c.title} (Instructor: ${typeof c.instructor === 'object' ? (c.instructor.en || c.instructor.ar) : c.instructor})`).join(' | ') || 'None'}
+      News: ${news?.map(n => n.title?.en || n.title_en || n.title_ar).join(' | ') || 'None'}
+      Events: ${events?.map(e => e.title?.en || e.title_en || e.title_ar).join(' | ') || 'None'}
+      `;
+
       // Call GITM AI
-      const responseText = await chatWithGitmai(history, selectedModel);
+      const responseText = await chatWithGitmai(history, selectedModel, globalContext);
       
       setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: responseText, time: new Date() }]);
     } catch (error) {

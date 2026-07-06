@@ -3,68 +3,7 @@ import { ChevronLeft, ChevronRight, Star, Clock, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
-const courses = [
-  {
-    id: 1,
-    title: { en: 'Full-Stack React & Node.js', ar: 'تطوير شامل بـ React و Node.js' },
-    instructor: { en: 'Ahmed Benali', ar: 'أحمد بنعلي' },
-    initials: 'AB',
-    progress: 75,
-    rating: 4.8,
-    hours: 40,
-    category: 'Web',
-    avatarGradient: 'from-blue-500 to-indigo-600',
-    badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
-  },
-  {
-    id: 2,
-    title: { en: 'Applied Machine Learning', ar: 'التعلم الآلي التطبيقي' },
-    instructor: { en: 'Dr. Sara Khattabi', ar: 'د. سارة الخطابي' },
-    initials: 'SK',
-    progress: 30,
-    rating: 4.9,
-    hours: 60,
-    category: 'AI',
-    avatarGradient: 'from-purple-500 to-fuchsia-600',
-    badgeColor: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
-  },
-  {
-    id: 3,
-    title: { en: 'Cloud Architecture with AWS', ar: 'هندسة السحابة مع AWS' },
-    instructor: { en: 'Youssef Mansouri', ar: 'يوسف المنصوري' },
-    initials: 'YM',
-    progress: 0,
-    rating: 4.7,
-    hours: 35,
-    category: 'Cloud',
-    avatarGradient: 'from-amber-500 to-orange-600',
-    badgeColor: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
-  },
-  {
-    id: 4,
-    title: { en: 'Cybersecurity Fundamentals', ar: 'أساسيات الأمن السيبراني' },
-    instructor: { en: 'Karim Lahlou', ar: 'كريم لحلو' },
-    initials: 'KL',
-    progress: 100,
-    rating: 4.9,
-    hours: 25,
-    category: 'Security',
-    avatarGradient: 'from-red-500 to-rose-600',
-    badgeColor: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
-  },
-  {
-    id: 5,
-    title: { en: 'UI/UX Advanced Design', ar: 'تصميم واجهة وتجربة المستخدم المتقدم' },
-    instructor: { en: 'Mona Tazi', ar: 'منى التازي' },
-    initials: 'MT',
-    progress: 50,
-    rating: 4.6,
-    hours: 30,
-    category: 'Design',
-    avatarGradient: 'from-emerald-500 to-teal-600',
-    badgeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
-  },
-];
+
 
 const StarRating = ({ rating }) => (
   <div className="flex items-center gap-1">
@@ -98,19 +37,19 @@ const CourseCard = ({ course, lang }) => {
                 {lang === 'ar' ? 'المدرب' : 'Instructor'}
               </p>
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                {course.instructor[lang] || course.instructor.en}
+                {course.instructor?.[lang] || course.instructor?.en || course.instructor || 'Unknown'}
               </p>
             </div>
           </div>
           {/* Category Badge */}
-          <span className={`px-3 py-1 rounded-full text-xs font-bold ${course.badgeColor}`}>
-            {course.category}
+          <span className={`px-3 py-1 rounded-full text-xs font-bold ${course.badgeColor || 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'}`}>
+            {course.category || 'General'}
           </span>
         </div>
 
         {/* Course Title */}
         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 leading-snug line-clamp-2 group-hover:text-emerald-600 dark:group-hover:text-cyan-400 transition-colors">
-          {course.title[lang] || course.title.en}
+          {course.title?.[lang] || course.title?.en || course.title_ar || course.title}
         </h3>
 
         {/* Rating + Duration */}
@@ -162,7 +101,7 @@ const CourseCard = ({ course, lang }) => {
 };
 
 const AcademySlider = () => {
-  const { lang } = useLanguage();
+  const { lang, courses } = useLanguage();
   const navigate = useNavigate();
   const sliderRef = useRef(null);
 
@@ -214,9 +153,27 @@ const AcademySlider = () => {
           className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
         >
-          {courses.map((course) => (
-            <CourseCard key={course.id} course={course} lang={lang} />
-          ))}
+          {courses && courses.map((course) => {
+            const instructorName = typeof course.instructor === 'object' 
+              ? (course.instructor?.en || course.instructor?.ar || 'CO') 
+              : (course.instructor || 'CO');
+              
+            return (
+              <CourseCard key={course.id} course={{
+                ...course,
+                avatarGradient: course.avatarGradient || 'from-blue-500 to-indigo-600',
+                initials: course.initials || instructorName.substring(0, 2).toUpperCase(),
+                progress: course.progress || 0,
+                rating: course.rating || 4.5,
+                hours: course.hours || 10
+              }} lang={lang} />
+            );
+          })}
+          {(!courses || courses.length === 0) && (
+            <div className="w-full text-center py-8 text-gray-500">
+              {lang === 'ar' ? 'لا توجد دورات حالياً.' : 'No courses available.'}
+            </div>
+          )}
         </div>
 
         {/* CTA Button */}

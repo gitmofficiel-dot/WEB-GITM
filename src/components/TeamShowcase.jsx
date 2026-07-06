@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
-import { teamData } from '../data/teamData';
+import { db } from '../config/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { Github, Linkedin, Twitter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +10,40 @@ export default function TeamShowcase() {
   const { lang } = useLanguage();
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('all');
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        const q = query(collection(db, 'users'), where('isTeamMember', '==', true));
+        const snap = await getDocs(q);
+        const members = snap.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            nameEn: data.name || data.firstName || 'Unknown',
+            nameAr: data.name || data.firstName || 'مجهول',
+            roleEn: data.role || 'Member',
+            roleAr: data.role || 'عضو',
+            type: data.role === 'president' || data.role === 'supervisor' ? 'founder' 
+                  : data.role === 'teacher' ? 'professor' 
+                  : 'member',
+            image: data.photoURL || `https://ui-avatars.com/api/?name=${data.name || 'GITM'}&background=random`,
+            bioEn: data.bio || 'GITM Team Member',
+            bioAr: data.bio || 'عضو في فريق GITM',
+            socials: data.socials || {}
+          };
+        });
+        setTeamMembers(members);
+      } catch (err) {
+        console.error("Error fetching team:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeam();
+  }, []);
 
   const filters = [
     { id: 'all', labelAr: 'الكل', labelEn: 'All' },
@@ -19,8 +54,8 @@ export default function TeamShowcase() {
   ];
 
   const filteredTeam = activeFilter === 'all'
-    ? teamData
-    : teamData.filter(member => member.type === activeFilter);
+    ? teamMembers
+    : teamMembers.filter(member => member.type === activeFilter);
 
   return (
     <div className="w-full">

@@ -114,8 +114,12 @@ export default function PresidentDashboard() {
 
   const updateUserRole = async (userId, newRole) => {
     try {
-      await updateDoc(doc(db, 'users', userId), { role: newRole });
-      toast.success(lang === 'ar' ? 'تم تحديث الصلاحية بنجاح' : 'Role updated successfully');
+      const isLeadership = ['president', 'teacher', 'supervisor', 'content_manager', 'member'].includes(newRole);
+      await updateDoc(doc(db, 'users', userId), { 
+        role: newRole,
+        isTeamMember: isLeadership 
+      });
+      toast.success(lang === 'ar' ? 'تم تحديث الصلاحية والربط بالصفحة الرئيسية بنجاح' : 'Role and visibility updated successfully');
     } catch (err) {
       console.error(err);
       toast.error(lang === 'ar' ? 'خطأ في التحديث' : 'Error updating role');

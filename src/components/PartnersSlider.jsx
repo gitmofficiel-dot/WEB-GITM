@@ -3,21 +3,23 @@ import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'framer-motion';
 import { Building2, Gamepad2, GraduationCap, Briefcase, Landmark } from 'lucide-react';
 
-const partners = [
-  { id: 1, nameAr: "مؤسسة الابتكار الوطني", nameEn: "National Innovation Foundation", icon: <Building2 size={32} className="text-gitm-green" /> },
-  { id: 2, nameAr: "مراكز الاستثمار الجهوية", nameEn: "Regional Investment Centers", icon: <Landmark size={32} className="text-gitm-red" /> },
-  { id: 3, nameAr: "نادي الألعاب الإلكترونية", nameEn: "Gaming & AI Club", icon: <Gamepad2 size={32} className="text-purple-500" /> },
-  { id: 4, nameAr: "رواد البحث العلمي", nameEn: "Scientific Research Pioneers", icon: <GraduationCap size={32} className="text-blue-600" /> },
-  { id: 5, nameAr: "حاضنات التكنولوجيا", nameEn: "Tech Incubators", icon: <Building2 size={32} className="text-amber-600" /> },
-  { id: 6, nameAr: "مختبرات الذكاء الاصطناعي", nameEn: "AI Laboratories", icon: <Briefcase size={32} className="text-indigo-600" /> },
-  { id: 7, nameAr: "الهيئات الرقمية", nameEn: "Digital Authorities", icon: <Landmark size={32} className="text-gitm-red" /> },
-];
+const getPartnerIcon = (type) => {
+  switch(type) {
+    case 'corporate': return <Building2 size={32} className="text-gitm-green" />;
+    case 'academic': return <GraduationCap size={32} className="text-blue-600" />;
+    case 'ngo': return <Landmark size={32} className="text-gitm-red" />;
+    default: return <Briefcase size={32} className="text-indigo-600" />;
+  }
+};
 
 export default function PartnersSlider() {
-  const { lang } = useLanguage();
+  const { lang, partners } = useLanguage();
+  
+  // Clean structure from context - default if not provided
+  const partnerList = partners && Array.isArray(partners) ? partners : [];
   
   // Double the array for infinite seamless scrolling
-  const duplicatedPartners = [...partners, ...partners];
+  const duplicatedPartners = partnerList.length > 0 ? [...partnerList, ...partnerList] : [];
 
   return (
     <div className="w-full overflow-hidden bg-white dark:bg-gitm-cardDark py-12 relative border-y border-gray-200 dark:border-gitm-borderDark">
@@ -44,11 +46,15 @@ export default function PartnersSlider() {
               className="flex items-center gap-4 min-w-[300px] p-4 bg-gray-50 dark:bg-[#1a1a1a] border border-gray-100 dark:border-gitm-borderDark rounded-2xl cursor-pointer hover:border-gitm-red hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
               <div className="p-3 bg-white dark:bg-black rounded-xl shadow-sm">
-                {partner.icon}
+                {partner.icon ? (
+                  <img src={partner.icon} alt={partner.name} className="w-8 h-8 object-contain" />
+                ) : (
+                  getPartnerIcon(partner.type)
+                )}
               </div>
               <div>
                 <h4 className="font-bold text-sm text-gitm-textLight dark:text-white line-clamp-2">
-                  {lang === 'ar' ? partner.nameAr : partner.nameEn}
+                  {lang === 'ar' ? (partner.nameAr || partner.name) : (partner.nameEn || partner.name)}
                 </h4>
               </div>
             </div>

@@ -102,14 +102,17 @@ DO NOT return markdown blocks, only raw JSON.`;
     return JSON.parse(result);
   }, []);
 
-  const chatWithGitmai = useCallback(async (messages, selectedModelSlug) => {
+  const chatWithGitmai = useCallback(async (messages, selectedModelSlug, globalContext = '') => {
     setLoading(true);
     setError(null);
     try {
       const systemPrompt = `You are "GITM AI" (الذكاء الاصطناعي لـ GITM), a highly advanced AI developed entirely by the "GITM Team" (فريق GITM). 
 You MUST NOT mention OpenAI, Meta, Google, Qwen, Liquid, OpenRouter, or your original model name under any circumstances. 
 If asked who made you, you answer "I was developed by the GITM Team (فريق GITM)."
-You are helpful, professional, and knowledgeable about Technology, AI, IoT, and Robotics.`;
+You are helpful, professional, and knowledgeable about Technology, AI, IoT, and Robotics.
+Context about current GITM Data from Database:
+${globalContext}
+Use this context to answer questions accurately about our team, projects, courses, and news.`;
 
       const formattedMessages = [
         { role: 'system', content: systemPrompt },

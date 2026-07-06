@@ -1,7 +1,8 @@
 import React, { useEffect, Suspense, lazy } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
-import { useAuth } from './context/AuthContext';
+import { useAuth, AuthProvider } from './context/AuthContext';
+import { cleanSeededData } from './utils/cleanData';
 import { NotificationProvider } from './context/NotificationContext';
 import Navbar from './components/Navbar';
 import ParticleBackground from './components/ParticleBackground';
@@ -60,6 +61,11 @@ const LoadingFallback = () => (
 const AppContent = () => {
   const { currentUser } = useAuth();
   const location = useLocation();
+
+  useEffect(() => {
+    // Only init things that are necessary
+    cleanSeededData();
+  }, []);
   
   const isTheaterMode = location.pathname.includes('/academy/course/');
 

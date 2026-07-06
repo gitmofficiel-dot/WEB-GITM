@@ -8,17 +8,10 @@ const LatestNews = () => {
   const { lang, news } = useLanguage();
   const navigate = useNavigate();
 
-  const mockNews = [
-    { id: '1', title: 'إطلاق برنامج التدريب الصيفي', title_ar: 'إطلاق برنامج التدريب الصيفي', title_en: 'Summer Training Program Launch', summary: 'نعلن عن بدء التسجيل في برنامجنا الصيفي...', date: '2026-06-25', category: 'Training', image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800' },
-    { id: '2', title: 'شراكة جديدة مع جامعة رائدة', title_ar: 'شراكة جديدة مع جامعة رائدة', title_en: 'New Partnership with Leading University', summary: 'تم توقيع اتفاقية شراكة استراتيجية لتبادل الخبرات...', date: '2026-06-18', category: 'Partnership', image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800' },
-    { id: '3', title: 'نجاح باهر لفعالية الهاكاثون', title_ar: 'نجاح باهر لفعالية الهاكاثون', title_en: 'Huge Success for Hackathon Event', summary: 'اختتام فعاليات الهاكاثون الوطني بمشاركة واسعة...', date: '2026-06-10', category: 'Events', image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800' },
-    { id: '4', title: 'تحديث منصة المشاريع', title_ar: 'تحديث منصة المشاريع', title_en: 'Projects Platform Update', summary: 'إطلاق ميزات جديدة في منصة إدارة المشاريع...', date: '2026-06-05', category: 'Platform', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800' }
-  ];
-
-  const sourceNews = (news && news.length > 0) ? news : mockNews;
+  const sourceNews = news || [];
 
   const officialNews = sourceNews
-    .filter(item => !item.id || item.type === 'official' || item.id.toString().startsWith('gitm-') || typeof item.id === 'string')
+    .filter(item => item.title || item.title_ar || item.title_en)
     .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
     .slice(0, 4);
 

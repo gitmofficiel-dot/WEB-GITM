@@ -251,6 +251,7 @@ export const LanguageProvider = ({ children }) => {
     const unsubEvents = onSnapshot(collection(db, 'events'), snap => setEvents(snap.docs.map(d => ({id: d.id, ...d.data()}))));
     const unsubGallery = onSnapshot(collection(db, 'gallery'), snap => setGallery(snap.docs.map(d => ({id: d.id, ...d.data()}))));
     const unsubCourses = onSnapshot(collection(db, 'courses'), snap => setCourses(snap.docs.map(d => ({id: d.id, ...d.data()}))));
+    const unsubPartners = onSnapshot(collection(db, 'partners'), snap => setPartners(snap.docs.map(d => ({id: d.id, ...d.data()}))));
 
     return () => {
       unsubTasks();
@@ -258,6 +259,7 @@ export const LanguageProvider = ({ children }) => {
       unsubEvents();
       unsubGallery();
       unsubCourses();
+      unsubPartners();
     };
   }, []);
 
