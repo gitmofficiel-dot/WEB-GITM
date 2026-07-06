@@ -56,28 +56,30 @@ export const LanguageProvider = ({ children }) => {
       { id: 6, memberId: 'GITM-006', name: 'سارة الفاسي', email: 'sara@gitm.ma', role: 'member', badges: ['developer', 'writer'], bio: 'Cybersecurity Analyst.', projects: ['Network Monitor'], github: 'github.com/sara', linkedin: 'linkedin.com/in/sara' },
       { id: 7, memberId: 'GITM-007', name: 'محمد الحسني', email: 'mohammed@gitm.ma', role: 'content_manager', badges: ['writer', 'designer'], bio: 'Tech Journalist & Content Creator.', projects: [], github: 'github.com/mohammed', linkedin: 'linkedin.com/in/mohammed' },
       { id: 8, memberId: 'GITM-008', name: 'خديجة بناني', email: 'khadija@gitm.ma', role: 'supervisor', badges: ['admin', 'legal'], bio: 'Project Manager & Legal Advisor.', projects: [], github: 'github.com/khadija', linkedin: 'linkedin.com/in/khadija' },
-    ];
-  });
-
   // 5. Active Dashboard Role
   const [activeDashboardRole, setActiveDashboardRole] = useState('president');
 
-  // 6. Data States
-  const [tasks, setTasks] = useState(() => {
-    const saved = localStorage.getItem('gitm_tasks');
+  // Users fallback
+  const [users, setUsers] = useState(() => {
+    const saved = localStorage.getItem('gitm_users');
     return saved ? JSON.parse(saved) : [
-      { id: 1, title: 'Optimizing YOLOv8 model for Jetson Nano', member: 'Dr. Amine Benjelloun', status: 'In Progress' },
-      { id: 2, title: 'Routing 4-layer power distribution PCB', member: 'Yassine El Marrakchi', status: 'Completed' },
-      { id: 3, title: 'Securing WebSocket connection logs', member: 'Sara El Fassi', status: 'Pending' }
+      { id: 'user1', name: 'Eng. Mohammed Rhzaouni', firstName: 'م. محمد غزاوني', email: 'president@gitm.ma', role: 'president', isTeamMember: true, bio: 'مهندس رؤيوي، قاد العديد من الابتكارات في الأنظمة المدمجة وإنترنت الأشياء لبناء مستقبل ذكي.' },
+      { id: 'user2', name: 'Prof. Ahmed Bensalem', firstName: 'أ. د. أحمد بنسالم', email: 'ahmed@gitm.ma', role: 'teacher', isTeamMember: true, bio: 'أستاذ باحث في الذكاء الاصطناعي، وخبير عالمي في معالجة اللغات الطبيعية وتطوير نماذج التعلم العميق المتطورة.' },
+      { id: 'user3', name: 'Dr. Laila Ammari', firstName: 'د. ليلى عماري', email: 'laila@gitm.ma', role: 'teacher', isTeamMember: true, bio: 'أستاذة علوم البيانات ورائدة أبحاث البيانات الضخمة، ولها إسهامات كبيرة في تحليل البيانات التنبؤية.' },
+      { id: 'user4', name: 'Eng. Sarah Alaoui', firstName: 'م. سارة العلوي', email: 'sarah@gitm.ma', role: 'supervisor', isTeamMember: true, bio: 'مديرة أنظمة الروبوتات، مهندسة متميزة تقود تطوير أنظمة ROS2 المتقدمة للروبوتات المستقلة.' },
+      { id: 'user5', name: 'Omar Tazi', firstName: 'عمر التازي', email: 'omar@gitm.ma', role: 'supervisor', isTeamMember: true, bio: 'مهندس البنية التحتية السحابية وخبير في الأمن السيبراني، يضمن استقرار خوادمنا.' },
+      { id: 'user6', name: 'Youssef El Idrissi', firstName: 'يوسف الإدريسي', email: 'youssef@gitm.ma', role: 'member', isTeamMember: true, bio: 'مطور ويب متخصص في بناء واجهات مستخدم حديثة وتجربة مستخدم استثنائية.' }
     ];
   });
 
   const [courses, setCourses] = useState(() => {
     const saved = localStorage.getItem('gitm_courses');
     return saved ? JSON.parse(saved) : [
-      { id: 'edge', track: 'edge', title: 'Edge AI & Embedded Systems Specialist', progress: 0, enrolled: false, mode: 'remote' },
-      { id: 'robotics', track: 'robotics', title: 'Autonomous Robotics & ROS2 Architect', progress: 0, enrolled: false, mode: 'in-person', location: 'GITM Lab, Casablanca, Morocco' },
-      { id: 'iotCloud', track: 'iotCloud', title: 'IoT Cloud Platform & Core Web Architect', progress: 0, enrolled: false, mode: 'remote' }
+      { id: 'react-node', track: 'web', title_ar: 'تطوير شامل بـ React و Node.js', title_en: 'Full-Stack React & Node.js', instructor: {ar: 'أحمد بنعلي', en: 'Ahmed Benali'}, progress: 75, enrolled: 120, status: 'Active', hours: 40, rating: 4.8 },
+      { id: 'ai-ml', track: 'ai', title_ar: 'التعلم الآلي التطبيقي', title_en: 'Applied Machine Learning', instructor: {ar: 'د. سارة الخطابي', en: 'Dr. Sara Khattabi'}, progress: 30, enrolled: 85, status: 'Active', hours: 60, rating: 4.9 },
+      { id: 'cloud-aws', track: 'cloud', title_ar: 'هندسة السحابة مع AWS', title_en: 'Cloud Architecture with AWS', instructor: {ar: 'يوسف المنصوري', en: 'Youssef Mansouri'}, progress: 0, enrolled: 60, status: 'Upcoming', hours: 35, rating: 4.7 },
+      { id: 'cybersecurity', track: 'security', title_ar: 'أساسيات الأمن السيبراني', title_en: 'Cybersecurity Fundamentals', instructor: {ar: 'كريم لحلو', en: 'Karim Lahlou'}, progress: 100, enrolled: 150, status: 'Completed', hours: 25, rating: 4.9 },
+      { id: 'ui-ux', track: 'design', title_ar: 'تصميم واجهة وتجربة المستخدم المتقدم', title_en: 'UI/UX Advanced Design', instructor: {ar: 'منى التازي', en: 'Mona Tazi'}, progress: 50, enrolled: 90, status: 'Active', hours: 30, rating: 4.6 }
     ];
   });
 
@@ -105,11 +107,10 @@ export const LanguageProvider = ({ children }) => {
   const [news, setNews] = useState(() => {
     const saved = localStorage.getItem('gitm_news');
     return saved ? JSON.parse(saved) : [
-      { id: 1, title_ar: 'إطلاق مختبر الذكاء الاصطناعي الجديد', title_en: 'New AI Lab Launch', title_fr: 'Lancement du nouveau labo IA', summary_ar: 'تم افتتاح مختبر الذكاء الاصطناعي المجهز بأحدث التقنيات', summary_en: 'Our new AI lab equipped with cutting-edge technology is now open', category: 'technology', date: '2026-06-15', author: 'GITM Team', pinned: true },
-      { id: 2, title_ar: 'ورشة عمل الروبوتات المستقلة', title_en: 'Autonomous Robotics Workshop', title_fr: 'Atelier Robotique Autonome', summary_ar: 'ورشة عمل تفاعلية حول بناء الروبوتات ذاتية القيادة', summary_en: 'Interactive workshop on building self-driving robots', category: 'events', date: '2026-06-10', author: 'Dr. Amine', pinned: false },
-      { id: 3, title_ar: 'دورة جديدة في إنترنت الأشياء', title_en: 'New IoT Course Available', title_fr: 'Nouveau cours IoT disponible', summary_ar: 'أطلقنا دورة شاملة في تطوير أنظمة إنترنت الأشياء', summary_en: 'We launched a comprehensive IoT systems development course', category: 'academy', date: '2026-06-05', author: 'Sara El Fassi', pinned: false },
-      { id: 4, title_ar: 'شراكة جديدة مع مايكروسوفت', title_en: 'New Partnership with Microsoft', title_fr: 'Nouveau partenariat avec Microsoft', summary_ar: 'وقعنا اتفاقية شراكة استراتيجية مع مايكروسوفت المغرب', summary_en: 'We signed a strategic partnership agreement with Microsoft Morocco', category: 'partners', date: '2026-06-01', author: 'GITM Team', pinned: false },
-      { id: 5, title_ar: 'مسابقة الهاكاثون السنوية', title_en: 'Annual Hackathon Competition', title_fr: 'Compétition Hackathon Annuelle', summary_ar: 'انطلاق التسجيل في مسابقة الهاكاثون السنوية لفريق GITM', summary_en: 'Registration opens for GITM annual hackathon competition', category: 'events', date: '2026-05-28', author: 'Yassine', pinned: false },
+      { id: 1, title_ar: 'إطلاق برنامج التدريب الصيفي', title_en: 'Launch of Summer Training Program', summary_ar: 'نعلن عن بدء التسجيل في برنامج التدريب الصيفي المكثف للمهندسين.', summary_en: 'Registration for our intensive summer training program is now open.', category: 'academy', date: '2026-06-25', author: 'GITM Team', pinned: true },
+      { id: 2, title_ar: 'شراكة جديدة مع جامعة رائدة', title_en: 'New Partnership with Leading University', summary_ar: 'تم توقيع اتفاقية تعاون مع كبرى الجامعات لتطوير برامج البحث العلمي.', summary_en: 'Cooperation agreement signed with major universities to develop research.', category: 'partners', date: '2026-06-20', author: 'President', pinned: false },
+      { id: 3, title_ar: 'نجاح باهر لفعالية الهاكاثون', title_en: 'Outstanding Success of Hackathon', summary_ar: 'اختتام فعاليات هاكاثون الابتكار 2026 بمشاركة متميزة من المواهب.', summary_en: 'Conclusion of Innovation Hackathon 2026 with outstanding participation.', category: 'events', date: '2026-06-15', author: 'Events Team', pinned: false },
+      { id: 4, title_ar: 'تحديث منصة المشاريع', title_en: 'Projects Platform Update', summary_ar: 'إضافة ميزات جديدة لتسهيل العمل الجماعي وإدارة مهام المشاريع بفعالية.', summary_en: 'New features added to facilitate teamwork and task management.', category: 'platform', date: '2026-06-10', author: 'Dev Team', pinned: false }
     ];
   });
 
@@ -244,6 +245,13 @@ export const LanguageProvider = ({ children }) => {
 
   // Effect: Listen to Data from Firestore
   useEffect(() => {
+    // FORCE CLEAR old local storage so dummy data doesn't persist
+    localStorage.removeItem('gitm_courses');
+    localStorage.removeItem('gitm_news');
+    localStorage.removeItem('gitm_users');
+    localStorage.removeItem('gitm_events');
+    localStorage.removeItem('gitm_partners');
+
     const unsubTasks = onSnapshot(doc(db, 'gitm_data', 'tasks'), snap => snap.exists() && snap.data().items && setTasks(snap.data().items));
     
     // Proper root collections
