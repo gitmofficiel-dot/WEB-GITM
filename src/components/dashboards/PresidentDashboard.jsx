@@ -65,6 +65,7 @@ export default function PresidentDashboard() {
   const [projects, setProjects] = useState([]);
   const [partners, setPartners] = useState([]);
   const [aboutData, setAboutData] = useState({ vision_ar: '', mission_ar: '', history_ar: '' });
+  const [allUsers, setAllUsers] = useState([]);
 
   useEffect(() => {
     const unsubNews = onSnapshot(collection(db, 'news'), snap => setNews(snap.docs.map(d => ({id: d.id, ...d.data()}))));
@@ -76,7 +77,10 @@ export default function PresidentDashboard() {
     const unsubAbout = onSnapshot(doc(db, 'settings', 'about'), docSnap => {
       if (docSnap.exists()) setAboutData(docSnap.data());
     });
-    return () => { unsubNews(); unsubCourses(); unsubEvents(); unsubGallery(); unsubProjects(); unsubPartners(); unsubAbout(); };
+    const unsubUsers = onSnapshot(collection(db, 'users'), snap => {
+      setAllUsers(snap.docs.map(d => ({id: d.id, ...d.data()})));
+    });
+    return () => { unsubNews(); unsubCourses(); unsubEvents(); unsubGallery(); unsubProjects(); unsubPartners(); unsubAbout(); unsubUsers(); };
   }, []);
 
   const [aiSettings, setAiSettings] = useState({
@@ -105,6 +109,26 @@ export default function PresidentDashboard() {
     } catch (err) {
       console.error(err);
       toast.error(lang === 'ar' ? 'خطأ في الحفظ' : 'Error saving');
+    }
+  };
+
+  const updateUserRole = async (userId, newRole) => {
+    try {
+      await updateDoc(doc(db, 'users', userId), { role: newRole });
+      toast.success(lang === 'ar' ? 'تم تحديث الصلاحية بنجاح' : 'Role updated successfully');
+    } catch (err) {
+      console.error(err);
+      toast.error(lang === 'ar' ? 'خطأ في التحديث' : 'Error updating role');
+    }
+  };
+
+  const toggleTeamMember = async (userId, currentStatus) => {
+    try {
+      await updateDoc(doc(db, 'users', userId), { isTeamMember: !currentStatus });
+      toast.success(lang === 'ar' ? 'تم تحديث حالة الظهور في الفريق' : 'Team visibility updated');
+    } catch (err) {
+      console.error(err);
+      toast.error(lang === 'ar' ? 'خطأ في التحديث' : 'Error updating team visibility');
     }
   };
 
@@ -617,7 +641,7 @@ export default function PresidentDashboard() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {firebaseUsers.map(m => (
+                        {allUsers.map(m => (
                           <tr key={m.id} className={`hover:bg-slate-50 dark:hover:bg-slate-50/ dark:bg-slate-800/ transition-colors ${m.role === 'suspended' ? 'opacity-50' : ''}`}>
                             <td className="p-3">
                               <div className="flex items-center gap-3">
@@ -641,8 +665,8 @@ export default function PresidentDashboard() {
                             </td>
                             <td className="p-3">
                               <select 
-                                value={m.role}
-                                onChange={(e) => handleRoleChange(m.id, e.target.value)}
+                                value={m.role || 'student'}
+                                onChange={(e) => updateUserRole(m.id, e.target.value)}
                                 className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer">
                                 <option value="student">Student (Default)</option>
                                 <option value="member">Member</option>
@@ -656,9 +680,18 @@ export default function PresidentDashboard() {
                               </select>
                             </td>
                             <td className="p-3 text-right">
-                              <div className="flex justify-end gap-2">
+                              <div className="flex justify-end gap-2 items-center">
+                                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={!!m.isTeamMember} 
+                                    onChange={() => toggleTeamMember(m.id, !!m.isTeamMember)}
+                                    className="accent-cyan-500 w-4 h-4"
+                                  />
+                                  {lang === 'ar' ? 'فريق About' : 'About Team'}
+                                </label>
                                 <button onClick={() => navigate(`/profile/${m.id}`)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-cyan-500 transition-colors bg-slate-100 dark:bg-slate-800 rounded-lg"><Eye size={16}/></button>
-                                <button onClick={() => handleDelete('member', m.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors bg-slate-100 dark:bg-slate-800 rounded-lg"><Trash2 size={16}/></button>
+                                <button onClick={() => handleDelete('user', m.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors bg-slate-100 dark:bg-slate-800 rounded-lg"><Trash2 size={16}/></button>
                               </div>
                             </td>
                           </tr>

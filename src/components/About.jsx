@@ -3,11 +3,12 @@ import { useLanguage } from '../context/LanguageContext';
 import { Target, Flag, History, Loader2, Users, Rocket, Activity, Library, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { db } from '../config/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
 
 export default function About() {
   const { lang } = useLanguage();
   const [aboutData, setAboutData] = useState(null);
+  const [teamMembers, setTeamMembers] = useState({ official: [], internal: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,24 +24,51 @@ export default function About() {
             vision_en: 'Leading the development of Moroccan AI and exporting it globally, building strong bridges for innovative tech creativity and academic brilliance.',
             mission_ar: 'توفير بيئة بحثية متقدمة للمواهب المغربية، وتمكينهم من بناء أنظمة ذكية تحل مشاكل واقعية بدعم من المؤسسات الوطنية.',
             mission_en: 'Providing an advanced research environment for Moroccan talents to build smart systems with national support.',
-            history_ar: 'تأسست GITM في عام 2024 لتوحيد جهود المهندسين المغاربة. قمنا بتأسيس نادي الألعاب وعقدنا شراكات مع المركز الجهوي للاستثمار.',
-            history_en: 'Founded in 2024, GITM unites Moroccan engineers. We established the Gaming Club and partnered with CRI.',
-            stats: { founded: '2024', projects: '15+', members: '500+' },
-            team: {
-              official: [
-                { id: 1, name: 'Dr. Yassine', name_ar: 'د. ياسين', role: 'President & Founder', role_ar: 'الرئيس والمؤسس', projectsCount: 12, image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400' },
-                { id: 2, name: 'Eng. Fatima', name_ar: 'م. فاطمة', role: 'Head of Robotics', role_ar: 'رئيسة قسم الروبوتات', projectsCount: 8, image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400' },
-                { id: 3, name: 'Prof. Ahmed', name_ar: 'أ. أحمد', role: 'Academic Director', role_ar: 'المدير الأكاديمي', projectsCount: 5, image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400' }
-              ],
-              internal: [
-                { id: 4, name: 'Karim', name_ar: 'كريم', role: 'AI Researcher', role_ar: 'باحث في الذكاء الاصطناعي', projectsCount: 15, image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400' },
-                { id: 5, name: 'Sara', name_ar: 'سارة', role: 'UI/UX Lead', role_ar: 'قائدة تصميم الواجهات', projectsCount: 10, image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400' },
-                { id: 6, name: 'Omar', name_ar: 'عمر', role: 'Cloud Engineer', role_ar: 'مهندس سحابي', projectsCount: 7, image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400' },
-                { id: 7, name: 'Meryem', name_ar: 'مريم', role: 'Content Manager', role_ar: 'مديرة المحتوى', projectsCount: 4, image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400' }
-              ]
-            }
+            history_ar: 'تأسست GITM في عام 2026 لتوحيد جهود المهندسين المغاربة. قمنا بتأسيس نادي الألعاب وعقدنا شراكات مع المركز الجهوي للاستثمار.',
+            history_en: 'Founded in 2026, GITM unites Moroccan engineers. We established the Gaming Club and partnered with CRI.',
+            stats: { founded: '2026', projects: '15+', members: '500+' }
           });
         }
+
+        // Fetch team members
+        const q = query(collection(db, 'users'), where('isTeamMember', '==', true));
+        const usersSnap = await getDocs(q);
+        const official = [];
+        const internal = [];
+        
+        usersSnap.forEach(docSnap => {
+          const data = docSnap.data();
+          const member = {
+            id: docSnap.id,
+            name: data.name || data.firstName || 'Unknown',
+            name_ar: data.name || data.firstName || 'مجهول',
+            role: data.role || 'member',
+            role_ar: data.role || 'عضو',
+            projectsCount: Math.floor(Math.random() * 15) + 1, // Simulated projects count
+            image: data.photoURL || `https://ui-avatars.com/api/?name=${data.name || 'GITM'}&background=random`
+          };
+          
+          if (['president', 'supervisor', 'teacher', 'partner', 'university'].includes(member.role)) {
+            official.push(member);
+          } else {
+            internal.push(member);
+          }
+        });
+
+        // Add defaults if none found from DB
+        if (official.length === 0 && internal.length === 0) {
+          official.push(
+            { id: 1, name: 'Dr. Yassine', name_ar: 'د. ياسين', role: 'President & Founder', role_ar: 'الرئيس والمؤسس', projectsCount: 12, image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400' },
+            { id: 2, name: 'Eng. Fatima', name_ar: 'م. فاطمة', role: 'Head of Robotics', role_ar: 'رئيسة قسم الروبوتات', projectsCount: 8, image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400' }
+          );
+          internal.push(
+            { id: 4, name: 'Karim', name_ar: 'كريم', role: 'AI Researcher', role_ar: 'باحث في الذكاء الاصطناعي', projectsCount: 15, image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400' },
+            { id: 5, name: 'Sara', name_ar: 'سارة', role: 'UI/UX Lead', role_ar: 'قائدة تصميم الواجهات', projectsCount: 10, image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400' }
+          );
+        }
+
+        setTeamMembers({ official, internal });
+
       } catch (error) {
         console.error("Error fetching about data:", error);
       } finally {
@@ -142,7 +170,7 @@ export default function About() {
               <div className="p-4 bg-gitm-red/20 rounded-full mb-6">
                 <Rocket size={48} className="text-gitm-red" />
               </div>
-              <span className="text-6xl font-bold text-white mb-4">{aboutData?.stats?.founded || '2024'}</span>
+              <span className="text-6xl font-bold text-white mb-4">{aboutData?.stats?.founded || '2026'}</span>
               <span className="text-xl text-gray-400 font-bold">{lang === 'ar' ? 'الانطلاقة' : 'Launch'}</span>
             </div>
             <div className="flex flex-col items-center">
@@ -182,7 +210,7 @@ export default function About() {
               {lang === 'ar' ? 'أعضاء الفريق الرسميين' : 'Official Team Members'}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {aboutData?.team?.official?.map((member, i) => (
+              {teamMembers.official.map((member, i) => (
                 <motion.div key={member.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
                   className="bg-white dark:bg-gitm-cardDark rounded-2xl overflow-hidden shadow-soft border border-gray-100 dark:border-gray-800 group hover:-translate-y-2 transition-transform duration-300"
                 >
@@ -210,7 +238,7 @@ export default function About() {
               {lang === 'ar' ? 'أعضاء الفريق الداخلي' : 'Internal Team'}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {aboutData?.team?.internal?.map((member, i) => (
+              {teamMembers.internal.map((member, i) => (
                 <motion.div key={member.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
                   className="bg-white dark:bg-gitm-cardDark rounded-2xl overflow-hidden shadow-soft border border-gray-100 dark:border-gray-800 group hover:-translate-y-2 transition-transform duration-300"
                 >
