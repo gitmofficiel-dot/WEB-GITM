@@ -20,11 +20,9 @@ const AIChatBot = () => {
   
   const GITM_MODELS = [
     { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'GITM Pro', desc: lang === 'ar' ? 'نموذج متطور جداً' : 'Advanced Model' },
-    { id: 'meta-llama/llama-3.2-3b-instruct:free', name: 'GITM Fast', desc: lang === 'ar' ? 'سريع وعملي' : 'Fast & Efficient' },
-    { id: 'qwen/qwen3-coder:free', name: 'GITM Coder', desc: lang === 'ar' ? 'مطور أكواد متخصص' : 'Specialized Coder' },
-    { id: 'nvidia/nemotron-nano-12b-2-vl:free', name: 'GITM Vision', desc: lang === 'ar' ? 'تحليل الرؤية' : 'Vision Analysis' },
-    { id: 'liquid/lfm2.5-1.2b-thinking:free', name: 'GITM Thinker', desc: lang === 'ar' ? 'تحليل عميق' : 'Deep Analysis' },
-    { id: 'nousresearch/hermes-3-405b-instruct:free', name: 'GITM Ultra', desc: lang === 'ar' ? 'القدرات القصوى' : 'Maximum Capabilities' }
+    { id: 'google/gemma-2-9b-it:free', name: 'GITM Fast', desc: lang === 'ar' ? 'سريع وعملي' : 'Fast & Efficient' },
+    { id: 'qwen/qwen-2.5-coder-32b-instruct:free', name: 'GITM Coder', desc: lang === 'ar' ? 'مطور أكواد متخصص' : 'Specialized Coder' },
+    { id: 'microsoft/phi-3-mini-128k-instruct:free', name: 'GITM Thinker', desc: lang === 'ar' ? 'تحليل عميق' : 'Deep Analysis' }
   ];
 
   const [selectedModel, setSelectedModel] = useState(GITM_MODELS[0].id);

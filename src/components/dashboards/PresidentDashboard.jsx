@@ -64,6 +64,7 @@ export default function PresidentDashboard() {
   const [gallery, setGallery] = useState([]);
   const [projects, setProjects] = useState([]);
   const [partners, setPartners] = useState([]);
+  const [aboutData, setAboutData] = useState({ vision_ar: '', mission_ar: '', history_ar: '' });
 
   useEffect(() => {
     const unsubNews = onSnapshot(collection(db, 'news'), snap => setNews(snap.docs.map(d => ({id: d.id, ...d.data()}))));
@@ -72,7 +73,10 @@ export default function PresidentDashboard() {
     const unsubGallery = onSnapshot(collection(db, 'gallery'), snap => setGallery(snap.docs.map(d => ({id: d.id, ...d.data()}))));
     const unsubProjects = onSnapshot(collection(db, 'projects'), snap => setProjects(snap.docs.map(d => ({id: d.id, ...d.data()}))));
     const unsubPartners = onSnapshot(collection(db, 'partners'), snap => setPartners(snap.docs.map(d => ({id: d.id, ...d.data()}))));
-    return () => { unsubNews(); unsubCourses(); unsubEvents(); unsubGallery(); unsubProjects(); unsubPartners(); };
+    const unsubAbout = onSnapshot(doc(db, 'settings', 'about'), docSnap => {
+      if (docSnap.exists()) setAboutData(docSnap.data());
+    });
+    return () => { unsubNews(); unsubCourses(); unsubEvents(); unsubGallery(); unsubProjects(); unsubPartners(); unsubAbout(); };
   }, []);
 
   const [aiSettings, setAiSettings] = useState({
@@ -94,6 +98,16 @@ export default function PresidentDashboard() {
   // --- Editor Handlers Removed (Moved to Standalone Editors) ---
 
   // --- CRUD Handlers ---
+  const handleSaveAbout = async () => {
+    try {
+      await setDoc(doc(db, 'settings', 'about'), aboutData, { merge: true });
+      toast.success(lang === 'ar' ? 'تم حفظ صفحة من نحن بنجاح' : 'About page saved successfully');
+    } catch (err) {
+      console.error(err);
+      toast.error(lang === 'ar' ? 'خطأ في الحفظ' : 'Error saving');
+    }
+  };
+
   const handleSave = async (formData) => {
     const isEdit = !!modalState.data;
     const colName = modalState.type === 'event' ? 'events' : 
@@ -529,7 +543,7 @@ export default function PresidentDashboard() {
                     <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
                       <Info className="text-cyan-500" size={24}/> {lang === 'ar' ? 'نظام إدارة محتوى (من نحن)' : 'About Us Content Management'}
                     </h3>
-                    <button className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-lg hover:shadow-cyan-500/30 transition-shadow">
+                    <button onClick={handleSaveAbout} className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-lg hover:shadow-cyan-500/30 transition-shadow">
                       {lang === 'ar' ? 'حفظ التغييرات ونشر' : 'Save & Publish'}
                     </button>
                   </div>
@@ -541,7 +555,8 @@ export default function PresidentDashboard() {
                       </label>
                       <textarea 
                         className="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[#1e3a5f] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all h-24"
-                        defaultValue={lang === 'ar' ? 'الريادة في تطوير الذكاء الاصطناعي المغربي وتصديره للعالم.' : 'Leading the development of Moroccan AI and exporting it to the world.'}
+                        value={lang === 'ar' ? aboutData.vision_ar || '' : aboutData.vision_en || ''}
+                        onChange={(e) => setAboutData({ ...aboutData, [lang === 'ar' ? 'vision_ar' : 'vision_en']: e.target.value })}
                       ></textarea>
                     </div>
 
@@ -551,7 +566,8 @@ export default function PresidentDashboard() {
                       </label>
                       <textarea 
                         className="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[#1e3a5f] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all h-24"
-                        defaultValue={lang === 'ar' ? 'توفير بيئة بحثية متقدمة للمواهب المغربية، وتمكينهم من بناء أنظمة ذكية تحل مشاكل واقعية.' : 'Providing an advanced research environment for Moroccan talents to build smart systems.'}
+                        value={lang === 'ar' ? aboutData.mission_ar || '' : aboutData.mission_en || ''}
+                        onChange={(e) => setAboutData({ ...aboutData, [lang === 'ar' ? 'mission_ar' : 'mission_en']: e.target.value })}
                       ></textarea>
                     </div>
 
@@ -561,7 +577,8 @@ export default function PresidentDashboard() {
                       </label>
                       <textarea 
                         className="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[#1e3a5f] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all h-32"
-                        defaultValue={lang === 'ar' ? 'تأسست GITM في عام 2024 لتوحيد جهود المهندسين المغاربة. قمنا بتدريب المئات وشاركنا في الهاكاثونات الوطنية والدولية بنجاح مبهر.' : 'Founded in 2024, GITM unites Moroccan engineers. We have trained hundreds and successfully participated in national and international hackathons.'}
+                        value={lang === 'ar' ? aboutData.history_ar || '' : aboutData.history_en || ''}
+                        onChange={(e) => setAboutData({ ...aboutData, [lang === 'ar' ? 'history_ar' : 'history_en']: e.target.value })}
                       ></textarea>
                     </div>
                   </div>
