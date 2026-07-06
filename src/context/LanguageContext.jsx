@@ -44,18 +44,8 @@ export const LanguageProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  // Users Roster (Extended with CV Data)
-  const [users, setUsers] = useState(() => {
-    const saved = localStorage.getItem('gitm_users');
-    return saved ? JSON.parse(saved) : [
-      { id: 1, memberId: 'GITM-001', name: 'سفيان العلوي', email: 'soufiane@gitm.ma', role: 'president', badges: ['developer', 'admin', 'speaker'], bio: 'Embedded Systems Engineer & AI Researcher.', projects: ['Edge AI YOLOv8', 'Smart Drone Controller'], github: 'github.com/soufiane', linkedin: 'linkedin.com/in/soufiane' },
-      { id: 2, memberId: 'GITM-002', name: 'فاطمة الزهراء', email: 'fatima@gitm.ma', role: 'teacher', badges: ['writer', 'developer'], bio: 'Senior Robotics Instructor.', projects: ['Autonomous Robot Arm'], github: 'github.com/fatima', linkedin: 'linkedin.com/in/fatima' },
-      { id: 3, memberId: 'GITM-003', name: 'عمر التازي', email: 'omar@gitm.ma', role: 'student', badges: ['developer'], bio: 'IoT Enthusiast and Maker.', projects: ['Smart Home Hub'], github: 'github.com/omar', linkedin: 'linkedin.com/in/omar' },
-      { id: 4, memberId: 'GITM-004', name: 'أمين بنجلون', email: 'amine@gitm.ma', role: 'teacher', badges: ['speaker', 'developer'], bio: 'Cloud Architect & AI Specialist.', projects: ['IoT Cloud Platform'], github: 'github.com/amine', linkedin: 'linkedin.com/in/amine' },
-      { id: 5, memberId: 'GITM-005', name: 'ياسين المراكشي', email: 'yassine@gitm.ma', role: 'member', badges: ['designer'], bio: 'UI/UX Designer for Tech Apps.', projects: ['GITM App Redesign'], github: 'github.com/yassine', linkedin: 'linkedin.com/in/yassine' },
-      { id: 6, memberId: 'GITM-006', name: 'سارة الفاسي', email: 'sara@gitm.ma', role: 'member', badges: ['developer', 'writer'], bio: 'Cybersecurity Analyst.', projects: ['Network Monitor'], github: 'github.com/sara', linkedin: 'linkedin.com/in/sara' },
-      { id: 7, memberId: 'GITM-007', name: 'محمد الحسني', email: 'mohammed@gitm.ma', role: 'content_manager', badges: ['writer', 'designer'], bio: 'Tech Journalist & Content Creator.', projects: [], github: 'github.com/mohammed', linkedin: 'linkedin.com/in/mohammed' },
-      { id: 8, memberId: 'GITM-008', name: 'خديجة بناني', email: 'khadija@gitm.ma', role: 'supervisor', badges: ['admin', 'legal'], bio: 'Project Manager & Legal Advisor.', projects: [], github: 'github.com/khadija', linkedin: 'linkedin.com/in/khadija' },
+
+
   // 5. Active Dashboard Role
   const [activeDashboardRole, setActiveDashboardRole] = useState('president');
 
