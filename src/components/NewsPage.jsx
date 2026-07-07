@@ -48,7 +48,7 @@ export default function NewsPage() {
     fetchNews();
   }, []);
 
-  const fetchGlobalNews = async (query = 'technology OR artificial intelligence') => {
+  const fetchGlobalNews = async (query = '"Artificial Intelligence" OR "AI" OR "IoT" OR "Internet of Things"') => {
     if (globalNews.length > 0 && !searchQuery) return;
     setLoadingGlobal(true);
     try {

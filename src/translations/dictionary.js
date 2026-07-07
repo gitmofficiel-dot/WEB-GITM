@@ -2,6 +2,8 @@ export const languages = {
   ar: { name: 'العربية', dir: 'rtl', flag: '🇲🇦' },
   en: { name: 'English', dir: 'ltr', flag: '🇬🇧' },
   fr: { name: 'Français', dir: 'ltr', flag: '🇫🇷' },
+  zh: { name: '中文', dir: 'ltr', flag: '🇨🇳' },
+  tzm: { name: 'ⵜⴰⵎⴰⵣⵉⵖⵜ', dir: 'ltr', flag: '🇲🇦' },
   es: { name: 'Español (AI)', dir: 'ltr', flag: '🇪🇸' },
   de: { name: 'Deutsch (AI)', dir: 'ltr', flag: '🇩🇪' },
   ja: { name: '日本語 (AI)', dir: 'ltr', flag: '🇯🇵' },

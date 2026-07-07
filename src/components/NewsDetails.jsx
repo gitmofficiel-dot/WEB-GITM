@@ -4,6 +4,7 @@ import { Calendar, User, Tag, ShieldCheck, ChevronLeft, Share2 } from 'lucide-re
 import { useLanguage } from '../context/LanguageContext';
 import { toast } from '../utils/toast';
 import CommentsSection from './ui/CommentsSection';
+import { Languages, Loader2 } from 'lucide-react';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
@@ -11,8 +12,44 @@ export default function NewsDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { lang, news, user } = useLanguage();
+  const [translatedTitle, setTranslatedTitle] = React.useState(null);
+  const [translatedSummary, setTranslatedSummary] = React.useState(null);
+  const [translatedContent, setTranslatedContent] = React.useState(null);
+  const [isTranslating, setIsTranslating] = React.useState(false);
 
   const article = news.find(n => n.id.toString() === id);
+
+  const handleTranslate = async () => {
+    if (isTranslating) return;
+    setIsTranslating(true);
+    try {
+      const targetLang = lang === 'ar' ? 'ar' : lang === 'fr' ? 'fr' : lang === 'zh' ? 'zh' : 'en';
+      const sourceLang = lang === 'ar' ? 'en' : 'ar'; // simplified assumption
+      
+      const translateText = async (text) => {
+        if (!text) return '';
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=autodetect|${targetLang}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        return data.responseData.translatedText;
+      };
+
+      const tTitle = await translateText(lang === 'ar' ? article.title_en : article.title_ar);
+      const tSummary = await translateText(lang === 'ar' ? article.summary_en : article.summary_ar);
+      const tContent = await translateText(lang === 'ar' ? article.content_en : article.content_ar);
+      
+      if (tTitle) setTranslatedTitle(tTitle);
+      if (tSummary) setTranslatedSummary(tSummary);
+      if (tContent) setTranslatedContent(tContent);
+      
+      toast.success(lang === 'ar' ? 'تمت الترجمة بنجاح' : 'Translated successfully');
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast.error(lang === 'ar' ? 'فشل الترجمة' : 'Translation failed');
+    } finally {
+      setIsTranslating(false);
+    }
+  };
 
   if (!article) {
     return (
@@ -71,9 +108,15 @@ export default function NewsDetails() {
               <ShieldCheck className="text-teal-500" size={24} />
               <span className="font-bold text-[#1e3a5f] dark:text-slate-200">{txt(lang, 'Official News', 'خبر رسمي', 'Nouvelles officielles', '官方新闻')}</span>
             </div>
-            <button onClick={() => navigator.clipboard.writeText(window.location.href).then(() => toast.success(lang === 'ar' ? 'تم نسخ الرابط' : 'Link copied'))} className="p-2 text-slate-500 hover:text-cyan-500 dark:hover:text-cyan-400 rounded-xl transition-colors bg-cyan-100 dark:bg-slate-800">
-              <Share2 size={20} />
-            </button>
+            <div className="flex items-center gap-2">
+              <button onClick={handleTranslate} disabled={isTranslating} className="p-2 text-slate-500 hover:text-cyan-500 dark:hover:text-cyan-400 rounded-xl transition-colors bg-cyan-100 dark:bg-slate-800 flex items-center gap-2 font-bold text-sm">
+                {isTranslating ? <Loader2 size={20} className="animate-spin" /> : <Languages size={20} />}
+                <span className="hidden sm:inline">{txt(lang, 'Translate', 'ترجمة فورية', 'Traduire', '翻译')}</span>
+              </button>
+              <button onClick={() => navigator.clipboard.writeText(window.location.href).then(() => toast.success(lang === 'ar' ? 'تم نسخ الرابط' : 'Link copied'))} className="p-2 text-slate-500 hover:text-cyan-500 dark:hover:text-cyan-400 rounded-xl transition-colors bg-cyan-100 dark:bg-slate-800">
+                <Share2 size={20} />
+              </button>
+            </div>
           </div>
           
           <div className="p-8 md:p-12 text-[#1e3a5f] dark:text-slate-200">
@@ -84,18 +127,22 @@ export default function NewsDetails() {
             </div>
             
             <h1 className="text-3xl md:text-5xl font-orbitron font-bold mb-8 text-[#0B132B] dark:text-white leading-tight">
-              {lang === 'ar' ? article.title_ar : article.title_en}
+              {translatedTitle || (lang === 'ar' ? article.title_ar : article.title_en)}
             </h1>
             
             <div className="w-full h-px bg-cyan-200 dark:bg-slate-800 mb-8"></div>
             
             <div className="prose dark:prose-invert max-w-none text-lg leading-relaxed space-y-6">
               <p className="text-xl font-medium text-slate-600 dark:text-slate-300 border-l-4 border-cyan-500 pl-4 rtl:pl-0 rtl:pr-4 rtl:border-l-0 rtl:border-r-4">
-                {lang === 'ar' ? article.summary_ar : article.summary_en}
+                {translatedSummary || (lang === 'ar' ? article.summary_ar : article.summary_en)}
               </p>
               
               <div className="mt-8">
-                {lang === 'ar' ? (article.content_ar || <p>المحتوى الكامل للمقال سيتم عرضه هنا. هذه المساحة مخصصة للتفاصيل الشاملة للخبر مع دعم الفقرات المتعددة والصور إن وجدت.</p>) : (article.content_en || <p>The full content of the article will be displayed here. This space is dedicated to comprehensive details of the news, supporting multiple paragraphs and images if any.</p>)}
+                {translatedContent ? (
+                  <p>{translatedContent}</p>
+                ) : (
+                  lang === 'ar' ? (article.content_ar || <p>المحتوى الكامل للمقال سيتم عرضه هنا. هذه المساحة مخصصة للتفاصيل الشاملة للخبر مع دعم الفقرات المتعددة والصور إن وجدت.</p>) : (article.content_en || <p>The full content of the article will be displayed here. This space is dedicated to comprehensive details of the news, supporting multiple paragraphs and images if any.</p>)
+                )}
               </div>
             </div>
             

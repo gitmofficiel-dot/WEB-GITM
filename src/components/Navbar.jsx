@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { Sun, Moon, Globe, Menu, X, LayoutDashboard, LogOut, ChevronDown, Search } from 'lucide-react';
+import { Sun, Moon, Globe, Menu, X, LayoutDashboard, LogOut, ChevronDown, Search, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { algoliasearch } from 'algoliasearch';
 
 const Navbar = () => {
   const { lang, changeLanguage, theme, toggleTheme, user, logoutUser, users } = useLanguage();
@@ -17,18 +18,61 @@ const Navbar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  // Mocking real-time notifications for now - in production this connects to Firebase Realtime DB / Firestore
+  useEffect(() => {
+    if (!user) return;
+    // For demo purposes, pushing a welcome notification
+    setNotifications([
+      { id: 1, title: lang === 'ar' ? 'مرحباً بك' : 'Welcome', message: lang === 'ar' ? 'تم تفعيل حسابك بنجاح' : 'Your account is active', time: '1m ago', read: false },
+      { id: 2, title: lang === 'ar' ? 'تحديث جديد' : 'New Update', message: lang === 'ar' ? 'تم إضافة محاكي البرمجة' : 'Code simulator added', time: '1h ago', read: false }
+    ]);
+  }, [user, lang]);
 
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
       return;
     }
-    const q = searchQuery.toLowerCase();
-    const results = (users || []).filter(u => 
-      u.name.toLowerCase().includes(q) || 
-      (u.memberId && u.memberId.toLowerCase().includes(q))
-    );
-    setSearchResults(results);
+    
+    const fetchSearchResults = async () => {
+      try {
+        const apiKey = import.meta.env.VITE_ALGOLIA_SEARCH_KEY;
+        if (apiKey) {
+          const client = algoliasearch('53BOZ8TCA9', apiKey);
+          const { results } = await client.search([{ indexName: 'gitm_users', query: searchQuery }]);
+          
+          if (results && results[0] && results[0].hits) {
+            setSearchResults(results[0].hits.map(h => ({
+              id: h.objectID || h.id,
+              name: h.name,
+              memberId: h.memberId,
+              role: h.role
+            })));
+          }
+        } else {
+          // Fallback to local array
+          const q = searchQuery.toLowerCase();
+          const results = (users || []).filter(u => 
+            u.name.toLowerCase().includes(q) || 
+            (u.memberId && u.memberId.toLowerCase().includes(q))
+          );
+          setSearchResults(results);
+        }
+      } catch (err) {
+        console.warn("Algolia search failed (using fallback):", err);
+        const q = searchQuery.toLowerCase();
+        const results = (users || []).filter(u => 
+          u.name.toLowerCase().includes(q) || 
+          (u.memberId && u.memberId.toLowerCase().includes(q))
+        );
+        setSearchResults(results);
+      }
+    };
+    
+    fetchSearchResults();
   }, [searchQuery, users]);
 
   useEffect(() => {
@@ -148,6 +192,46 @@ const Navbar = () => {
             <button onClick={toggleTheme} className="p-2.5 rounded-lg text-gitm-mutedLight dark:text-gitm-mutedDark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
+
+            {user && (
+              <div className="relative">
+                <button 
+                  onClick={() => { setNotificationsOpen(!notificationsOpen); setProfileDropdown(false); setLangDropdown(false); }} 
+                  className="p-2.5 rounded-lg text-gitm-mutedLight dark:text-gitm-mutedDark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
+                >
+                  <Bell size={18} />
+                  {notifications.filter(n => !n.read).length > 0 && (
+                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                  )}
+                </button>
+                <AnimatePresence>
+                  {notificationsOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setNotificationsOpen(false)} />
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                        className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-80 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden"
+                      >
+                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                          <h4 className="font-bold text-sm text-gitm-textLight dark:text-gitm-textDark">{lang === 'ar' ? 'الإشعارات (مباشر)' : 'Notifications (Realtime)'}</h4>
+                          <span className="text-xs bg-gitm-blue text-white px-2 py-0.5 rounded-full">{notifications.length}</span>
+                        </div>
+                        <div className="max-h-72 overflow-y-auto">
+                          {notifications.map(n => (
+                            <div key={n.id} className={`p-4 border-b border-gray-50 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer ${!n.read ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}`}>
+                              <h5 className="font-bold text-sm text-gitm-textLight dark:text-gitm-textDark mb-1">{n.title}</h5>
+                              <p className="text-xs text-gitm-mutedLight dark:text-gitm-mutedDark mb-1">{n.message}</p>
+                              <span className="text-[10px] text-gray-400">{n.time}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+            
             
             <div className="relative hidden sm:block">
               <button 
@@ -167,8 +251,11 @@ const Navbar = () => {
                       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
                       className="absolute top-full mt-2 right-0 w-32 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden py-1"
                     >
-                      <button onClick={() => {changeLanguage('ar'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">العربية</button>
-                      <button onClick={() => {changeLanguage('en'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">English</button>
+                      <button onClick={() => {changeLanguage('ar'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">العربية (AR)</button>
+                      <button onClick={() => {changeLanguage('en'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">English (EN)</button>
+                      <button onClick={() => {changeLanguage('fr'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">Français (FR)</button>
+                      <button onClick={() => {changeLanguage('zh'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">中文 (ZH)</button>
+                      <button onClick={() => {changeLanguage('tzm'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">ⵜⴰⵎⴰⵣⵉⵖⵜ (TZM)</button>
                     </motion.div>
                   </>
                 )}
@@ -266,10 +353,12 @@ const Navbar = () => {
                 </button>
               ))}
               
-              <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gitm-borderDark flex justify-between">
-                <button onClick={() => changeLanguage('ar')} className={`flex-1 py-3 text-center rounded-lg ${lang === 'ar' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>العربية</button>
-                <div className="w-4"></div>
-                <button onClick={() => changeLanguage('en')} className={`flex-1 py-3 text-center rounded-lg ${lang === 'en' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>English</button>
+              <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gitm-borderDark grid grid-cols-2 gap-3">
+                <button onClick={() => changeLanguage('ar')} className={`py-3 text-center rounded-lg text-sm font-bold ${lang === 'ar' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>العربية</button>
+                <button onClick={() => changeLanguage('en')} className={`py-3 text-center rounded-lg text-sm font-bold ${lang === 'en' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>English</button>
+                <button onClick={() => changeLanguage('fr')} className={`py-3 text-center rounded-lg text-sm font-bold ${lang === 'fr' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>Français</button>
+                <button onClick={() => changeLanguage('zh')} className={`py-3 text-center rounded-lg text-sm font-bold ${lang === 'zh' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>中文</button>
+                <button onClick={() => changeLanguage('tzm')} className={`col-span-2 py-3 text-center rounded-lg text-sm font-bold ${lang === 'tzm' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>ⵜⴰⵎⴰⵣⵉⵖⵜ</button>
               </div>
             </div>
           </motion.div>

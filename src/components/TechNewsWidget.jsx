@@ -24,8 +24,8 @@ const TechNewsWidget = () => {
       setLoading(true);
       setError(false);
       try {
-        const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
-        const url = `https://gnews.io/api/v4/top-headlines?category=technology&lang=${newsLang}&max=5&apikey=${apiKey}`;
+        const apiKey = import.meta.env.VITE_GNEWS_API_KEY || 'demo';
+        const url = `https://gnews.io/api/v4/search?q="Artificial Intelligence" OR "AI" OR "IoT" OR "Internet of Things"&lang=${newsLang}&max=5&apikey=${apiKey}`;
         
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);

@@ -46,13 +46,52 @@ export default function CodeSimulator({ lang = 'en' }) {
 
   const { simulateCodeExecution, loading: aiLoading } = useAI();
 
+  const executeWithJudge0 = async (sourceCode, langId) => {
+    // Judge0 language IDs: JS=93 (Node), Python=71, C++=54 (GCC 9.2.0)
+    const idMap = { javascript: 93, python: 71, cpp: 54 };
+    const language_id = idMap[langId] || 93;
+
+    const apiKey = import.meta.env.VITE_JUDGE0_API_KEY;
+    if (!apiKey) {
+      console.warn("No Judge0 API Key found, falling back to AI Simulator");
+      return await simulateCodeExecution(sourceCode, langId);
+    }
+
+    try {
+      const response = await fetch('https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'X-RapidAPI-Key': apiKey,
+          'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
+        },
+        body: JSON.stringify({
+          language_id: language_id,
+          source_code: sourceCode,
+          stdin: ""
+        })
+      });
+
+      if (!response.ok) throw new Error('Judge0 API request failed');
+      const data = await response.json();
+      
+      if (data.stderr || data.compile_output) {
+        return { status: 'error', output: data.stderr || data.compile_output };
+      }
+      return { status: 'success', output: data.stdout || 'Execution finished (no output)' };
+    } catch (err) {
+      console.error(err);
+      return { status: 'error', output: err.message };
+    }
+  };
+
   const handleRunCode = async () => {
     setIsRunning(true);
     setStatus(null);
-    setOutput(lang === 'ar' ? 'جاري التنفيذ...' : 'Running code...');
+    setOutput(lang === 'ar' ? 'جاري التنفيذ عبر Judge0...' : 'Running code via Judge0...');
 
     try {
-      const result = await simulateCodeExecution(code, language);
+      const result = await executeWithJudge0(code, language);
       if (result && result.output) {
         setOutput(result.output);
         setStatus(result.status === 'success' ? 'success' : 'error');
@@ -118,7 +157,7 @@ export default function CodeSimulator({ lang = 'en' }) {
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
         {/* Editor Area */}
         <div className="flex-1 relative">
           <Editor
@@ -142,7 +181,7 @@ export default function CodeSimulator({ lang = 'en' }) {
         </div>
 
         {/* Terminal/Output Area */}
-        <div className="w-1/3 bg-[#11111b] border-l border-slate-200/ dark:border-slate-700/ flex flex-col">
+        <div className="w-full h-1/3 md:h-auto md:w-1/3 bg-[#11111b] md:border-l border-t md:border-t-0 border-slate-200/ dark:border-slate-700/ flex flex-col">
           <div className="px-4 py-2 bg-[#181825] border-b border-slate-200/ dark:border-slate-700/ flex justify-between items-center">
             <span className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-2">
               <Terminal size={14} /> {lang === 'ar' ? 'المخرجات (Console)' : 'Output Console'}

@@ -13,21 +13,36 @@ const WeatherWidget = () => {
     const fetchWeather = async (lat = 33.57, lon = -7.59, isFallback = true) => {
       try {
         setLoading(true);
-        // Fetch weather
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,windspeed_10m&timezone=auto`);
-        if (!res.ok) throw new Error('Failed to fetch weather');
-        const data = await res.json();
-        setWeather(data.current);
+        const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
+        
+        if (apiKey) {
+          // OpenWeather API
+          const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
+          if (!res.ok) throw new Error('OpenWeather API Failed');
+          const data = await res.json();
+          setWeather({
+            temperature_2m: Math.round(data.main.temp),
+            weathercode: data.weather[0].id, // Note: OpenWeather codes are different, we will map them
+            windspeed_10m: Math.round(data.wind.speed * 3.6), // convert m/s to km/h
+            isOpenWeather: true
+          });
+          setCityName(data.name || (lang === 'ar' ? 'موقعك' : 'Your Location'));
+        } else {
+          // Fallback to Open-Meteo
+          const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,windspeed_10m&timezone=auto`);
+          if (!res.ok) throw new Error('Failed to fetch weather');
+          const data = await res.json();
+          setWeather(data.current);
 
-        // Fetch city name if not fallback
-        if (!isFallback) {
-          try {
-            const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=${lang}`);
-            const geoData = await geoRes.json();
-            const city = geoData.address.city || geoData.address.town || geoData.address.state || geoData.address.country;
-            if (city) setCityName(city);
-          } catch (geoErr) {
-            console.error('Reverse geocoding failed', geoErr);
+          if (!isFallback) {
+            try {
+              const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=${lang}`);
+              const geoData = await geoRes.json();
+              const city = geoData.address.city || geoData.address.town || geoData.address.state || geoData.address.country;
+              if (city) setCityName(city);
+            } catch (geoErr) {
+              console.error('Reverse geocoding failed', geoErr);
+            }
           }
         }
         
@@ -54,10 +69,17 @@ const WeatherWidget = () => {
     }
   }, [lang]);
 
-  const getWeatherIcon = (code) => {
-    if (code <= 3) return <Sun className="text-yellow-400" size={24} />;
-    if (code <= 48) return <Cloud className="text-gray-400" size={24} />;
-    return <CloudRain className="text-blue-400" size={24} />;
+  const getWeatherIcon = (code, isOpenWeather = false) => {
+    if (isOpenWeather) {
+      if (code >= 200 && code < 600) return <CloudRain className="text-blue-400" size={24} />;
+      if (code >= 600 && code < 700) return <Cloud className="text-gray-200" size={24} />;
+      if (code >= 801 && code <= 804) return <Cloud className="text-gray-400" size={24} />;
+      return <Sun className="text-yellow-400" size={24} />;
+    } else {
+      if (code <= 3) return <Sun className="text-yellow-400" size={24} />;
+      if (code <= 48) return <Cloud className="text-gray-400" size={24} />;
+      return <CloudRain className="text-blue-400" size={24} />;
+    }
   };
 
   if (loading) return (
@@ -80,7 +102,7 @@ const WeatherWidget = () => {
       </h4>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {getWeatherIcon(weather.weathercode)}
+          {getWeatherIcon(weather.weathercode, weather.isOpenWeather)}
           <div>
             <div className="text-2xl font-bold font-orbitron text-gray-800 dark:text-white">
               {weather.temperature_2m}°C

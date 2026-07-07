@@ -53,7 +53,6 @@ export default function Hero() {
   
   const [titleIndex, setTitleIndex] = useState(0);
   const [bgIndex, setBgIndex] = useState(0);
-  const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -146,53 +145,10 @@ export default function Hero() {
               {lang === 'ar' ? 'اكتشف التقنيات' : 'Discover Tech'}
               <ArrowRight size={20} className={lang === 'ar' ? 'rotate-180' : ''} />
             </button>
-            
-            <button 
-              onClick={() => setIsVideoOpen(true)}
-              className="w-full sm:w-auto bg-white/10 hover:bg-white/20 border border-white/30 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all backdrop-blur-md hover:-translate-y-1"
-            >
-              <Play fill="currentColor" size={20} />
-              {lang === 'ar' ? 'شاهد الفيديو التعريفي' : 'Watch Intro Video'}
-            </button>
           </div>
         </div>
       </motion.div>
 
-      {/* Video Modal */}
-      <AnimatePresence>
-        {isVideoOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md"
-          >
-            <button 
-              onClick={() => setIsVideoOpen(false)}
-              className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-gitm-red text-white rounded-full transition-colors"
-            >
-              <X size={24} />
-            </button>
-            
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl shadow-gitm-red/20 border border-white/10"
-            >
-              <iframe 
-                width="100%" 
-                height="100%" 
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
-                title="GITM Presentation" 
-                frameBorder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowFullScreen
-              ></iframe>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
