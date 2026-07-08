@@ -46,6 +46,13 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
   background-color: theme('colors.gitm.light');
   color: theme('colors.gitm.textLight');
+  padding-bottom: 70px; /* Space for mobile bottom nav */
+}
+
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 0; /* Remove space on desktop */
+  }
 }
 
 .dark body {
@@ -83,6 +90,15 @@ html[dir="rtl"] .max-w-7xl {
 
 .dark ::-webkit-scrollbar-thumb {
   background: theme('colors.gitm.blue');
+}
+
+/* Hide scrollbar for horizontal menus but keep functionality */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* ========================================

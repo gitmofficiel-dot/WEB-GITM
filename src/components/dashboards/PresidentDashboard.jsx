@@ -437,11 +437,13 @@ export default function PresidentDashboard() {
       {/* Sidebar Navigation */}
       <div className="w-full md:w-64 shrink-0">
         <div className="glass-card rounded-3xl p-4 sticky top-24 border border-cyan-200 dark:border-slate-800 shadow-xl shadow-cyan-900/5">
-          <div className="mb-6 px-2">
-            <h2 className="text-xl font-orbitron font-bold gradient-text">{lang === 'ar' ? 'القيادة العليا' : 'Supreme Command'}</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{lang === 'ar' ? 'نظام التحكم المركزي' : 'Central Control System'}</p>
+          <div className="mb-4 md:mb-6 px-2 flex justify-between items-center md:block">
+            <div>
+              <h2 className="text-lg md:text-xl font-orbitron font-bold gradient-text">{lang === 'ar' ? 'القيادة العليا' : 'Supreme Command'}</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 hidden md:block">{lang === 'ar' ? 'نظام التحكم المركزي' : 'Central Control System'}</p>
+            </div>
           </div>
-          <nav className="space-y-2">
+          <nav className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
             {tabs.map(tab => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -449,9 +451,9 @@ export default function PresidentDashboard() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
+                  className={`flex-shrink-0 md:w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
                     isActive 
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30 translate-x-2' 
+                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30 md:translate-x-2' 
                     : 'text-slate-600 dark:text-slate-400 hover:bg-cyan-50 dark:hover:bg-slate-50 dark:bg-slate-800 hover:text-cyan-600 dark:hover:text-cyan-400'
                   }`}
                 >

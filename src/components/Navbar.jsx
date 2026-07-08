@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { Sun, Moon, Globe, Menu, X, LayoutDashboard, LogOut, ChevronDown, Search, Bell } from 'lucide-react';
+import { Sun, Moon, Globe, Menu, X, LayoutDashboard, LogOut, ChevronDown, Search, Bell, Home, BookOpen, Calendar, Compass } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { algoliasearch } from 'algoliasearch';
 
@@ -318,8 +318,8 @@ const Navbar = () => {
               </button>
             )}
 
-            {/* Mobile Menu Toggle */}
-            <button className="md:hidden p-2 ml-1 text-gitm-textLight dark:text-gitm-textDark" onClick={() => setMobileOpen(true)}>
+            {/* Desktop only Menu Toggle (Hidden on mobile as we will use bottom nav) */}
+            <button className="hidden p-2 ml-1 text-gitm-textLight dark:text-gitm-textDark" onClick={() => setMobileOpen(true)}>
               <Menu size={24} />
             </button>
           </div>
@@ -364,6 +364,26 @@ const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* App-like Bottom Navigation for Mobile */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-lg border-t border-gray-200 dark:border-gitm-borderDark px-6 py-3 flex justify-between items-center shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+        <button onClick={() => navigate('/')} className={`flex flex-col items-center gap-1 ${currentPath === '/' ? 'text-gitm-blue' : 'text-gray-500 dark:text-gray-400'}`}>
+          <Home size={22} className={currentPath === '/' ? 'fill-current' : ''} />
+          <span className="text-[10px] font-bold">{lang === 'ar' ? 'الرئيسية' : 'Home'}</span>
+        </button>
+        <button onClick={() => navigate('/academy')} className={`flex flex-col items-center gap-1 ${currentPath === '/academy' ? 'text-gitm-blue' : 'text-gray-500 dark:text-gray-400'}`}>
+          <BookOpen size={22} className={currentPath === '/academy' ? 'fill-current' : ''} />
+          <span className="text-[10px] font-bold">{lang === 'ar' ? 'الأكاديمية' : 'Academy'}</span>
+        </button>
+        <button onClick={() => navigate('/events')} className={`flex flex-col items-center gap-1 ${currentPath === '/events' ? 'text-gitm-blue' : 'text-gray-500 dark:text-gray-400'}`}>
+          <Calendar size={22} className={currentPath === '/events' ? 'fill-current' : ''} />
+          <span className="text-[10px] font-bold">{lang === 'ar' ? 'الفعاليات' : 'Events'}</span>
+        </button>
+        <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400">
+          <Menu size={22} />
+          <span className="text-[10px] font-bold">{lang === 'ar' ? 'المزيد' : 'Menu'}</span>
+        </button>
+      </div>
     </>
   );
 };

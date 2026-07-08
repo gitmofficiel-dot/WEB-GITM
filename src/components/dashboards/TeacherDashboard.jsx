@@ -409,18 +409,20 @@ export default function TeacherDashboard() {
       {/* Sidebar */}
       <div className="w-full md:w-64 shrink-0">
         <div className="glass-card rounded-3xl p-4 sticky top-24 border border-blue-200 dark:border-blue-900/30 shadow-xl">
-          <div className="mb-6 px-2">
-            <h2 className="text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'بوابة المعلم' : 'Teacher Portal'}</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{teacherName}</p>
+          <div className="mb-4 md:mb-6 px-2 flex justify-between items-center md:block">
+            <div>
+              <h2 className="text-lg md:text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'بوابة المعلم' : 'Teacher Portal'}</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 hidden md:block">{teacherName}</p>
+            </div>
           </div>
-          <nav className="space-y-2">
+          <nav className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
             {tabs.map(tab => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
+                  className={`flex-shrink-0 md:w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
                     activeTab === tab.id
                     ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/20'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-50 dark:bg-slate-800'
@@ -442,8 +444,8 @@ export default function TeacherDashboard() {
             {/* ═══════════════ COURSES TAB ═══════════════ */}
             {activeTab === 'courses' && (
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <h3 className="text-xl md:text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
                     <BookOpen className="text-blue-500"/> {lang === 'ar' ? 'المقررات المكلف بها' : 'Assigned Courses'}
                   </h3>
                   <div className="flex gap-3 items-center">
@@ -515,10 +517,10 @@ export default function TeacherDashboard() {
                     <Loader2 size={32} className="animate-spin text-blue-500" />
                   </div>
                 ) : (
-                <div className="grid grid-cols-1 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   {assignedCourses.map((course, i) => (
                     <motion.div key={course.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
-                      className="glass-card rounded-2xl p-6 border border-slate-200/50 dark:border-slate-800 overflow-hidden relative"
+                      className="glass-card rounded-2xl p-4 md:p-6 relative overflow-hidden group border border-slate-200/50 dark:border-slate-800"
                     >
                       <div className={`absolute top-0 ${lang === 'ar' ? 'right-0' : 'left-0'} w-1.5 h-full bg-gradient-to-b ${course.color}`} />
 
@@ -719,21 +721,21 @@ export default function TeacherDashboard() {
                     { label: lang === 'ar' ? 'المقررات النشطة' : 'Active Courses', value: analyticsData.coursesActive, icon: BookOpen, gradient: 'from-amber-500 to-orange-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
                   ].map((kpi, i) => (
                     <motion.div key={i} custom={i} variants={cardVariants} initial="hidden" animate="visible"
-                      className={`glass-card rounded-2xl p-5 ${kpi.bg} border border-slate-200/50 dark:border-slate-800`}
+                      className={`glass-card rounded-2xl p-3 sm:p-4 md:p-5 ${kpi.bg} border border-slate-200/50 dark:border-slate-800`}
                     >
-                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${kpi.gradient} flex items-center justify-center mb-3`}>
-                        <kpi.icon size={20} className="text-white"/>
+                      <div className={`w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br ${kpi.gradient} flex items-center justify-center mb-2 md:mb-3`}>
+                        <kpi.icon size={18} className="text-white"/>
                       </div>
-                      <p className="text-2xl font-bold text-[#1e3a5f] dark:text-white">{kpi.value}</p>
-                      <p className="text-xs text-slate-500 font-semibold mt-1">{kpi.label}</p>
+                      <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#1e3a5f] dark:text-white">{kpi.value}</p>
+                      <p className="text-[10px] sm:text-xs text-slate-500 font-semibold mt-1 leading-tight">{kpi.label}</p>
                     </motion.div>
                   ))}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                   {/* Grade Distribution Chart */}
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                    className="glass-card rounded-2xl p-6"
+                    className="glass-card rounded-2xl p-4 md:p-6"
                   >
                     <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2">
                       <PieChart size={18} className="text-purple-500"/> {lang === 'ar' ? 'توزيع الدرجات' : 'Grade Distribution'}

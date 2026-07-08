@@ -80,7 +80,7 @@ export default function Hero() {
 
   return (
     <div 
-      className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden"
+      className="relative min-h-screen flex items-end md:items-center justify-center pt-20 pb-24 md:pb-0 overflow-hidden"
       onMouseMove={handleMouseMove}
     >
       <AnimatePresence mode="popLayout">
@@ -106,15 +106,15 @@ export default function Hero() {
         }}
         transition={{ type: "spring", stiffness: 75, damping: 15 }}
       >
-        {/* Removed the black background card completely. Text floats freely. */}
-        <div className="max-w-5xl mx-auto text-center p-4">
+        {/* Mobile: bottom-aligned and left-aligned, Desktop: centered */}
+        <div className="max-w-5xl mx-auto text-left rtl:text-right md:text-center p-4">
           
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 backdrop-blur-md text-blue-100 font-bold text-sm mb-8 border border-blue-400/30 shadow-lg">
+          <div className="inline-flex items-center justify-start md:justify-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 backdrop-blur-md text-blue-100 font-bold text-sm mb-6 border border-blue-400/30 shadow-lg">
             <Globe size={18} />
             {lang === 'ar' ? 'واجهة عالمية للابتكار' : 'Global Interface for Innovation'}
           </div>
 
-          <div className="h-32 sm:h-40 md:h-48 flex items-center justify-center mb-6">
+          <div className="h-40 sm:h-40 md:h-48 flex items-end md:items-center justify-start md:justify-center mb-4">
             <AnimatePresence mode="wait">
               <motion.h1
                 key={titleIndex}
@@ -130,13 +130,13 @@ export default function Hero() {
             </AnimatePresence>
           </div>
 
-          <p className="text-lg md:text-2xl text-gray-200 max-w-4xl mx-auto mb-12 leading-relaxed font-semibold drop-shadow-lg">
+          <p className="text-lg md:text-2xl text-gray-200 max-w-4xl mx-auto mb-8 md:mb-12 leading-relaxed font-semibold drop-shadow-lg">
             {lang === 'ar' 
               ? 'نجمع نخبة المهندسين والمبدعين لتطوير مشاريع رائدة تسهم في التحول الرقمي والتكنولوجي، برؤية وطنية طموحة وبصمة عالمية مؤثرة تصنع المستقبل.' 
               : 'Uniting elite engineers and creators to develop pioneering projects contributing to digital and technological transformation, with an ambitious national vision shaping the future globally.'}
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
+          <div className="flex flex-col sm:flex-row items-stretch md:items-center justify-start md:justify-center gap-5">
             <button 
               onClick={() => navigate('/projects-hub')}
               className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:-translate-y-1"
