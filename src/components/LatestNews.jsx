@@ -16,15 +16,15 @@ const LatestNews = () => {
     .slice(0, 4);
 
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="py-10 md:py-24 relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/10 blur-[100px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none" />
       
       <div className="container-custom relative z-10 px-4">
-        <div className="flex justify-between items-end mb-10">
+        <div className="flex justify-between items-end mb-6 md:mb-10">
           <div>
-            <h2 className="text-4xl font-bold font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-400 mb-2 drop-shadow-sm">
+            <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-400 mb-2 drop-shadow-sm">
               {lang === 'ar' ? 'آخر الأخبار' : 'Latest News'}
             </h2>
             <div className="w-24 h-1.5 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full shadow-[0_0_10px_rgba(20,184,166,0.5)]"></div>
@@ -61,8 +61,8 @@ const LatestNews = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
                 
                 {/* Title overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                  <h3 className="text-2xl font-bold text-white mb-2 line-clamp-2">
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 translate-y-2 md:translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                  <h3 className="text-xl md:text-2xl font-bold text-white mb-1 md:mb-2 line-clamp-2">
                     {item.title_ar || item.title_en || item.title?.en || item.title}
                   </h3>
                 </div>

@@ -85,11 +85,11 @@ export default function EventsPage() {
   const currentEvents = filteredEvents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+    <div className="min-h-screen pt-24 md:pt-32 pb-10 md:pb-20 px-4 md:px-8 max-w-7xl mx-auto">
       
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4">
+      <div className="text-center max-w-3xl mx-auto mb-8 md:mb-16">
+        <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-4">
           {lang === 'ar' ? 'اكتشف الفعاليات القادمة' : 'Discover Upcoming Events'}
         </h2>
         <div className="w-24 h-1.5 bg-gradient-to-r from-teal-500 to-cyan-500 mx-auto mb-6 rounded-full"></div>
@@ -101,7 +101,7 @@ export default function EventsPage() {
       </div>
 
       {/* Search */}
-      <div className="max-w-2xl mx-auto mb-12">
+      <div className="max-w-2xl mx-auto mb-8 md:mb-12">
         <SearchBar 
           value={searchQuery}
           onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
@@ -122,9 +122,9 @@ export default function EventsPage() {
           </h3>
         </div>
       ) : (
-        <div className="flex flex-col gap-10 items-center">
+        <div className="flex flex-col gap-8 md:gap-10 items-center">
           <div className="max-w-6xl w-full mx-auto">
-            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             <AnimatePresence>
               {currentEvents.map((evt) => (
                 <motion.div

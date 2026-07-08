@@ -103,10 +103,10 @@ export default function About() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gitm-red/10 text-gitm-red font-bold text-sm mb-6 border border-gitm-red/20">
             {lang === 'ar' ? 'منظمة وطنية ذات رؤية عالمية' : 'National Organization, Global Vision'}
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gitm-textLight dark:text-white mb-8">
+          <h1 className="text-3xl md:text-6xl font-bold tracking-tight text-gitm-textLight dark:text-white mb-4 md:mb-8">
             {lang === 'ar' ? 'نصنع التكنولوجيا من المغرب إلى العالم' : 'Building Tech from Morocco to the World'}
           </h1>
-          <p className="text-xl md:text-2xl text-gitm-mutedLight dark:text-gitm-mutedDark leading-relaxed">
+          <p className="text-lg md:text-2xl text-gitm-mutedLight dark:text-gitm-mutedDark leading-relaxed">
             {lang === 'ar' 
               ? 'المجموعة المغربية للابتكار التكنولوجي (GITM) تقود التحول الرقمي بالتعاون مع كبرى المؤسسات وتفتح آفاقاً للشباب المغربي للتألق في الجامعات العالمية.' 
               : 'The Moroccan Group for Technological Innovation (GITM) leads digital transformation and opens horizons for Moroccan youth globally.'}
@@ -114,10 +114,10 @@ export default function About() {
         </motion.div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-20">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="tilt-card p-8 group border-t-4 border-gitm-red bg-white dark:bg-gitm-cardDark shadow-soft"
+            className="tilt-card p-6 md:p-8 group border-t-4 border-gitm-red bg-white dark:bg-gitm-cardDark shadow-soft"
           >
             <div className="w-16 h-16 rounded-2xl bg-gitm-red/10 flex items-center justify-center text-gitm-red mb-6 group-hover:scale-110 transition-transform">
               <Target size={32} />
@@ -130,7 +130,7 @@ export default function About() {
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="tilt-card p-8 group border-t-4 border-gitm-green bg-white dark:bg-gitm-cardDark shadow-soft"
+            className="tilt-card p-6 md:p-8 group border-t-4 border-gitm-green bg-white dark:bg-gitm-cardDark shadow-soft"
           >
             <div className="w-16 h-16 rounded-2xl bg-gitm-green/10 flex items-center justify-center text-gitm-green mb-6 group-hover:scale-110 transition-transform">
               <Flag size={32} />
@@ -143,7 +143,7 @@ export default function About() {
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="tilt-card p-8 group border-t-4 border-black dark:border-white bg-white dark:bg-gitm-cardDark shadow-soft"
+            className="tilt-card p-6 md:p-8 group border-t-4 border-black dark:border-white bg-white dark:bg-gitm-cardDark shadow-soft"
           >
             <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gitm-textLight dark:text-white mb-6 group-hover:scale-110 transition-transform">
               <Library size={32} />
@@ -158,30 +158,11 @@ export default function About() {
         {/* Impact Stats */}
         <motion.div 
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          className="tilt-card bg-[#111] border border-gitm-borderDark p-12 md:p-20 text-center relative overflow-hidden"
+          className="tilt-card bg-[#111] border border-gitm-borderDark p-8 md:p-20 text-center relative overflow-hidden"
         >
           {/* Subtle gradient inside */}
           <div className="absolute inset-0 bg-gradient-to-r from-gitm-red/20 via-transparent to-gitm-green/20 pointer-events-none" />
           
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-16 relative z-10">{lang === 'ar' ? 'أرقامنا وإنجازاتنا' : 'Our Impact'}</h2>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 relative z-10">
-            <div className="flex flex-col items-center">
-              <div className="p-4 bg-gitm-red/20 rounded-full mb-6">
-                <Rocket size={48} className="text-gitm-red" />
-              </div>
-              <span className="text-6xl font-bold text-white mb-4">{aboutData?.stats?.founded || '2026'}</span>
-              <span className="text-xl text-gray-400 font-bold">{lang === 'ar' ? 'الانطلاقة' : 'Launch'}</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="p-4 bg-white/10 rounded-full mb-6">
-                <Activity size={48} className="text-white" />
-              </div>
-              <span className="text-6xl font-bold text-white mb-4">{aboutData?.stats?.projects || '15+'}</span>
-              <span className="text-xl text-gray-400 font-bold">{lang === 'ar' ? 'مشروع ابتكاري' : 'Projects'}</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="p-4 bg-gitm-green/20 rounded-full mb-6">
                 <Users size={48} className="text-gitm-green" />
               </div>
               <span className="text-6xl font-bold text-white mb-4">{aboutData?.stats?.members || '500+'}</span>

@@ -375,17 +375,17 @@ export default function Academy() {
         
         {/* Sidebar Filters */}
         <div className="w-full lg:w-64 shrink-0">
-           <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm sticky top-24">
+           <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 md:p-6 border border-slate-200 dark:border-slate-800 shadow-sm sticky top-24">
               <div className="flex items-center gap-2 mb-6 text-slate-800 dark:text-white">
                 <Filter size={20} />
                 <h3 className="font-bold text-lg">{lang === 'ar' ? 'تصفية النتائج' : 'Filters'}</h3>
               </div>
               
               <div className="mb-8">
-                <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+                <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 md:mb-3">
                   {lang === 'ar' ? 'التخصصات' : 'Categories'}
                 </h4>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-row flex-wrap lg:flex-col gap-2 md:gap-2">
                    {categories.map(cat => (
                      <label key={cat} className="flex items-center gap-3 cursor-pointer group">
                         <input 
@@ -404,10 +404,10 @@ export default function Academy() {
               </div>
 
               <div>
-                <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+                <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 md:mb-3 mt-4 lg:mt-0">
                   {lang === 'ar' ? 'المستوى' : 'Level'}
                 </h4>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-row flex-wrap lg:flex-col gap-2 md:gap-2">
                    {levels.map(lvl => (
                      <label key={lvl} className="flex items-center gap-3 cursor-pointer group">
                         <input 

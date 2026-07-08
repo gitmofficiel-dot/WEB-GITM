@@ -73,7 +73,7 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className="min-h-screen grid-bg py-24 px-6 md:px-12 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen grid-bg py-12 md:py-24 px-4 md:px-12 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto relative z-10">
         
         {/* Header */}
@@ -92,7 +92,7 @@ export default function GalleryPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-6xl font-bold mb-6 font-orbitron gradient-text"
+            className="text-3xl md:text-6xl font-bold mb-4 md:mb-6 font-orbitron gradient-text"
           >
             {lang === 'ar' ? 'التقاط الابتكار' : lang === 'fr' ? 'Capturer l\'Innovation' : 'Capturing Innovation'}
           </motion.h1>

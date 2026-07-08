@@ -36,20 +36,20 @@ const Section = ({ title, subtitle, icon: Icon, children, bgClass, linkText, lin
   }
   
   return (
-    <section className={`w-full py-20 relative ${bgClass}`}>
+    <section className={`w-full py-10 md:py-20 relative ${bgClass}`}>
       <div className="container mx-auto max-w-7xl relative z-10 px-4">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-12 gap-4 md:gap-6">
           <div className="flex-1">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3 mb-2 md:mb-4">
               <div className={`p-3 rounded-xl ${accentBg} backdrop-blur-sm`}>
                 <Icon size={28} className={accentColor} />
               </div>
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-gitm-textLight dark:text-white drop-shadow-md">
+              <h2 className="text-2xl md:text-5xl font-bold tracking-tight text-gitm-textLight dark:text-white drop-shadow-md">
                 {title}
               </h2>
             </div>
             {subtitle && (
-              <p className="text-gray-800 dark:text-gray-200 text-lg max-w-3xl rtl:ml-0 font-medium drop-shadow">
+              <p className="text-gray-800 dark:text-gray-200 text-sm md:text-lg max-w-3xl rtl:ml-0 font-medium drop-shadow mt-1 md:mt-0">
                 {subtitle}
               </p>
             )}
@@ -89,7 +89,7 @@ export default function Home() {
         linkText={lang === 'ar' ? 'تصفح كل الأخبار' : 'Browse All News'}
         linkUrl="/news"
       >
-        <div className="glass-card p-6 md:p-8 rounded-3xl shadow-xl">
+        <div className="glass-card p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-xl">
           <LatestNews />
         </div>
       </Section>
