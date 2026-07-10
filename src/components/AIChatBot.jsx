@@ -217,7 +217,7 @@ const AIChatBot = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 rtl:left-6 rtl:right-auto z-50">
+    <div className="fixed bottom-24 md:bottom-6 right-6 rtl:left-6 rtl:right-auto z-[60]">
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
