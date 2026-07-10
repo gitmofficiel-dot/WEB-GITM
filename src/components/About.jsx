@@ -246,13 +246,13 @@ export default function About() {
                     <img src={member.image} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
-                  <div className="p-6">
-                    <h4 className="text-xl font-bold text-gitm-textLight dark:text-white mb-1">{lang === 'ar' ? member.name_ar : member.name}</h4>
-                    <p className="text-gitm-green font-medium text-sm mb-4">{lang === 'ar' ? member.role_ar : member.role}</p>
-                    <div className="flex items-center gap-2 text-sm text-gitm-mutedLight dark:text-gitm-mutedDark bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg">
-                      <Activity size={16} className="text-gitm-red" />
+                  <div className="p-4 md:p-6">
+                    <h4 className="text-lg md:text-xl font-bold text-gitm-textLight dark:text-white mb-1 truncate">{lang === 'ar' ? member.name_ar : member.name}</h4>
+                    <p className="text-gitm-red font-medium text-xs md:text-sm mb-3 md:mb-4 truncate">{lang === 'ar' ? member.role_ar : member.role}</p>
+                    <div className="flex items-center gap-1 md:gap-2 text-[10px] md:text-sm text-gitm-mutedLight dark:text-gitm-mutedDark bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg justify-center md:justify-start">
+                      <Activity size={14} className="text-gitm-green shrink-0" />
                       <span className="font-bold">{member.projectsCount}</span>
-                      <span>{lang === 'ar' ? 'مشاريع شارك فيها' : 'Projects Participated'}</span>
+                      <span className="truncate">{lang === 'ar' ? 'مشاريع' : 'Projects'}</span>
                     </div>
                   </div>
                 </motion.div>
