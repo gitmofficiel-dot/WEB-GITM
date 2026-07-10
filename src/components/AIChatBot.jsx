@@ -240,7 +240,7 @@ const AIChatBot = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-20 right-0 rtl:left-0 rtl:right-auto w-80 sm:w-96 h-[500px] bg-white dark:bg-slate-900 flex flex-col overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 rounded-3xl origin-bottom-right rtl:origin-bottom-left animate-in zoom-in-95 duration-200">
+        <div className="absolute bottom-20 right-0 rtl:left-0 rtl:right-auto w-[calc(100vw-3rem)] sm:w-96 h-[65vh] sm:h-[500px] min-h-[400px] max-h-[600px] bg-white dark:bg-slate-900 flex flex-col overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 rounded-3xl origin-bottom-right rtl:origin-bottom-left animate-in zoom-in-95 duration-200">
           {/* Header */}
           <div className="px-5 py-4 bg-gradient-to-r from-teal-500 to-blue-600 text-white flex items-center justify-between">
             <div className="flex items-center gap-3">

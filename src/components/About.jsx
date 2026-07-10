@@ -158,34 +158,34 @@ export default function About() {
         {/* Impact Stats */}
         <motion.div 
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          className="tilt-card bg-[#111] border border-gitm-borderDark p-8 md:p-20 text-center relative overflow-hidden"
+          className="tilt-card border border-gitm-borderDark p-8 md:p-20 text-center relative overflow-hidden"
         >
           {/* Subtle gradient inside */}
           <div className="absolute inset-0 bg-gradient-to-r from-gitm-red/20 via-transparent to-gitm-green/20 pointer-events-none" />
           
-          <h2 className="text-2xl md:text-4xl font-bold text-white mb-10 md:mb-16 relative z-10">{lang === 'ar' ? 'أرقامنا وإنجازاتنا' : 'Our Impact'}</h2>
+          <h2 className="text-2xl md:text-4xl font-bold text-gitm-textLight dark:text-white mb-10 md:mb-16 relative z-10">{lang === 'ar' ? 'أرقامنا وإنجازاتنا' : 'Our Impact'}</h2>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-12 relative z-10">
             <div className="flex flex-col items-center">
               <div className="p-3 md:p-4 bg-gitm-red/20 rounded-full mb-4 md:mb-6">
                 <Rocket size={36} className="text-gitm-red md:w-12 md:h-12" />
               </div>
-              <span className="text-4xl md:text-6xl font-bold text-white mb-2 md:mb-4">{aboutData?.stats?.founded || '2026'}</span>
-              <span className="text-lg md:text-xl text-gray-400 font-bold">{lang === 'ar' ? 'الانطلاقة' : 'Launch'}</span>
+              <span className="text-4xl md:text-6xl font-bold text-gitm-textLight dark:text-white mb-2 md:mb-4">{aboutData?.stats?.founded || '2026'}</span>
+              <span className="text-lg md:text-xl text-gitm-mutedLight dark:text-gray-400 font-bold">{lang === 'ar' ? 'الانطلاقة' : 'Launch'}</span>
             </div>
             <div className="flex flex-col items-center">
-              <div className="p-3 md:p-4 bg-white/10 rounded-full mb-4 md:mb-6">
-                <Activity size={36} className="text-white md:w-12 md:h-12" />
+              <div className="p-3 md:p-4 bg-slate-200 dark:bg-white/10 rounded-full mb-4 md:mb-6">
+                <Activity size={36} className="text-gitm-textLight dark:text-white md:w-12 md:h-12" />
               </div>
-              <span className="text-4xl md:text-6xl font-bold text-white mb-2 md:mb-4">{aboutData?.stats?.projects || '15+'}</span>
-              <span className="text-lg md:text-xl text-gray-400 font-bold">{lang === 'ar' ? 'مشروعاً مبتكراً' : 'Innovative Projects'}</span>
+              <span className="text-4xl md:text-6xl font-bold text-gitm-textLight dark:text-white mb-2 md:mb-4">{aboutData?.stats?.projects || '15+'}</span>
+              <span className="text-lg md:text-xl text-gitm-mutedLight dark:text-gray-400 font-bold">{lang === 'ar' ? 'مشروعاً مبتكراً' : 'Innovative Projects'}</span>
             </div>
             <div className="flex flex-col items-center">
               <div className="p-3 md:p-4 bg-gitm-green/20 rounded-full mb-4 md:mb-6">
                 <Users size={36} className="text-gitm-green md:w-12 md:h-12" />
               </div>
-              <span className="text-4xl md:text-6xl font-bold text-white mb-2 md:mb-4">{aboutData?.stats?.members || '500+'}</span>
-              <span className="text-lg md:text-xl text-gray-400 font-bold">{lang === 'ar' ? 'عضو أكاديمي' : 'Academic Members'}</span>
+              <span className="text-4xl md:text-6xl font-bold text-gitm-textLight dark:text-white mb-2 md:mb-4">{aboutData?.stats?.members || '500+'}</span>
+              <span className="text-lg md:text-xl text-gitm-mutedLight dark:text-gray-400 font-bold">{lang === 'ar' ? 'عضو أكاديمي' : 'Academic Members'}</span>
             </div>
           </div>
         </motion.div>

@@ -431,7 +431,7 @@ export default function UserProfileSettings({ currentUser: propUser }) {
               </div>
             </div>
           ) : (
-            <div className="glass-card rounded-3xl p-8 text-center max-w-lg w-full">
+            <div className="glass-card rounded-3xl p-4 md:p-8 text-center max-w-lg w-full">
               <Award className="w-16 h-16 text-slate-400 mx-auto mb-4" />
               <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-2">
                 {lang === 'ar' ? 'لا توجد عضوية نشطة' : 'No Active Membership'}

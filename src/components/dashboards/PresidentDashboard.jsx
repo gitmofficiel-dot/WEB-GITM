@@ -488,7 +488,7 @@ export default function PresidentDashboard() {
                   <StatCard title={lang === 'ar' ? 'المقالات والأخبار' : 'News Articles'} value={news.length.toString()} icon={Newspaper} color="pink" trend="+2%" />
                 </div>
 
-                <div className="glass-card rounded-3xl p-8 border-pink-500/30 shadow-[0_0_30px_rgba(236,72,153,0.1)] bg-gradient-to-br from-white to-pink-50 dark:from-slate-900 dark:to-pink-950/20 relative overflow-hidden">
+                <div className="glass-card rounded-3xl p-5 md:p-8 border-pink-500/30 shadow-[0_0_30px_rgba(236,72,153,0.1)] bg-gradient-to-br from-white to-pink-50 dark:from-slate-900 dark:to-pink-950/20 relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-8 opacity-5"><Bot size={150} /></div>
                   <div className="flex justify-between items-center mb-6 relative z-10">
                     <div className="flex items-center gap-3">
@@ -517,7 +517,7 @@ export default function PresidentDashboard() {
             {/* STRATEGIC VISION TAB */}
             {activeTab === 'vision' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-8 border-t-4 border-cyan-500">
+                <div className="glass-card rounded-3xl p-5 md:p-8 border-t-4 border-cyan-500">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-2xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
                       <Target className="text-cyan-500" size={28}/> {lang === 'ar' ? 'الأهداف الاستراتيجية لـ GITM' : 'GITM Strategic Goals'}
@@ -568,7 +568,7 @@ export default function PresidentDashboard() {
             {/* ABOUT US CMS TAB */}
             {activeTab === 'about_cms' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-6 border-t-4 border-cyan-500">
+                <div className="glass-card rounded-3xl p-4 md:p-8 border-t-4 border-emerald-500">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
                       <Info className="text-cyan-500" size={24}/> {lang === 'ar' ? 'نظام إدارة محتوى (من نحن)' : 'About Us Content Management'}
@@ -619,7 +619,7 @@ export default function PresidentDashboard() {
             {/* MEMBERS TAB (ROLE MANAGEMENT) */}
             {activeTab === 'members' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-6 border-l-4 border-blue-500">
+                <div className="glass-card rounded-3xl p-4 md:p-8 border-t-4 border-blue-500">
                   <div className="flex justify-between items-center mb-6">
                     <div>
                       <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white mb-1">
