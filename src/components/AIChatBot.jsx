@@ -209,6 +209,18 @@ const AIChatBot = () => {
       const responseText = await chatWithGitmai(history, selectedModel, globalContext);
       
       setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: responseText, time: new Date() }]);
+
+      // Voice Feature: Read response out loud
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Stop any previous speech
+        const utterance = new SpeechSynthesisUtterance(responseText);
+        utterance.lang = lang === 'ar' ? 'ar-SA' : 'en-US';
+        // Try to select a natural voice if available
+        const voices = window.speechSynthesis.getVoices();
+        const targetVoice = voices.find(v => v.lang.startsWith(lang === 'ar' ? 'ar' : 'en'));
+        if (targetVoice) utterance.voice = targetVoice;
+        window.speechSynthesis.speak(utterance);
+      }
     } catch (error) {
       setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: lang === 'ar' ? 'عذراً، حدث خطأ أثناء الاتصال بالخادم.' : 'Sorry, an error occurred while connecting to the server.', time: new Date() }]);
     } finally {

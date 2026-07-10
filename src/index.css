@@ -23,12 +23,12 @@ html {
 /* Global Mobile Responsiveness Scaling */
 @media (max-width: 480px) {
   html {
-    font-size: 13px; /* Scales down all text, padding, and margins on small phones */
+    font-size: 11px; /* Scales down all text, padding, and margins on small phones */
   }
 }
 @media (min-width: 481px) and (max-width: 768px) {
   html {
-    font-size: 14px; /* Scales down for large phones and small tablets */
+    font-size: 12.5px; /* Scales down for large phones and small tablets */
   }
 }
 @media (min-width: 769px) and (max-width: 1024px) {
