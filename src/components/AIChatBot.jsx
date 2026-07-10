@@ -199,10 +199,10 @@ const AIChatBot = () => {
 
       // Compile global context for AI
       const globalContext = `
-      Team Members: ${users?.filter(u => u.isTeamMember).map(u => `${u.name || u.firstName} (${u.role}) - ${u.bio || ''}`).join(' | ') || 'None'}
-      Courses: ${courses?.map(c => `${c.title?.en || c.title_en || c.title_ar || c.title} (Instructor: ${typeof c.instructor === 'object' ? (c.instructor.en || c.instructor.ar) : c.instructor})`).join(' | ') || 'None'}
-      News: ${news?.map(n => n.title?.en || n.title_en || n.title_ar).join(' | ') || 'None'}
-      Events: ${events?.map(e => e.title?.en || e.title_en || e.title_ar).join(' | ') || 'None'}
+      Team Members: ${users?.filter(u => u.isTeamMember)?.map(u => `${u.name || u.firstName} (${u.role}) - ${u.bio || ''}`)?.join(' | ') || 'None'}
+      Courses: ${courses?.map(c => `${c.title?.en || c.title_en || c.title_ar || c.title} (Instructor: ${typeof c.instructor === 'object' ? (c.instructor.en || c.instructor.ar) : c.instructor})`)?.join(' | ') || 'None'}
+      News: ${news?.map(n => n.title?.en || n.title_en || n.title_ar)?.join(' | ') || 'None'}
+      Events: ${events?.map(e => e.title?.en || e.title_en || e.title_ar)?.join(' | ') || 'None'}
       `;
 
       // Call GITM AI
