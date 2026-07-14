@@ -121,11 +121,11 @@ export default function NewsPage() {
   const currentNews = filteredNews.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+    <div className="min-h-screen pt-24 md:pt-32 pb-10 md:pb-20 px-4 md:px-8 max-w-7xl mx-auto">
       
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4">
+      <div className="text-center max-w-3xl mx-auto mb-8 md:mb-16">
+        <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-3 md:mb-4">
           {lang === 'ar' ? 'أحدث الإعلانات والأخبار' : 'Latest Announcements & News'}
         </h2>
         <div className="w-24 h-1.5 bg-gradient-to-r from-teal-500 to-cyan-500 mx-auto mb-6 rounded-full"></div>
@@ -137,29 +137,29 @@ export default function NewsPage() {
       </div>
 
       {/* Search & Toggle */}
-      <div className="max-w-2xl mx-auto mb-12 flex flex-col items-center gap-6">
-        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
+      <div className="max-w-2xl mx-auto mb-8 md:mb-12 flex flex-col items-center gap-4 md:gap-6">
+        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl md:rounded-2xl w-full sm:w-auto">
           <button
             onClick={() => { setNewsType('local'); setCurrentPage(1); setSearchQuery(''); }}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${
+            className={`flex items-center justify-center gap-1.5 md:gap-2 flex-1 sm:flex-none px-4 md:px-6 py-2.5 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-sm transition-all ${
               newsType === 'local' 
                 ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' 
                 : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
             }`}
           >
-            <Home size={18} />
-            {lang === 'ar' ? 'أخبار الأكاديمية' : 'GITM News'}
+            <Home size={16} />
+            {lang === 'ar' ? 'أخبار GITM' : 'GITM News'}
           </button>
           <button
             onClick={() => { setNewsType('global'); setCurrentPage(1); setSearchQuery(''); }}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${
+            className={`flex items-center justify-center gap-1.5 md:gap-2 flex-1 sm:flex-none px-4 md:px-6 py-2.5 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-sm transition-all ${
               newsType === 'global' 
                 ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' 
                 : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
             }`}
           >
-            <Globe size={18} />
-            {lang === 'ar' ? 'الأخبار العالمية' : 'Global Tech News'}
+            <Globe size={16} />
+            {lang === 'ar' ? 'أخبار عالمية' : 'Global News'}
           </button>
         </div>
 
@@ -185,7 +185,7 @@ export default function NewsPage() {
       ) : (
         <div className="flex flex-col gap-10 items-center">
           <div className="max-w-6xl w-full mx-auto">
-            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             <AnimatePresence>
               {currentNews.map((news) => (
                 <motion.div

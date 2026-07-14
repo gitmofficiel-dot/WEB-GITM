@@ -229,18 +229,18 @@ const AIChatBot = () => {
   };
 
   return (
-    <div className="fixed bottom-24 md:bottom-6 right-6 rtl:left-6 rtl:right-auto z-[60]">
+    <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 rtl:left-4 md:rtl:left-6 rtl:right-auto z-[60]">
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-xl ${isOpen ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/30' : 'bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-400 hover:to-blue-500 text-white shadow-teal-500/30'}`}
+        className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 shadow-xl ${isOpen ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/30' : 'bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-400 hover:to-blue-500 text-white shadow-teal-500/30'}`}
       >
-        {isOpen ? <X size={24} /> : <MessageCircle size={28} />}
+        {isOpen ? <X size={22} /> : <MessageCircle size={24} />}
       </button>
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-20 right-0 rtl:left-0 rtl:right-auto w-[calc(100vw-3rem)] sm:w-96 h-[65vh] sm:h-[500px] min-h-[400px] max-h-[600px] bg-white dark:bg-slate-900 flex flex-col overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 rounded-3xl origin-bottom-right rtl:origin-bottom-left animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 sm:absolute sm:inset-auto sm:bottom-20 sm:right-0 sm:rtl:left-0 sm:rtl:right-auto sm:w-96 sm:h-[500px] sm:min-h-[400px] sm:max-h-[600px] w-full h-full sm:rounded-3xl bg-white dark:bg-slate-900 flex flex-col overflow-hidden shadow-2xl border-0 sm:border sm:border-slate-200 sm:dark:border-slate-800 z-[70] sm:origin-bottom-right sm:rtl:origin-bottom-left animate-in zoom-in-95 duration-200">
           {/* Header */}
           <div className="px-5 py-4 bg-gradient-to-r from-teal-500 to-blue-600 text-white flex items-center justify-between">
             <div className="flex items-center gap-3">

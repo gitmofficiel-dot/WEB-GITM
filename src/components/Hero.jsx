@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { ArrowRight, Play, X, Globe, Cpu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Detect touch device
+const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 const titles = {
   ar: [
@@ -70,17 +73,18 @@ export default function Hero() {
     };
   }, []);
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback((e) => {
+    if (isTouchDevice()) return; // Skip 3D effect on touch devices
     const { clientX, clientY } = e;
     const { innerWidth, innerHeight } = window;
     const x = (clientX / innerWidth - 0.5) * 15; 
     const y = (clientY / innerHeight - 0.5) * -15;
     setMousePosition({ x, y });
-  };
+  }, []);
 
   return (
     <div 
-      className="relative min-h-screen flex items-end md:items-center justify-center pt-20 pb-24 md:pb-0 overflow-hidden"
+      className="relative min-h-[85vh] md:min-h-screen flex items-end md:items-center justify-center pt-16 md:pt-20 pb-20 md:pb-0 overflow-hidden"
       onMouseMove={handleMouseMove}
     >
       <AnimatePresence mode="popLayout">
@@ -100,21 +104,21 @@ export default function Hero() {
 
       <motion.div 
         className="container mx-auto px-4 z-10 perspective-1000"
-        animate={{ 
+        animate={isTouchDevice() ? {} : { 
           rotateY: mousePosition.x, 
           rotateX: mousePosition.y 
         }}
         transition={{ type: "spring", stiffness: 75, damping: 15 }}
       >
         {/* Mobile: bottom-aligned and left-aligned, Desktop: centered */}
-        <div className="max-w-5xl mx-auto text-left rtl:text-right md:text-center p-4">
+        <div className="max-w-5xl mx-auto text-left rtl:text-right md:text-center p-3 md:p-4">
           
-          <div className="inline-flex items-center justify-start md:justify-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 backdrop-blur-md text-blue-100 font-bold text-sm mb-6 border border-blue-400/30 shadow-lg">
-            <Globe size={18} />
+          <div className="inline-flex items-center justify-start md:justify-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-blue-500/20 backdrop-blur-md text-blue-100 font-bold text-xs md:text-sm mb-4 md:mb-6 border border-blue-400/30 shadow-lg">
+            <Globe size={16} className="md:w-[18px] md:h-[18px]" />
             {lang === 'ar' ? 'واجهة عالمية للابتكار' : 'Global Interface for Innovation'}
           </div>
 
-          <div className="h-40 sm:h-40 md:h-48 flex items-end md:items-center justify-start md:justify-center mb-4">
+          <div className="h-28 sm:h-36 md:h-48 flex items-end md:items-center justify-start md:justify-center mb-3 md:mb-4">
             <AnimatePresence mode="wait">
               <motion.h1
                 key={titleIndex}
@@ -122,7 +126,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
-                className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight text-white drop-shadow-2xl"
+                className="text-3xl sm:text-4xl md:text-7xl font-extrabold tracking-tight text-white drop-shadow-2xl leading-tight"
                 style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}
               >
                 {lang === 'ar' ? titles.ar[titleIndex] : titles.en[titleIndex]}
@@ -130,20 +134,20 @@ export default function Hero() {
             </AnimatePresence>
           </div>
 
-          <p className="text-lg md:text-2xl text-gray-200 max-w-4xl mx-auto mb-8 md:mb-12 leading-relaxed font-semibold drop-shadow-lg">
+          <p className="text-sm sm:text-base md:text-2xl text-gray-200 max-w-4xl mx-auto mb-6 md:mb-12 leading-relaxed font-semibold drop-shadow-lg">
             {lang === 'ar' 
-              ? 'نجمع نخبة المهندسين والمبدعين لتطوير مشاريع رائدة تسهم في التحول الرقمي والتكنولوجي، برؤية وطنية طموحة وبصمة عالمية مؤثرة تصنع المستقبل.' 
-              : 'Uniting elite engineers and creators to develop pioneering projects contributing to digital and technological transformation, with an ambitious national vision shaping the future globally.'}
+              ? 'نجمع نخبة المهندسين والمبدعين لتطوير مشاريع رائدة تسهم في التحول الرقمي والتكنولوجي.' 
+              : 'Uniting elite engineers and creators to develop pioneering projects contributing to digital and technological transformation.'}
           </p>
 
-          <div className="flex flex-col sm:flex-row items-stretch md:items-center justify-start md:justify-center gap-5">
+          <div className="flex flex-col sm:flex-row items-stretch md:items-center justify-start md:justify-center gap-3 md:gap-5">
             <button 
               onClick={() => navigate('/projects-hub')}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:-translate-y-1"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:-translate-y-1 active:scale-[0.98]"
             >
-              <Cpu size={22} />
+              <Cpu size={20} className="md:w-[22px] md:h-[22px]" />
               {lang === 'ar' ? 'اكتشف التقنيات' : 'Discover Tech'}
-              <ArrowRight size={20} className={lang === 'ar' ? 'rotate-180' : ''} />
+              <ArrowRight size={18} className={`md:w-5 md:h-5 ${lang === 'ar' ? 'rotate-180' : ''}`} />
             </button>
           </div>
         </div>

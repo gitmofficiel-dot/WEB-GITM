@@ -87,7 +87,7 @@ export default function About() {
   }
 
   return (
-    <div className="min-h-screen bg-gitm-light dark:bg-gitm-dark pt-32 pb-24 relative overflow-hidden">
+    <div className="min-h-screen bg-gitm-light dark:bg-gitm-dark pt-24 md:pt-32 pb-16 md:pb-24 relative overflow-hidden">
       
       {/* Math & Tech Overlay */}
       <div className="absolute inset-0 bg-math-overlay opacity-[0.03] dark:opacity-[0.02] pointer-events-none" />
@@ -98,15 +98,15 @@ export default function About() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center max-w-5xl mx-auto mb-20"
+          className="text-center max-w-5xl mx-auto mb-10 md:mb-20"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gitm-red/10 text-gitm-red font-bold text-sm mb-6 border border-gitm-red/20">
             {lang === 'ar' ? 'منظمة وطنية ذات رؤية عالمية' : 'National Organization, Global Vision'}
           </div>
-          <h1 className="text-3xl md:text-6xl font-bold tracking-tight text-gitm-textLight dark:text-white mb-4 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-6xl font-bold tracking-tight text-gitm-textLight dark:text-white mb-3 md:mb-8">
             {lang === 'ar' ? 'نصنع التكنولوجيا من المغرب إلى العالم' : 'Building Tech from Morocco to the World'}
           </h1>
-          <p className="text-lg md:text-2xl text-gitm-mutedLight dark:text-gitm-mutedDark leading-relaxed">
+          <p className="text-base md:text-2xl text-gitm-mutedLight dark:text-gitm-mutedDark leading-relaxed">
             {lang === 'ar' 
               ? 'المجموعة المغربية للابتكار التكنولوجي (GITM) تقود التحول الرقمي بالتعاون مع كبرى المؤسسات وتفتح آفاقاً للشباب المغربي للتألق في الجامعات العالمية.' 
               : 'The Moroccan Group for Technological Innovation (GITM) leads digital transformation and opens horizons for Moroccan youth globally.'}
@@ -114,7 +114,7 @@ export default function About() {
         </motion.div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-8 md:mb-20">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             className="tilt-card p-6 md:p-8 group border-t-4 border-gitm-red bg-white dark:bg-gitm-cardDark shadow-soft"
@@ -158,12 +158,12 @@ export default function About() {
         {/* Impact Stats */}
         <motion.div 
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          className="tilt-card border border-gitm-borderDark p-8 md:p-20 text-center relative overflow-hidden"
+          className="tilt-card border border-gitm-borderDark p-6 md:p-20 text-center relative overflow-hidden"
         >
           {/* Subtle gradient inside */}
           <div className="absolute inset-0 bg-gradient-to-r from-gitm-red/20 via-transparent to-gitm-green/20 pointer-events-none" />
           
-          <h2 className="text-2xl md:text-4xl font-bold text-gitm-textLight dark:text-white mb-10 md:mb-16 relative z-10">{lang === 'ar' ? 'أرقامنا وإنجازاتنا' : 'Our Impact'}</h2>
+          <h2 className="text-xl md:text-4xl font-bold text-gitm-textLight dark:text-white mb-6 md:mb-16 relative z-10">{lang === 'ar' ? 'أرقامنا وإنجازاتنا' : 'Our Impact'}</h2>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-12 relative z-10">
             <div className="flex flex-col items-center">
@@ -191,10 +191,10 @@ export default function About() {
         </motion.div>
 
         {/* Team Section */}
-        <div className="mt-32">
+        <div className="mt-16 md:mt-32">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-16"
+            className="text-center mb-8 md:mb-16"
           >
             <h2 className="text-3xl md:text-5xl font-bold text-gitm-textLight dark:text-white mb-6">
               {lang === 'ar' ? 'فريقنا المتميز' : 'Our Exceptional Team'}

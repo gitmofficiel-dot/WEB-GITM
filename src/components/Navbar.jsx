@@ -131,10 +131,10 @@ const Navbar = () => {
           </nav>
 
           {/* Right Controls */}
-          <div className="flex items-center gap-2 relative">
+          <div className="flex items-center gap-1 sm:gap-2 relative">
             
             {/* Search Bar */}
-            <div className="relative flex items-center">
+            <div className="relative hidden sm:flex items-center">
               <AnimatePresence>
                 {searchOpen && (
                   <motion.div 
@@ -312,15 +312,15 @@ const Navbar = () => {
             ) : (
               <button 
                 onClick={() => navigate('/login')}
-                className="bg-gitm-blue hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-bold ml-2 transition-colors"
+                className="bg-gitm-blue hover:bg-blue-700 text-white px-3 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold ml-1 sm:ml-2 transition-colors"
               >
-                {lang === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
+                {lang === 'ar' ? 'الدخول' : 'Sign In'}
               </button>
             )}
 
-            {/* Desktop only Menu Toggle (Hidden on mobile as we will use bottom nav) */}
-            <button className="hidden p-2 ml-1 text-gitm-textLight dark:text-gitm-textDark" onClick={() => setMobileOpen(true)}>
-              <Menu size={24} />
+            {/* Mobile Menu Toggle */}
+            <button className="md:hidden p-2 ml-1 text-gitm-textLight dark:text-gitm-textDark" onClick={() => setMobileOpen(true)}>
+              <Menu size={22} />
             </button>
           </div>
         </div>
@@ -337,28 +337,69 @@ const Navbar = () => {
             className="fixed inset-0 z-[60] bg-gitm-light dark:bg-gitm-dark flex flex-col"
           >
             <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gitm-borderDark">
-              <span className="font-bold text-xl">GITM Menu</span>
-              <button onClick={() => setMobileOpen(false)} className="p-2 bg-gray-200 dark:bg-gray-800 rounded-full">
+              <div className="flex items-center gap-3">
+                <img src="/logo.png" alt="GITM" className="h-8 object-contain" />
+                <span className="font-bold text-xl">GITM</span>
+              </div>
+              <button onClick={() => setMobileOpen(false)} className="p-2.5 bg-gray-200 dark:bg-gray-800 rounded-full active:scale-95 transition-transform">
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 flex flex-col gap-4 overflow-y-auto">
-              {navItems.map(item => (
-                <button 
-                  key={item.id} 
-                  onClick={() => { navigate(item.path); setMobileOpen(false); }} 
-                  className="text-lg font-bold text-left rtl:text-right p-4 rounded-xl bg-gray-50 dark:bg-gitm-cardDark"
-                >
-                  {lang === 'ar' ? item.label.ar : item.label.en}
-                </button>
-              ))}
+            <div className="p-5 flex flex-col gap-3 overflow-y-auto flex-1 scroll-container">
+              {/* Search Bar in Mobile Menu */}
+              <div className="relative mb-2">
+                <Search size={18} className="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 -translate-y-1/2 text-gray-400" />
+                <input 
+                  type="text" 
+                  placeholder={lang === 'ar' ? 'بحث...' : 'Search...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full p-3 pl-10 rtl:pr-10 rtl:pl-3 text-sm bg-gray-100 dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl text-gitm-textLight dark:text-gitm-textDark focus:ring-2 focus:ring-gitm-blue outline-none"
+                />
+              </div>
+
+              {navItems.map(item => {
+                const isActive = currentPath === item.path;
+                return (
+                  <button 
+                    key={item.id} 
+                    onClick={() => { navigate(item.path); setMobileOpen(false); }} 
+                    className={`text-base font-bold text-left rtl:text-right p-4 rounded-xl transition-colors active:scale-[0.98] ${
+                      isActive 
+                        ? 'bg-gitm-blue/10 dark:bg-gitm-blue/20 text-gitm-blue dark:text-gitm-cyan border border-gitm-blue/20' 
+                        : 'bg-gray-50 dark:bg-gitm-cardDark hover:bg-gray-100 dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    {lang === 'ar' ? item.label.ar : item.label.en}
+                  </button>
+                );
+              })}
               
-              <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gitm-borderDark grid grid-cols-2 gap-3">
-                <button onClick={() => changeLanguage('ar')} className={`py-3 text-center rounded-lg text-sm font-bold ${lang === 'ar' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>العربية</button>
-                <button onClick={() => changeLanguage('en')} className={`py-3 text-center rounded-lg text-sm font-bold ${lang === 'en' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>English</button>
-                <button onClick={() => changeLanguage('fr')} className={`py-3 text-center rounded-lg text-sm font-bold ${lang === 'fr' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>Français</button>
-                <button onClick={() => changeLanguage('zh')} className={`py-3 text-center rounded-lg text-sm font-bold ${lang === 'zh' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>中文</button>
-                <button onClick={() => changeLanguage('tzm')} className={`col-span-2 py-3 text-center rounded-lg text-sm font-bold ${lang === 'tzm' ? 'bg-gitm-blue text-white' : 'bg-gray-200 dark:bg-gray-800'}`}>ⵜⴰⵎⴰⵣⵉⵖⵜ</button>
+              {/* Theme Toggle in Mobile Menu */}
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gitm-borderDark">
+                <button 
+                  onClick={toggleTheme} 
+                  className="w-full flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gitm-cardDark"
+                >
+                  <span className="font-bold text-sm">{lang === 'ar' ? 'الوضع الليلي' : 'Dark Mode'}</span>
+                  <div className={`w-12 h-7 rounded-full relative transition-colors ${theme === 'dark' ? 'bg-gitm-blue' : 'bg-gray-300'}`}>
+                    <div className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform ${theme === 'dark' ? 'translate-x-5 rtl:-translate-x-5' : 'translate-x-0.5 rtl:-translate-x-0.5'}`} />
+                  </div>
+                </button>
+              </div>
+
+              {/* Language Selection */}
+              <div className="mt-2 pt-4 border-t border-gray-200 dark:border-gitm-borderDark">
+                <h4 className="text-xs font-bold text-gitm-mutedLight dark:text-gitm-mutedDark uppercase tracking-wider mb-3 px-1">
+                  {lang === 'ar' ? 'اختر اللغة' : 'Language'}
+                </h4>
+                <div className="grid grid-cols-3 gap-2">
+                  <button onClick={() => changeLanguage('ar')} className={`py-2.5 text-center rounded-lg text-sm font-bold transition-colors active:scale-95 ${lang === 'ar' ? 'bg-gitm-blue text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800'}`}>العربية</button>
+                  <button onClick={() => changeLanguage('en')} className={`py-2.5 text-center rounded-lg text-sm font-bold transition-colors active:scale-95 ${lang === 'en' ? 'bg-gitm-blue text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800'}`}>English</button>
+                  <button onClick={() => changeLanguage('fr')} className={`py-2.5 text-center rounded-lg text-sm font-bold transition-colors active:scale-95 ${lang === 'fr' ? 'bg-gitm-blue text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800'}`}>Français</button>
+                  <button onClick={() => changeLanguage('zh')} className={`py-2.5 text-center rounded-lg text-sm font-bold transition-colors active:scale-95 ${lang === 'zh' ? 'bg-gitm-blue text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800'}`}>中文</button>
+                  <button onClick={() => changeLanguage('tzm')} className={`col-span-2 py-2.5 text-center rounded-lg text-sm font-bold transition-colors active:scale-95 ${lang === 'tzm' ? 'bg-gitm-blue text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800'}`}>ⵜⴰⵎⴰⵣⵉⵖⵜ</button>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -366,22 +407,30 @@ const Navbar = () => {
       </AnimatePresence>
 
       {/* App-like Bottom Navigation for Mobile */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-lg border-t border-gray-200 dark:border-gitm-borderDark px-6 py-3 flex justify-between items-center shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
-        <button onClick={() => navigate('/')} className={`flex flex-col items-center gap-1 ${currentPath === '/' ? 'text-gitm-blue' : 'text-gray-500 dark:text-gray-400'}`}>
-          <Home size={22} className={currentPath === '/' ? 'fill-current' : ''} />
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-gray-200/80 dark:border-gitm-borderDark mobile-bottom-nav px-4 pt-2 pb-3 flex justify-around items-center shadow-[0_-4px_30px_rgba(0,0,0,0.12)]">
+        <button onClick={() => navigate('/')} className={`flex flex-col items-center gap-0.5 min-w-[56px] py-1 rounded-xl transition-colors active:scale-95 ${currentPath === '/' ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
+          <Home size={22} strokeWidth={currentPath === '/' ? 2.5 : 1.5} />
           <span className="text-[10px] font-bold">{lang === 'ar' ? 'الرئيسية' : 'Home'}</span>
+          {currentPath === '/' && <span className="mobile-nav-active-dot" />}
         </button>
-        <button onClick={() => navigate('/academy')} className={`flex flex-col items-center gap-1 ${currentPath === '/academy' ? 'text-gitm-blue' : 'text-gray-500 dark:text-gray-400'}`}>
-          <BookOpen size={22} className={currentPath === '/academy' ? 'fill-current' : ''} />
+        <button onClick={() => navigate('/news')} className={`flex flex-col items-center gap-0.5 min-w-[56px] py-1 rounded-xl transition-colors active:scale-95 ${currentPath.startsWith('/news') ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
+          <Compass size={22} strokeWidth={currentPath.startsWith('/news') ? 2.5 : 1.5} />
+          <span className="text-[10px] font-bold">{lang === 'ar' ? 'اكتشف' : 'Explore'}</span>
+          {currentPath.startsWith('/news') && <span className="mobile-nav-active-dot" />}
+        </button>
+        <button onClick={() => navigate('/academy')} className={`flex flex-col items-center gap-0.5 min-w-[56px] py-1 rounded-xl transition-colors active:scale-95 ${currentPath === '/academy' ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
+          <BookOpen size={22} strokeWidth={currentPath === '/academy' ? 2.5 : 1.5} />
           <span className="text-[10px] font-bold">{lang === 'ar' ? 'الأكاديمية' : 'Academy'}</span>
+          {currentPath === '/academy' && <span className="mobile-nav-active-dot" />}
         </button>
-        <button onClick={() => navigate('/events')} className={`flex flex-col items-center gap-1 ${currentPath === '/events' ? 'text-gitm-blue' : 'text-gray-500 dark:text-gray-400'}`}>
-          <Calendar size={22} className={currentPath === '/events' ? 'fill-current' : ''} />
+        <button onClick={() => navigate('/events')} className={`flex flex-col items-center gap-0.5 min-w-[56px] py-1 rounded-xl transition-colors active:scale-95 ${currentPath.startsWith('/events') ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
+          <Calendar size={22} strokeWidth={currentPath.startsWith('/events') ? 2.5 : 1.5} />
           <span className="text-[10px] font-bold">{lang === 'ar' ? 'الفعاليات' : 'Events'}</span>
+          {currentPath.startsWith('/events') && <span className="mobile-nav-active-dot" />}
         </button>
-        <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400">
-          <Menu size={22} />
-          <span className="text-[10px] font-bold">{lang === 'ar' ? 'المزيد' : 'Menu'}</span>
+        <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center gap-0.5 min-w-[56px] py-1 rounded-xl text-gray-400 dark:text-gray-500 active:scale-95 transition-transform">
+          <Menu size={22} strokeWidth={1.5} />
+          <span className="text-[10px] font-bold">{lang === 'ar' ? 'المزيد' : 'More'}</span>
         </button>
       </div>
     </>

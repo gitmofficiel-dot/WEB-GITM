@@ -140,7 +140,7 @@ const AppContent = () => {
         {!isTheaterMode && <GlobalSearch />}
         
         {/* Main Content Area */}
-        <main className={`flex-1 ${isTheaterMode ? 'w-full h-screen overflow-hidden' : 'mt-20 p-4 md:p-6 pb-24 max-w-7xl mx-auto w-full'}`}>
+        <main className={`flex-1 ${isTheaterMode ? 'w-full h-screen overflow-hidden' : 'mt-16 md:mt-20 p-3 md:p-6 pb-20 md:pb-24 max-w-7xl mx-auto w-full'}`}>
           <Suspense fallback={<LoadingFallback />}>
             {renderRoutes()}
           </Suspense>

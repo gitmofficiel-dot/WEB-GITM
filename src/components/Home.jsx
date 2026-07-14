@@ -36,15 +36,15 @@ const Section = ({ title, subtitle, icon: Icon, children, bgClass, linkText, lin
   }
   
   return (
-    <section className={`w-full py-10 md:py-20 relative ${bgClass}`}>
+    <section className={`w-full py-6 md:py-20 relative ${bgClass}`}>
       <div className="container mx-auto max-w-7xl relative z-10 px-4">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-12 gap-4 md:gap-6">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2 md:mb-4">
-              <div className={`p-3 rounded-xl ${accentBg} backdrop-blur-sm`}>
-                <Icon size={28} className={accentColor} />
+              <div className={`p-2.5 md:p-3 rounded-xl ${accentBg} backdrop-blur-sm`}>
+                <Icon size={22} className={`md:w-7 md:h-7 ${accentColor}`} />
               </div>
-              <h2 className="text-2xl md:text-5xl font-bold tracking-tight text-gitm-textLight dark:text-white drop-shadow-md">
+              <h2 className="text-xl md:text-5xl font-bold tracking-tight text-gitm-textLight dark:text-white drop-shadow-md">
                 {title}
               </h2>
             </div>
@@ -89,7 +89,7 @@ export default function Home() {
         linkText={lang === 'ar' ? 'تصفح كل الأخبار' : 'Browse All News'}
         linkUrl="/news"
       >
-        <div className="glass-card p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-xl">
+        <div className="glass-card p-3 md:p-8 rounded-2xl md:rounded-3xl shadow-xl">
           <LatestNews />
         </div>
       </Section>
@@ -104,7 +104,7 @@ export default function Home() {
         linkText={lang === 'ar' ? 'جدول الفعاليات' : 'Events Schedule'}
         linkUrl="/events"
       >
-        <div className="glass-card p-6 md:p-8 rounded-3xl shadow-xl">
+        <div className="glass-card p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-xl">
           <TechExhibitions />
         </div>
       </Section>
@@ -119,7 +119,7 @@ export default function Home() {
         linkText={lang === 'ar' ? 'استكشف المناهج' : 'Explore Curriculum'}
         linkUrl="/academy"
       >
-        <div className="glass-card p-6 md:p-10 rounded-3xl shadow-xl">
+        <div className="glass-card p-4 md:p-10 rounded-2xl md:rounded-3xl shadow-xl">
           <AcademySlider />
         </div>
       </Section>
@@ -134,7 +134,7 @@ export default function Home() {
         linkText={lang === 'ar' ? 'تعرف علينا' : 'About Us'}
         linkUrl="/about-us"
       >
-        <div className="glass-card p-6 md:p-8 rounded-3xl shadow-xl">
+        <div className="glass-card p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-xl">
           <TeamShowcase />
         </div>
       </Section>

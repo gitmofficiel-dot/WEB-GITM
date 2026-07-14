@@ -136,3 +136,94 @@ html[dir="rtl"] .max-w-7xl {
 }
 
 /* Removed bg-math-overlay as requested to prevent obscuring 3D elements */
+
+/* ========================================
+   MOBILE ENHANCEMENTS
+   ======================================== */
+
+/* Safe Area Insets for notched devices (iPhone X+, etc.) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: calc(70px + env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 768px) {
+    body {
+      padding-bottom: 0;
+    }
+  }
+}
+
+/* Extra-small screen scaling (iPhone SE, small Androids) */
+@media (max-width: 374px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+/* Touch interaction improvements */
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Prevent text selection on interactive elements on mobile */
+@media (hover: none) and (pointer: coarse) {
+  button, a, [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Mobile-optimized cards */
+@media (max-width: 640px) {
+  .tilt-card {
+    border-radius: 1rem;
+  }
+
+  .glass-card {
+    border-radius: 1rem !important;
+  }
+}
+
+/* Bottom nav safe area */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-bottom-nav {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* Mobile active indicator pulse */
+.mobile-nav-active-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: theme('colors.gitm.blue');
+  margin-top: 2px;
+  animation: navDotPulse 2s ease-in-out infinite;
+}
+
+@keyframes navDotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.5); }
+}
+
+/* Smooth scroll momentum for iOS */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+/* Mobile full-screen overlay */
+.mobile-fullscreen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+}
+
+/* Prevent body scroll when overlay is open */
+body.overlay-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
