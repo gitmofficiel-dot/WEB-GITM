@@ -107,6 +107,7 @@ const AppContent = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-certificate" element={<VerifyCertificate />} />
         <Route path="/library/book" element={<LibraryBookDetails />} />
+        <Route path="/dashboard" element={renderDashboard()} />
         <Route path="/dashboard/:hash" element={renderDashboard()} />
         <Route path="/editor/project/new" element={<SmartProjectBuilder standalone />} />
         <Route path="/editor/project/edit/:id" element={<SmartProjectBuilder standalone />} />

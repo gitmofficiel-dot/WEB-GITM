@@ -111,8 +111,7 @@ const ProjectsHub = () => {
       {/* Search */}
       <div className="max-w-2xl mx-auto mb-12">
         <SearchBar 
-          value={searchQuery}
-          onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+          onSearch={(val) => { setSearchQuery(val); setCurrentPage(1); }}
           placeholder={lang === 'ar' ? 'ابحث في الأفكار والمشاريع...' : 'Search ideas and projects...'}
         />
       </div>

@@ -103,8 +103,7 @@ export default function EventsPage() {
       {/* Search */}
       <div className="max-w-2xl mx-auto mb-8 md:mb-12">
         <SearchBar 
-          value={searchQuery}
-          onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+          onSearch={(val) => { setSearchQuery(val); setCurrentPage(1); }}
           placeholder={lang === 'ar' ? 'ابحث في الفعاليات...' : 'Search events...'}
         />
       </div>

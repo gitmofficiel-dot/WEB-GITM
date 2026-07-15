@@ -164,8 +164,7 @@ export default function NewsPage() {
         </div>
 
         <SearchBar 
-          value={searchQuery}
-          onChange={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+          onSearch={(val) => { setSearchQuery(val); setCurrentPage(1); }}
           placeholder={lang === 'ar' ? 'ابحث في الأخبار...' : 'Search news...'}
         />
       </div>
