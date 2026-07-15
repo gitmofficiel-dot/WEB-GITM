@@ -569,7 +569,7 @@ export default function ContentManagerDashboard() {
     <div className={`flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative ${lang === 'ar' ? 'md:flex-row-reverse' : ''}`}>
       <ConfirmDialogComponent />
       {/* Sidebar */}
-      <div className="w-full md:w-64 shrink-0">
+      <div className="w-full md:w-64 shrink-0 min-w-0">
         <div className="glass-card rounded-3xl p-4 sticky top-24 border border-rose-200 dark:border-rose-900/30 shadow-xl">
           <div className="mb-6 px-2">
             <h2 className="text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'مدير المحتوى' : 'Content Manager'}</h2>
@@ -600,7 +600,7 @@ export default function ContentManagerDashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 w-full min-w-0">
+      <div className="flex-1 w-full min-w-0 max-w-full">
         <AnimatePresence mode="wait">
           <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }} className="space-y-6">
 

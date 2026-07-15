@@ -94,8 +94,8 @@ export default function UniversityDashboard() {
   ];
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative">
-      <div className="w-full md:w-64 shrink-0">
+    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative w-full max-w-[100vw] overflow-x-hidden">
+      <div className="w-full md:w-64 shrink-0 min-w-0">
         <div className="glass-card rounded-3xl p-4 sticky top-24 border border-indigo-200 dark:border-indigo-900/30 shadow-xl">
           <div className="mb-6 px-2">
             <h2 className="text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'بوابة الجامعة' : 'University Portal'}</h2>
@@ -117,7 +117,7 @@ export default function UniversityDashboard() {
         </div>
       </div>
 
-      <div className="flex-1 w-full min-w-0">
+      <div className="flex-1 w-full min-w-0 max-w-full">
         <AnimatePresence mode="wait">
           <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
 

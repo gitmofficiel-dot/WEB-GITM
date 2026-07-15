@@ -432,10 +432,10 @@ export default function PresidentDashboard() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative">
+    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative w-full max-w-[100vw] overflow-x-hidden">
       
       {/* Sidebar Navigation */}
-      <div className="w-full md:w-64 shrink-0">
+      <div className="w-full md:w-64 shrink-0 min-w-0">
         <div className="glass-card rounded-3xl p-4 sticky top-24 border border-cyan-200 dark:border-slate-800 shadow-xl shadow-cyan-900/5">
           <div className="mb-4 md:mb-6 px-2 flex justify-between items-center md:block">
             <div>
@@ -443,7 +443,7 @@ export default function PresidentDashboard() {
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 hidden md:block">{lang === 'ar' ? 'نظام التحكم المركزي' : 'Central Control System'}</p>
             </div>
           </div>
-          <nav className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
+          <nav className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar w-full snap-x snap-mandatory">
             {tabs.map(tab => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -467,7 +467,7 @@ export default function PresidentDashboard() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 w-full min-w-0">
+      <div className="flex-1 w-full min-w-0 max-w-full">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}

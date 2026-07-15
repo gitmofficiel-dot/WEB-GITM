@@ -79,7 +79,7 @@ export default function StudentDashboard() {
   return (
     <div className={`flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative ${lang === 'ar' ? 'md:flex-row-reverse' : ''}`}>
       {/* Sidebar */}
-      <div className="w-full md:w-64 shrink-0">
+      <div className="w-full md:w-64 shrink-0 min-w-0">
         <div className="glass-card rounded-3xl p-4 sticky top-24 border border-cyan-200 dark:border-slate-800 shadow-xl">
           <div className="mb-4 md:mb-6 px-2 flex justify-between items-center md:block">
             <div>
@@ -87,7 +87,7 @@ export default function StudentDashboard() {
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 hidden md:block">{studentName}</p>
             </div>
           </div>
-          <nav className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
+          <nav className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar w-full snap-x snap-mandatory">
             {tabs.map(tab => {
               const Icon = tab.icon;
               return (
@@ -109,7 +109,7 @@ export default function StudentDashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 w-full min-w-0">
+      <div className="flex-1 w-full min-w-0 max-w-full">
         <AnimatePresence mode="wait">
           <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }} className="space-y-6">
 
