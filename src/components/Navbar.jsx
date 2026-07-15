@@ -283,7 +283,7 @@ const Navbar = () => {
                       <div className="fixed inset-0 z-40" onClick={() => setProfileDropdown(false)} />
                       <motion.div 
                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                        className="absolute top-full mt-2 right-0 w-56 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden py-2"
+                        className="absolute top-full mt-2 right-0 rtl:left-0 rtl:right-auto w-56 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden py-2"
                       >
                         <div className="px-4 py-2 border-b border-gray-100 dark:border-gitm-borderDark mb-2 flex items-center gap-3">
                           {user.photoURL ? (
@@ -298,7 +298,7 @@ const Navbar = () => {
                             <p className="text-xs text-gitm-mutedLight dark:text-gitm-mutedDark truncate">{user.email}</p>
                           </div>
                         </div>
-                        <button onClick={() => {navigate('/dashboard/user'); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <button onClick={() => {navigate('/dashboard'); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
                           <LayoutDashboard size={16} className="text-gitm-blue"/> {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
                         </button>
                         <button onClick={() => {logoutUser(); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 mt-1">
@@ -407,30 +407,30 @@ const Navbar = () => {
       </AnimatePresence>
 
       {/* App-like Bottom Navigation for Mobile */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-gray-200/80 dark:border-gitm-borderDark mobile-bottom-nav px-4 pt-2 pb-3 flex justify-around items-center shadow-[0_-4px_30px_rgba(0,0,0,0.12)]">
-        <button onClick={() => navigate('/')} className={`flex flex-col items-center gap-0.5 min-w-[56px] py-1 rounded-xl transition-colors active:scale-95 ${currentPath === '/' ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
-          <Home size={22} strokeWidth={currentPath === '/' ? 2.5 : 1.5} />
-          <span className="text-[10px] font-bold">{lang === 'ar' ? 'الرئيسية' : 'Home'}</span>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-gray-200/80 dark:border-gitm-borderDark mobile-bottom-nav px-2 sm:px-4 pt-2 pb-3 flex justify-between items-center shadow-[0_-4px_30px_rgba(0,0,0,0.12)]">
+        <button onClick={() => navigate('/')} className={`flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl transition-colors active:scale-95 ${currentPath === '/' ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
+          <Home size={20} strokeWidth={currentPath === '/' ? 2.5 : 1.5} />
+          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{lang === 'ar' ? 'الرئيسية' : 'Home'}</span>
           {currentPath === '/' && <span className="mobile-nav-active-dot" />}
         </button>
-        <button onClick={() => navigate('/news')} className={`flex flex-col items-center gap-0.5 min-w-[56px] py-1 rounded-xl transition-colors active:scale-95 ${currentPath.startsWith('/news') ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
-          <Compass size={22} strokeWidth={currentPath.startsWith('/news') ? 2.5 : 1.5} />
-          <span className="text-[10px] font-bold">{lang === 'ar' ? 'اكتشف' : 'Explore'}</span>
+        <button onClick={() => navigate('/news')} className={`flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl transition-colors active:scale-95 ${currentPath.startsWith('/news') ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
+          <Compass size={20} strokeWidth={currentPath.startsWith('/news') ? 2.5 : 1.5} />
+          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{lang === 'ar' ? 'اكتشف' : 'Explore'}</span>
           {currentPath.startsWith('/news') && <span className="mobile-nav-active-dot" />}
         </button>
-        <button onClick={() => navigate('/academy')} className={`flex flex-col items-center gap-0.5 min-w-[56px] py-1 rounded-xl transition-colors active:scale-95 ${currentPath === '/academy' ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
-          <BookOpen size={22} strokeWidth={currentPath === '/academy' ? 2.5 : 1.5} />
-          <span className="text-[10px] font-bold">{lang === 'ar' ? 'الأكاديمية' : 'Academy'}</span>
+        <button onClick={() => navigate('/academy')} className={`flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl transition-colors active:scale-95 ${currentPath === '/academy' ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
+          <BookOpen size={20} strokeWidth={currentPath === '/academy' ? 2.5 : 1.5} />
+          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{lang === 'ar' ? 'الأكاديمية' : 'Academy'}</span>
           {currentPath === '/academy' && <span className="mobile-nav-active-dot" />}
         </button>
-        <button onClick={() => navigate('/events')} className={`flex flex-col items-center gap-0.5 min-w-[56px] py-1 rounded-xl transition-colors active:scale-95 ${currentPath.startsWith('/events') ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
-          <Calendar size={22} strokeWidth={currentPath.startsWith('/events') ? 2.5 : 1.5} />
-          <span className="text-[10px] font-bold">{lang === 'ar' ? 'الفعاليات' : 'Events'}</span>
+        <button onClick={() => navigate('/events')} className={`flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl transition-colors active:scale-95 ${currentPath.startsWith('/events') ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
+          <Calendar size={20} strokeWidth={currentPath.startsWith('/events') ? 2.5 : 1.5} />
+          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{lang === 'ar' ? 'الفعاليات' : 'Events'}</span>
           {currentPath.startsWith('/events') && <span className="mobile-nav-active-dot" />}
         </button>
-        <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center gap-0.5 min-w-[56px] py-1 rounded-xl text-gray-400 dark:text-gray-500 active:scale-95 transition-transform">
-          <Menu size={22} strokeWidth={1.5} />
-          <span className="text-[10px] font-bold">{lang === 'ar' ? 'المزيد' : 'More'}</span>
+        <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl text-gray-400 dark:text-gray-500 active:scale-95 transition-transform">
+          <Menu size={20} strokeWidth={1.5} />
+          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{lang === 'ar' ? 'المزيد' : 'More'}</span>
         </button>
       </div>
     </>

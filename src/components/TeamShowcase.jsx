@@ -86,10 +86,10 @@ export default function TeamShowcase() {
               transition={{ duration: 0.3 }}
               key={member.id}
               onClick={() => navigate(`/profile/${member.id}`)}
-              className="tilt-card group overflow-hidden flex flex-col shadow-soft cursor-pointer hover:shadow-2xl transition-shadow"
+              className="tilt-card group overflow-hidden flex flex-col shadow-soft cursor-pointer hover:shadow-2xl transition-shadow max-w-[320px] mx-auto w-full sm:max-w-none"
             >
               {/* Colorful Image Header */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100 dark:bg-[#1a1a1a]">
+              <div className="relative aspect-square sm:aspect-[4/3] w-full overflow-hidden bg-gray-100 dark:bg-[#1a1a1a]">
                 <img
                   src={member.image}
                   alt={member.nameEn}

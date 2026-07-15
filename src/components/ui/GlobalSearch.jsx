@@ -102,7 +102,7 @@ export default function GlobalSearch() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 rtl:right-auto rtl:left-6 z-[90] flex items-center justify-center w-14 h-14 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white shadow-xl shadow-cyan-500/30 hover:scale-105 transition-all duration-300 group"
+        className="hidden md:flex fixed bottom-6 right-6 rtl:right-auto rtl:left-6 z-[90] items-center justify-center w-14 h-14 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white shadow-xl shadow-cyan-500/30 hover:scale-105 transition-all duration-300 group"
       >
         <Search size={24} className="group-hover:rotate-12 transition-transform" />
       </button>
