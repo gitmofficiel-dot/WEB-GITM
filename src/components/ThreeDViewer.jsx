@@ -76,10 +76,19 @@ const ThreeDViewer = ({ type = 'drone' }) => {
     camera.position.set(0, 3, 5);
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    containerRef.current.appendChild(renderer.domElement);
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      containerRef.current.appendChild(renderer.domElement);
+    } catch (e) {
+      console.warn("WebGL not supported for 3D Viewer:", e);
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '<div class="flex items-center justify-center w-full h-full text-[#8A99AD] text-sm text-center p-4">WebGL is not supported or hardware acceleration is disabled. 3D view unavailable.</div>';
+      }
+      return;
+    }
 
     // Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);

@@ -14,10 +14,16 @@ const ParticleBackground = () => {
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
     camera.position.z = 150;
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    mountRef.current.appendChild(renderer.domElement);
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      mountRef.current.appendChild(renderer.domElement);
+    } catch (e) {
+      console.warn("WebGL not supported, skipping particle background:", e);
+      return;
+    }
 
     // Particles
     const particleCount = 200;

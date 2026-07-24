@@ -5,6 +5,31 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { Box, Activity, Cpu, Wifi } from 'lucide-react';
 
+class WebGLErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.warn("WebGL Canvas crashed:", error);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="w-full h-full min-h-[400px] flex items-center justify-center text-slate-400 bg-[#0B132B]">
+          <p className="text-center px-4">
+            WebGL is not supported or hardware acceleration is disabled on your device.<br/>
+            3D Virtual Lab is unavailable.
+          </p>
+        </div>
+      );
+    }
+    return this.props.children; 
+  }
+}
 // A simple 3D component representing an IoT/Edge AI Node
 function TechNode({ position, color, label, icon: Icon, testData }) {
   const meshRef = useRef();
@@ -126,29 +151,31 @@ export default function VirtualLab() {
         </div>
 
         {/* 3D Canvas - Optimized for performance */}
-        <Canvas camera={{ position: [0, 2, 8], fov: 50 }} dpr={[1, 1.5]} performance={{ min: 0.5 }}>
-          <color attach="background" args={['#0B132B']} />
-          <ambientLight intensity={0.8} />
-          <spotLight position={[10, 10, 10]} angle={0.2} penumbra={1} intensity={2} color="#06b6d4" />
-          <pointLight position={[-10, -10, -10]} intensity={1.5} color="#8b5cf6" />
-          
-          <Suspense fallback={null}>
-            {/* Main Center Node */}
-            <TechNode position={[0, 0, 0]} color="#1e293b" label="Core Processing Unit" icon={Cpu} testData={testDataItems[0]} />
+        <WebGLErrorBoundary>
+          <Canvas camera={{ position: [0, 2, 8], fov: 50 }} dpr={[1, 1.5]} performance={{ min: 0.5 }}>
+            <color attach="background" args={['#0B132B']} />
+            <ambientLight intensity={0.8} />
+            <spotLight position={[10, 10, 10]} angle={0.2} penumbra={1} intensity={2} color="#06b6d4" />
+            <pointLight position={[-10, -10, -10]} intensity={1.5} color="#8b5cf6" />
             
-            {/* Satellite Nodes */}
-            <TechNode position={[-3, 1, -2]} color="#334155" label="Sensor Array Alpha" icon={Activity} testData={testDataItems[1]} />
-            <TechNode position={[3, -1, 1]} color="#334155" label="Comms Module (5G)" icon={Wifi} testData={testDataItems[2]} />
-          </Suspense>
-          
-          <OrbitControls 
-            enablePan={false}
-            minPolarAngle={Math.PI / 4}
-            maxPolarAngle={Math.PI / 2}
-            autoRotate
-            autoRotateSpeed={0.5}
-          />
-        </Canvas>
+            <Suspense fallback={null}>
+              {/* Main Center Node */}
+              <TechNode position={[0, 0, 0]} color="#1e293b" label="Core Processing Unit" icon={Cpu} testData={testDataItems[0]} />
+              
+              {/* Satellite Nodes */}
+              <TechNode position={[-3, 1, -2]} color="#334155" label="Sensor Array Alpha" icon={Activity} testData={testDataItems[1]} />
+              <TechNode position={[3, -1, 1]} color="#334155" label="Comms Module (5G)" icon={Wifi} testData={testDataItems[2]} />
+            </Suspense>
+            
+            <OrbitControls 
+              enablePan={false}
+              minPolarAngle={Math.PI / 4}
+              maxPolarAngle={Math.PI / 2}
+              autoRotate
+              autoRotateSpeed={0.5}
+            />
+          </Canvas>
+        </WebGLErrorBoundary>
 
         {/* Bottom controls overlay */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 bg-white/ dark:bg-slate-900/ backdrop-blur-md px-8 py-4 rounded-3xl border border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.2)]">
