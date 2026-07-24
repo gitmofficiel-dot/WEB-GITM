@@ -11,9 +11,16 @@ const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : 
 
 export default function AuthForms({ initialMode = 'login' }) {
   const { lang, loginUser, registerUser } = useLanguage();
-  const { login, signup } = useAuth();
+  const { login, signup, currentUser } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState(initialMode); // 'login' or 'register'
+  
+  React.useEffect(() => {
+    if (currentUser) {
+      const secureHash = Math.random().toString(36).substring(2, 10);
+      navigate(`/dashboard/${secureHash}`);
+    }
+  }, [currentUser, navigate]);
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -56,8 +63,6 @@ export default function AuthForms({ initialMode = 'login' }) {
           toast.success(lang === 'ar' ? 'تم إنشاء الحساب بنجاح!' : 'Account successfully created!');
         });
       }
-      const secureHash = Math.random().toString(36).substring(2, 10);
-      navigate(`/dashboard/${secureHash}`);
     } catch (err) {
       const errorMsg = formatAuthError(err);
       setError(errorMsg);
@@ -77,8 +82,6 @@ export default function AuthForms({ initialMode = 'login' }) {
       import('../utils/toast').then(({ toast }) => {
         toast.success(lang === 'ar' ? 'تم تسجيل الدخول بنجاح!' : 'Successfully logged in!');
       });
-      const secureHash = Math.random().toString(36).substring(2, 10);
-      navigate(`/dashboard/${secureHash}`);
     } catch (err) {
       const errorMsg = formatAuthError(err);
       setError(errorMsg);
