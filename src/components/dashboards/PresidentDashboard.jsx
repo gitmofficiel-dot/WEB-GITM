@@ -432,10 +432,21 @@ export default function PresidentDashboard() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-10 min-h-screen relative w-full max-w-[100vw] overflow-x-hidden">
+    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-24 md:pb-10 min-h-screen relative w-full max-w-[100vw] overflow-x-hidden">
       
+      {/* Mobile Header */}
+      <div className="md:hidden flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm mb-2 sticky top-20 z-40">
+        <div>
+          <h2 className="text-xl font-orbitron font-bold gradient-text">{lang === 'ar' ? 'القيادة العليا' : 'Supreme Command'}</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{user?.name || 'President'}</p>
+        </div>
+        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold shadow-lg">
+          {(user?.name || 'P').charAt(0)}
+        </div>
+      </div>
+
       {/* Sidebar Navigation */}
-      <div className="w-full md:w-64 shrink-0 min-w-0">
+      <div className="hidden md:block w-full md:w-64 shrink-0 min-w-0">
         <div className="glass-card rounded-3xl p-4 sticky top-24 border border-cyan-200 dark:border-slate-800 shadow-xl shadow-cyan-900/5">
           <div className="mb-4 md:mb-6 px-2 flex justify-between items-center md:block">
             <div>
@@ -1011,6 +1022,29 @@ export default function PresidentDashboard() {
       <CrudModal />
       <ConfirmDialog />
 
+      {/* Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 z-50 px-2 py-2 flex justify-between items-center overflow-x-auto hide-scrollbar shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+        {tabs.map(tab => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex flex-col items-center justify-center p-2 min-w-[64px] rounded-xl transition-all ${
+                isActive
+                ? 'text-cyan-600 dark:text-cyan-400 font-bold scale-105'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+              }`}
+            >
+              <div className={`p-1.5 rounded-lg mb-1 ${isActive ? 'bg-cyan-100 dark:bg-cyan-900/30' : ''}`}>
+                <Icon size={20} className={isActive ? 'animate-bounce' : ''} />
+              </div>
+              <span className="text-[9px] whitespace-nowrap">{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

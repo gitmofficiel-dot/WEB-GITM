@@ -110,9 +110,21 @@ export default function MemberDashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Navigation */}
-      <div className="flex flex-wrap gap-2 pb-4 border-b border-white/10">
+    <div className="space-y-6 pb-24 md:pb-10 min-h-screen relative w-full max-w-[100vw] overflow-x-hidden">
+      
+      {/* Mobile Header */}
+      <div className="md:hidden flex items-center justify-between bg-black/40 backdrop-blur-md p-4 rounded-3xl border border-white/10 shadow-sm mb-2 sticky top-20 z-40">
+        <div>
+          <h2 className="text-xl font-orbitron font-bold text-white">{lang === 'ar' ? 'لوحة العضو' : 'Member Panel'}</h2>
+          <p className="text-xs text-gray-400 mt-0.5">{currentUser?.name}</p>
+        </div>
+        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg">
+          {(currentUser?.name || 'M').charAt(0)}
+        </div>
+      </div>
+
+      {/* Navigation (Desktop) */}
+      <div className="hidden md:flex flex-wrap gap-2 pb-4 border-b border-white/10">
         {[
           { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
           { id: 'projects', icon: Code, label: lang === 'ar' ? 'مشاريعي' : 'My Projects' },
@@ -335,6 +347,34 @@ export default function MemberDashboard() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-lg border-t border-white/10 z-50 px-2 py-2 flex justify-between items-center overflow-x-auto hide-scrollbar shadow-[0_-5px_15px_rgba(0,0,0,0.5)]">
+        {[
+          { id: 'overview', icon: LayoutDashboard, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
+          { id: 'projects', icon: Code, label: lang === 'ar' ? 'مشاريعي' : 'Projects' },
+          { id: 'matchmaker', icon: Users, label: lang === 'ar' ? 'الهاكاثون' : 'Teams' },
+          { id: 'ledger', icon: BookOpen, label: lang === 'ar' ? 'دفتر الأخطاء' : 'Ledger' },
+          { id: 'events', icon: Calendar, label: lang === 'ar' ? 'الأحداث' : 'Events' },
+          { id: 'certificates', icon: Award, label: lang === 'ar' ? 'الشهادات' : 'Certs' },
+          { id: 'profile', icon: User, label: lang === 'ar' ? 'الملف' : 'Profile' }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex flex-col items-center justify-center p-2 min-w-[64px] rounded-xl transition-all ${
+              activeTab === tab.id
+              ? 'text-rose-400 font-bold scale-105'
+              : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            <div className={`p-1.5 rounded-lg mb-1 ${activeTab === tab.id ? 'bg-rose-500/20' : ''}`}>
+              <tab.icon size={20} className={activeTab === tab.id ? 'animate-bounce' : ''} />
+            </div>
+            <span className="text-[9px] whitespace-nowrap">{tab.label}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
