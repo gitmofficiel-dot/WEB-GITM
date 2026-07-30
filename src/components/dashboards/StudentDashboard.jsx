@@ -12,6 +12,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import UserProfileSettings from './UserProfileSettings';
 import CodeSimulator from './CodeSimulator';
 import InspirationCard from './InspirationCard';
+import { db } from '../../config/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 export default function StudentDashboard() {
   const { lang } = useLanguage();
@@ -24,36 +26,46 @@ export default function StudentDashboard() {
   const studentName = currentUser?.name || (lang === 'ar' ? 'أيمن بنعلي' : 'Aymane Benali');
   const studentEmail = currentUser?.email || 'a.benali@gitm.ma';
 
-  const enrolledCourses = [
-    { id: 1, title: 'Edge AI Development', titleAr: 'تطوير الذكاء الاصطناعي الحافي', progress: 65, nextLesson: 'Neural Networks Basics', nextLessonAr: 'أساسيات الشبكات العصبية', status: 'In Progress', color: 'from-blue-500 to-cyan-500' },
-    { id: 2, title: 'Python for Robotics', titleAr: 'بايثون للروبوتات', progress: 100, nextLesson: '-', nextLessonAr: '-', status: 'Completed', grade: 'A+', color: 'from-emerald-500 to-teal-500' },
-    { id: 3, title: 'IoT Cloud Architecture', titleAr: 'بنية سحابة إنترنت الأشياء', progress: 15, nextLesson: 'AWS IoT Core Setup', nextLessonAr: 'إعداد AWS IoT Core', status: 'In Progress', color: 'from-purple-500 to-indigo-500' },
-    { id: 4, title: 'Cybersecurity Fundamentals', titleAr: 'أساسيات الأمن السيبراني', progress: 42, nextLesson: 'Network Scanning', nextLessonAr: 'مسح الشبكات', status: 'In Progress', color: 'from-rose-500 to-pink-500' },
-  ];
-
-  const assignments = [
-    { id: 1, course: 'Edge AI Development', courseAr: 'تطوير الذكاء الاصطناعي', title: 'Train CNN Model', titleAr: 'تدريب نموذج CNN', dueDate: '2026-06-25', status: 'Pending', priority: 'high' },
-    { id: 2, course: 'Python for Robotics', courseAr: 'بايثون للروبوتات', title: 'Pathfinding Algorithm', titleAr: 'خوارزمية البحث عن المسار', dueDate: '2026-05-10', status: 'Graded (95/100)', priority: 'done' },
-    { id: 3, course: 'IoT Cloud Architecture', courseAr: 'بنية سحابة إنترنت الأشياء', title: 'AWS Lambda Setup', titleAr: 'إعداد AWS Lambda', dueDate: '2026-07-01', status: 'Pending', priority: 'medium' },
-    { id: 4, course: 'Cybersecurity Fundamentals', courseAr: 'أساسيات الأمن السيبراني', title: 'Vulnerability Assessment Report', titleAr: 'تقرير تقييم الثغرات', dueDate: '2026-06-28', status: 'In Progress', priority: 'high' },
-  ];
-
-  const certificates = [
-    { id: 'CERT-GITM-2026-0042', course: 'Python for Robotics', courseAr: 'بايثون للروبوتات', issueDate: '2026-05-15', grade: 'A+', instructor: 'Dr. Amine', color: 'from-emerald-500 to-teal-500' },
-    { id: 'CERT-GITM-2026-0089', course: 'Data Structures & Algorithms', courseAr: 'هياكل البيانات والخوارزميات', issueDate: '2026-03-20', grade: 'A', instructor: 'Dr. Fatima', color: 'from-blue-500 to-indigo-500' },
-    { id: 'CERT-GITM-2025-0312', course: 'Introduction to AI', courseAr: 'مقدمة في الذكاء الاصطناعي', issueDate: '2025-12-10', grade: 'A+', instructor: 'Dr. Yassine', color: 'from-purple-500 to-violet-500' },
-  ];
-
-  const learningStats = {
-    studyHoursThisWeek: 12,
-    coursesCompleted: 2,
-    quizAverage: 87,
-    streak: 14,
-    totalPoints: 2450,
-    rank: 3,
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [certificates, setCertificates] = useState([]);
+  const [learningStats, setLearningStats] = useState({
+    studyHoursThisWeek: 0,
+    coursesCompleted: 0,
+    quizAverage: 0,
+    streak: 0,
+    totalPoints: 0,
+    rank: 0,
     weeklyGoal: 15,
-    weeklyData: [1.5, 2, 1, 2.5, 1.5, 2, 1.5],
-  };
+    weeklyData: [0, 0, 0, 0, 0, 0, 0],
+  });
+
+  useEffect(() => {
+    const fetchRealData = async () => {
+      try {
+        const snap = await getDocs(collection(db, 'courses'));
+        const colors = ['from-blue-500 to-cyan-500', 'from-emerald-500 to-teal-500', 'from-purple-500 to-indigo-500', 'from-rose-500 to-pink-500'];
+        const fetchedCourses = snap.docs.map((doc, i) => {
+          const data = doc.data();
+          const color = colors[i % colors.length];
+          return {
+            id: doc.id,
+            title: data.titleEn || data.title || 'Untitled',
+            titleAr: data.titleAr || data.title || 'بدون عنوان',
+            progress: 0,
+            nextLesson: data.modules?.[0]?.titleEn || data.modules?.[0]?.title || 'Introduction',
+            nextLessonAr: data.modules?.[0]?.titleAr || data.modules?.[0]?.title || 'مقدمة',
+            status: 'In Progress',
+            color: color
+          };
+        });
+        setEnrolledCourses(fetchedCourses);
+      } catch (err) {
+        console.error("Error fetching courses:", err);
+      }
+    };
+    fetchRealData();
+  }, []);
 
   const handleShareCert = (certId) => {
     const link = `https://gitm.ma/verify/${certId}`;
