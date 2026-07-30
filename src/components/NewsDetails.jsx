@@ -34,9 +34,9 @@ export default function NewsDetails() {
         return data.responseData.translatedText;
       };
 
-      const tTitle = await translateText(lang === 'ar' ? article.title_en : article.title_ar);
-      const tSummary = await translateText(lang === 'ar' ? article.summary_en : article.summary_ar);
-      const tContent = await translateText(lang === 'ar' ? article.content_en : article.content_ar);
+      const tTitle = await translateText(lang === 'ar' ? (article.titleEn || article.title_en || article.title) : (article.titleAr || article.title_ar || article.title));
+      const tSummary = await translateText(lang === 'ar' ? (article.summaryEn || article.summary_en) : (article.summaryAr || article.summary_ar));
+      const tContent = await translateText(article.content || (lang === 'ar' ? article.content_en : article.content_ar));
       
       if (tTitle) setTranslatedTitle(tTitle);
       if (tSummary) setTranslatedSummary(tSummary);
@@ -127,24 +127,67 @@ export default function NewsDetails() {
             </div>
             
             <h1 className="text-3xl md:text-5xl font-orbitron font-bold mb-8 text-[#0B132B] dark:text-white leading-tight">
-              {translatedTitle || (lang === 'ar' ? article.title_ar : article.title_en)}
+              {translatedTitle || (lang === 'ar' ? (article.titleAr || article.title_ar || article.title) : (article.titleEn || article.title_en || article.title))}
             </h1>
+            
+            {(article.mainImage || article.imageUrl) && (
+              <img src={article.mainImage || article.imageUrl} alt="Article Main" className="w-full h-[400px] object-cover rounded-3xl mb-8 shadow-xl" />
+            )}
             
             <div className="w-full h-px bg-cyan-200 dark:bg-slate-800 mb-8"></div>
             
-            <div className="prose dark:prose-invert max-w-none text-lg leading-relaxed space-y-6">
-              <p className="text-xl font-medium text-slate-600 dark:text-slate-300 border-l-4 border-cyan-500 pl-4 rtl:pl-0 rtl:pr-4 rtl:border-l-0 rtl:border-r-4">
-                {translatedSummary || (lang === 'ar' ? article.summary_ar : article.summary_en)}
-              </p>
+            <div className="prose dark:prose-invert max-w-none text-lg leading-relaxed space-y-6 quill-content ql-editor">
+              {(translatedSummary || article.summary_ar || article.summary_en) && (
+                <p className="text-xl font-medium text-slate-600 dark:text-slate-300 border-l-4 border-cyan-500 pl-4 rtl:pl-0 rtl:pr-4 rtl:border-l-0 rtl:border-r-4">
+                  {translatedSummary || (lang === 'ar' ? article.summary_ar : article.summary_en)}
+                </p>
+              )}
               
               <div className="mt-8">
                 {translatedContent ? (
-                  <p>{translatedContent}</p>
+                  <div dangerouslySetInnerHTML={{ __html: translatedContent }} />
                 ) : (
-                  lang === 'ar' ? (article.content_ar || <p>المحتوى الكامل للمقال سيتم عرضه هنا. هذه المساحة مخصصة للتفاصيل الشاملة للخبر مع دعم الفقرات المتعددة والصور إن وجدت.</p>) : (article.content_en || <p>The full content of the article will be displayed here. This space is dedicated to comprehensive details of the news, supporting multiple paragraphs and images if any.</p>)
+                  article.content ? (
+                    <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                  ) : (
+                    <div dangerouslySetInnerHTML={{ __html: (lang === 'ar' ? article.content_ar : article.content_en) || '<p>المحتوى غير متوفر</p>' }} />
+                  )
                 )}
               </div>
             </div>
+
+            {(article.updates || article.additions) && (
+              <div className="mt-12 p-8 bg-slate-100 dark:bg-slate-800/50 rounded-3xl border border-slate-200 dark:border-slate-700">
+                {article.updates && (
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-3 flex items-center gap-2">
+                      <span className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg"><Calendar size={20}/></span> 
+                      {lang === 'ar' ? 'تحديثات للمقال' : 'Article Updates'}
+                    </h3>
+                    <div className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{article.updates}</div>
+                  </div>
+                )}
+                {article.additions && (
+                  <div className="mt-6 border-t border-slate-200 dark:border-slate-700 pt-6">
+                    <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-3 flex items-center gap-2">
+                      <span className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg"><ShieldCheck size={20}/></span>
+                      {lang === 'ar' ? 'إضافات وملاحظات' : 'Additions & Highlights'}
+                    </h3>
+                    <div className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{article.additions}</div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {article.tags && article.tags.length > 0 && (
+              <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-2">
+                {article.tags.map((tag, i) => (
+                  <span key={i} className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors hover:bg-cyan-50 hover:text-cyan-600">
+                    <Tag size={16}/> {tag}
+                  </span>
+                ))}
+              </div>
+            )}
             
             {/* Comments Section */}
             <CommentsSection targetId={article.id} targetType="news" />
