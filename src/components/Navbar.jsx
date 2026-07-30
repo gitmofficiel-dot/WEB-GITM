@@ -4,6 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { Sun, Moon, Globe, Menu, X, LayoutDashboard, LogOut, ChevronDown, Search, Bell, Home, BookOpen, Calendar, Compass } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { algoliasearch } from 'algoliasearch';
+import { useNotifications } from '../hooks/useNotifications';
 
 const Navbar = () => {
   const { lang, changeLanguage, theme, toggleTheme, user, logoutUser, users } = useLanguage();
@@ -19,17 +20,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-
-  // Mocking real-time notifications for now - in production this connects to Firebase Realtime DB / Firestore
-  useEffect(() => {
-    if (!user) return;
-    // For demo purposes, pushing a welcome notification
-    setNotifications([
-      { id: 1, title: lang === 'ar' ? 'مرحباً بك' : 'Welcome', message: lang === 'ar' ? 'تم تفعيل حسابك بنجاح' : 'Your account is active', time: '1m ago', read: false },
-      { id: 2, title: lang === 'ar' ? 'تحديث جديد' : 'New Update', message: lang === 'ar' ? 'تم إضافة محاكي البرمجة' : 'Code simulator added', time: '1h ago', read: false }
-    ]);
-  }, [user, lang]);
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
 
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -200,7 +191,7 @@ const Navbar = () => {
                   className="p-2.5 rounded-lg text-gitm-mutedLight dark:text-gitm-mutedDark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
                 >
                   <Bell size={18} />
-                  {notifications.filter(n => !n.read).length > 0 && (
+                  {unreadCount > 0 && (
                     <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                   )}
                 </button>
@@ -213,17 +204,36 @@ const Navbar = () => {
                         className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-80 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden"
                       >
                         <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
-                          <h4 className="font-bold text-sm text-gitm-textLight dark:text-gitm-textDark">{lang === 'ar' ? 'الإشعارات (مباشر)' : 'Notifications (Realtime)'}</h4>
-                          <span className="text-xs bg-gitm-blue text-white px-2 py-0.5 rounded-full">{notifications.length}</span>
+                          <h4 className="font-bold text-sm text-gitm-textLight dark:text-gitm-textDark">{lang === 'ar' ? 'الإشعارات' : 'Notifications'}</h4>
+                          <div className="flex gap-2 items-center">
+                            {unreadCount > 0 && (
+                              <button onClick={() => markAllAsRead()} className="text-xs text-gitm-blue hover:underline">
+                                {lang === 'ar' ? 'تحديد كـ مقروء' : 'Mark all read'}
+                              </button>
+                            )}
+                            <span className="text-xs bg-gitm-blue text-white px-2 py-0.5 rounded-full">{unreadCount}</span>
+                          </div>
                         </div>
                         <div className="max-h-72 overflow-y-auto">
-                          {notifications.map(n => (
-                            <div key={n.id} className={`p-4 border-b border-gray-50 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer ${!n.read ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}`}>
-                              <h5 className="font-bold text-sm text-gitm-textLight dark:text-gitm-textDark mb-1">{n.title}</h5>
-                              <p className="text-xs text-gitm-mutedLight dark:text-gitm-mutedDark mb-1">{n.message}</p>
-                              <span className="text-[10px] text-gray-400">{n.time}</span>
+                          {notifications.length === 0 ? (
+                            <div className="p-4 text-center text-gray-500 text-sm">
+                              {lang === 'ar' ? 'لا توجد إشعارات' : 'No notifications'}
                             </div>
-                          ))}
+                          ) : (
+                            notifications.map(n => (
+                              <div 
+                                key={n.id} 
+                                onClick={() => { markAsRead(n.id); if(n.link) { navigate(n.link); setNotificationsOpen(false); } }}
+                                className={`p-4 border-b border-gray-50 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer ${!n.read ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}`}
+                              >
+                                <h5 className="font-bold text-sm text-gitm-textLight dark:text-gitm-textDark mb-1">{n.title}</h5>
+                                <p className="text-xs text-gitm-mutedLight dark:text-gitm-mutedDark mb-1">{n.message}</p>
+                                <span className="text-[10px] text-gray-400">
+                                  {n.createdAt && typeof n.createdAt.toDate === 'function' ? new Intl.DateTimeFormat(lang === 'ar' ? 'ar-MA' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(n.createdAt.toDate()) : 'Recently'}
+                                </span>
+                              </div>
+                            ))
+                          )}
                         </div>
                       </motion.div>
                     </>
