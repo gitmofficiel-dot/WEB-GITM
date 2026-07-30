@@ -16,17 +16,8 @@ export default function UniversityDashboard() {
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
-  const [researchCollabs, setResearchCollabs] = useState([
-    { id: 1, title: lang==='ar'?'أبحاث التعلم العميق للمدن الذكية':'Deep Learning for Smart Cities Research', lead: 'Prof. Amrani', students: 12, status: 'Active', papers: 3 },
-    { id: 2, title: lang==='ar'?'الأمن السيبراني للبنية التحتية الحيوية':'Cybersecurity for Critical Infrastructure', lead: 'Dr. Benjelloun', students: 8, status: 'Active', papers: 1 },
-    { id: 3, title: lang==='ar'?'إنترنت الأشياء في الزراعة الذكية':'IoT in Smart Agriculture', lead: 'Prof. Tazi', students: 6, status: 'Completed', papers: 5 }
-  ]);
-
-  const [exchangePrograms, setExchangePrograms] = useState([
-    { id: 1, title: lang==='ar'?'برنامج التبادل الأكاديمي مع GITM':'Academic Exchange with GITM', duration: '6 months', spots: 15, filled: 11 },
-    { id: 2, title: lang==='ar'?'منحة بحثية مشتركة':'Joint Research Fellowship', duration: '12 months', spots: 5, filled: 3 }
-  ]);
-
+  const [researchCollabs, setResearchCollabs] = useState([]);
+  const [exchangePrograms, setExchangePrograms] = useState([]);
   const [jointCourses, setJointCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,11 +26,12 @@ export default function UniversityDashboard() {
   const [newResearch, setNewResearch] = useState({ title: '', lead: '' });
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchData = async () => {
       try {
-        const snap = await getDocs(collection(db, 'courses'));
+        // Fetch Courses
+        const coursesSnap = await getDocs(collection(db, 'courses'));
         const coursesList = [];
-        snap.forEach(doc => {
+        coursesSnap.forEach(doc => {
           const data = doc.data();
           if (data.isJointWithUniversity) {
             coursesList.push({
@@ -61,28 +53,61 @@ export default function UniversityDashboard() {
           );
         }
         setJointCourses(coursesList);
+
+        // Fetch Research Collabs
+        const researchSnap = await getDocs(collection(db, 'research_collaborations'));
+        const researchList = [];
+        researchSnap.forEach(doc => researchList.push({ id: doc.id, ...doc.data() }));
+        if(researchList.length === 0) {
+          researchList.push(
+            { id: 1, title: lang==='ar'?'أبحاث التعلم العميق للمدن الذكية':'Deep Learning for Smart Cities Research', lead: 'Prof. Amrani', students: 12, status: 'Active', papers: 3 },
+            { id: 2, title: lang==='ar'?'الأمن السيبراني للبنية التحتية الحيوية':'Cybersecurity for Critical Infrastructure', lead: 'Dr. Benjelloun', students: 8, status: 'Active', papers: 1 },
+            { id: 3, title: lang==='ar'?'إنترنت الأشياء في الزراعة الذكية':'IoT in Smart Agriculture', lead: 'Prof. Tazi', students: 6, status: 'Completed', papers: 5 }
+          );
+        }
+        setResearchCollabs(researchList);
+
+        // Fetch Exchange Programs
+        const exchangeSnap = await getDocs(collection(db, 'exchange_programs'));
+        const exchangeList = [];
+        exchangeSnap.forEach(doc => exchangeList.push({ id: doc.id, ...doc.data() }));
+        if(exchangeList.length === 0) {
+          exchangeList.push(
+            { id: 1, title: lang==='ar'?'برنامج التبادل الأكاديمي مع GITM':'Academic Exchange with GITM', duration: '6 months', spots: 15, filled: 11 },
+            { id: 2, title: lang==='ar'?'منحة بحثية مشتركة':'Joint Research Fellowship', duration: '12 months', spots: 5, filled: 3 }
+          );
+        }
+        setExchangePrograms(exchangeList);
+
       } catch (err) {
-        console.error("Error fetching courses:", err);
+        console.error("Error fetching university data:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchCourses();
+    fetchData();
   }, [lang]);
 
-  const handleProposeResearch = () => {
+  const handleProposeResearch = async () => {
     if(!newResearch.title) return;
-    setResearchCollabs(prev => [...prev, {
-      id: Date.now(),
-      title: newResearch.title,
-      lead: newResearch.lead || currentUser?.name,
-      students: 0,
-      status: 'Proposed',
-      papers: 0
-    }]);
-    setShowResearchModal(false);
-    setNewResearch({ title: '', lead: '' });
-    toast.success(lang === 'ar' ? 'تم تقديم الاقتراح' : 'Research proposed');
+    try {
+      const researchData = {
+        title: newResearch.title,
+        lead: newResearch.lead || currentUser?.name || 'Unknown',
+        students: 0,
+        status: 'Proposed',
+        papers: 0,
+        createdAt: serverTimestamp()
+      };
+      const docRef = await addDoc(collection(db, 'research_collaborations'), researchData);
+      setResearchCollabs(prev => [...prev, { id: docRef.id, ...researchData }]);
+      setShowResearchModal(false);
+      setNewResearch({ title: '', lead: '' });
+      toast.success(lang === 'ar' ? 'تم تقديم الاقتراح بنجاح' : 'Research proposed successfully');
+    } catch (err) {
+      console.error("Error proposing research:", err);
+      toast.error(lang === 'ar' ? 'حدث خطأ' : 'Error proposing research');
+    }
   };
 
   const tabs = [

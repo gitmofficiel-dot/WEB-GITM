@@ -16,14 +16,15 @@ export default function PartnerDashboard() {
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
-  const partnershipMetrics = {
-    sharedProjects: 3,
-    totalReach: '12,500+',
-    eventsCoHosted: 7,
-    satisfactionScore: 4.8
-  };
+  const [partnershipMetrics, setPartnershipMetrics] = useState({
+    sharedProjects: 0,
+    totalReach: '0+',
+    eventsCoHosted: 0,
+    satisfactionScore: 0
+  });
 
   const [sharedProjects, setSharedProjects] = useState([]);
+  const [communications, setCommunications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [newProject, setNewProject] = useState({ title: '', description: '' });
@@ -46,7 +47,6 @@ export default function PartnerDashboard() {
             });
           }
         });
-        
         if (projectsList.length === 0) {
           // Fallback static data if none in DB
           projectsList.push(
@@ -56,8 +56,30 @@ export default function PartnerDashboard() {
           );
         }
         setSharedProjects(projectsList);
+
+        // Fetch Communications
+        const commsSnap = await getDocs(collection(db, 'communications'));
+        const commsList = [];
+        commsSnap.forEach(doc => commsList.push({ id: doc.id, ...doc.data() }));
+        if(commsList.length === 0) {
+           commsList.push(
+            { id: 1, from: 'Mourad (GITM President)', subject: lang === 'ar' ? 'اجتماع مراجعة الشراكة Q3' : 'Q3 Partnership Review Meeting', date: '2026-06-25', unread: true },
+            { id: 2, from: 'Youssef Alaoui', subject: lang === 'ar' ? 'تحديث مشروع المدن الذكية' : 'Smart Cities Project Update', date: '2026-06-20', unread: false },
+            { id: 3, from: 'GITM Academy', subject: lang === 'ar' ? 'فرصة تدريب مشترك جديدة' : 'New Joint Training Opportunity', date: '2026-06-18', unread: true }
+           );
+        }
+        setCommunications(commsList);
+        
+        // Setup Metrics
+        setPartnershipMetrics({
+          sharedProjects: projectsList.length,
+          totalReach: '12,500+',
+          eventsCoHosted: 7,
+          satisfactionScore: 4.8
+        });
+
       } catch (err) {
-        console.error("Error fetching partner projects:", err);
+        console.error("Error fetching partner data:", err);
       } finally {
         setLoading(false);
       }
@@ -85,11 +107,7 @@ export default function PartnerDashboard() {
     }
   };
 
-  const communications = [
-    { id: 1, from: 'Mourad (GITM President)', subject: lang === 'ar' ? 'اجتماع مراجعة الشراكة Q3' : 'Q3 Partnership Review Meeting', date: '2026-06-25', unread: true },
-    { id: 2, from: 'Youssef Alaoui', subject: lang === 'ar' ? 'تحديث مشروع المدن الذكية' : 'Smart Cities Project Update', date: '2026-06-20', unread: false },
-    { id: 3, from: 'GITM Academy', subject: lang === 'ar' ? 'فرصة تدريب مشترك جديدة' : 'New Joint Training Opportunity', date: '2026-06-18', unread: true }
-  ];
+
 
   const tabs = [
     { id: 'overview', icon: BarChart3, label: lang === 'ar' ? 'نظرة عامة' : 'Overview' },
