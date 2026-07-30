@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { Target, Flag, History, Loader2, Users, Rocket, Activity, Library, ChevronLeft } from 'lucide-react';
+import { Target, Flag, History, Loader2, Users, Rocket, Activity, Library, ChevronLeft, Github, Linkedin, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { db } from '../config/firebase';
 import { doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
@@ -45,7 +45,8 @@ export default function About() {
             role: data.role || 'member',
             role_ar: data.role || 'عضو',
             projectsCount: Math.floor(Math.random() * 15) + 1, // Simulated projects count
-            image: data.photoURL || `https://ui-avatars.com/api/?name=${data.name || 'GITM'}&background=random`
+            image: data.imageUrl || data.photoURL || `https://ui-avatars.com/api/?name=${data.name || 'GITM'}&background=random`,
+            socialLinks: data.socialLinks || {}
           };
           
           if (['president', 'supervisor', 'teacher', 'partner', 'university'].includes(member.role)) {
@@ -58,12 +59,12 @@ export default function About() {
         // Add defaults if none found from DB
         if (official.length === 0 && internal.length === 0) {
           official.push(
-            { id: 1, name: 'Dr. Yassine', name_ar: 'د. ياسين', role: 'President & Founder', role_ar: 'الرئيس والمؤسس', projectsCount: 12, image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400' },
-            { id: 2, name: 'Eng. Fatima', name_ar: 'م. فاطمة', role: 'Head of Robotics', role_ar: 'رئيسة قسم الروبوتات', projectsCount: 8, image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400' }
+            { id: 1, name: 'Dr. Yassine', name_ar: 'د. ياسين', role: 'President & Founder', role_ar: 'الرئيس والمؤسس', projectsCount: 12, image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400', socialLinks: { linkedin: '#', github: '#' } },
+            { id: 2, name: 'Eng. Fatima', name_ar: 'م. فاطمة', role: 'Head of Robotics', role_ar: 'رئيسة قسم الروبوتات', projectsCount: 8, image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400', socialLinks: { linkedin: '#' } }
           );
           internal.push(
-            { id: 4, name: 'Karim', name_ar: 'كريم', role: 'AI Researcher', role_ar: 'باحث في الذكاء الاصطناعي', projectsCount: 15, image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400' },
-            { id: 5, name: 'Sara', name_ar: 'سارة', role: 'UI/UX Lead', role_ar: 'قائدة تصميم الواجهات', projectsCount: 10, image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400' }
+            { id: 4, name: 'Karim', name_ar: 'كريم', role: 'AI Researcher', role_ar: 'باحث في الذكاء الاصطناعي', projectsCount: 15, image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400', socialLinks: { github: '#' } },
+            { id: 5, name: 'Sara', name_ar: 'سارة', role: 'UI/UX Lead', role_ar: 'قائدة تصميم الواجهات', projectsCount: 10, image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400', socialLinks: {} }
           );
         }
 
@@ -221,11 +222,30 @@ export default function About() {
                   <div className="p-4 md:p-6">
                     <h4 className="text-lg md:text-xl font-bold text-gitm-textLight dark:text-white mb-1 truncate">{lang === 'ar' ? member.name_ar : member.name}</h4>
                     <p className="text-gitm-red font-medium text-xs md:text-sm mb-3 md:mb-4 truncate">{lang === 'ar' ? member.role_ar : member.role}</p>
-                    <div className="flex items-center gap-1 md:gap-2 text-[10px] md:text-sm text-gitm-mutedLight dark:text-gitm-mutedDark bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg justify-center md:justify-start">
+                    <div className="flex items-center gap-1 md:gap-2 text-[10px] md:text-sm text-gitm-mutedLight dark:text-gitm-mutedDark bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg justify-center md:justify-start mb-3">
                       <Activity size={14} className="text-gitm-green shrink-0" />
                       <span className="font-bold">{member.projectsCount}</span>
                       <span className="truncate">{lang === 'ar' ? 'مشاريع' : 'Projects'}</span>
                     </div>
+                    {member.socialLinks && (
+                      <div className="flex items-center gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                        {member.socialLinks.linkedin && (
+                          <a href={member.socialLinks.linkedin} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors">
+                            <Linkedin size={18} />
+                          </a>
+                        )}
+                        {member.socialLinks.github && (
+                          <a href={member.socialLinks.github} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                            <Github size={18} />
+                          </a>
+                        )}
+                        {member.socialLinks.facebook && (
+                          <a href={member.socialLinks.facebook} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-500 transition-colors">
+                            <Globe size={18} />
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}
@@ -249,11 +269,30 @@ export default function About() {
                   <div className="p-4 md:p-6">
                     <h4 className="text-lg md:text-xl font-bold text-gitm-textLight dark:text-white mb-1 truncate">{lang === 'ar' ? member.name_ar : member.name}</h4>
                     <p className="text-gitm-red font-medium text-xs md:text-sm mb-3 md:mb-4 truncate">{lang === 'ar' ? member.role_ar : member.role}</p>
-                    <div className="flex items-center gap-1 md:gap-2 text-[10px] md:text-sm text-gitm-mutedLight dark:text-gitm-mutedDark bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg justify-center md:justify-start">
+                    <div className="flex items-center gap-1 md:gap-2 text-[10px] md:text-sm text-gitm-mutedLight dark:text-gitm-mutedDark bg-gray-50 dark:bg-gray-800/50 p-2 rounded-lg justify-center md:justify-start mb-3">
                       <Activity size={14} className="text-gitm-green shrink-0" />
                       <span className="font-bold">{member.projectsCount}</span>
                       <span className="truncate">{lang === 'ar' ? 'مشاريع' : 'Projects'}</span>
                     </div>
+                    {member.socialLinks && (
+                      <div className="flex items-center gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                        {member.socialLinks.linkedin && (
+                          <a href={member.socialLinks.linkedin} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors">
+                            <Linkedin size={18} />
+                          </a>
+                        )}
+                        {member.socialLinks.github && (
+                          <a href={member.socialLinks.github} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                            <Github size={18} />
+                          </a>
+                        )}
+                        {member.socialLinks.facebook && (
+                          <a href={member.socialLinks.facebook} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-500 transition-colors">
+                            <Globe size={18} />
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}
