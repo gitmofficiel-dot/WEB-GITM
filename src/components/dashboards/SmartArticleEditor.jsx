@@ -286,8 +286,9 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
             body: JSON.stringify({
               model: model,
               messages: [
-                { role: "system", content: "You are a professional journalist for a Moroccan technology institute called GITM. Write a well-structured HTML article without markdown wrappers (use <h2>, <h3>, <p>, <ul>, <strong>). The article must be highly engaging, informative, and professional. The language should be " + (lang === 'ar' ? 'Arabic' : 'English') + "." },
-                { role: "user", content: `Write a comprehensive, professional article about: ${aiPrompt}` }
+              messages: [
+                { role: "system", content: "You are a professional journalist for a Moroccan technology institute called GITM. You MUST output your response as a valid JSON object ONLY, with exactly three keys: 'titleAr' (a catchy Arabic title), 'titleEn' (a catchy English title), and 'content' (a well-structured HTML article without markdown wrappers, using <h2>, <h3>, <p>, <ul>, <strong>). The article must be highly engaging, informative, and professional. The content should be primarily in " + (lang === 'ar' ? 'Arabic' : 'English') + "." },
+                { role: "user", content: `Write a comprehensive, professional article about: ${aiPrompt}. Please return only JSON.` }
               ]
             })
           });
@@ -296,10 +297,24 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
           
           const data = await response.json();
           if (data.choices && data.choices[0] && data.choices[0].message?.content) {
-            generatedContent = data.choices[0].message.content;
-            success = true;
-            console.log(`Successfully generated using model: ${model}`);
-            break; // Exit the loop on success
+            let text = data.choices[0].message.content;
+            text = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+            
+            try {
+              const parsed = JSON.parse(text);
+              if (parsed.titleAr) setTitleAr(parsed.titleAr);
+              if (parsed.titleEn) setTitleEn(parsed.titleEn);
+              if (parsed.content) setContent(parsed.content + "\n" + content);
+              success = true;
+              console.log(`Successfully generated using model: ${model}`);
+              break;
+            } catch (e) {
+              console.warn("Failed to parse JSON, falling back...", e);
+              // Fallback if not valid JSON
+              setContent(text + "\n" + content);
+              success = true;
+              break;
+            }
           }
         } catch (err) {
           console.warn(`Model ${model} failed, trying next...`, err);
@@ -307,8 +322,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
       }
 
       if (success) {
-        setContent(generatedContent + content);
-        toast.success(lang === 'ar' ? 'تم إنشاء المقال بنجاح!' : 'Article generated successfully!');
+        toast.success(lang === 'ar' ? 'تم إنشاء المقال وعناوينه بنجاح!' : 'Article and titles generated successfully!');
         setShowAiModal(false);
         setAiPrompt('');
       } else {
@@ -779,6 +793,8 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
         }
         .ql-editor {
           padding: 24px;
+          unicode-bidi: plaintext;
+          text-align: start;
         }
         .ql-editor img {
           border-radius: 12px;
