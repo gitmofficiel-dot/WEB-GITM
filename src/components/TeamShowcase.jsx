@@ -75,7 +75,7 @@ export default function TeamShowcase() {
         ))}
       </div>
 
-      <motion.div layout className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+      <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
         <AnimatePresence>
           {filteredTeam.map((member, index) => (
             <motion.div
@@ -120,14 +120,14 @@ export default function TeamShowcase() {
                 </div>
               </div>
 
-              <div className="p-3 sm:p-4 md:p-8 flex-1 flex flex-col bg-white dark:bg-gitm-cardDark border-t-2 md:border-t-4 border-gitm-red">
-                <h3 className="text-sm sm:text-base md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2 text-gitm-textLight dark:text-white group-hover:text-gitm-red transition-colors">
+              <div className="p-4 md:p-8 flex-1 flex flex-col bg-white dark:bg-gitm-cardDark border-t-2 md:border-t-4 border-gitm-red">
+                <h3 className="text-base md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2 text-gitm-textLight dark:text-white group-hover:text-gitm-red transition-colors">
                   {lang === 'ar' ? member.nameAr : member.nameEn}
                 </h3>
-                <p className="text-[10px] sm:text-xs md:text-base lg:text-lg text-gitm-green font-bold mb-2 md:mb-5">
+                <p className="text-xs md:text-base lg:text-lg text-gitm-green font-bold mb-2 md:mb-5">
                   {lang === 'ar' ? member.roleAr : member.roleEn}
                 </p>
-                <p className="text-[10px] sm:text-xs md:text-base text-gitm-mutedLight dark:text-gitm-mutedDark line-clamp-2 md:line-clamp-3 leading-tight md:leading-relaxed border-t border-gray-100 dark:border-gitm-borderDark pt-2 md:pt-5">
+                <p className="text-xs md:text-base text-gitm-mutedLight dark:text-gitm-mutedDark line-clamp-2 md:line-clamp-3 leading-tight md:leading-relaxed border-t border-gray-100 dark:border-gitm-borderDark pt-2 md:pt-5">
                   {lang === 'ar' ? member.bioAr : member.bioEn}
                 </p>
               </div>
