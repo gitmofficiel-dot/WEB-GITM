@@ -75,7 +75,7 @@ export default function TeamShowcase() {
         ))}
       </div>
 
-      <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-10">
         <AnimatePresence>
           {filteredTeam.map((member, index) => (
             <motion.div
@@ -86,7 +86,7 @@ export default function TeamShowcase() {
               transition={{ duration: 0.3 }}
               key={member.id}
               onClick={() => navigate(`/profile/${member.id}`)}
-              className="tilt-card group overflow-hidden flex flex-col shadow-soft cursor-pointer hover:shadow-2xl transition-shadow max-w-[320px] mx-auto w-full sm:max-w-none"
+              className="tilt-card group overflow-hidden flex flex-col shadow-soft cursor-pointer hover:shadow-2xl transition-shadow max-w-[400px] mx-auto w-full sm:max-w-none"
             >
               {/* Colorful Image Header */}
               <div className="relative aspect-square sm:aspect-[4/3] w-full overflow-hidden bg-gray-100 dark:bg-[#1a1a1a]">
@@ -120,14 +120,14 @@ export default function TeamShowcase() {
                 </div>
               </div>
 
-              <div className="p-6 flex-1 flex flex-col bg-white dark:bg-gitm-cardDark border-t-2 border-gitm-red">
-                <h3 className="text-xl font-bold mb-1 text-gitm-textLight dark:text-white group-hover:text-gitm-red transition-colors">
+              <div className="p-8 flex-1 flex flex-col bg-white dark:bg-gitm-cardDark border-t-4 border-gitm-red">
+                <h3 className="text-2xl md:text-3xl font-bold mb-2 text-gitm-textLight dark:text-white group-hover:text-gitm-red transition-colors">
                   {lang === 'ar' ? member.nameAr : member.nameEn}
                 </h3>
-                <p className="text-sm text-gitm-green font-bold mb-4">
+                <p className="text-base md:text-lg text-gitm-green font-bold mb-5">
                   {lang === 'ar' ? member.roleAr : member.roleEn}
                 </p>
-                <p className="text-sm text-gitm-mutedLight dark:text-gitm-mutedDark line-clamp-3 leading-relaxed border-t border-gray-100 dark:border-gitm-borderDark pt-4">
+                <p className="text-base text-gitm-mutedLight dark:text-gitm-mutedDark line-clamp-3 leading-relaxed border-t border-gray-100 dark:border-gitm-borderDark pt-5">
                   {lang === 'ar' ? member.bioAr : member.bioEn}
                 </p>
               </div>
