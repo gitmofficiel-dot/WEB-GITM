@@ -359,7 +359,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
         </button>
 
         <div className="max-w-4xl mx-auto glass-card rounded-3xl p-8 shadow-2xl relative">
-          <div className="absolute top-8 right-8 flex gap-2">
+          <div className="flex justify-end mb-4">
             <span className="px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-xs font-bold">
               {selectedCategory || (lang === 'ar' ? 'بدون تصنيف' : 'Uncategorized')}
             </span>
