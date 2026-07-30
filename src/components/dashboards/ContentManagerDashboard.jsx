@@ -63,7 +63,7 @@ export default function ContentManagerDashboard() {
   const [loadingMedia, setLoadingMedia] = useState(true);
   const [showMediaModal, setShowMediaModal] = useState(false);
   const [mediaForm, setMediaForm] = useState({ title: '', category: '' });
-  const [mediaFile, setMediaFile] = useState(null);
+  const [mediaFiles, setMediaFiles] = useState([]);
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
 
   // --- SEO & Queue State ---
@@ -464,29 +464,36 @@ export default function ContentManagerDashboard() {
   };
 
   const handleUploadMedia = async () => {
-    if (!mediaFile) return;
+    if (!mediaFiles || mediaFiles.length === 0) return;
     setIsUploadingMedia(true);
     try {
-      const url = await uploadToCloudinary(mediaFile);
-      const isVideo = mediaFile.type.startsWith('video/');
-      
-      const mediaData = {
-        title: mediaForm.title || mediaFile.name,
-        category: mediaForm.category || 'General',
-        url,
-        type: isVideo ? 'video' : 'image',
-        size: (mediaFile.size / (1024 * 1024)).toFixed(2) + ' MB',
-        createdAt: serverTimestamp(),
-        date: new Date().toISOString().split('T')[0],
-      };
+      const uploadPromises = mediaFiles.map(async (file) => {
+        const url = await uploadToCloudinary(file);
+        const isVideo = file.type.startsWith('video/');
+        
+        const mediaData = {
+          title: mediaForm.title ? (mediaFiles.length > 1 ? `${mediaForm.title} - ${file.name}` : mediaForm.title) : file.name,
+          category: mediaForm.category || 'General',
+          url,
+          type: isVideo ? 'video' : 'image',
+          size: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
+          createdAt: serverTimestamp(),
+          date: new Date().toISOString().split('T')[0],
+        };
 
-      await addDoc(collection(db, 'gallery'), mediaData);
+        return addDoc(collection(db, 'gallery'), mediaData);
+      });
+
+      await Promise.all(uploadPromises);
+      
+      toast.success(lang === 'ar' ? `تم رفع ${mediaFiles.length} ملفات بنجاح` : `Successfully uploaded ${mediaFiles.length} files`);
       setShowMediaModal(false);
       setMediaForm({ title: '', category: '' });
-      setMediaFile(null);
+      setMediaFiles([]);
       fetchMedia();
     } catch (error) {
       console.error('Error uploading media:', error);
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الرفع' : 'Error uploading files');
     } finally {
       setIsUploadingMedia(false);
     }
@@ -924,7 +931,7 @@ export default function ContentManagerDashboard() {
                     <ImageIcon className="text-indigo-500"/> {lang === 'ar' ? 'مكتبة الوسائط' : 'Media Library'}
                   </h3>
                   <button 
-                    onClick={() => { setShowMediaModal(true); setMediaForm({ title: '', category: '' }); setMediaFile(null); }}
+                    onClick={() => { setShowMediaModal(true); setMediaForm({ title: '', category: '' }); setMediaFiles([]); }}
                     className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg transition-all hover:scale-105"
                   >
                     <Upload size={16}/> {lang === 'ar' ? 'رفع ملف' : 'Upload File'}
@@ -1000,16 +1007,21 @@ export default function ContentManagerDashboard() {
                             />
                           </div>
                           <div>
-                            <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الملف' : 'File'}</label>
-                            <input type="file" accept="image/*,video/*" onChange={e => setMediaFile(e.target.files[0])}
+                            <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الملفات' : 'Files'}</label>
+                            <input type="file" multiple accept="image/*,video/*" onChange={e => setMediaFiles(Array.from(e.target.files))}
                               className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-900/30 dark:file:text-indigo-400"
                             />
+                            {mediaFiles.length > 0 && (
+                              <p className="text-xs text-indigo-500 mt-2 font-bold">
+                                {mediaFiles.length} {lang === 'ar' ? 'ملفات محددة' : 'files selected'}
+                              </p>
+                            )}
                           </div>
-                          <button onClick={handleUploadMedia} disabled={!mediaFile || isUploadingMedia}
+                          <button onClick={handleUploadMedia} disabled={mediaFiles.length === 0 || isUploadingMedia}
                             className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-2"
                           >
                             {isUploadingMedia ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16}/>} 
-                            {isUploadingMedia ? (lang === 'ar' ? 'جاري الرفع...' : 'Uploading...') : (lang === 'ar' ? 'رفع الملف' : 'Upload File')}
+                            {isUploadingMedia ? (lang === 'ar' ? 'جاري الرفع...' : 'Uploading...') : (lang === 'ar' ? 'رفع الملفات' : 'Upload Files')}
                           </button>
                         </div>
                       </motion.div>

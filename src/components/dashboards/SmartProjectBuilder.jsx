@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { toast } from '../../utils/toast';
 import ReactQuill from 'react-quill-new';
@@ -36,6 +36,21 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
   const [techStack, setTechStack] = useState(initialData?.techStack?.join(', ') || '');
   const [attachments, setAttachments] = useState(initialData?.attachments || []);
   const [isSaving, setIsSaving] = useState(false);
+  const [registeredUsers, setRegisteredUsers] = useState([]);
+
+  // Fetch registered users
+  React.useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'users'));
+        const usersData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        setRegisteredUsers(usersData);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   // Fetch data if standalone and editing
   React.useEffect(() => {
@@ -139,7 +154,7 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
   };
 
   const handleAddMember = () => {
-    setTeamMembers([...teamMembers, { id: Date.now(), name: '', role: '', initials: '' }]);
+    setTeamMembers([...teamMembers, { id: Date.now(), name: '', role: '', initials: '', userId: '' }]);
   };
 
   const handleUpdateMember = (id, field, value) => {
@@ -303,8 +318,36 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
                      {member.initials || '?'}
                    </div>
                    <div className="flex-1 flex flex-col gap-2">
-                     <div className="flex gap-2">
-                       <input type="text" placeholder="Name" value={member.name} onChange={e=>handleUpdateMember(member.id, 'name', e.target.value)} className="flex-1 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm"/>
+                     <div className="flex flex-col sm:flex-row gap-2">
+                       <select 
+                         className="flex-1 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm"
+                         value={member.userId || ''}
+                         onChange={e => {
+                           const val = e.target.value;
+                           if (val === 'custom') {
+                             handleUpdateMember(member.id, 'userId', '');
+                             handleUpdateMember(member.id, 'name', '');
+                             handleUpdateMember(member.id, 'profileUrl', '');
+                           } else {
+                             const u = registeredUsers.find(u => u.id === val);
+                             if (u) {
+                               handleUpdateMember(member.id, 'userId', u.id);
+                               handleUpdateMember(member.id, 'name', u.nameLatin || u.name || u.email);
+                               handleUpdateMember(member.id, 'profileUrl', u.linkedin || `mailto:${u.email}`);
+                             }
+                           }
+                         }}
+                       >
+                         <option value="">{lang === 'ar' ? 'اختر عضواً مسجلاً...' : 'Select registered member...'}</option>
+                         <option value="custom">{lang === 'ar' ? 'إدخال يدوي' : 'Manual entry'}</option>
+                         {registeredUsers.map(u => (
+                           <option key={u.id} value={u.id}>{u.nameLatin || u.name || u.email}</option>
+                         ))}
+                       </select>
+                       
+                       {(!member.userId) && (
+                         <input type="text" placeholder="Name" value={member.name} onChange={e=>handleUpdateMember(member.id, 'name', e.target.value)} className="flex-1 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm"/>
+                       )}
                        <input type="text" placeholder="Role (e.g. Lead Dev)" value={member.role} onChange={e=>handleUpdateMember(member.id, 'role', e.target.value)} className="flex-1 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm"/>
                      </div>
                      <input type="text" placeholder="Profile URL (e.g. LinkedIn)" value={member.profileUrl || ''} onChange={e=>handleUpdateMember(member.id, 'profileUrl', e.target.value)} className="w-full p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm" dir="ltr"/>

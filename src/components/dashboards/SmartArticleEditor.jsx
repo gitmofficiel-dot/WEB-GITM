@@ -28,6 +28,8 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
   const [mainImage, setMainImage] = useState(initialData?.mainImage || '');
   const [fbVideo, setFbVideo] = useState(initialData?.fbVideo || '');
   const [ytVideo, setYtVideo] = useState(initialData?.ytVideo || '');
+  const [updates, setUpdates] = useState(initialData?.updates || '');
+  const [additions, setAdditions] = useState(initialData?.additions || '');
   const [isZenMode, setIsZenMode] = useState(false);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [saveStatus, setSaveStatus] = useState(''); // 'saving', 'saved', ''
@@ -43,8 +45,10 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
   const fileInputRef = useRef(null);
 
   // AI Assistant States
-  const [aiLoading, setAiLoading] = useState(''); // 'intro', 'proofread', 'seo'
+  const [aiLoading, setAiLoading] = useState(''); // 'intro', 'proofread', 'seo', 'generate'
   const [seoScore, setSeoScore] = useState(null);
+  const [showAiModal, setShowAiModal] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
 
   // --- Auto-Save Drafts & Standalone Load ---
   useEffect(() => {
@@ -63,6 +67,8 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
             setMainImage(data.imageUrl || data.mainImage || '');
             setFbVideo(data.fbVideo || '');
             setYtVideo(data.ytVideo || '');
+            setUpdates(data.updates || '');
+            setAdditions(data.additions || '');
             setAttachments(data.attachments || []);
           }
         } catch (error) {
@@ -86,6 +92,8 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
           if (draft.mainImage) setMainImage(draft.mainImage);
           if (draft.fbVideo) setFbVideo(draft.fbVideo);
           if (draft.ytVideo) setYtVideo(draft.ytVideo);
+          if (draft.updates) setUpdates(draft.updates);
+          if (draft.additions) setAdditions(draft.additions);
         } catch (e) {
           console.error('Failed to parse draft', e);
         }
@@ -98,7 +106,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
     const timer = setTimeout(() => {
       if (titleAr || content) {
         setSaveStatus('saving');
-        localStorage.setItem('gitm_article_draft', JSON.stringify({ titleAr, titleEn, content, tags, category: selectedCategory, mainImage, fbVideo, ytVideo }));
+        localStorage.setItem('gitm_article_draft', JSON.stringify({ titleAr, titleEn, content, tags, category: selectedCategory, mainImage, fbVideo, ytVideo, updates, additions }));
         setTimeout(() => {
           setSaveStatus('saved');
           setLastSaved(new Date());
@@ -108,7 +116,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
     }, 3000); // Auto-save 3 seconds after last keystroke
 
     return () => clearTimeout(timer);
-  }, [titleAr, titleEn, content, tags, selectedCategory, mainImage, fbVideo, ytVideo]);
+  }, [titleAr, titleEn, content, tags, selectedCategory, mainImage, fbVideo, ytVideo, updates, additions]);
 
   // --- Quill Modules ---
   const modules = {
@@ -175,6 +183,8 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
           mainImage,
           fbVideo,
           ytVideo,
+          updates,
+          additions,
           author: user?.displayName || 'Admin',
           status: 'draft',
           updatedAt: serverTimestamp(),
@@ -201,7 +211,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
   };
 
   const handlePublish = async () => {
-    const articleData = { titleAr, titleEn, title: titleAr || titleEn, content, tags, category: selectedCategory, attachments, imageUrl: mainImage, mainImage, fbVideo, ytVideo };
+    const articleData = { titleAr, titleEn, title: titleAr || titleEn, content, tags, category: selectedCategory, attachments, imageUrl: mainImage, mainImage, fbVideo, ytVideo, updates, additions };
     localStorage.removeItem('gitm_article_draft');
     
     if (standalone) {
@@ -235,17 +245,81 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
     }
   };
 
-  // --- Mock AI Functions ---
-  const handleGenerateIntro = () => {
-    if (!titleAr) return alert(lang === 'ar' ? 'الرجاء إدخال العنوان أولاً' : 'Please enter a title first');
-    setAiLoading('intro');
-    setTimeout(() => {
-      const generatedIntro = lang === 'ar' 
-        ? `<p><strong>مقدمة تلقائية:</strong> يعكس هذا المقال بعنوان "${titleAr}" رؤية حديثة وتطوراً ملحوظاً في مسيرتنا التكنولوجية. من خلال هذه الأسطر، سنستكشف التفاصيل التقنية والإنجازات التي تم تحقيقها بفضل جهود فريقنا المتميز.</p><br/>`
-        : `<p><strong>Auto Intro:</strong> This article titled "${titleEn || titleAr}" reflects a modern vision and remarkable progress in our tech journey. Through these lines, we explore the technical details and achievements realized by our outstanding team.</p><br/>`;
-      setContent(generatedIntro + content);
+  // --- Mock & Real AI Functions ---
+  const handleGenerateArticle = async () => {
+    if (!aiPrompt) return alert(lang === 'ar' ? 'الرجاء إدخال فكرة المقال أولاً' : 'Please enter the article topic first');
+    setAiLoading('generate');
+    try {
+      const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+      if (!apiKey) {
+        toast.error(lang === 'ar' ? 'مفتاح OpenRouter (VITE_OPENROUTER_API_KEY) غير موجود في .env' : 'OpenRouter API key (VITE_OPENROUTER_API_KEY) missing in .env');
+        setAiLoading('');
+        return;
+      }
+      
+      const fallbackModels = [
+        "nvidia/nemotron-3-nano-omni",
+        "nvidia/nemotron-nano-9b-v2",
+        "google/gemma-4-26b-a4b-it",
+        "nvidia/nemotron-nano-12b-2-vl",
+        "openai/gpt-oss-20b",
+        "google/gemma-4-31b-it",
+        "google/gemini-2.5-flash",
+        "meta-llama/llama-3.3-70b-instruct",
+        "openai/gpt-4o-mini",
+        "openrouter/auto"
+      ];
+
+      let success = false;
+      let generatedContent = '';
+
+      for (const model of fallbackModels) {
+        try {
+          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+              "HTTP-Referer": "https://gitm.ma",
+              "X-Title": "GITM Dashboard"
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [
+                { role: "system", content: "You are a professional journalist for a Moroccan technology institute called GITM. Write a well-structured HTML article without markdown wrappers (use <h2>, <h3>, <p>, <ul>, <strong>). The article must be highly engaging, informative, and professional. The language should be " + (lang === 'ar' ? 'Arabic' : 'English') + "." },
+                { role: "user", content: `Write a comprehensive, professional article about: ${aiPrompt}` }
+              ]
+            })
+          });
+
+          if (!response.ok) throw new Error(`Model ${model} failed with status ${response.status}`);
+          
+          const data = await response.json();
+          if (data.choices && data.choices[0] && data.choices[0].message?.content) {
+            generatedContent = data.choices[0].message.content;
+            success = true;
+            console.log(`Successfully generated using model: ${model}`);
+            break; // Exit the loop on success
+          }
+        } catch (err) {
+          console.warn(`Model ${model} failed, trying next...`, err);
+        }
+      }
+
+      if (success) {
+        setContent(generatedContent + content);
+        toast.success(lang === 'ar' ? 'تم إنشاء المقال بنجاح!' : 'Article generated successfully!');
+        setShowAiModal(false);
+        setAiPrompt('');
+      } else {
+        throw new Error("All fallback models failed to generate content.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(lang === 'ar' ? 'فشلت جميع النماذج في التوليد، يرجى المحاولة لاحقاً' : 'All models failed to generate, please try again later');
+    } finally {
       setAiLoading('');
-    }, 2000);
+    }
   };
 
   const handleProofread = () => {
@@ -298,6 +372,23 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
             className="prose dark:prose-invert max-w-none prose-img:rounded-2xl prose-img:shadow-xl prose-pre:bg-white dark:bg-slate-900 prose-pre:rounded-xl"
             dangerouslySetInnerHTML={{ __html: content || (lang === 'ar' ? '<p>محتوى المقال...</p>' : '<p>Article content...</p>') }}
           />
+
+          {(updates || additions) && (
+            <div className="mt-12 p-6 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700">
+              {updates && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2"><Activity size={18}/> {lang === 'ar' ? 'تحديثات' : 'Updates'}</h3>
+                  <div className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{updates}</div>
+                </div>
+              )}
+              {additions && (
+                <div>
+                  <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-400 mb-2 flex items-center gap-2"><Plus size={18}/> {lang === 'ar' ? 'إضافات' : 'Additions'}</h3>
+                  <div className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{additions}</div>
+                </div>
+              )}
+            </div>
+          )}
 
           {tags.length > 0 && (
             <div className="mt-12 pt-6 border-t border-slate-200 dark:border-slate-700 flex flex-wrap gap-2">
@@ -365,6 +456,39 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
                 {lang === 'ar' ? 'إلغاء' : 'Cancel'}
               </button>
             </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* AI Generator Modal */}
+      {showAiModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4 bg-slate-900/50 backdrop-blur-sm">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-2xl max-w-lg w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                <Sparkles size={24} /> {lang === 'ar' ? 'توليد مقال بالذكاء الاصطناعي' : 'Generate Article with AI'}
+              </h3>
+              <button onClick={() => setShowAiModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><X size={20}/></button>
+            </div>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+              {lang === 'ar' ? 'استخدم قوة OpenRouter لكتابة مقال صحفي متكامل، أدخل الموضوع أو الفكرة الرئيسية أدناه:' : 'Use the power of OpenRouter to write a comprehensive article. Enter the topic below:'}
+            </p>
+            <textarea
+              rows={4}
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              placeholder={lang === 'ar' ? 'مثال: اكتب مقالاً عن أهمية الذكاء الاصطناعي في التعليم الجامعي بالمغرب...' : 'Example: Write an article about the impact of AI in Moroccan education...'}
+              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-indigo-500 text-slate-800 dark:text-slate-200 resize-none mb-4"
+              dir="auto"
+            />
+            <button 
+              onClick={handleGenerateArticle}
+              disabled={!aiPrompt || aiLoading === 'generate'}
+              className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all hover:shadow-lg disabled:opacity-50"
+            >
+              {aiLoading === 'generate' ? <Activity size={18} className="animate-spin" /> : <Bot size={18} />}
+              {aiLoading === 'generate' ? (lang === 'ar' ? 'جاري التوليد...' : 'Generating...') : (lang === 'ar' ? 'توليد المقال الآن' : 'Generate Article Now')}
+            </button>
           </motion.div>
         </div>
       )}
@@ -442,6 +566,34 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
             />
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="glass-card rounded-2xl p-5 shadow-lg border-l-4 border-blue-500">
+              <h3 className="font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 mb-3">
+                 <Activity size={18} className="text-blue-500"/> {lang === 'ar' ? 'تحديثات للمقال (Updates)' : 'Article Updates'}
+              </h3>
+              <textarea
+                value={updates}
+                onChange={e => setUpdates(e.target.value)}
+                placeholder={lang === 'ar' ? 'أضف تحديثات جديدة لهذا المقال بمرور الوقت...' : 'Add time-based updates for this article...'}
+                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-blue-500 text-sm h-24 resize-none text-slate-700 dark:text-slate-300"
+                dir="auto"
+              />
+            </div>
+            
+            <div className="glass-card rounded-2xl p-5 shadow-lg border-l-4 border-emerald-500">
+              <h3 className="font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 mb-3">
+                 <Layers size={18} className="text-emerald-500"/> {lang === 'ar' ? 'إضافات وملاحظات (Additions)' : 'Additions & Highlights'}
+              </h3>
+              <textarea
+                value={additions}
+                onChange={e => setAdditions(e.target.value)}
+                placeholder={lang === 'ar' ? 'أضف ملاحظات أو إضافات بارزة...' : 'Add extra highlights or notes...'}
+                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-emerald-500 text-sm h-24 resize-none text-slate-700 dark:text-slate-300"
+                dir="auto"
+              />
+            </div>
+          </div>
+
           <div className="glass-card rounded-2xl p-5 shadow-lg space-y-4">
             <h3 className="font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
                <Globe size={18} className="text-blue-500"/> {lang === 'ar' ? 'الوسائط المتعددة (روابط وتضمين)' : 'Media & Embeds'}
@@ -478,12 +630,12 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
               
               <div className="space-y-3 relative z-10">
                 <button 
-                  onClick={handleGenerateIntro}
+                  onClick={() => setShowAiModal(true)}
                   disabled={aiLoading !== ''}
                   className="w-full flex justify-between items-center px-4 py-3 bg-white/50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-50 dark:bg-slate-800 rounded-xl font-bold text-sm text-indigo-700 dark:text-indigo-300 transition-colors border border-indigo-200 dark:border-indigo-800"
                 >
-                  {lang === 'ar' ? 'صياغة مقدمة جذابة' : 'Generate Catchy Intro'}
-                  {aiLoading === 'intro' ? <Activity size={16} className="animate-spin" /> : <Bot size={16} />}
+                  {lang === 'ar' ? 'توليد مقال احترافي (OpenRouter)' : 'Generate Professional Article'}
+                  {aiLoading === 'generate' ? <Activity size={16} className="animate-spin" /> : <Bot size={16} />}
                 </button>
                 
                 <button 
