@@ -188,9 +188,6 @@ export default function ContentManagerDashboard() {
     }));
 
     const queue = [...drafts, ...eventDrafts];
-    if (queue.length === 0 && !loadingArticles && !loadingEvents) {
-      queue.push({ id: 'dummy', title: 'New IoT Workshop Announcement', titleAr: 'إعلان ورشة إنترنت الأشياء', type: 'article', author: 'Fatima Zahra', submittedDate: '2026-06-24', priority: 'high' });
-    }
     setPublishQueue(queue);
 
     // Dynamically compute SEO data

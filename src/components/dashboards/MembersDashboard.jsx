@@ -55,7 +55,7 @@ export default function MembersDashboard() {
     }
   };
 
-  const roles = ['student', 'member', 'instructor', 'content_manager', 'admin'];
+  const roles = ['student', 'member', 'teacher', 'content_manager', 'partner', 'university', 'supervisor', 'president'];
 
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },

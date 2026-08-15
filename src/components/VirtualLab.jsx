@@ -198,25 +198,25 @@ export default function VirtualLab() {
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 bg-white/ dark:bg-slate-900/ backdrop-blur-md px-8 py-4 rounded-3xl border border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.2)]">
           <div className="flex gap-2">
             <button 
-              onClick={() => fetchData('posts')}
+              onClick={() => fetchData('telemetry')}
               disabled={loading}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'posts' ? 'bg-cyan-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)]' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'telemetry' ? 'bg-cyan-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)]' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
             >
-              Fetch Sensor Data
+              Live Telemetry
             </button>
             <button 
-              onClick={() => fetchData('users')}
+              onClick={() => fetchData('nodes')}
               disabled={loading}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'users' ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'nodes' ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
             >
-              Fetch User Auth
+              Cluster Nodes
             </button>
             <button 
-              onClick={() => fetchData('todos')}
+              onClick={() => fetchData('logs')}
               disabled={loading}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'todos' ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'logs' ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
             >
-              Fetch System Logs
+              System Logs
             </button>
           </div>
           <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Left Click Node: View Data | Drag: Rotate | Scroll: Zoom</p>

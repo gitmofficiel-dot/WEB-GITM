@@ -340,10 +340,8 @@ export default function MemberDashboard() {
             </div>
           </motion.div>
         ) : (
-          <motion.div key="wip" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-12 text-center">
-            <LayoutDashboard size={48} className="mx-auto mb-4 text-rose-500/50" />
-            <h2 className="text-2xl font-orbitron text-white mb-2">{lang === 'ar' ? 'قريباً' : 'Coming Soon'}</h2>
-            <p className="text-gray-400">{lang === 'ar' ? 'هذه الوحدة قيد التطوير' : 'This module is under development.'}</p>
+          <motion.div key="overview-fallback" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+            <InspirationCard lang={lang} />
           </motion.div>
         )}
       </AnimatePresence>

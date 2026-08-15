@@ -68,7 +68,7 @@ export default function StudentDashboard() {
   }, []);
 
   const handleShareCert = (certId) => {
-    const link = `https://gitm.ma/verify/${certId}`;
+    const link = `${window.location.origin}/verify-certificate?id=${certId}`;
     navigator.clipboard.writeText(link);
     setCopiedLink(certId);
     setTimeout(() => setCopiedLink(null), 2000);
