@@ -6,7 +6,8 @@ const Methodology = () => {
   const { t, lang } = useLanguage();
   const [activeStep, setActiveStep] = useState(0);
 
-  const stepsData = t('methodology.steps');
+  const stepsRaw = t('methodology.steps');
+  const stepsData = Array.isArray(stepsRaw) ? stepsRaw : [];
   
   const stepIcons = [Clipboard, Code, ShieldCheck, Layers];
 

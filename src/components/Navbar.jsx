@@ -16,6 +16,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langDropdown, setLangDropdown] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
+  const [toolsDropdown, setToolsDropdown] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -87,6 +88,20 @@ const Navbar = () => {
     { id: 'about-us', path: '/about-us', label: { ar: 'من نحن', en: 'About Us' } }
   ];
 
+  const toolItems = [
+    { id: 'hackathon', path: '/hackathon-arena', label: { ar: 'حلبة الهاكاثون', en: 'Hackathon Arena' }, icon: '⚡' },
+    { id: 'hardware', path: '/hardware-request', label: { ar: 'طلب عتاد ومعدات', en: 'Hardware Request' }, icon: '🔌' },
+    { id: 'digital-twin', path: '/digital-twin', label: { ar: 'منصة التوأم الرقمي', en: 'Digital Twin' }, icon: '🛰️' },
+    { id: 'arch', path: '/architecture-builder', label: { ar: 'منشئ البنى الهندسية', en: 'Architecture Builder' }, icon: '📐' },
+    { id: 'talent', path: '/talent-hub', label: { ar: 'سوق الكفاءات والخبراء', en: 'Talent Hub' }, icon: '💼' },
+    { id: 'virtual-lab', path: '/virtual-lab', label: { ar: 'المختبر الافتراضي IoT', en: 'Virtual Lab' }, icon: '🔬' },
+    { id: 'collab', path: '/collab-board', label: { ar: 'لوحة التعاون المباشر', en: 'Collab Board' }, icon: '📋' },
+    { id: 'verify', path: '/verify-certificate', label: { ar: 'التحقق من الشهادات', en: 'Verify Certificate' }, icon: '🎓' },
+    { id: 'archive', path: '/archive', label: { ar: 'الأرشيف والوثائق', en: 'Archive' }, icon: '📁' },
+    { id: 'methodology', path: '/methodology', label: { ar: 'منهجية العمل', en: 'Methodology' }, icon: '⚙️' },
+    { id: 'contact', path: '/contact', label: { ar: 'اتصل بنا', en: 'Contact Us' }, icon: '✉️' }
+  ];
+
   return (
     <>
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'glass-nav py-3 shadow-soft' : 'bg-transparent py-5'}`}>
@@ -119,6 +134,49 @@ const Navbar = () => {
                 </button>
               );
             })}
+
+            {/* Innovation Tools Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setToolsDropdown(!toolsDropdown)}
+                className={`flex items-center gap-1 px-2 lg:px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  toolsDropdown 
+                    ? 'text-gitm-blue dark:text-gitm-cyan bg-blue-50/50 dark:bg-blue-900/20' 
+                    : 'text-gitm-textLight dark:text-gitm-textDark hover:text-gitm-blue dark:hover:text-gitm-cyan hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
+                }`}
+              >
+                <span>{lang === 'ar' ? 'أدوات الابتكار' : 'Innovation Hub'}</span>
+                <ChevronDown size={14} className={`transition-transform duration-200 ${toolsDropdown ? 'rotate-180' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {toolsDropdown && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setToolsDropdown(false)} />
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-72 bg-white/95 dark:bg-[#0d1527]/95 backdrop-blur-xl border border-gray-200 dark:border-cyan-500/20 rounded-2xl shadow-2xl z-50 p-2 grid grid-cols-1 gap-1"
+                    >
+                      <div className="px-3 py-2 text-xs font-bold text-gray-400 dark:text-cyan-400/80 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800">
+                        {lang === 'ar' ? 'الأدوات والخدمات المتقدمة' : 'Advanced Engineering Tools'}
+                      </div>
+                      {toolItems.map(tool => (
+                        <button
+                          key={tool.id}
+                          onClick={() => { navigate(tool.path); setToolsDropdown(false); }}
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10 hover:text-gitm-blue dark:hover:text-cyan-300 transition-all text-left rtl:text-right"
+                        >
+                          <span className="text-base">{tool.icon}</span>
+                          <span>{lang === 'ar' ? tool.label.ar : tool.label.en}</span>
+                        </button>
+                      ))}
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
           </nav>
 
           {/* Right Controls */}
@@ -384,6 +442,25 @@ const Navbar = () => {
                   </button>
                 );
               })}
+
+              {/* Innovation Tools in Mobile Menu */}
+              <div className="mt-2 pt-4 border-t border-gray-200 dark:border-gitm-borderDark">
+                <h4 className="text-xs font-bold text-gray-500 dark:text-cyan-400 uppercase tracking-wider mb-2 px-1">
+                  {lang === 'ar' ? 'أدوات الابتكار والخدمات' : 'Innovation Hub'}
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {toolItems.map(tool => (
+                    <button
+                      key={tool.id}
+                      onClick={() => { navigate(tool.path); setMobileOpen(false); }}
+                      className="flex items-center gap-2 p-2.5 rounded-xl bg-gray-50 dark:bg-gitm-cardDark hover:bg-cyan-500/10 text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors text-left rtl:text-right"
+                    >
+                      <span>{tool.icon}</span>
+                      <span className="truncate">{lang === 'ar' ? tool.label.ar : tool.label.en}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
               
               {/* Theme Toggle in Mobile Menu */}
               <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gitm-borderDark">

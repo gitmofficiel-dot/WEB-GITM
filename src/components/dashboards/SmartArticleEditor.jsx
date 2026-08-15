@@ -286,7 +286,6 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
             body: JSON.stringify({
               model: model,
               messages: [
-              messages: [
                 { role: "system", content: "You are a professional journalist for a Moroccan technology institute called GITM. You MUST output your response as a valid JSON object ONLY, with exactly three keys: 'titleAr' (a catchy Arabic title), 'titleEn' (a catchy English title), and 'content' (a well-structured HTML article without markdown wrappers, using <h2>, <h3>, <p>, <ul>, <strong>). The article must be highly engaging, informative, and professional. The content should be primarily in " + (lang === 'ar' ? 'Arabic' : 'English') + "." },
                 { role: "user", content: `Write a comprehensive, professional article about: ${aiPrompt}. Please return only JSON.` }
               ]

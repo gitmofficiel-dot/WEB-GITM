@@ -1,0 +1,29 @@
+# Robots.txt for GITM - Groupe Innovation Technologique Maroc
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /editor/
+
+# AI Crawlers & LLM Indexing (Explicitly Allowed for Knowledge Graph Discovery)
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+Sitemap: https://gitm.pages.dev/sitemap.xml

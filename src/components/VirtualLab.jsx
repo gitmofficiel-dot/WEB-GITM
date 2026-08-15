@@ -108,18 +108,35 @@ export default function VirtualLab() {
   const fetchData = async (type) => {
     setLoading(true);
     setDataType(type);
-    try {
-      const res = await fetch(`https://jsonplaceholder.typicode.com/${type}?_limit=3`);
-      const data = await res.json();
-      setTestDataItems(data);
-    } catch (err) {
-      console.error(err);
-    }
+    
+    // Realistic Edge AI & IoT node telemetry simulation
+    const simulatedSensors = [
+      {
+        id: 'node-01',
+        name: 'STM32-H7 Dual Core MCU',
+        title: 'Core Computing Cluster',
+        body: `CPU Frequency: 480 MHz | Core Temp: ${(38 + Math.random() * 8).toFixed(1)}°C | RAM: 1024 KB (62% used) | AI Inference: ${(14.2 + Math.random() * 2).toFixed(2)}ms (MobileNet-v2)`
+      },
+      {
+        id: 'node-02',
+        name: 'Environmental Sensor Pod Alpha',
+        title: 'Atmospheric & Soil Telemetry',
+        body: `Ambient Temp: ${(22 + Math.random() * 4).toFixed(1)}°C | Humidity: ${(45 + Math.random() * 10).toFixed(0)}% | Pressure: ${(1013 + Math.random() * 5).toFixed(1)} hPa | Gas Index: 88 AQI`
+      },
+      {
+        id: 'node-03',
+        name: 'LoRaWAN + 5G Gateway Hub',
+        title: 'Long-Range Mesh Uplink',
+        body: `Uplink Signal (RSSI): -${(75 + Math.random() * 10).toFixed(0)} dBm | SNR: +8.5 dB | Packet Delivery: 99.8% | Active Nodes: 18 Nodes`
+      }
+    ];
+
+    setTestDataItems(simulatedSensors);
     setLoading(false);
   };
 
   React.useEffect(() => {
-    fetchData('posts');
+    fetchData('telemetry');
   }, []);
 
   return (

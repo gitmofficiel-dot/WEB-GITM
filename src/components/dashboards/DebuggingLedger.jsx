@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Search, Tag, ThumbsUp, Code, Terminal, MessageSquare, Plus, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { BookOpen, Search, Tag, ThumbsUp, Code, Terminal, MessageSquare, Plus, CheckCircle, ChevronUp, X, Send } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
+import { useFirestore } from '../../hooks/useFirestore';
 
-const MOCK_ENTRIES = [
+const DEFAULT_ENTRIES = [
   {
-    id: 1,
+    id: 'default-1',
     title: 'ESP32 Brownout Detector was triggered',
     category: 'Hardware',
     tags: ['ESP32', 'Power', 'Bootloop'],
@@ -16,7 +18,7 @@ const MOCK_ENTRIES = [
     isResolved: true
   },
   {
-    id: 2,
+    id: 'default-2',
     title: 'React useEffect infinite loop',
     category: 'Software',
     tags: ['React', 'Hooks', 'JavaScript'],
@@ -30,12 +32,81 @@ const MOCK_ENTRIES = [
 
 export default function DebuggingLedger() {
   const { lang } = useLanguage();
+  const { currentUser } = useAuth();
+  const { data: firestoreEntries, addDocument, updateDocument, subscribeToDocs } = useFirestore('debugging_ledger');
+  
   const [search, setSearch] = useState('');
   const [expandedId, setExpandedId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [entries, setEntries] = useState(DEFAULT_ENTRIES);
 
-  const filteredEntries = MOCK_ENTRIES.filter(entry => 
-    entry.title.toLowerCase().includes(search.toLowerCase()) || 
-    entry.tags.some(t => t.toLowerCase().includes(search.toLowerCase()))
+  // Form state
+  const [newTitle, setNewTitle] = useState('');
+  const [newCategory, setNewCategory] = useState('Hardware');
+  const [newTags, setNewTags] = useState('');
+  const [newProblem, setNewProblem] = useState('');
+  const [newSolution, setNewSolution] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const unsub = subscribeToDocs([], [], (docs) => {
+      if (docs && docs.length > 0) {
+        setEntries([...docs, ...DEFAULT_ENTRIES.filter(d => !docs.some(doc => doc.id === d.id))]);
+      } else {
+        setEntries(DEFAULT_ENTRIES);
+      }
+    });
+    return () => {
+      if (typeof unsub === 'function') unsub();
+    };
+  }, [subscribeToDocs]);
+
+  const handleVote = async (entry, e) => {
+    e.stopPropagation();
+    const newVotes = (entry.votes || 0) + 1;
+    if (entry.id.startsWith('default-')) {
+      setEntries(prev => prev.map(item => item.id === entry.id ? { ...item, votes: newVotes } : item));
+    } else {
+      await updateDocument(entry.id, { votes: newVotes });
+    }
+  };
+
+  const handleAddEntry = async (e) => {
+    e.preventDefault();
+    if (!newTitle.trim() || !newProblem.trim() || !newSolution.trim()) return;
+
+    setSubmitting(true);
+    try {
+      const entryData = {
+        title: newTitle.trim(),
+        category: newCategory,
+        tags: newTags.split(',').map(t => t.trim()).filter(Boolean),
+        problem: newProblem.trim(),
+        solution: newSolution.trim(),
+        author: currentUser?.name || 'GITM Engineer',
+        authorId: currentUser?.uid || null,
+        votes: 1,
+        isResolved: true,
+        createdAt: new Date().toISOString()
+      };
+
+      await addDocument(entryData);
+      setShowModal(false);
+      setNewTitle('');
+      setNewTags('');
+      setNewProblem('');
+      setNewSolution('');
+    } catch (err) {
+      console.error('Error adding debug ledger entry:', err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const filteredEntries = entries.filter(entry => 
+    entry.title?.toLowerCase().includes(search.toLowerCase()) || 
+    entry.tags?.some(t => t.toLowerCase().includes(search.toLowerCase())) ||
+    entry.problem?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -48,23 +119,26 @@ export default function DebuggingLedger() {
            </h2>
            <p className="text-slate-500">
              {lang === 'ar' 
-               ? 'قاعدة المعرفة الخاصة بأعضاء GITM لحل المشاكل التقنية والأخطاء الشائعة.' 
-               : 'GITM internal knowledge base for solving common technical errors and bugs.'}
+               ? 'قاعدة المعرفة الحية لأعضاء GITM لحل وتوثيق المشاكل التقنية والأخطاء الشائعة.' 
+               : 'Live knowledge base for GITM engineers to solve and document common hardware/software bugs.'}
            </p>
          </div>
-         <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 shrink-0">
+         <button 
+           onClick={() => setShowModal(true)}
+           className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 shrink-0"
+         >
            <Plus size={18} /> {lang === 'ar' ? 'توثيق خطأ جديد' : 'Document New Error'}
          </button>
       </div>
 
       <div className="relative mb-8 max-w-2xl mx-auto w-full">
-         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 dark:text-slate-400" size={20} />
+         <Search className="absolute left-4 rtl:right-4 rtl:left-auto top-1/2 -translate-y-1/2 text-slate-400" size={20} />
          <input 
            type="text" 
            value={search}
            onChange={(e) => setSearch(e.target.value)}
            placeholder={lang === 'ar' ? 'ابحث عن خطأ (مثال: ESP32, React, NullPointer)' : 'Search errors (e.g. ESP32, React, NullPointer)'}
-           className="w-full bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-2xl py-4 pl-12 pr-4 text-slate-700 dark:text-slate-200 outline-none focus:border-emerald-500 transition-colors shadow-sm"
+           className="w-full bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-2xl py-4 pl-12 pr-4 rtl:pr-12 rtl:pl-4 text-slate-700 dark:text-slate-200 outline-none focus:border-emerald-500 transition-colors shadow-sm"
          />
       </div>
 
@@ -86,8 +160,14 @@ export default function DebuggingLedger() {
                   onClick={() => setExpandedId(isExpanded ? null : entry.id)}
                 >
                   <div className="flex flex-col items-center gap-1 shrink-0 w-12 pt-1">
-                    <button className="text-slate-600 dark:text-slate-400 hover:text-emerald-500 transition-colors"><ChevronUp size={24}/></button>
-                    <span className="font-bold text-slate-600 dark:text-slate-300">{entry.votes}</span>
+                    <button 
+                      onClick={(e) => handleVote(entry, e)}
+                      className="text-slate-400 hover:text-emerald-500 transition-colors active:scale-125"
+                      title="Upvote"
+                    >
+                      <ChevronUp size={24}/>
+                    </button>
+                    <span className="font-bold text-slate-600 dark:text-slate-300 text-sm">{entry.votes || 0}</span>
                   </div>
                   
                   <div className="flex-1 min-w-0">
@@ -100,7 +180,7 @@ export default function DebuggingLedger() {
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${entry.category === 'Hardware' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'}`}>
                         {entry.category}
                       </span>
-                      {entry.tags.map(tag => (
+                      {entry.tags?.map(tag => (
                         <span key={tag} className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 flex items-center gap-1">
                           <Tag size={10}/> {tag}
                         </span>
@@ -131,8 +211,7 @@ export default function DebuggingLedger() {
                         </div>
 
                         <div className="flex justify-between items-center text-xs text-slate-600 dark:text-slate-400 pt-4 border-t border-slate-200 dark:border-slate-700">
-                          <span>Documented by: <strong className="text-slate-600 dark:text-slate-300">{entry.author}</strong></span>
-                          <button className="flex items-center gap-1 hover:text-emerald-500 transition-colors"><MessageSquare size={14}/> Reply/Discuss</button>
+                          <span>{lang === 'ar' ? 'تم التوثيق بواسطة:' : 'Documented by:'} <strong className="text-slate-700 dark:text-slate-200">{entry.author}</strong></span>
                         </div>
                       </div>
                     </motion.div>
@@ -150,6 +229,110 @@ export default function DebuggingLedger() {
           </div>
         )}
       </div>
+
+      {/* Add New Entry Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-xl w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <h3 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                  <Plus className="text-emerald-500" /> {lang === 'ar' ? 'توثيق خطأ وحل هندسي' : 'Document Error & Solution'}
+                </h3>
+                <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddEntry} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">{lang === 'ar' ? 'عنوان المشكلة' : 'Error Title'}</label>
+                  <input 
+                    type="text" 
+                    required 
+                    value={newTitle} 
+                    onChange={e => setNewTitle(e.target.value)} 
+                    placeholder={lang === 'ar' ? 'مثال: خطأ في توصيل مستشعر MPU6050 عبر I2C' : 'e.g. I2C Bus collision on MPU6050'}
+                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">{lang === 'ar' ? 'المجال' : 'Category'}</label>
+                    <select 
+                      value={newCategory} 
+                      onChange={e => setNewCategory(e.target.value)}
+                      className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none"
+                    >
+                      <option value="Hardware">Hardware / Embedded</option>
+                      <option value="Software">Software / Full-Stack</option>
+                      <option value="AI / ML">AI / Machine Learning</option>
+                      <option value="IoT">IoT / Networking</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">{lang === 'ar' ? 'الوسوم (مفصولة بفاصلة)' : 'Tags (comma-separated)'}</label>
+                    <input 
+                      type="text" 
+                      value={newTags} 
+                      onChange={e => setNewTags(e.target.value)} 
+                      placeholder="STM32, I2C, Pullup"
+                      className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">{lang === 'ar' ? 'تفاصيل المشكلة والخطأ' : 'Problem Description'}</label>
+                  <textarea 
+                    rows={3} 
+                    required 
+                    value={newProblem} 
+                    onChange={e => setNewProblem(e.target.value)} 
+                    placeholder={lang === 'ar' ? 'اشرح ما يحدث والرسالة التي ظهرت...' : 'Describe symptoms and terminal output...'}
+                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-1">{lang === 'ar' ? 'الحل المعتمد والخطوات' : 'Documented Solution'}</label>
+                  <textarea 
+                    rows={4} 
+                    required 
+                    value={newSolution} 
+                    onChange={e => setNewSolution(e.target.value)} 
+                    placeholder={lang === 'ar' ? 'اكتب الحل خطوة بخطوة مع الأكواد إن وجدت...' : 'Step by step fix and code snippets...'}
+                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none resize-none font-mono"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <button 
+                    type="button" 
+                    onClick={() => setShowModal(false)} 
+                    className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+                  </button>
+                  <button 
+                    type="submit" 
+                    disabled={submitting}
+                    className="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 flex items-center gap-2"
+                  >
+                    <Send size={16} /> {submitting ? '...' : (lang === 'ar' ? 'نشر في القاعدة' : 'Publish Entry')}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

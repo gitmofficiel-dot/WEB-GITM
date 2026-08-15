@@ -226,12 +226,60 @@ const ClassroomTabs = ({ lesson, courseDescription }) => {
             )}
 
             {activeTab === 'visuals' && (
-              <div className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
-                 <ImageIcon size={48} className="text-slate-600 dark:text-slate-300 mb-4" />
-                 <p className="text-slate-500 font-bold">{lang === 'ar' ? 'مساحة المخططات والصور قيد التطوير' : 'Visuals space under development'}</p>
-                 <button className="mt-4 text-teal-500 flex items-center gap-2 text-sm font-bold hover:underline">
-                   <ZoomIn size={16} /> {lang === 'ar' ? 'تكبير المخطط' : 'Zoom Schematic'}
-                 </button>
+              <div className="flex flex-col gap-4 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-800/60 p-6">
+                <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-slate-700">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon size={20} className="text-cyan-500" />
+                    <h4 className="font-bold text-sm text-[#1e3a5f] dark:text-white">
+                      {lang === 'ar' ? 'المخطط الهندسي والبنية التفاعلية للدرس' : 'Lesson Schematic & Architecture Blueprint'}
+                    </h4>
+                  </div>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-500 font-mono font-bold">
+                    {lesson?.title || 'Interactive Schematic v2.4'}
+                  </span>
+                </div>
+
+                {/* Interactive Schematic Board */}
+                <div className="relative aspect-video max-h-72 w-full rounded-xl bg-slate-900 border border-cyan-500/30 overflow-hidden flex items-center justify-center p-4">
+                  <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
+                  
+                  {/* Schematic Interactive Elements */}
+                  <div className="relative z-10 flex flex-wrap items-center justify-center gap-3 md:gap-6 text-center">
+                    <div className="p-3 bg-cyan-950/80 border border-cyan-400/50 rounded-xl shadow-lg hover:scale-105 transition-transform cursor-pointer">
+                      <span className="text-xl">🎛️</span>
+                      <p className="text-xs font-mono font-bold text-cyan-300 mt-1">MCU Controller</p>
+                      <span className="text-[10px] text-gray-400">STM32 / ESP32</span>
+                    </div>
+
+                    <div className="text-cyan-400 font-mono text-sm">➔ [SPI / I2C] ➔</div>
+
+                    <div className="p-3 bg-blue-950/80 border border-blue-400/50 rounded-xl shadow-lg hover:scale-105 transition-transform cursor-pointer">
+                      <span className="text-xl">📡</span>
+                      <p className="text-xs font-mono font-bold text-blue-300 mt-1">Edge AI Unit</p>
+                      <span className="text-[10px] text-gray-400">NPU Tensor Core</span>
+                    </div>
+
+                    <div className="text-blue-400 font-mono text-sm">➔ [MQTT] ➔</div>
+
+                    <div className="p-3 bg-emerald-950/80 border border-emerald-400/50 rounded-xl shadow-lg hover:scale-105 transition-transform cursor-pointer">
+                      <span className="text-xl">☁️</span>
+                      <p className="text-xs font-mono font-bold text-emerald-300 mt-1">GITM Cloud Sync</p>
+                      <span className="text-[10px] text-gray-400">Real-time Telemetry</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-xs text-slate-500">
+                  <span>{lang === 'ar' ? 'انقر على أي وحدة لاستعراض مواصفات التوصيل البرمجي' : 'Click components to inspect pinout & interface details'}</span>
+                  <a 
+                    href={lesson?.attachmentUrl || '#'} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="text-cyan-500 flex items-center gap-1.5 font-bold hover:underline"
+                  >
+                    <ZoomIn size={14} /> {lang === 'ar' ? 'تحميل المخطط بدقة عالية (PDF)' : 'Download Full Blueprint (PDF)'}
+                  </a>
+                </div>
               </div>
             )}
 

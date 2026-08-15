@@ -31,6 +31,14 @@ const ProjectDetails = lazy(() => import('./components/ProjectDetails'));
 const VirtualLab = lazy(() => import('./components/VirtualLab'));
 const CollaborationBoard = lazy(() => import('./components/CollaborationBoard'));
 const LibraryBookDetails = lazy(() => import('./components/LibraryBookDetails'));
+const HackathonArena = lazy(() => import('./components/HackathonArena'));
+const HardwareRequest = lazy(() => import('./components/HardwareRequest'));
+const DigitalTwin = lazy(() => import('./components/DigitalTwin'));
+const ArchitectureBuilder = lazy(() => import('./components/ArchitectureBuilder'));
+const TalentHub = lazy(() => import('./components/TalentHub'));
+const Contact = lazy(() => import('./components/Contact'));
+const Archive = lazy(() => import('./components/Archive'));
+const Methodology = lazy(() => import('./components/Methodology'));
 
 // Dashboards
 const PresidentDashboard = lazy(() => import('./components/dashboards/PresidentDashboard'));
@@ -102,6 +110,14 @@ const AppContent = () => {
         <Route path="/project-details/:id" element={<ProjectDetails />} />
         <Route path="/virtual-lab" element={<VirtualLab />} />
         <Route path="/collab-board" element={<CollaborationBoard />} />
+        <Route path="/hackathon-arena" element={<HackathonArena />} />
+        <Route path="/hardware-request" element={<HardwareRequest />} />
+        <Route path="/digital-twin" element={<DigitalTwin />} />
+        <Route path="/architecture-builder" element={<ArchitectureBuilder />} />
+        <Route path="/talent-hub" element={<TalentHub />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/archive" element={<Archive />} />
+        <Route path="/methodology" element={<Methodology />} />
         <Route path="/login" element={<AuthForms initialMode="login" />} />
         <Route path="/register" element={<AuthForms initialMode="register" />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

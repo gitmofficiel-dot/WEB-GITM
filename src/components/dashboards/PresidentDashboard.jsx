@@ -816,6 +816,7 @@ export default function PresidentDashboard() {
                             <button onClick={() => handleDelete('project', project.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
                           </div>
                         </div>
+                      </div>
                     ))}
                   </div>
                 </div>
