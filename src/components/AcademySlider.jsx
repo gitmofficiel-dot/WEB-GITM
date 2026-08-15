@@ -122,7 +122,7 @@ const AcademySlider = () => {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-cyan-400 mb-2">
               {lang === 'ar' ? 'تعلّم وتطور' : 'Learn & Grow'}
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-slate-900 dark:text-white mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold font-sans font-bold tracking-tight text-slate-900 dark:text-white mb-3">
               {lang === 'ar' ? 'أكاديمية GITM' : 'GITM Academy'}
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full" />

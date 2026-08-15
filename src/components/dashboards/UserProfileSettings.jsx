@@ -397,7 +397,7 @@ export default function UserProfileSettings({ currentUser: propUser }) {
             <div className="w-full max-w-sm bg-gradient-to-br from-[#1e3a5f] to-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-700 relative text-white">
               {/* Card Header */}
               <div className="bg-teal-500/20 px-6 py-4 flex justify-between items-center border-b border-white/10">
-                <h3 className="font-orbitron font-black text-xl text-teal-400 tracking-wider">GITM</h3>
+                <h3 className="font-sans font-bold tracking-tight font-black text-xl text-teal-400 tracking-wider">GITM</h3>
                 <span className="text-xs uppercase tracking-widest font-bold text-slate-300">Member ID</span>
               </div>
               

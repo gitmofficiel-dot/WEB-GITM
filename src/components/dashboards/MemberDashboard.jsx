@@ -115,7 +115,7 @@ export default function MemberDashboard() {
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between bg-black/40 backdrop-blur-md p-4 rounded-3xl border border-white/10 shadow-sm mb-2 sticky top-20 z-40">
         <div>
-          <h2 className="text-xl font-orbitron font-bold text-white">{lang === 'ar' ? 'لوحة العضو' : 'Member Panel'}</h2>
+          <h2 className="text-xl font-sans font-bold tracking-tight font-bold text-white">{lang === 'ar' ? 'لوحة العضو' : 'Member Panel'}</h2>
           <p className="text-xs text-gray-400 mt-0.5">{currentUser?.name}</p>
         </div>
         <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg">
@@ -144,7 +144,7 @@ export default function MemberDashboard() {
             }`}
           >
             <tab.icon size={18} />
-            <span className="font-orbitron">{tab.label}</span>
+            <span className="font-sans font-bold tracking-tight">{tab.label}</span>
           </button>
         ))}
       </div>
@@ -179,7 +179,7 @@ export default function MemberDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="glass-card p-6">
-                <h3 className="text-xl font-orbitron text-white mb-4 flex items-center gap-2">
+                <h3 className="text-xl font-sans font-bold tracking-tight text-white mb-4 flex items-center gap-2">
                   <Calendar className="text-rose-400" />
                   {lang === 'ar' ? 'الأحداث القادمة' : 'Upcoming Events'}
                 </h3>
@@ -200,11 +200,14 @@ export default function MemberDashboard() {
 
               <div className="glass-card p-6 flex flex-col items-center justify-center text-center">
                 <Award size={48} className="text-yellow-400 mb-4" />
-                <h3 className="text-xl font-orbitron text-white mb-2">{lang === 'ar' ? 'احصل على شهاداتك' : 'Claim Your Certificates'}</h3>
+                <h3 className="text-xl font-sans font-bold tracking-tight text-white mb-2">{lang === 'ar' ? 'احصل على شهاداتك' : 'Claim Your Certificates'}</h3>
                 <p className="text-gray-400 mb-6">
                   {lang === 'ar' ? 'لديك شهادات جديدة متاحة للتحميل من ورشة العمل الأخيرة.' : 'You have new certificates available for download from the recent workshop.'}
                 </p>
-                <button className="px-6 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl transition-colors font-medium">
+                <button 
+                  onClick={() => setActiveTab('certificates')}
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors font-semibold text-sm shadow-sm"
+                >
                   {lang === 'ar' ? 'عرض الشهادات' : 'View Certificates'}
                 </button>
               </div>
@@ -214,7 +217,7 @@ export default function MemberDashboard() {
         ) : activeTab === 'projects' ? (
           <motion.div key="projects" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
             <div className="glass-card p-6">
-              <h3 className="text-xl font-orbitron text-white mb-6 flex items-center gap-2">
+              <h3 className="text-xl font-sans font-bold tracking-tight text-white mb-6 flex items-center gap-2">
                 <Code className="text-cyan-400" />
                 {lang === 'ar' ? 'مشاريعي وفرق العمل' : 'My Projects & Teams'}
               </h3>
@@ -292,7 +295,7 @@ export default function MemberDashboard() {
         ) : activeTab === 'events' ? (
           <motion.div key="events" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
             <div className="glass-card p-6">
-              <h3 className="text-xl font-orbitron text-white mb-6 flex items-center gap-2">
+              <h3 className="text-xl font-sans font-bold tracking-tight text-white mb-6 flex items-center gap-2">
                 <Calendar className="text-rose-400" />
                 {lang === 'ar' ? 'الأحداث المتاحة' : 'Available Events'}
               </h3>
@@ -323,14 +326,14 @@ export default function MemberDashboard() {
         ) : activeTab === 'certificates' ? (
           <motion.div key="certificates" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
             <div className="glass-card p-6">
-              <h3 className="text-xl font-orbitron text-white mb-6 flex items-center gap-2">
+              <h3 className="text-xl font-sans font-bold tracking-tight text-white mb-6 flex items-center gap-2">
                 <Award className="text-yellow-400" />
                 {lang === 'ar' ? 'الشهادات' : 'Certificates'}
               </h3>
               
               <div className="bg-white/5 dark:bg-slate-900/40 p-12 rounded-2xl border border-white/10 text-center">
                 <Award size={48} className="mx-auto mb-4 text-gray-600" />
-                <h2 className="text-xl font-orbitron text-white mb-2">{lang === 'ar' ? 'لا توجد شهادات بعد' : 'No Certificates Yet'}</h2>
+                <h2 className="text-xl font-sans font-bold tracking-tight text-white mb-2">{lang === 'ar' ? 'لا توجد شهادات بعد' : 'No Certificates Yet'}</h2>
                 <p className="text-gray-400">
                   {lang === 'ar' 
                     ? 'سيتم إضافة شهاداتك هنا بمجرد إكمال ورش العمل أو الهاكاثون.' 

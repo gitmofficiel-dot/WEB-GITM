@@ -113,7 +113,7 @@ export default function DebuggingLedger() {
     <div className="w-full bg-slate-50 dark:bg-[#0a0f1a] min-h-[600px] rounded-3xl border border-slate-200 dark:border-slate-800 p-6 md:p-10 font-sans shadow-xl flex flex-col">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
          <div>
-           <h2 className="text-3xl font-bold font-orbitron text-[#1e3a5f] dark:text-white flex items-center gap-3 mb-2">
+           <h2 className="text-3xl font-bold font-sans font-bold tracking-tight text-[#1e3a5f] dark:text-white flex items-center gap-3 mb-2">
              <BookOpen className="text-emerald-500" size={32} />
              {lang === 'ar' ? 'دفتر التصحيح الهندسي' : 'Debugging Ledger'}
            </h2>

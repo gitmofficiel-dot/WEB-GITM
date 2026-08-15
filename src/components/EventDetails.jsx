@@ -108,7 +108,7 @@ export default function EventDetails() {
               <span className="px-3 py-1 bg-cyan-500 text-white rounded-full text-xs font-bold uppercase shadow-lg">
                 {viewDetailsEvent.type || (viewDetailsEvent.scope ? txt(lang, 'Competition', 'مسابقة', 'Compétition', '竞赛') : 'Event')}
               </span>
-              <h2 className="text-3xl md:text-5xl font-orbitron font-bold text-[#1e3a5f] dark:text-white mt-3 drop-shadow-lg">
+              <h2 className="text-3xl md:text-5xl font-sans font-bold tracking-tight font-bold text-[#1e3a5f] dark:text-white mt-3 drop-shadow-lg">
                 {lang === 'ar' ? viewDetailsEvent.title_ar : viewDetailsEvent.title_en}
               </h2>
             </div>
@@ -171,7 +171,7 @@ export default function EventDetails() {
                     </h3>
                     <div className="aspect-video bg-black/20 rounded-xl flex items-center justify-center relative overflow-hidden group cursor-pointer border border-white/10 shadow-lg">
                       <img src={viewDetailsEvent.image} className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-30 transition-opacity" />
-                      <PlayCircle size={64} className="text-white z-10 group-hover:scale-110 transition-transform drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
+                      <PlayCircle size={64} className="text-white z-10 group-hover:scale-110 transition-transform drop-shadow-sm" />
                     </div>
                   </div>
                 )}

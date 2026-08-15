@@ -53,7 +53,7 @@ const Auth = () => {
           <div className="absolute -top-24 -left-24 w-48 h-48 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none"></div>
 
           <div>
-            <h2 className="text-xl md:text-2xl font-black text-[#1e3a5f] dark:text-white mb-2 font-orbitron tracking-wide text-center lg:text-right rtl:text-right ltr:text-left">
+            <h2 className="text-xl md:text-2xl font-black text-[#1e3a5f] dark:text-white mb-2 font-sans font-bold tracking-tight tracking-wide text-center lg:text-right rtl:text-right ltr:text-left">
               {mode === 'login' && t('auth.loginTitle')}
               {mode === 'register' && t('auth.registerTitle')}
               {mode === 'forgot' && t('auth.forgotPassword')}
@@ -148,7 +148,7 @@ const Auth = () => {
           <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"></div>
           
           <div>
-            <h3 className="text-lg md:text-xl font-bold text-white font-orbitron tracking-wide mb-2 flex items-center space-x-2 rtl:space-x-reverse text-right rtl:text-right ltr:text-left">
+            <h3 className="text-lg md:text-xl font-bold text-white font-sans font-bold tracking-tight tracking-wide mb-2 flex items-center space-x-2 rtl:space-x-reverse text-right rtl:text-right ltr:text-left">
               <KeyRound size={20} className="text-cyan-400 animate-pulse" />
               <span>معاينة فورية (Demo Logins)</span>
             </h3>
@@ -169,7 +169,7 @@ const Auth = () => {
                   <span className="text-[10px] text-cyber-muted font-mono truncate mt-1">
                     {account.email}
                   </span>
-                  <span className="text-[9px] text-cyan-400 uppercase tracking-widest font-bold font-orbitron mt-2.5 flex items-center justify-between">
+                  <span className="text-[9px] text-cyan-400 uppercase tracking-widest font-bold font-sans font-bold tracking-tight mt-2.5 flex items-center justify-between">
                     <span>{account.role}</span>
                     <ArrowRight size={10} className="opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1 rtl:rotate-180" />
                   </span>

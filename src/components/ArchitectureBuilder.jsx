@@ -132,7 +132,7 @@ const ArchitectureBuilder = () => {
           <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#00E5FF]/10 text-[#00E5FF] border border-[#00E5FF]/20 uppercase tracking-wider mb-3 inline-block">
             {lang === 'ar' ? 'مخطط الأنظمة الهندسية' : 'GITM Architecture Builder'}
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e3a5f] dark:text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e3a5f] dark:text-white font-sans font-bold tracking-tight tracking-wide mb-4 uppercase">
             {lang === 'ar' ? 'منشئ بنية النظم التفاعلي' : 'Interactive Architecture Builder'}
           </h2>
           <div className="w-20 h-1 bg-[#00E5FF] mx-auto mb-4"></div>
@@ -186,7 +186,7 @@ const ArchitectureBuilder = () => {
           {/* Side Palette (Templates list) */}
           <div className="lg:col-span-3 p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 flex flex-col justify-between">
             <div>
-              <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron mb-4">
+              <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-sans font-bold tracking-tight mb-4">
                 {lang === 'ar' ? 'عناصر البنية التحتية' : 'System Node Palette'}
               </h3>
               <p className="text-[11px] text-slate-500 dark:text-cyber-muted leading-relaxed mb-6">

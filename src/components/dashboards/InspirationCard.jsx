@@ -39,7 +39,7 @@ export default function InspirationCard({ lang = 'en' }) {
           <div className="p-2 bg-yellow-400/20 rounded-lg">
             <Lightbulb size={20} className="text-yellow-400" />
           </div>
-          <h3 className="font-bold text-lg font-orbitron">
+          <h3 className="font-bold text-lg font-sans font-bold tracking-tight">
             {lang === 'ar' ? 'إلهام اليوم' : 'Daily Inspiration'}
           </h3>
         </div>

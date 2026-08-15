@@ -30,7 +30,7 @@ const Countdown = ({ targetDate, lang }) => {
         { label: lang === 'ar' ? 'ثواني' : 'Secs', value: timeLeft.seconds }
       ].map((item, i) => (
         <div key={i} className="flex flex-col items-center bg-gray-100 dark:bg-gray-800 p-3 rounded-lg min-w-[70px] shadow-inner">
-          <span className="text-2xl font-orbitron font-bold text-emerald-600 dark:text-cyan-400">{item.value.toString().padStart(2, '0')}</span>
+          <span className="text-2xl font-sans font-bold tracking-tight font-bold text-emerald-600 dark:text-cyan-400">{item.value.toString().padStart(2, '0')}</span>
           <span className="text-xs text-gray-500 uppercase">{item.label}</span>
         </div>
       ))}
@@ -61,7 +61,7 @@ const TechExhibitions = () => {
     <section className="py-16 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-[#0B132B] dark:text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold font-sans font-bold tracking-tight text-[#0B132B] dark:text-white mb-4">
             {lang === 'ar' ? 'المعارض التقنية القادمة' : 'Upcoming Tech Exhibitions'}
           </h2>
           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">

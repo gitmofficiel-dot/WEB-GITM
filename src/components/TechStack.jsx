@@ -44,7 +44,7 @@ const TechStack = () => {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white font-sans font-bold tracking-tight tracking-wide mb-4 uppercase">
             {t('tech.title')}
           </h2>
           <div className="w-20 h-1 bg-gradient-to-r from-emerald-400 to-cyan-400 mx-auto mb-4"></div>
@@ -89,7 +89,7 @@ const TechStack = () => {
         </div>
 
         {/* Exclusions & Scope Boundary Box */}
-        <div className="max-w-4xl mx-auto p-6 rounded-2xl glass border border-red-500/10 shadow-[0_0_20px_rgba(239,68,68,0.03)] relative overflow-hidden">
+        <div className="max-w-4xl mx-auto p-6 rounded-2xl glass border border-red-500/10 shadow-sm relative overflow-hidden">
           {/* Subtle warning glow */}
           <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 rounded-full blur-2xl"></div>
 
@@ -98,7 +98,7 @@ const TechStack = () => {
               <ShieldAlert size={24} className="animate-pulse" />
             </div>
             <div className="text-center md:text-right rtl:text-right ltr:text-left">
-              <h4 className="text-sm font-bold text-white font-orbitron tracking-wider uppercase mb-1.5 flex items-center justify-center md:justify-start space-x-2 rtl:space-x-reverse">
+              <h4 className="text-sm font-bold text-white font-sans font-bold tracking-tight tracking-wider uppercase mb-1.5 flex items-center justify-center md:justify-start space-x-2 rtl:space-x-reverse">
                 <span className="text-red-400">⛔</span>
                 <span>{t('tech.boundaryTitle')}</span>
               </h4>

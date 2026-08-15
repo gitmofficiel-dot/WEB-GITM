@@ -54,7 +54,7 @@ export default function CollaborationBoard() {
       {/* Header Bar */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold font-orbitron flex items-center gap-3">
+          <h2 className="text-2xl font-bold font-sans font-bold tracking-tight flex items-center gap-3">
             {txt(lang, 'Live Architecture Board', 'لوحة المعمارية المباشرة', 'Tableau interactif', '实时协作板')}
             <span className="px-2 py-1 bg-red-500/20 text-red-500 text-[10px] uppercase font-bold rounded flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span> LIVE

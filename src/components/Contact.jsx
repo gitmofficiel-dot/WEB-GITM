@@ -38,7 +38,7 @@ const Contact = () => {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-20">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white font-sans font-bold tracking-tight tracking-wide mb-4 uppercase">
             {t('contact.title')}
           </h2>
           <div className="w-20 h-1 bg-gradient-to-r from-emerald-400 to-cyan-400 mx-auto mb-4"></div>
@@ -54,7 +54,7 @@ const Contact = () => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-2xl"></div>
 
             <div className="space-y-6">
-              <h3 className="text-xl md:text-2xl font-bold text-white font-orbitron">
+              <h3 className="text-xl md:text-2xl font-bold text-white font-sans font-bold tracking-tight">
                 {t('contact.infoTitle')}
               </h3>
               <p className="text-sm text-cyber-muted leading-relaxed">
@@ -97,7 +97,7 @@ const Contact = () => {
 
           {/* Column 2: Interactive Contact Form */}
           <div className="lg:col-span-7 p-8 rounded-2xl glass border border-white/5 relative">
-            <h3 className="text-lg md:text-xl font-bold text-white mb-6 font-orbitron">
+            <h3 className="text-lg md:text-xl font-bold text-white mb-6 font-sans font-bold tracking-tight">
               {t('contact.formTitle')}
             </h3>
 

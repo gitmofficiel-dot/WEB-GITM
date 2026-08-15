@@ -91,7 +91,7 @@ export default function IoTTelemetryDashboard() {
       {/* Header */}
       <div className="h-16 border-b border-slate-800 bg-[#111827] flex items-center justify-between px-6 shrink-0">
         <div>
-          <h2 className="text-white font-bold font-orbitron text-lg flex items-center gap-2">
+          <h2 className="text-white font-bold font-sans font-bold tracking-tight text-lg flex items-center gap-2">
             <Activity className="text-cyan-400" />
             {lang === 'ar' ? 'لوحة القياسات عن بعد (IoT Telemetry)' : 'IoT Telemetry Dashboard'}
           </h2>

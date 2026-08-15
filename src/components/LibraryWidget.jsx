@@ -65,7 +65,7 @@ const LibraryWidget = () => {
   return (
     <div className="glass-card p-6 rounded-2xl bg-[#e0fcfc]/40 dark:bg-gray-800/40 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg hover-lift transition-transform">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-bold font-orbitron flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+        <h3 className="text-xl font-bold font-sans font-bold tracking-tight flex items-center gap-2 text-[#1e3a5f] dark:text-white">
           <BookOpen className="text-blue-500" /> {title}
         </h3>
         <div className="flex flex-wrap gap-2 justify-end">

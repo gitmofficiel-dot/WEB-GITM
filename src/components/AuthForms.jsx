@@ -106,7 +106,7 @@ export default function AuthForms({ initialMode = 'login' }) {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 mb-4 shadow-lg">
               {mode === 'login' ? <LogIn className="text-white w-8 h-8" /> : <UserPlus className="text-white w-8 h-8" />}
             </div>
-            <h2 className="text-3xl font-orbitron font-bold text-[#1e3a5f] dark:text-white mb-2">
+            <h2 className="text-3xl font-sans font-bold tracking-tight font-bold text-[#1e3a5f] dark:text-white mb-2">
               {mode === 'login' 
                 ? txt(lang, 'Welcome Back', 'مرحباً بعودتك', 'Bon retour', '欢迎回来')
                 : txt(lang, 'Create Account', 'إنشاء حساب جديد', 'Créer un compte', '创建账户')}

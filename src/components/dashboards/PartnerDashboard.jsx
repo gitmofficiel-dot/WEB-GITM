@@ -123,7 +123,7 @@ export default function PartnerDashboard() {
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm mb-2 sticky top-20 z-40">
         <div>
-          <h2 className="text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'بوابة الشريك' : 'Partner Portal'}</h2>
+          <h2 className="text-xl font-sans font-bold tracking-tight font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'بوابة الشريك' : 'Partner Portal'}</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{currentUser?.name || 'Corporate Partner'}</p>
         </div>
         <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold shadow-lg">
@@ -135,7 +135,7 @@ export default function PartnerDashboard() {
       <div className="hidden md:block w-full md:w-64 shrink-0 min-w-0">
         <div className="glass-card rounded-3xl p-4 sticky top-24 border border-emerald-200 dark:border-emerald-900/30 shadow-xl">
           <div className="mb-6 px-2">
-            <h2 className="text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'بوابة الشريك' : 'Partner Portal'}</h2>
+            <h2 className="text-xl font-sans font-bold tracking-tight font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'بوابة الشريك' : 'Partner Portal'}</h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{currentUser?.name || 'Corporate Partner'}</p>
           </div>
           <nav className="space-y-2">
@@ -147,8 +147,8 @@ export default function PartnerDashboard() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
                     activeTab === tab.id 
-                    ? 'bg-emerald-500 text-white shadow-lg translate-x-2' 
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-50 dark:bg-slate-800'
+                    ? 'bg-emerald-600 text-white shadow-sm' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
                   <Icon size={18} /> {tab.label}

@@ -437,21 +437,21 @@ export default function PresidentDashboard() {
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm mb-2 sticky top-20 z-40">
         <div>
-          <h2 className="text-xl font-orbitron font-bold gradient-text">{lang === 'ar' ? 'القيادة العليا' : 'Supreme Command'}</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{user?.name || 'President'}</p>
+          <h2 className="text-xl font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'رئاسة المنظمة' : 'Executive Office'}</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{user?.name || 'GITM President'}</p>
         </div>
-        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold shadow-lg">
+        <div className="w-10 h-10 rounded-full bg-slate-900 dark:bg-blue-600 flex items-center justify-center text-white font-bold shadow-md">
           {(user?.name || 'P').charAt(0)}
         </div>
       </div>
 
       {/* Sidebar Navigation */}
       <div className="hidden md:block w-full md:w-64 shrink-0 min-w-0">
-        <div className="glass-card rounded-3xl p-4 sticky top-24 border border-cyan-200 dark:border-slate-800 shadow-xl shadow-cyan-900/5">
+        <div className="glass-card rounded-3xl p-4 sticky top-24 border border-slate-200 dark:border-slate-800 shadow-lg">
           <div className="mb-4 md:mb-6 px-2 flex justify-between items-center md:block">
             <div>
-              <h2 className="text-lg md:text-xl font-orbitron font-bold gradient-text">{lang === 'ar' ? 'القيادة العليا' : 'Supreme Command'}</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 hidden md:block">{lang === 'ar' ? 'نظام التحكم المركزي' : 'Central Control System'}</p>
+              <h2 className="text-lg md:text-xl font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'رئاسة المنظمة' : 'Executive Office'}</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 hidden md:block">{lang === 'ar' ? 'الحوكمة والإشراف العام' : 'Governance & Administration'}</p>
             </div>
           </div>
           <nav className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar w-full snap-x snap-mandatory">
@@ -464,11 +464,11 @@ export default function PresidentDashboard() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-shrink-0 md:w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
                     isActive 
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30 md:translate-x-2' 
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-cyan-50 dark:hover:bg-slate-50 dark:bg-slate-800 hover:text-cyan-600 dark:hover:text-cyan-400'
+                    ? 'bg-slate-900 dark:bg-blue-600 text-white shadow-sm' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  <Icon size={18} className={isActive ? 'animate-pulse' : ''} />
+                  <Icon size={18} />
                   {tab.label}
                 </button>
               );
@@ -499,12 +499,12 @@ export default function PresidentDashboard() {
                   <StatCard title={lang === 'ar' ? 'المقالات والأخبار' : 'News Articles'} value={news.length.toString()} icon={Newspaper} color="pink" trend="+2%" />
                 </div>
 
-                <div className="glass-card rounded-3xl p-5 md:p-8 border-pink-500/30 shadow-[0_0_30px_rgba(236,72,153,0.1)] bg-gradient-to-br from-white to-pink-50 dark:from-slate-900 dark:to-pink-950/20 relative overflow-hidden">
+                <div className="glass-card rounded-3xl p-5 md:p-8 border-pink-500/30 shadow-sm bg-gradient-to-br from-white to-pink-50 dark:from-slate-900 dark:to-pink-950/20 relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-8 opacity-5"><Bot size={150} /></div>
                   <div className="flex justify-between items-center mb-6 relative z-10">
                     <div className="flex items-center gap-3">
                       <div className="p-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl shadow-lg shadow-pink-500/30 text-white"><Bot size={24} /></div>
-                      <h3 className="text-xl font-bold font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 dark:from-pink-400 dark:to-purple-400">
+                      <h3 className="text-xl font-bold font-sans font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 dark:from-pink-400 dark:to-purple-400">
                         {lang === 'ar' ? 'موجز الذكاء الاصطناعي التنبؤي' : 'AI Predictive Summary'}
                       </h3>
                     </div>

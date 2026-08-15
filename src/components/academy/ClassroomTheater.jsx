@@ -360,7 +360,7 @@ export default function ClassroomTheater() {
   if (!course) {
     return (
       <div className="min-h-screen grid-bg flex items-center justify-center flex-col gap-4 text-center px-4">
-        <h2 className="text-3xl font-bold text-white font-orbitron">Course Not Found</h2>
+        <h2 className="text-3xl font-bold text-white font-sans font-bold tracking-tight">Course Not Found</h2>
         <button onClick={() => navigate('/academy')} className="btn-primary px-6 py-3 rounded-xl flex items-center gap-2">
           <ArrowLeft size={18}/> Back to Academy
         </button>
@@ -428,7 +428,7 @@ export default function ClassroomTheater() {
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-4">
                   <PlayCircle size={64} className="opacity-20" />
-                  <p className="font-orbitron tracking-widest uppercase text-sm">No Video Source</p>
+                  <p className="font-sans font-bold tracking-tight tracking-widest uppercase text-sm">No Video Source</p>
                 </div>
               )}
             </div>

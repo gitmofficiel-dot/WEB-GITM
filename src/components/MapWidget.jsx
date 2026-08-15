@@ -26,7 +26,7 @@ const MapWidget = () => {
 
   return (
     <div className="glass-card p-6 rounded-2xl bg-[#e0fcfc]/40 dark:bg-gray-800/40 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg relative">
-      <h3 className="text-xl font-bold font-orbitron mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+      <h3 className="text-xl font-bold font-sans font-bold tracking-tight mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
         <MapPin className="text-rose-500" /> {title}
       </h3>
       <div className="h-[300px] w-full rounded-xl overflow-hidden border border-cyan-300 dark:border-slate-700 relative z-10">

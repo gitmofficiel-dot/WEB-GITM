@@ -62,7 +62,7 @@ const Archive = () => {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-[#0f172a] dark:text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#0f172a] dark:text-white font-sans font-bold tracking-tight tracking-wide mb-4 uppercase">
             {t('archive.title')}
           </h2>
           <div className="w-20 h-1 bg-gradient-to-r from-emerald-400 to-cyan-400 mx-auto mb-4"></div>
@@ -93,7 +93,7 @@ const Archive = () => {
                   </div>
 
                   {/* Top-Right Badge */}
-                  <span className="absolute top-3 right-3 px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[9px] font-bold text-emerald-400 uppercase tracking-widest font-orbitron">
+                  <span className="absolute top-3 right-3 px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[9px] font-bold text-emerald-400 uppercase tracking-widest font-sans font-bold tracking-tight">
                     {item.badge}
                   </span>
 

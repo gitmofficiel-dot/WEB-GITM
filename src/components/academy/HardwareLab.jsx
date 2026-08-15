@@ -158,7 +158,7 @@ export default function HardwareLab() {
       <div className="h-14 bg-white dark:bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center gap-3">
           <Cpu className="text-teal-400" size={20} />
-          <h2 className="text-white font-bold font-orbitron">{lang === 'ar' ? 'مختبر العتاد السحابي' : 'Remote Hardware Lab'}</h2>
+          <h2 className="text-white font-bold font-sans font-bold tracking-tight">{lang === 'ar' ? 'مختبر العتاد السحابي' : 'Remote Hardware Lab'}</h2>
           <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded flex items-center gap-1">
              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div> Live
           </span>
@@ -249,7 +249,7 @@ export default function HardwareLab() {
              {/* Fake Video Content */}
              <div className="absolute inset-0 bg-slate-50 dark:bg-slate-800 flex flex-col items-center justify-center">
                 <Camera size={32} className="text-slate-600 mb-2"/>
-                <span className="text-xs text-slate-500 font-orbitron text-center px-4">
+                <span className="text-xs text-slate-500 font-sans font-bold tracking-tight text-center px-4">
                   Hardware Stream Active<br/>Waiting for deployment...
                 </span>
              </div>

@@ -69,7 +69,7 @@ export default function TechProjectsPage() {
             className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-card border border-teal-500/30 mb-6"
           >
             <Code className="w-5 h-5 text-teal-400" />
-            <span className="font-orbitron text-teal-300 font-medium tracking-wide">
+            <span className="font-sans font-bold tracking-tight text-teal-300 font-medium tracking-wide">
               {lang === 'ar' ? 'مشاريعنا التقنية' : lang === 'fr' ? 'Nos Projets Tech' : 'Our Tech Projects'}
             </span>
           </motion.div>
@@ -77,7 +77,7 @@ export default function TechProjectsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-6xl font-bold mb-6 font-orbitron gradient-text"
+            className="text-4xl md:text-6xl font-bold mb-6 font-sans font-bold tracking-tight gradient-text"
           >
             {lang === 'ar' ? 'ابتكارات تقود المستقبل' : lang === 'fr' ? 'Des Innovations pour l\'Avenir' : 'Innovations Driving the Future'}
           </motion.h1>
@@ -97,7 +97,7 @@ export default function TechProjectsPage() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="w-12 h-12 text-teal-400 animate-spin mb-4" />
-            <p className="text-teal-300 font-orbitron animate-pulse">
+            <p className="text-teal-300 font-sans font-bold tracking-tight animate-pulse">
               {lang === 'ar' ? 'جاري التحميل...' : lang === 'fr' ? 'Chargement...' : 'Loading...'}
             </p>
           </div>
@@ -108,7 +108,7 @@ export default function TechProjectsPage() {
             className="glass-card max-w-2xl mx-auto p-12 text-center rounded-2xl border border-teal-500/30"
           >
             <Code className="w-16 h-16 text-slate-500 mx-auto mb-6 opacity-50" />
-            <h3 className="text-2xl font-orbitron text-white mb-2">{emptyMessage[lang] || emptyMessage.en}</h3>
+            <h3 className="text-2xl font-sans font-bold tracking-tight text-white mb-2">{emptyMessage[lang] || emptyMessage.en}</h3>
           </motion.div>
         ) : (
           <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

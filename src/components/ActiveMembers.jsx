@@ -40,7 +40,7 @@ const ActiveMembers = () => {
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex justify-between items-end mb-10">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-[#0B132B] dark:text-white mb-2 flex items-center gap-3">
+            <h2 className="text-3xl md:text-4xl font-bold font-sans font-bold tracking-tight text-[#0B132B] dark:text-white mb-2 flex items-center gap-3">
               <Award className="text-amber-500" size={32} />
               {txt(lang, 'Most Active Members', 'الأعضاء الأكثر نشاطاً', 'Membres les plus actifs', '最活跃成员')}
             </h2>

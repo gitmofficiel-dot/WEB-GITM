@@ -111,7 +111,7 @@ const HardwareRequest = () => {
           <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#00FF87]/10 text-[#00FF87] border border-[#00FF87]/20 uppercase tracking-wider mb-3 inline-block">
             {lang === 'ar' ? 'مخزن العتاد الرقمي' : 'Hardware Request & Inventory'}
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e3a5f] dark:text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e3a5f] dark:text-white font-sans font-bold tracking-tight tracking-wide mb-4 uppercase">
             {lang === 'ar' ? 'نظام إعارة الأجهزة والمعدات' : 'Hardware Request System'}
           </h2>
           <div className="w-20 h-1 bg-[#00FF87] mx-auto mb-4"></div>
@@ -182,7 +182,7 @@ const HardwareRequest = () => {
 
             {/* Active Requests Tracker */}
             <div className="p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20">
-              <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron mb-4">
+              <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-sans font-bold tracking-tight mb-4">
                 {lang === 'ar' ? 'سجل طلبات الاستعارة النشطة' : 'Active Hardware Loan Log'}
               </h3>
               <div className="overflow-x-auto">
@@ -219,7 +219,7 @@ const HardwareRequest = () => {
           {/* Borrow Form panel (Right/col-span-4) */}
           <div className="lg:col-span-4 p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron">
+              <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-sans font-bold tracking-tight">
                 {lang === 'ar' ? 'طلب إعارة عتاد جديد' : 'New Loan Request'}
               </h3>
               <Package size={18} className="text-[#00FF87]" />

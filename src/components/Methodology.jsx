@@ -20,7 +20,7 @@ const Methodology = () => {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-20">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white font-sans font-bold tracking-tight tracking-wide mb-4 uppercase">
             {t('methodology.title')}
           </h2>
           <div className="w-20 h-1 bg-gradient-to-r from-emerald-400 to-cyan-400 mx-auto mb-4"></div>
@@ -80,7 +80,7 @@ const Methodology = () => {
           <div className="lg:col-span-7 p-8 rounded-2xl glass border border-white/5 min-h-[300px] flex flex-col justify-between relative overflow-hidden">
             
             {/* Background scanner line */}
-            <div className="absolute inset-x-0 top-0 h-[1px] bg-emerald-500/20 shadow-[0_0_15px_#10b981] animate-float opacity-30"></div>
+            <div className="absolute inset-x-0 top-0 h-[1px] bg-emerald-500/20 shadow-sm animate-float opacity-30"></div>
 
             <div>
               <div className="flex items-center justify-between mb-6">
@@ -103,7 +103,7 @@ const Methodology = () => {
 
             {/* Phase Core Deliverables Specifications */}
             <div className="p-5 rounded-xl bg-black/40 border border-white/5 space-y-2 text-xs">
-              <span className="text-white font-bold block border-b border-white/5 pb-1.5 uppercase tracking-wider font-orbitron text-[10px]">
+              <span className="text-white font-bold block border-b border-white/5 pb-1.5 uppercase tracking-wider font-sans font-bold tracking-tight text-[10px]">
                 {lang === 'ar' ? 'المخرجات الأساسية لهذه المرحلة الهندسية' : 'Core Phase Deliverables'}
               </span>
               <ul className="space-y-1.5 text-[11px] text-cyber-muted font-sans list-disc list-inside">

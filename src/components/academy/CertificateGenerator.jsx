@@ -52,7 +52,7 @@ export default function CertificateGenerator({ studentName, courseName, issueDat
             <Award className="w-10 h-10 text-white -rotate-45" />
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-black font-orbitron text-[#1e3a5f] dark:text-white uppercase tracking-widest mb-2">
+          <h1 className="text-4xl md:text-5xl font-black font-sans font-bold tracking-tight text-[#1e3a5f] dark:text-white uppercase tracking-widest mb-2">
             Certificate
           </h1>
           <h2 className="text-xl md:text-2xl text-emerald-600 dark:text-cyan-400 tracking-wider mb-8 uppercase font-bold">

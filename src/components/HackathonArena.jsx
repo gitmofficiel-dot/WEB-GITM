@@ -137,7 +137,7 @@ const HackathonArena = () => {
           <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20 uppercase tracking-wider mb-3 inline-block animate-pulse">
             {lang === 'ar' ? 'البطولة الوطنية للابتكار الهندسي' : 'National Hardware Hackathon Arena'}
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e3a5f] dark:text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e3a5f] dark:text-white font-sans font-bold tracking-tight tracking-wide mb-4 uppercase">
             {lang === 'ar' ? 'حلبة هاكاثون GITM للبرمجة' : 'GITM Hackathon Arena'}
           </h2>
           <div className="w-20 h-1 bg-red-500 mx-auto mb-4"></div>
@@ -161,7 +161,7 @@ const HackathonArena = () => {
           <div className="p-5 rounded-xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 flex items-center justify-between">
             <div>
               <span className="text-[10px] text-slate-600 dark:text-slate-400 dark:text-cyber-muted block uppercase tracking-wider">{lang === 'ar' ? 'التحديات النشطة' : 'Active Challenges'}</span>
-              <span className="text-2xl font-black font-orbitron text-[#1e3a5f] dark:text-white">{challenges.length} Tasks</span>
+              <span className="text-2xl font-black font-sans font-bold tracking-tight text-[#1e3a5f] dark:text-white">{challenges.length} Tasks</span>
             </div>
             <Code className="text-[#00E5FF]" size={24} />
           </div>
@@ -169,7 +169,7 @@ const HackathonArena = () => {
           <div className="p-5 rounded-xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 flex items-center justify-between">
             <div>
               <span className="text-[10px] text-slate-600 dark:text-slate-400 dark:text-cyber-muted block uppercase tracking-wider">{lang === 'ar' ? 'الفرق المسجلة' : 'Teams Registered'}</span>
-              <span className="text-2xl font-black font-orbitron text-[#1e3a5f] dark:text-white">{scoreboard.length} Swarms</span>
+              <span className="text-2xl font-black font-sans font-bold tracking-tight text-[#1e3a5f] dark:text-white">{scoreboard.length} Swarms</span>
             </div>
             <Users className="text-[#00FF87]" size={24} />
           </div>
@@ -229,7 +229,7 @@ const HackathonArena = () => {
 
               {/* Submission Area */}
               <div className="lg:col-span-5 p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 space-y-4">
-                <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron">
+                <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-sans font-bold tracking-tight">
                   {lang === 'ar' ? 'تقديم الكود المصدري للحل' : 'Submit Challenge Solution'}
                 </h3>
 
@@ -276,7 +276,7 @@ const HackathonArena = () => {
 
           {activeTab === 'leaderboard' && (
             <div className="p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20">
-              <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron mb-6 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-sans font-bold tracking-tight mb-6 flex items-center gap-2">
                 <Trophy className="text-yellow-500" size={16} />
                 <span>{lang === 'ar' ? 'لوحة الصدارة الحية للهاكاثون' : 'Live Scoreboard Leaderboard'}</span>
               </h3>
@@ -314,7 +314,7 @@ const HackathonArena = () => {
             <div className="max-w-md mx-auto p-6 rounded-2xl glass border border-[#3A506B]/20 bg-cyan-50 dark:bg-black/20 space-y-6">
               <div className="text-center">
                 <Users size={32} className="text-red-500 mx-auto mb-3" />
-                <h3 className="text-base font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron">
+                <h3 className="text-base font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-sans font-bold tracking-tight">
                   {lang === 'ar' ? 'تسجيل فريق الهاكاثون' : 'Join Hackathon Team'}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-cyber-muted mt-1">

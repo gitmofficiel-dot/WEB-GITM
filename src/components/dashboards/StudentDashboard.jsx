@@ -94,7 +94,7 @@ export default function StudentDashboard() {
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm mb-2 sticky top-20 z-40">
         <div>
-          <h2 className="text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'لوحة الطالب' : 'Student Panel'}</h2>
+          <h2 className="text-xl font-sans font-bold tracking-tight font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'لوحة الطالب' : 'Student Panel'}</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{studentName}</p>
         </div>
         <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold shadow-lg">
@@ -107,7 +107,7 @@ export default function StudentDashboard() {
         <div className="glass-card rounded-3xl p-4 sticky top-24 border border-cyan-200 dark:border-slate-800 shadow-xl">
           <div className="mb-4 md:mb-6 px-2 flex justify-between items-center md:block">
             <div>
-              <h2 className="text-lg md:text-xl font-orbitron font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'لوحة الطالب' : 'Student Panel'}</h2>
+              <h2 className="text-lg md:text-xl font-sans font-bold tracking-tight font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'لوحة الطالب' : 'Student Panel'}</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 hidden md:block">{studentName}</p>
             </div>
           </div>
@@ -120,8 +120,8 @@ export default function StudentDashboard() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-shrink-0 md:w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
                     activeTab === tab.id
-                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/20'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-50 dark:bg-slate-800'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
                   <Icon size={18} /> {tab.label}
@@ -525,7 +525,7 @@ export default function StudentDashboard() {
               <div className="absolute inset-0 bg-white/40 print:bg-white/40 pointer-events-none z-0"></div>
               
               <div className="relative z-10 mb-4 sm:mb-8 mt-6 sm:mt-12">
-                <h1 className="text-3xl sm:text-4xl md:text-6xl font-black font-orbitron text-[#0a1f3d] mb-1 sm:mb-2 tracking-widest drop-shadow-md">CERTIFICATE</h1>
+                <h1 className="text-3xl sm:text-4xl md:text-6xl font-black font-sans font-bold tracking-tight text-[#0a1f3d] mb-1 sm:mb-2 tracking-widest drop-shadow-md">CERTIFICATE</h1>
                 <h2 className="text-lg sm:text-xl md:text-2xl text-teal-900 font-bold uppercase tracking-[0.2em] drop-shadow-sm">Of Completion</h2>
               </div>
 
@@ -563,7 +563,7 @@ export default function StudentDashboard() {
 
               {/* Logo */}
               <div className="absolute bottom-12 left-12 z-10 drop-shadow-xl bg-white/80 p-4 rounded-xl border border-white/50 backdrop-blur-sm">
-                <h2 className="text-3xl font-black font-orbitron text-teal-900">GITM</h2>
+                <h2 className="text-3xl font-black font-sans font-bold tracking-tight text-teal-900">GITM</h2>
                 <p className="text-xs text-slate-900 font-bold tracking-widest">ACADEMY</p>
               </div>
             </div>

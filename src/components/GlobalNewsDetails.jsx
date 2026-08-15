@@ -32,7 +32,7 @@ export default function GlobalNewsDetails() {
                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
              </svg>
            </div>
-           <h2 className="text-3xl font-bold font-orbitron mb-4">
+           <h2 className="text-3xl font-bold font-sans font-bold tracking-tight mb-4">
              {txt(lang, 'Members Only', 'محتوى حصري للأعضاء', 'Membres Uniquement', '仅限会员')}
            </h2>
            <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">

@@ -44,7 +44,7 @@ export default function Footer() {
           <div className="space-y-6">
             <div className="flex items-center gap-3">
               <img src="/logo.png" alt="GITM Logo" className="w-12 h-12 object-contain" />
-              <h2 className="font-orbitron font-bold text-2xl text-white tracking-wider">GITM</h2>
+              <h2 className="font-sans font-bold tracking-tight font-bold text-2xl text-white tracking-wider">GITM</h2>
             </div>
             <p className="text-slate-300 leading-relaxed text-sm">
               {lang === 'ar' ? 'نصنع أنظمة ذكية تعيد تعريف المستقبل. نعمل على تطوير حلول في الذكاء الاصطناعي، إنترنت الأشياء، والروبوتات المتقدمة.' : 'We engineer smart systems that redefine the future. Developing cutting-edge solutions in AI, IoT, and Advanced Robotics.'}

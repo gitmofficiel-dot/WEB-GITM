@@ -126,7 +126,7 @@ export default function VisitorAnalytics() {
           <motion.div key={i} custom={i} variants={cardVariants} initial="hidden" animate="visible"
             className="glass-card p-5 rounded-2xl border border-slate-200/50 dark:border-slate-800 relative overflow-hidden"
           >
-            <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${kpi.color} opacity-10 rounded-full blur-2xl -mr-10 -mt-10`} />
+            
             <div className="flex justify-between items-start mb-4">
               <div className={`p-2.5 rounded-xl bg-gradient-to-br ${kpi.color} text-white`}>
                 <kpi.icon size={20} />

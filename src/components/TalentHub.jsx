@@ -64,7 +64,7 @@ const TalentHub = () => {
           <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#00E5FF]/10 text-[#00E5FF] border border-[#00E5FF]/20 uppercase tracking-wider mb-3 inline-block">
             {lang === 'ar' ? 'بوابة المواهب والتوظيف' : 'GITM Talent Placement Hub'}
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e3a5f] dark:text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e3a5f] dark:text-white font-sans font-bold tracking-tight tracking-wide mb-4 uppercase">
             {lang === 'ar' ? 'خريجو الأكاديمية المتميزون' : 'Academy Graduate Portfolios'}
           </h2>
           <div className="w-20 h-1 bg-[#00E5FF] mx-auto mb-4"></div>
@@ -159,10 +159,10 @@ const TalentHub = () => {
                 
                 {/* Header */}
                 <div className="border-b border-[#3A506B]/20 pb-4">
-                  <div className="w-16 h-16 rounded-full bg-[#00E5FF]/10 border border-[#00E5FF]/20 text-[#00E5FF] font-bold flex items-center justify-center text-xl font-orbitron mb-3">
+                  <div className="w-16 h-16 rounded-full bg-[#00E5FF]/10 border border-[#00E5FF]/20 text-[#00E5FF] font-bold flex items-center justify-center text-xl font-sans font-bold tracking-tight mb-3">
                     {selectedStudent.name[0]}
                   </div>
-                  <h3 className="text-lg font-black text-[#1e3a5f] dark:text-white font-orbitron">{selectedStudent.name}</h3>
+                  <h3 className="text-lg font-black text-[#1e3a5f] dark:text-white font-sans font-bold tracking-tight">{selectedStudent.name}</h3>
                   <span className="text-xs font-mono text-[#00E5FF]">{selectedStudent.trackLabel}</span>
                 </div>
 

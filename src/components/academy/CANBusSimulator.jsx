@@ -78,7 +78,7 @@ export default function CANBusSimulator() {
         
         {/* Header */}
         <div className="p-4 border-b border-slate-800 bg-[#1e293b]/50">
-           <h2 className="text-white font-bold font-orbitron flex items-center gap-2">
+           <h2 className="text-white font-bold font-sans font-bold tracking-tight flex items-center gap-2">
              <Activity size={18} className="text-cyan-400" />
              {lang === 'ar' ? 'محاكي CAN Bus' : 'CAN Bus Simulator'}
            </h2>
@@ -98,7 +98,7 @@ export default function CANBusSimulator() {
                      <span className="text-[10px] font-mono text-slate-600 dark:text-slate-400">ID: {node.hexId}</span>
                    </div>
                  </div>
-                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-sm"></div>
               </div>
             ))}
           </div>
@@ -130,7 +130,7 @@ export default function CANBusSimulator() {
 
           <button 
             onClick={handleInject}
-            className="w-full py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-bold text-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all active:scale-95 flex items-center justify-center gap-2 mt-4"
+            className="w-full py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-bold text-sm shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2 mt-4"
           >
             <Plus size={16} /> {lang === 'ar' ? 'إرسال الإطار' : 'Inject Frame'}
           </button>

@@ -104,7 +104,7 @@ const WeatherWidget = () => {
         <div className="flex items-center gap-3">
           {getWeatherIcon(weather.weathercode, weather.isOpenWeather)}
           <div>
-            <div className="text-2xl font-bold font-orbitron text-gray-800 dark:text-white">
+            <div className="text-2xl font-bold font-sans font-bold tracking-tight text-gray-800 dark:text-white">
               {weather.temperature_2m}°C
             </div>
           </div>

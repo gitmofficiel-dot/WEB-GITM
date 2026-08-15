@@ -24,10 +24,10 @@ const LatestNews = () => {
       <div className="container-custom relative z-10 px-4">
         <div className="flex justify-between items-end mb-6 md:mb-10">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-400 mb-2 drop-shadow-sm">
+            <h2 className="text-3xl md:text-4xl font-bold font-sans font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-400 mb-2 drop-shadow-sm">
               {lang === 'ar' ? 'آخر الأخبار' : 'Latest News'}
             </h2>
-            <div className="w-24 h-1.5 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full shadow-[0_0_10px_rgba(20,184,166,0.5)]"></div>
+            <div className="w-24 h-1.5 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full shadow-sm"></div>
           </div>
           <button 
             onClick={() => navigate('/news')}

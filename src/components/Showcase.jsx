@@ -62,7 +62,7 @@ const Showcase = () => {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white font-orbitron tracking-wide mb-4 uppercase">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white font-sans font-bold tracking-tight tracking-wide mb-4 uppercase">
             {t('showcase.title')}
           </h2>
           <div className="w-20 h-1 bg-gradient-to-r from-emerald-400 to-cyan-400 mx-auto mb-4"></div>
@@ -121,7 +121,7 @@ const Showcase = () => {
                     <Info size={16} />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-1 font-orbitron">
+                    <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-1 font-sans font-bold tracking-tight">
                       {t('showcase.problem')}
                     </h4>
                     <p className="text-xs md:text-sm text-cyber-muted">
@@ -134,7 +134,7 @@ const Showcase = () => {
 
             {/* Tech Badges */}
             <div className="border-t border-white/5 pt-4 mt-6">
-              <h4 className="text-[10px] font-bold text-white uppercase tracking-wider mb-2.5 font-orbitron">
+              <h4 className="text-[10px] font-bold text-white uppercase tracking-wider mb-2.5 font-sans font-bold tracking-tight">
                 {t('showcase.techUsed')}
               </h4>
               <div className="flex flex-wrap gap-2">
@@ -188,7 +188,7 @@ const Showcase = () => {
               </div>
             ) : (
               <div className="mb-6">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4 font-orbitron flex items-center space-x-2 rtl:space-x-reverse">
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4 font-sans font-bold tracking-tight flex items-center space-x-2 rtl:space-x-reverse">
                   <Server size={14} className={style.text} />
                   <span>{t('showcase.archDiagram')}</span>
                 </h4>
@@ -260,7 +260,7 @@ const Showcase = () => {
 
             {/* System Technical Specifications */}
             <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-2 text-xs">
-              <span className="text-white font-bold block border-b border-white/5 pb-1.5 uppercase tracking-wider font-orbitron text-[10px]">
+              <span className="text-white font-bold block border-b border-white/5 pb-1.5 uppercase tracking-wider font-sans font-bold tracking-tight text-[10px]">
                 System Topology Specs
               </span>
               <div className="space-y-1.5 text-[10px] text-cyber-muted font-mono">

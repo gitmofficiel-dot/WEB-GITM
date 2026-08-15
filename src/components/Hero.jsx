@@ -143,7 +143,7 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row items-stretch md:items-center justify-start md:justify-center gap-3 md:gap-5">
             <button 
               onClick={() => navigate('/projects-hub')}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:-translate-y-1 active:scale-[0.98]"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-sm hover:-translate-y-1 active:scale-[0.98]"
             >
               <Cpu size={20} className="md:w-[22px] md:h-[22px]" />
               {lang === 'ar' ? 'اكتشف التقنيات' : 'Discover Tech'}

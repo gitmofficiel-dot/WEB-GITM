@@ -89,7 +89,7 @@ const NotificationBell = () => {
                       !notification.read ? 'bg-cyan-900/20' : ''
                     }`}
                   >
-                    <div className={`w-2 h-2 mt-2 rounded-full flex-shrink-0 ${!notification.read ? 'bg-cyan-500 shadow-[0_0_8px_rgba(0,229,255,0.8)]' : 'bg-transparent'}`} />
+                    <div className={`w-2 h-2 mt-2 rounded-full flex-shrink-0 ${!notification.read ? 'bg-cyan-500 shadow-sm' : 'bg-transparent'}`} />
                     <div className="flex-1">
                       <h4 className={`text-sm font-semibold ${!notification.read ? 'text-white' : 'text-gray-300'}`}>
                         {notification.title}

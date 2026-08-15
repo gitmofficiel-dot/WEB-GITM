@@ -84,7 +84,7 @@ export default function GalleryPage() {
             className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-card border border-teal-500/30 mb-6"
           >
             <Camera className="w-5 h-5 text-teal-400" />
-            <span className="font-orbitron text-teal-300 font-medium tracking-wide">
+            <span className="font-sans font-bold tracking-tight text-teal-300 font-medium tracking-wide">
               {lang === 'ar' ? 'معرض الصور' : lang === 'fr' ? 'Notre Galerie' : 'Our Gallery'}
             </span>
           </motion.div>
@@ -92,7 +92,7 @@ export default function GalleryPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-3xl md:text-6xl font-bold mb-4 md:mb-6 font-orbitron gradient-text"
+            className="text-3xl md:text-6xl font-bold mb-4 md:mb-6 font-sans font-bold tracking-tight gradient-text"
           >
             {lang === 'ar' ? 'التقاط الابتكار' : lang === 'fr' ? 'Capturer l\'Innovation' : 'Capturing Innovation'}
           </motion.h1>
@@ -121,7 +121,7 @@ export default function GalleryPage() {
               onClick={() => { setFilter(f.id); setCurrentPage(1); }}
               className={`px-5 py-2 rounded-full font-medium transition-all duration-300 ${
                 filter === f.id 
-                  ? 'bg-teal-500 text-white shadow-[0_0_15px_rgba(13,148,136,0.5)]' 
+                  ? 'bg-teal-500 text-white shadow-sm' 
                   : 'glass text-slate-600 dark:text-slate-300 hover:text-teal-300 hover:bg-teal-500/10'
               }`}
             >
@@ -134,7 +134,7 @@ export default function GalleryPage() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="w-12 h-12 text-teal-400 animate-spin mb-4" />
-            <p className="text-teal-300 font-orbitron animate-pulse">
+            <p className="text-teal-300 font-sans font-bold tracking-tight animate-pulse">
               {lang === 'ar' ? 'جاري التحميل...' : lang === 'fr' ? 'Chargement...' : 'Loading...'}
             </p>
           </div>
@@ -145,7 +145,7 @@ export default function GalleryPage() {
             className="glass-card max-w-2xl mx-auto p-12 text-center rounded-2xl border border-teal-500/30"
           >
             <Camera className="w-16 h-16 text-slate-500 mx-auto mb-6 opacity-50" />
-            <h3 className="text-2xl font-orbitron text-white mb-2">{emptyMessage[lang] || emptyMessage.en}</h3>
+            <h3 className="text-2xl font-sans font-bold tracking-tight text-white mb-2">{emptyMessage[lang] || emptyMessage.en}</h3>
           </motion.div>
         ) : (
           <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -168,7 +168,7 @@ export default function GalleryPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                     <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      <h3 className="text-xl font-bold text-white mb-2 font-orbitron">{getLocalized(item, 'title', lang)}</h3>
+                      <h3 className="text-xl font-bold text-white mb-2 font-sans font-bold tracking-tight">{getLocalized(item, 'title', lang)}</h3>
                       <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-300">
                         <span className="flex items-center gap-1"><MapPin className="w-4 h-4 text-teal-400"/> {getLocalized(item, 'location', lang)}</span>
                         <span className="flex items-center gap-1"><Calendar className="w-4 h-4 text-teal-400"/> {item.date}</span>
@@ -224,7 +224,7 @@ export default function GalleryPage() {
                   className="w-full max-h-[80vh] object-contain bg-white/ dark:bg-slate-900/"
                 />
                 <div className="p-6 bg-white/ dark:bg-slate-900/ backdrop-blur-md border-t border-teal-500/20">
-                  <h3 className="text-2xl font-bold text-white mb-2 font-orbitron">{getLocalized(selectedImg, 'title', lang)}</h3>
+                  <h3 className="text-2xl font-bold text-white mb-2 font-sans font-bold tracking-tight">{getLocalized(selectedImg, 'title', lang)}</h3>
                   <div className="flex items-center gap-6 text-slate-600 dark:text-slate-300">
                     <span className="flex items-center gap-2"><MapPin className="w-5 h-5 text-teal-400"/> {getLocalized(selectedImg, 'location', lang)}</span>
                     <span className="flex items-center gap-2"><Calendar className="w-5 h-5 text-teal-400"/> {selectedImg.date}</span>

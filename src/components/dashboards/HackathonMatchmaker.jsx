@@ -100,7 +100,7 @@ export default function HackathonMatchmaker() {
          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-indigo-500/30">
            <Users size={32} className="text-white" />
          </div>
-         <h2 className="text-3xl font-bold font-orbitron text-[#1e3a5f] dark:text-white mb-4">
+         <h2 className="text-3xl font-bold font-sans font-bold tracking-tight text-[#1e3a5f] dark:text-white mb-4">
            {lang === 'ar' ? 'صانع التوافق للهاكاثون' : 'Hackathon Matchmaker'}
          </h2>
          <p className="text-slate-500">

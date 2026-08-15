@@ -251,7 +251,7 @@ const AIChatBot = () => {
                 <select 
                   value={selectedModel}
                   onChange={(e) => setSelectedModel(e.target.value)}
-                  className="bg-transparent text-white font-bold font-orbitron drop-shadow-md text-sm outline-none appearance-none cursor-pointer"
+                  className="bg-transparent text-white font-bold font-sans font-bold tracking-tight drop-shadow-md text-sm outline-none appearance-none cursor-pointer"
                 >
                   {GITM_MODELS.map(m => (
                     <option key={m.id} value={m.id} className="text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-800">{m.name}</option>

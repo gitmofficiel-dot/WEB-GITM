@@ -70,7 +70,7 @@ function TechNode({ position, color, label, icon: Icon, testData }) {
               <div className="bg-white/ dark:bg-slate-900/ backdrop-blur-md border border-cyan-500/30 text-white p-3 rounded-xl shadow-2xl w-48 animate-fade-in-up pointer-events-none">
                 <div className="flex items-center gap-2 mb-2 text-cyan-400">
                   <Icon size={16} />
-                  <h4 className="font-bold text-sm font-orbitron">{label}</h4>
+                  <h4 className="font-bold text-sm font-sans font-bold tracking-tight">{label}</h4>
                 </div>
                 {active && testData ? (
                   <div className="text-xs text-slate-600 dark:text-slate-300 space-y-1">
@@ -142,7 +142,7 @@ export default function VirtualLab() {
   return (
     <div className="animate-fade-in-up w-full h-full flex flex-col pt-8">
       <div className="mb-8 text-center max-w-3xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-orbitron font-bold gradient-text mb-4">
+        <h1 className="text-4xl md:text-5xl font-sans font-bold tracking-tight font-bold gradient-text mb-4">
           {txt(lang, 'GITM 3D Virtual Lab', 'مختبر GITM الافتراضي 3D', 'Laboratoire Virtuel 3D', 'GITM 3D虚拟实验室')}
         </h1>
         <p className="text-slate-600 dark:text-slate-400">
@@ -156,7 +156,7 @@ export default function VirtualLab() {
         </p>
       </div>
 
-      <div className="flex-1 min-h-[600px] w-full relative rounded-3xl overflow-hidden glass-card border-2 border-cyan-500/20 shadow-[0_0_50px_rgba(6,182,212,0.15)] group">
+      <div className="flex-1 min-h-[600px] w-full relative rounded-3xl overflow-hidden glass-card border-2 border-cyan-500/20 shadow-sm group">
         <div className="absolute top-4 left-4 z-10 flex gap-2">
           <span className="px-3 py-1 bg-cyan-500/20 text-cyan-500 border border-cyan-500/30 rounded-full text-xs font-bold uppercase backdrop-blur-md">
             <span className="inline-block w-2 h-2 rounded-full bg-cyan-500 animate-pulse mr-2 rtl:ml-2 rtl:mr-0"></span>
@@ -195,26 +195,26 @@ export default function VirtualLab() {
         </WebGLErrorBoundary>
 
         {/* Bottom controls overlay */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 bg-white/ dark:bg-slate-900/ backdrop-blur-md px-8 py-4 rounded-3xl border border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.2)]">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 bg-white/ dark:bg-slate-900/ backdrop-blur-md px-8 py-4 rounded-3xl border border-cyan-500/30 shadow-sm">
           <div className="flex gap-2">
             <button 
               onClick={() => fetchData('telemetry')}
               disabled={loading}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'telemetry' ? 'bg-cyan-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)]' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'telemetry' ? 'bg-cyan-600 text-white shadow-sm' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
             >
               Live Telemetry
             </button>
             <button 
               onClick={() => fetchData('nodes')}
               disabled={loading}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'nodes' ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'nodes' ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
             >
               Cluster Nodes
             </button>
             <button 
               onClick={() => fetchData('logs')}
               disabled={loading}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'logs' ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${dataType === 'logs' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
             >
               System Logs
             </button>

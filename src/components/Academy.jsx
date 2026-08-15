@@ -348,7 +348,7 @@ export default function Academy() {
          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
          <div className="absolute inset-0 bg-gradient-to-r from-teal-900/80 to-blue-900/80"></div>
          <div className="max-w-7xl mx-auto relative z-10 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 font-orbitron">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 font-sans font-bold tracking-tight">
               {lang === 'ar' ? 'تعلم بلا حدود مع' : 'Learn Without Limits with'} <span className="text-teal-400">GITM</span>
             </h1>
             <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto mb-10">

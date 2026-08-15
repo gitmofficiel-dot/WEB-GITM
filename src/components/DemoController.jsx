@@ -46,7 +46,7 @@ const DemoController = () => {
         >
           <Minimize2 size={14} />
         </button>
-        <span className="text-[10px] font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-orbitron flex items-center space-x-1 rtl:space-x-reverse">
+        <span className="text-[10px] font-bold text-[#1e3a5f] dark:text-white uppercase tracking-wider font-sans font-bold tracking-tight flex items-center space-x-1 rtl:space-x-reverse">
           <span>{t('dashboards.demoControl')}</span>
         </span>
       </div>

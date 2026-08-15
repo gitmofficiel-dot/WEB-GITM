@@ -37,7 +37,7 @@ const ScienceFactWidget = () => {
       </div>
       
       <div className="flex items-center justify-between mb-4 relative z-10">
-        <h3 className="text-xl font-bold font-orbitron flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+        <h3 className="text-xl font-bold font-sans font-bold tracking-tight flex items-center gap-2 text-[#1e3a5f] dark:text-white">
           <Microscope className="text-emerald-500" /> {title}
         </h3>
         <button 

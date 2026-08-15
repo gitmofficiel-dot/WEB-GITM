@@ -113,7 +113,7 @@ export default function CodeSimulator({ lang = 'en' }) {
       <div className="flex items-center justify-between px-4 py-3 bg-[#181825] border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center gap-3">
           <Code2 className="text-cyan-400" size={20} />
-          <h3 className="font-orbitron font-bold text-white text-sm">
+          <h3 className="font-sans font-bold tracking-tight font-bold text-white text-sm">
             {lang === 'ar' ? 'محاكي البرمجة (HackerRank Engine)' : 'Code Simulator (HackerRank Engine)'}
           </h3>
         </div>
