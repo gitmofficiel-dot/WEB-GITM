@@ -9,6 +9,7 @@ import AIChatBot from './components/AIChatBot';
 import Footer from './components/Footer';
 import ToastContainer from './components/ui/ToastContainer';
 import GlobalSearch from './components/ui/GlobalSearch';
+import SEO from './components/SEO';
 
 // Lazy loading all major components for better performance
 const Home = lazy(() => import('./components/Home'));
@@ -153,6 +154,7 @@ const AppContent = () => {
 
       {/* Main App Layout */}
       <div className="relative z-10 flex flex-col min-h-screen">
+        <SEO />
         {!isTheaterMode && <Navbar />}
         {!isTheaterMode && <GlobalSearch />}
         
