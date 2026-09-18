@@ -512,11 +512,19 @@ export default function PresidentDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                     <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-2xl p-6 border border-pink-200 dark:border-pink-900/50">
                       <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-3 flex items-center gap-2 text-sm"><TrendingUp size={16} className="text-emerald-500" /> {lang === 'ar' ? 'نمو الأكاديمية' : 'Academy Growth'}</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-300">Expect a 24% increase in Edge AI course demand next week. Auto-scaling servers is recommended.</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-300">
+                        {lang === 'ar' 
+                          ? `تمتلك الأكاديمية حالياً ${courses.length} دورة تقنية. تشير التحليلات إلى نمو مستمر في المحتوى التعليمي.` 
+                          : `The academy currently has ${courses.length} tech courses. Analytics indicate continuous growth in educational content.`}
+                      </p>
                     </div>
                     <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-2xl p-6 border border-pink-200 dark:border-pink-900/50">
                       <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-3 flex items-center gap-2 text-sm"><AlertTriangle size={16} className="text-amber-500" /> {lang === 'ar' ? 'تحليل تفاعل الأعضاء' : 'Member Engagement'}</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-300">Engagement in 'Cybersecurity 101' dropped by 15%. Consider sending a motivational email campaign.</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-300">
+                        {lang === 'ar'
+                          ? `لدينا ${allUsers.filter(u => u.role === 'member' || u.role === 'student').length} عضو (طالب/عضو) في مجتمعنا. ننصح بإطلاق فعاليات جديدة لتعزيز تفاعل الأعضاء وتطوير المهارات.`
+                          : `We have ${allUsers.filter(u => u.role === 'member' || u.role === 'student').length} members (students/members) in our community. We recommend launching new events to boost engagement.`}
+                      </p>
                     </div>
                   </div>
                 </div>
