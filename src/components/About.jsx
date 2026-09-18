@@ -25,8 +25,8 @@ export default function About() {
             vision_en: 'Leading the development of Moroccan AI and exporting it globally, building strong bridges for innovative tech creativity and academic brilliance.',
             mission_ar: 'توفير بيئة بحثية متقدمة للمواهب المغربية، وتمكينهم من بناء أنظمة ذكية تحل مشاكل واقعية بدعم من المؤسسات الوطنية.',
             mission_en: 'Providing an advanced research environment for Moroccan talents to build smart systems with national support.',
-            history_ar: 'تأسست GITM في عام 2026 لتوحيد جهود المهندسين المغاربة. قمنا بتأسيس نادي الألعاب وعقدنا شراكات مع المركز الجهوي للاستثمار.',
-            history_en: 'Founded in 2026, GITM unites Moroccan engineers. We established the Gaming Club and partnered with CRI.',
+            history_ar: 'تأسست GITM لتوحيد جهود المبدعين والمبتكرين المغاربة. نسعى لتوفير بيئة تكنولوجية متكاملة تفتح آفاقاً جديدة للشباب المغربي.',
+            history_en: 'GITM was founded to unite Moroccan creators and innovators. We strive to provide an integrated technological environment that opens new horizons for Moroccan youth.',
             stats: { founded: '2026', projects: '15+', members: '500+' }
           });
         }
@@ -173,9 +173,11 @@ export default function About() {
             <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gitm-textLight dark:text-white mb-6 group-hover:scale-110 transition-transform">
               <Library size={32} />
             </div>
-            <h2 className="text-2xl font-bold text-gitm-textLight dark:text-white mb-4">{lang === 'ar' ? 'الأكاديميات الشريكة' : 'Partner Academies'}</h2>
+            <h2 className="text-2xl font-bold text-gitm-textLight dark:text-white mb-4">{lang === 'ar' ? 'رحلة التأسيس' : 'Our Journey'}</h2>
             <p className="text-gitm-mutedLight dark:text-gitm-mutedDark leading-relaxed font-medium">
-              {lang === 'ar' ? aboutData?.history_ar : aboutData?.history_en}
+              {lang === 'ar' 
+                ? 'تأسست GITM لتوحيد جهود المبدعين والمبتكرين المغاربة. نسعى لتوفير بيئة تكنولوجية متكاملة تفتح آفاقاً جديدة للشباب المغربي.' 
+                : 'GITM was founded to unite Moroccan creators and innovators. We strive to provide an integrated technological environment that opens new horizons for Moroccan youth.'}
             </p>
           </motion.div>
         </div>
