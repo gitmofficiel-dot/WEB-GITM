@@ -39,11 +39,10 @@ export const LanguageProvider = ({ children }) => {
 
   const [selectedProfileId, setSelectedProfileId] = useState(null);
 
-  // 4. Auth User State
-  const { currentUser: user, demoLogin, logout } = useAuth();
+  // 4. Removed Auth User State from here, it should only be managed by AuthContext.
 
   // 5. Active Dashboard Role
-  const [activeDashboardRole, setActiveDashboardRole] = useState('president');
+  const [activeDashboardRole, setActiveDashboardRole] = useState('student');
 
   // Users fallback
   const [users, setUsers] = useState(() => {
@@ -302,28 +301,8 @@ export const LanguageProvider = ({ children }) => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
 
-  const registerUser = (email, name) => {
-    demoLogin(email, 'student', name);
-    setActiveDashboardRole('student');
-    setView('dashboard');
-  };
-
-  const loginUser = (email, role, name) => {
-    demoLogin(email, role, name);
-    setActiveDashboardRole(role);
-    setView('dashboard');
-  };
-
-  const logoutUser = async () => {
-    try {
-      await logout();
-      setActiveDashboardRole('student');
-      setView('home');
-    } catch (error) {
-      console.error('Error signing out', error);
-    }
-  };
-
+  // Removed mock auth to avoid conflicts with real AuthContext.
+  
   const t = (path) => {
     const keys = path.split('.');
     let current = translations[lang] || translations['ar'];
@@ -371,12 +350,8 @@ export const LanguageProvider = ({ children }) => {
       selectedProfileId,
       setSelectedProfileId,
       
-      user,
-      loginUser,
-      logoutUser,
       users,
       setUsers,
-      registerUser,
       
       activeDashboardRole,
       setActiveDashboardRole,

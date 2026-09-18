@@ -21,33 +21,30 @@ export default function VerifyCertificate() {
     }
   }, [location.search]);
 
-  const verifyId = (idToVerify) => {
+  const verifyId = async (idToVerify) => {
     setStatus('loading');
-    // Simulate API call
-    setTimeout(() => {
+    
+    try {
+      const { db } = await import('../config/firebase');
+      const { doc, getDoc } = await import('firebase/firestore');
+      
       const upperId = idToVerify.toUpperCase();
-      if (upperId.startsWith('GITM-CERT-') || upperId.startsWith('CERT-GITM-')) {
-        // Parse mock data based on ID
-        const parts = upperId.split('-');
-        const year = parts[2] || '2026';
-        
-        let course = 'Technology & Innovation';
-        if (upperId.includes('0042')) course = 'Python for Robotics';
-        else if (upperId.includes('0089')) course = 'Data Structures & Algorithms';
-        else if (upperId.includes('0312')) course = 'Introduction to AI';
-        else if (upperId.includes('001')) course = 'Edge AI Architecture';
+      const docRef = doc(db, 'certificates', upperId);
+      const docSnap = await getDoc(docRef);
 
+      if (docSnap.exists()) {
         setCertData({
-          name: 'Soufiane El Alaoui', // Mock student name
-          course: course,
-          date: `15 June ${year}`,
+          ...docSnap.data(),
           id: upperId
         });
         setStatus('valid');
       } else {
         setStatus('invalid');
       }
-    }, 1500);
+    } catch (error) {
+      console.error('Error verifying certificate:', error);
+      setStatus('invalid');
+    }
   };
 
   const handleVerify = (e) => {

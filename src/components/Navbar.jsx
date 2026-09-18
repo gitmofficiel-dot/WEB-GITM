@@ -5,9 +5,11 @@ import { Sun, Moon, Globe, Menu, X, LayoutDashboard, LogOut, ChevronDown, Search
 import { motion, AnimatePresence } from 'framer-motion';
 import { algoliasearch } from 'algoliasearch';
 import { useNotifications } from '../hooks/useNotifications';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
-  const { lang, changeLanguage, theme, toggleTheme, user, logoutUser, users } = useLanguage();
+  const { lang, changeLanguage, theme, toggleTheme, users } = useLanguage();
+  const { currentUser: user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -360,7 +362,7 @@ const Navbar = () => {
                         <button onClick={() => {navigate('/dashboard'); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
                           <LayoutDashboard size={16} className="text-gitm-blue"/> {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
                         </button>
-                        <button onClick={() => {logoutUser(); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 mt-1">
+                        <button onClick={async () => { await logout(); navigate('/'); setProfileDropdown(false); }} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 mt-1">
                           <LogOut size={16}/> {lang === 'ar' ? 'تسجيل الخروج' : 'Logout'}
                         </button>
                       </motion.div>
