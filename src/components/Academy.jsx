@@ -33,6 +33,7 @@ export default function Academy() {
   // Filters
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedLevel, setSelectedLevel] = useState('All');
+  const [selectedBookLang, setSelectedBookLang] = useState('All'); // New state for Book Language
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -57,12 +58,26 @@ export default function Academy() {
     fetchCourses();
   }, []);
 
-  const fetchBooks = async (query = 'technology') => {
+  const fetchBooks = async (query = '') => {
     setBooksLoading(true);
     try {
+      // Build search query based on category and search text
+      let finalQuery = query.trim() || 'technology';
+      if (selectedCategory !== 'All') {
+         finalQuery = `${selectedCategory} ${finalQuery}`.trim();
+      }
+
+      let url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(finalQuery)}&maxResults=12`;
+      
+      // Apply Language Filter if not 'All'
+      if (selectedBookLang === 'ar') url += '&langRestrict=ar';
+      else if (selectedBookLang === 'en') url += '&langRestrict=en';
+      else if (selectedBookLang === 'fr') url += '&langRestrict=fr';
+
       const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
-      if (!apiKey) return;
-      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=12&key=${apiKey}`);
+      if (apiKey) url += `&key=${apiKey}`;
+
+      const res = await fetch(url);
       const data = await res.json();
       if (data.items) {
         setBooks(data.items);
@@ -77,19 +92,13 @@ export default function Academy() {
   };
 
   useEffect(() => {
-    if (activeTab === 'library' && books.length === 0) {
-      fetchBooks('artificial intelligence technology');
-    }
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (activeTab === 'library' && searchQuery) {
+    if (activeTab === 'library') {
       const timeoutId = setTimeout(() => {
         fetchBooks(searchQuery);
       }, 500);
       return () => clearTimeout(timeoutId);
     }
-  }, [searchQuery, activeTab]);
+  }, [searchQuery, activeTab, selectedCategory, selectedBookLang]);
 
   const startCourseFlow = () => {
     setIsCourseStarted(true);
@@ -155,6 +164,12 @@ export default function Academy() {
 
   const categories = ['All', 'AI', 'Web Dev', 'Security', 'Data Science', 'Cloud'];
   const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'];
+  const bookLangs = [
+    { value: 'All', labelAr: 'الكل', labelEn: 'All' },
+    { value: 'ar', labelAr: 'العربية', labelEn: 'Arabic' },
+    { value: 'en', labelAr: 'الإنجليزية', labelEn: 'English' },
+    { value: 'fr', labelAr: 'الفرنسية', labelEn: 'French' }
+  ];
 
   if (activeCourse) {
     return (
@@ -403,27 +418,51 @@ export default function Academy() {
                 </div>
               </div>
 
-              <div>
-                <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 md:mb-3 mt-4 lg:mt-0">
-                  {lang === 'ar' ? 'المستوى' : 'Level'}
-                </h4>
-                <div className="flex flex-row flex-wrap lg:flex-col gap-2 md:gap-2">
-                   {levels.map(lvl => (
-                     <label key={lvl} className="flex items-center gap-3 cursor-pointer group">
-                        <input 
-                          type="radio" 
-                          name="level"
-                          checked={selectedLevel === lvl}
-                          onChange={() => { setSelectedLevel(lvl); setCurrentPage(1); }}
-                          className="w-4 h-4 text-teal-500 focus:ring-teal-500 border-gray-300"
-                        />
-                        <span className={`text-slate-700 dark:text-slate-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors ${selectedLevel === lvl ? 'font-bold text-teal-600 dark:text-teal-400' : ''}`}>
-                          {lvl}
-                        </span>
-                     </label>
-                   ))}
+              {activeTab === 'courses' ? (
+                <div>
+                  <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 md:mb-3 mt-4 lg:mt-0">
+                    {lang === 'ar' ? 'المستوى' : 'Level'}
+                  </h4>
+                  <div className="flex flex-row flex-wrap lg:flex-col gap-2 md:gap-2">
+                     {levels.map(lvl => (
+                       <label key={lvl} className="flex items-center gap-3 cursor-pointer group">
+                          <input 
+                            type="radio" 
+                            name="level"
+                            checked={selectedLevel === lvl}
+                            onChange={() => { setSelectedLevel(lvl); setCurrentPage(1); }}
+                            className="w-4 h-4 text-teal-500 focus:ring-teal-500 border-gray-300"
+                          />
+                          <span className={`text-slate-700 dark:text-slate-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors ${selectedLevel === lvl ? 'font-bold text-teal-600 dark:text-teal-400' : ''}`}>
+                            {lvl}
+                          </span>
+                       </label>
+                     ))}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div>
+                  <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 md:mb-3 mt-4 lg:mt-0">
+                    {lang === 'ar' ? 'لغة الكتاب' : 'Book Language'}
+                  </h4>
+                  <div className="flex flex-row flex-wrap lg:flex-col gap-2 md:gap-2">
+                     {bookLangs.map(bl => (
+                       <label key={bl.value} className="flex items-center gap-3 cursor-pointer group">
+                          <input 
+                            type="radio" 
+                            name="bookLang"
+                            checked={selectedBookLang === bl.value}
+                            onChange={() => { setSelectedBookLang(bl.value); setCurrentPage(1); }}
+                            className="w-4 h-4 text-indigo-500 focus:ring-indigo-500 border-gray-300"
+                          />
+                          <span className={`text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors ${selectedBookLang === bl.value ? 'font-bold text-indigo-600 dark:text-indigo-400' : ''}`}>
+                            {lang === 'ar' ? bl.labelAr : bl.labelEn}
+                          </span>
+                       </label>
+                     ))}
+                  </div>
+                </div>
+              )}
            </div>
         </div>
 
@@ -431,8 +470,13 @@ export default function Academy() {
         <div className="flex-1">
           <div className="flex items-center justify-between mb-8">
              <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
-               {lang === 'ar' ? 'الدورات المتاحة' : 'Available Courses'}
-               <span className="text-slate-400 text-sm ml-3 font-normal">({filteredCourses.length} results)</span>
+               {activeTab === 'courses' 
+                 ? (lang === 'ar' ? 'الدورات المتاحة' : 'Available Courses')
+                 : (lang === 'ar' ? 'الكتب المتاحة' : 'Available Books')
+               }
+               <span className="text-slate-400 text-sm ml-3 font-normal">
+                 ({activeTab === 'courses' ? filteredCourses.length : books.length} results)
+               </span>
              </h2>
              
              <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
