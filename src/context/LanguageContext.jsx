@@ -264,8 +264,35 @@ export const LanguageProvider = ({ children }) => {
     if (newLang === lang) return;
     setIsTranslating(true);
     setTargetLang(newLang);
+    
     setTimeout(() => {
+      // Set our internal state to English if it's a foreign language,
+      // so the base DOM is predictable (English) before Google translates it.
+      // Or just set to newLang and let our ternary default to English.
       setLang(newLang);
+      
+      // Trigger Google Translate
+      try {
+        const gtSelect = document.querySelector('.goog-te-combo');
+        if (gtSelect) {
+          if (newLang === 'ar' || newLang === 'en') {
+            gtSelect.value = ''; // Reset translation
+            gtSelect.dispatchEvent(new Event('change'));
+            
+            // Also remove cookie if we want to be safe
+            document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          } else {
+            // For fr, zh, etc., select it in the widget
+            // The base page language for translation purposes is considered what the script thinks it is.
+            // Since our default falls back to english, translating from english to the target language works best.
+            gtSelect.value = newLang;
+            gtSelect.dispatchEvent(new Event('change'));
+          }
+        }
+      } catch (e) {
+        console.error("Google Translate error:", e);
+      }
+      
       setIsTranslating(false);
       setTargetLang(null);
     }, 300);

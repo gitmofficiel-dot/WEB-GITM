@@ -116,8 +116,26 @@
       ]
     }
     </script>
+    
+    <!-- Google Translate Script -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({pageLanguage: 'en', autoDisplay: false}, 'google_translate_element');
+      }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+      /* Hide the Google Translate UI */
+      .goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon { display: none !important; }
+      body { top: 0px !important; }
+      #google_translate_element { display: none !important; }
+      .goog-tooltip { display: none !important; }
+      .goog-tooltip:hover { display: none !important; }
+      .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+    </style>
   </head>
   <body class="bg-slate-50 dark:bg-cyber-bg text-slate-900 dark:text-cyber-text transition-colors duration-300">
+    <div id="google_translate_element"></div>
     <div id="root">
       <!-- Semantic Crawler Prerender Fallback (Read by Search Bots before JS execution) -->
       <noscript>
