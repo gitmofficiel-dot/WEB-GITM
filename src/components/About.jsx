@@ -4,6 +4,7 @@ import { Target, Flag, History, Loader2, Users, Rocket, Activity, Library, Chevr
 import { motion } from 'framer-motion';
 import { db } from '../config/firebase';
 import { doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import SEO from './SEO';
 
 export default function About() {
   const { lang } = useLanguage();
@@ -87,9 +88,32 @@ export default function About() {
     );
   }
 
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "مجموعة الابتكار التكنولوجي بالمغرب",
+    "alternateName": "Groupe Innovation Technologique Maroc (GITM)",
+    "url": "https://gitm.pages.dev",
+    "logo": "https://gitm.pages.dev/logo.png",
+    "founder": {
+      "@type": "Person",
+      "name": "محمد غزاوني",
+      "alternateName": "MOHAMMED RHZAOUNI",
+      "birthDate": "2004-01-31",
+      "birthPlace": {
+        "@type": "Place",
+        "name": "وادي زم، المغرب"
+      },
+      "jobTitle": "مؤسس المجموعة والمشرف العام"
+    }
+  };
+
+  const pageTitle = lang === 'ar' ? 'من نحن | محمد غزاوني - مؤسس GITM' : 'About Us | MOHAMMED RHZAOUNI - GITM Founder';
+  const pageDesc = lang === 'ar' ? 'نحن مبادرة تكنولوجية مغربية رائدة. محمد غزاوني - MOHAMMED RHZAOUNI مؤسس مجموعة الابتكار التكنولوجي بالمغرب.' : 'We are a leading Moroccan tech initiative. MOHAMMED RHZAOUNI - محمد غزاوني is the founder of GITM.';
+
   return (
     <div className="min-h-screen bg-gitm-light dark:bg-gitm-dark pt-24 md:pt-32 pb-16 md:pb-24 relative overflow-hidden">
-      
+      <SEO title={pageTitle} description={pageDesc} schema={schemaMarkup} />
       {/* Math & Tech Overlay */}
       <div className="absolute inset-0 bg-math-overlay opacity-[0.03] dark:opacity-[0.02] pointer-events-none" />
 
@@ -155,6 +179,35 @@ export default function About() {
             </p>
           </motion.div>
         </div>
+
+        {/* Founder Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mb-12 md:mb-20 bg-white dark:bg-gitm-cardDark p-8 rounded-3xl shadow-soft border border-gray-100 dark:border-gray-800"
+        >
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-1 text-center md:text-right rtl:md:text-right ltr:md:text-left">
+              <h1 className="text-3xl md:text-5xl font-bold text-gitm-textLight dark:text-white mb-4">
+                {lang === 'ar' ? 'محمد غزاوني' : 'MOHAMMED RHZAOUNI'}
+              </h1>
+              <h2 className="text-xl md:text-2xl text-gitm-red font-bold mb-6">
+                {lang === 'ar' ? 'مؤسس المجموعة والمشرف العام' : 'Founder & General Supervisor'}
+              </h2>
+              <div className="space-y-4 text-gitm-mutedLight dark:text-gitm-mutedDark leading-relaxed font-medium text-lg">
+                <p>
+                  {lang === 'ar' ? 'تاريخ ومكان الازدياد: 31 يناير 2004 بمدينة وادي زم، المغرب.' : 'Born: January 31, 2004 in Oued Zem, Morocco.'}
+                </p>
+                <p>
+                  {lang === 'ar' 
+                    ? 'محمد غزاوني هو شاب مغربي يمتلك شغفاً كبيراً بمجال التكنولوجيا والابتكار. يكرس جهده من خلال هذه المجموعة لقيادة المشاريع التقنية وتوفير بيئة خصبة للإبداع التكنولوجي، إيماناً منه بقدرة الشباب المغربي على التميز وصناعة المستقبل.' 
+                    : 'Mohammed Rhzaouni is a young Moroccan with a great passion for technology and innovation. He dedicates his effort through this group to lead technical projects and provide a fertile environment for technological creativity.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Impact Stats */}
         <motion.div 

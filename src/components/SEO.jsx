@@ -6,7 +6,8 @@ export default function SEO({
   description = 'المنصة الوطنية للابتكار التكنولوجي والذكاء الاصطناعي بالمغرب - Groupe Innovation Technologique Maroc',
   keywords = 'GITM, Groupe Innovation Technologique Maroc, الذكاء الاصطناعي, إنترنت الأشياء, الأنظمة المدمجة, المغرب',
   image = 'https://gitm.pages.dev/logo.png',
-  type = 'website'
+  type = 'website',
+  schema = null
 }) {
   const location = useLocation();
   const canonicalUrl = `https://gitm.pages.dev${location.pathname === '/' ? '' : location.pathname}`;
@@ -53,7 +54,21 @@ export default function SEO({
     }
     linkCanonical.setAttribute('href', canonicalUrl);
 
-  }, [title, description, keywords, image, type, canonicalUrl]);
+    // 7. JSON-LD Schema
+    let schemaScript = document.querySelector('script[id="json-ld-schema"]');
+    if (schema) {
+      if (!schemaScript) {
+        schemaScript = document.createElement('script');
+        schemaScript.setAttribute('type', 'application/ld+json');
+        schemaScript.setAttribute('id', 'json-ld-schema');
+        document.head.appendChild(schemaScript);
+      }
+      schemaScript.innerHTML = JSON.stringify(schema);
+    } else if (schemaScript) {
+      schemaScript.remove();
+    }
+
+  }, [title, description, keywords, image, type, canonicalUrl, schema]);
 
   return null;
 }
