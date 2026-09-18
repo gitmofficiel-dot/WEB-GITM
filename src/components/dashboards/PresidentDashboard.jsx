@@ -547,23 +547,23 @@ export default function PresidentDashboard() {
                     <div className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
                       <div className="flex justify-between items-start mb-4">
                         <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'تدريب الكفاءات المغربية' : 'Train Moroccan Talents'}</h4>
-                        <span className="text-cyan-600 font-bold">60%</span>
+                        <span className="text-cyan-600 font-bold">{Math.min((allUsers.filter(u => u.role === 'student' || u.role === 'member').length / 10000) * 100, 100).toFixed(1)}%</span>
                       </div>
                       <p className="text-sm text-slate-500 mb-4">{lang === 'ar' ? 'الهدف: تدريب 10,000 طالب في مجالات الذكاء الاصطناعي والتكنولوجيا المتقدمة بحلول 2028.' : 'Goal: Train 10,000 students in AI and advanced tech by 2028.'}</p>
                       <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-cyan-400 to-blue-500 h-3 rounded-full" style={{ width: '60%' }}></div>
+                        <div className="bg-gradient-to-r from-cyan-400 to-blue-500 h-3 rounded-full" style={{ width: `${Math.min((allUsers.filter(u => u.role === 'student' || u.role === 'member').length / 10000) * 100, 100)}%` }}></div>
                       </div>
-                      <p className="text-right text-xs mt-2 font-bold text-slate-500">6,000 / 10,000</p>
+                      <p className="text-right text-xs mt-2 font-bold text-slate-500">{allUsers.filter(u => u.role === 'student' || u.role === 'member').length.toLocaleString()} / 10,000</p>
                     </div>
 
                     <div className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
                       <div className="flex justify-between items-start mb-4">
                         <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'التوسع الإقليمي' : 'Regional Expansion'}</h4>
-                        <span className="text-purple-600 font-bold">40%</span>
+                        <span className="text-purple-600 font-bold">{Math.min((2 / 5) * 100, 100).toFixed(1)}%</span>
                       </div>
                       <p className="text-sm text-slate-500 mb-4">{lang === 'ar' ? 'الهدف: افتتاح مختبرات GITM في 5 مدن مغربية رئيسية (الدار البيضاء، الرباط، طنجة، مراكش، أكادير).' : 'Goal: Open GITM labs in 5 major Moroccan cities.'}</p>
                       <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-purple-400 to-pink-500 h-3 rounded-full" style={{ width: '40%' }}></div>
+                        <div className="bg-gradient-to-r from-purple-400 to-pink-500 h-3 rounded-full" style={{ width: `${Math.min((2 / 5) * 100, 100)}%` }}></div>
                       </div>
                       <p className="text-right text-xs mt-2 font-bold text-slate-500 flex items-center justify-end gap-1"><MapPin size={12}/> 2 / 5 Cities</p>
                     </div>
@@ -571,13 +571,13 @@ export default function PresidentDashboard() {
                     <div className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 md:col-span-2">
                       <div className="flex justify-between items-start mb-4">
                         <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'البحث والتطوير (R&D)' : 'Research & Development'}</h4>
-                        <span className="text-emerald-600 font-bold">85%</span>
+                        <span className="text-emerald-600 font-bold">{Math.min(((projects.length || 1) / 5) * 100, 100).toFixed(1)}%</span>
                       </div>
                       <p className="text-sm text-slate-500 mb-4">{lang === 'ar' ? 'الهدف: إطلاق نظام ذكاء اصطناعي مغربي 100% للشركات الناشئة.' : 'Goal: Launch a 100% Moroccan AI system for startups.'}</p>
                       <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-emerald-400 to-teal-500 h-3 rounded-full" style={{ width: '85%' }}></div>
+                        <div className="bg-gradient-to-r from-emerald-400 to-teal-500 h-3 rounded-full" style={{ width: `${Math.min(((projects.length || 1) / 5) * 100, 100)}%` }}></div>
                       </div>
-                      <p className="text-right text-xs mt-2 font-bold text-slate-500">Beta Testing Phase</p>
+                      <p className="text-right text-xs mt-2 font-bold text-slate-500">{lang === 'ar' ? 'مرحلة الاختبار التجريبي' : 'Beta Testing Phase'}</p>
                     </div>
                   </div>
                 </div>

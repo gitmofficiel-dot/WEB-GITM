@@ -90,7 +90,8 @@ const Navbar = () => {
 
   const toolItems = [
     { id: 'verify', path: '/verify-certificate', label: { ar: 'التحقق من الشهادات', en: 'Verify Certificate' }, icon: '🎓' },
-    { id: 'contact', path: '/contact', label: { ar: 'اتصل بنا', en: 'Contact Us' }, icon: '✉️' }
+    { id: 'contact', path: '/contact', label: { ar: 'اتصل بنا', en: 'Contact Us' }, icon: '✉️' },
+    { id: 'talent', path: '/talent-hub', label: { ar: 'سوق الكفاءات', en: 'Talent Hub' }, icon: '💼' }
   ];
 
   return (
