@@ -50,6 +50,7 @@ export function AuthProvider({ children }) {
   }
 
   function logout() {
+    localStorage.removeItem('gitm_user');
     return signOut(auth);
   }
 
@@ -64,7 +65,6 @@ export function AuthProvider({ children }) {
           if (docSnap.exists()) {
             setCurrentUser({ ...user, ...docSnap.data() });
           } else {
-            // Failsafe: if doc missing but auth exists
             setCurrentUser({ ...user, role: 'student', badges: [] });
           }
         } catch (error) {
@@ -72,7 +72,13 @@ export function AuthProvider({ children }) {
           setCurrentUser({ ...user, role: 'student', badges: [] });
         }
       } else {
-        setCurrentUser(null);
+        // Fallback to local storage for demo accounts
+        const saved = localStorage.getItem('gitm_user');
+        if (saved) {
+          setCurrentUser(JSON.parse(saved));
+        } else {
+          setCurrentUser(null);
+        }
       }
       setLoading(false);
     });
@@ -80,11 +86,19 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
+  const demoLogin = (email, role, name) => {
+    const newUser = { email, role, name, badges: [] };
+    localStorage.setItem('gitm_user', JSON.stringify(newUser));
+    setCurrentUser(newUser);
+  };
+
+
   const value = {
     currentUser,
     login,
     signup,
-    logout
+    logout,
+    demoLogin
   };
 
   return (

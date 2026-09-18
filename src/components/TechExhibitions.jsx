@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, CalendarDays, Ticket } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
+import DOMPurify from 'dompurify';
 
 const Countdown = ({ targetDate, lang }) => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -76,7 +77,7 @@ const TechExhibitions = () => {
               {lang === 'ar' ? 'الحدث القادم' : 'Next Event'}
             </span>
             <h3 className="text-2xl font-bold text-[#0B132B] dark:text-white mb-2">{lang === 'ar' ? (nextEvent.title_ar || nextEvent.title || nextEvent.titleEn) : (nextEvent.title_en || nextEvent.titleEn || nextEvent.title)}</h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4" dangerouslySetInnerHTML={{ __html: (nextEvent.description_ar || nextEvent.description_en || nextEvent.description || '').substring(0, 100) + '...' }}></p>
+            <p className="text-gray-600 dark:text-gray-300 mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize((nextEvent.description_ar || nextEvent.description_en || nextEvent.description || '').substring(0, 100) + '...') }}></p>
             
             <Countdown targetDate={`${nextEvent.startDate || nextEvent.date}T${nextEvent.startTime || '00:00'}`} lang={lang} />
             
@@ -94,7 +95,7 @@ const TechExhibitions = () => {
               >
                 <div className="flex-1">
                   <h4 className="text-xl font-bold text-[#0B132B] dark:text-white mb-2">{lang === 'ar' ? (exhibition.title_ar || exhibition.title || exhibition.titleEn) : (exhibition.title_en || exhibition.titleEn || exhibition.title)}</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400" dangerouslySetInnerHTML={{ __html: (exhibition.description_ar || exhibition.description_en || exhibition.description || '').substring(0, 80) + '...' }}></p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize((exhibition.description_ar || exhibition.description_en || exhibition.description || '').substring(0, 80) + '...') }}></p>
                 </div>
                 <div className="flex flex-col gap-2 min-w-[200px]">
                   <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">

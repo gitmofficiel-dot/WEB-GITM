@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PlayCircle, CheckCircle, FileText, Video, Code, Brain } from 'lucide-react';
 import CodeWorkspace from './CodeWorkspace';
+import DOMPurify from 'dompurify';
 
 const LessonView = ({ lesson, onComplete, lang = 'en' }) => {
   const isRtl = lang === 'ar';
@@ -138,7 +139,7 @@ const LessonView = ({ lesson, onComplete, lang = 'en' }) => {
         {/* Content Section */}
         {currentItem.type !== 'code' ? (
           <div className="p-6 md:p-8 prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
-            <div dangerouslySetInnerHTML={{ __html: currentItem.content || '' }} />
+            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(currentItem.content || '') }} />
           </div>
         ) : (
           <div className="p-6 md:p-8">

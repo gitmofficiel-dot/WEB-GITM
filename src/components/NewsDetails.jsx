@@ -5,6 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { toast } from '../utils/toast';
 import CommentsSection from './ui/CommentsSection';
 import { Languages, Loader2 } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
@@ -24,7 +25,6 @@ export default function NewsDetails() {
     setIsTranslating(true);
     try {
       const targetLang = lang === 'ar' ? 'ar' : lang === 'fr' ? 'fr' : lang === 'zh' ? 'zh' : 'en';
-      const sourceLang = lang === 'ar' ? 'en' : 'ar'; // simplified assumption
       
       const translateText = async (text) => {
         if (!text) return '';
@@ -145,12 +145,12 @@ export default function NewsDetails() {
               
               <div className="mt-8">
                 {translatedContent ? (
-                  <div dangerouslySetInnerHTML={{ __html: translatedContent }} />
+                  <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(translatedContent) }} />
                 ) : (
                   article.content ? (
-                    <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }} />
                   ) : (
-                    <div dangerouslySetInnerHTML={{ __html: (lang === 'ar' ? article.content_ar : article.content_en) || '<p>المحتوى غير متوفر</p>' }} />
+                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize((lang === 'ar' ? article.content_ar : article.content_en) || '<p>المحتوى غير متوفر</p>') }} />
                   )
                 )}
               </div>

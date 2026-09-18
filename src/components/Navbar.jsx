@@ -89,16 +89,7 @@ const Navbar = () => {
   ];
 
   const toolItems = [
-    { id: 'hackathon', path: '/hackathon-arena', label: { ar: 'حلبة الهاكاثون', en: 'Hackathon Arena' }, icon: '⚡' },
-    { id: 'hardware', path: '/hardware-request', label: { ar: 'طلب عتاد ومعدات', en: 'Hardware Request' }, icon: '🔌' },
-    { id: 'digital-twin', path: '/digital-twin', label: { ar: 'منصة التوأم الرقمي', en: 'Digital Twin' }, icon: '🛰️' },
-    { id: 'arch', path: '/architecture-builder', label: { ar: 'منشئ البنى الهندسية', en: 'Architecture Builder' }, icon: '📐' },
-    { id: 'talent', path: '/talent-hub', label: { ar: 'سوق الكفاءات والخبراء', en: 'Talent Hub' }, icon: '💼' },
-    { id: 'virtual-lab', path: '/virtual-lab', label: { ar: 'المختبر الافتراضي IoT', en: 'Virtual Lab' }, icon: '🔬' },
-    { id: 'collab', path: '/collab-board', label: { ar: 'لوحة التعاون المباشر', en: 'Collab Board' }, icon: '📋' },
     { id: 'verify', path: '/verify-certificate', label: { ar: 'التحقق من الشهادات', en: 'Verify Certificate' }, icon: '🎓' },
-    { id: 'archive', path: '/archive', label: { ar: 'الأرشيف والوثائق', en: 'Archive' }, icon: '📁' },
-    { id: 'methodology', path: '/methodology', label: { ar: 'منهجية العمل', en: 'Methodology' }, icon: '⚙️' },
     { id: 'contact', path: '/contact', label: { ar: 'اتصل بنا', en: 'Contact Us' }, icon: '✉️' }
   ];
 

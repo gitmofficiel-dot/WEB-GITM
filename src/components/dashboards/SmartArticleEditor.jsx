@@ -11,6 +11,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { toast } from '../../utils/toast';
+import DOMPurify from 'dompurify';
 
 const PREDEFINED_CATEGORIES = ['مشاريع الأنظمة المدمجة', 'أخبار الروبوت علي', 'تغطيات الهاكاثون', 'تحديثات NABD-X', 'ورشات عمل', 'أكاديمية GITM', 'Technology'];
 
@@ -383,7 +384,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
           
           <div 
             className="prose dark:prose-invert max-w-none prose-img:rounded-2xl prose-img:shadow-xl prose-pre:bg-white dark:bg-slate-900 prose-pre:rounded-xl"
-            dangerouslySetInnerHTML={{ __html: content || (lang === 'ar' ? '<p>محتوى المقال...</p>' : '<p>Article content...</p>') }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content || (lang === 'ar' ? '<p>محتوى المقال...</p>' : '<p>Article content...</p>')) }}
           />
 
           {(updates || additions) && (

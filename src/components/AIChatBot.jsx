@@ -18,17 +18,32 @@ const AIChatBot = () => {
   const [isListening, setIsListening] = useState(false);
   const fileInputRef = useRef(null);
   
-  const GITM_MODELS = [
-    { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'GITM Pro', desc: lang === 'ar' ? 'نموذج متطور جداً' : 'Advanced Model' },
+  const defaultModels = [
+    { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'GITM Pro', desc: lang === 'ar' ? 'النموذج الأقوى (احترافي)' : 'Professional Model' },
+    { id: 'nvidia/llama-3.1-nemotron-70b-instruct:free', name: 'GITM Ultra', desc: lang === 'ar' ? 'نموذج فائق الدقة' : 'Ultra Accurate' },
     { id: 'google/gemma-2-9b-it:free', name: 'GITM Fast', desc: lang === 'ar' ? 'سريع وعملي' : 'Fast & Efficient' },
-    { id: 'qwen/qwen-2.5-coder-32b-instruct:free', name: 'GITM Coder', desc: lang === 'ar' ? 'مطور أكواد متخصص' : 'Specialized Coder' },
-    { id: 'microsoft/phi-3-mini-128k-instruct:free', name: 'GITM Thinker', desc: lang === 'ar' ? 'تحليل عميق' : 'Deep Analysis' }
+    { id: 'qwen/qwen-2.5-coder-32b-instruct:free', name: 'GITM Coder', desc: lang === 'ar' ? 'مطور الأكواد' : 'Code Developer' }
   ];
 
-  const [selectedModel, setSelectedModel] = useState(GITM_MODELS[0].id);
+  const [gitmModels, setGitmModels] = useState(defaultModels);
+  const [selectedModel, setSelectedModel] = useState(defaultModels[0].id);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    // Fetch Dynamic Models from Firebase
+    const fetchModels = async () => {
+      try {
+        const modelsDoc = await getDoc(doc(db, 'settings', 'ai_models'));
+        if (modelsDoc.exists() && modelsDoc.data().models?.length > 0) {
+          setGitmModels(modelsDoc.data().models);
+          setSelectedModel(modelsDoc.data().models[0].id);
+        }
+      } catch (err) {
+        console.error('Error fetching dynamic models:', err);
+      }
+    };
+    fetchModels();
+
     const loadChat = async () => {
       let loaded = false;
       if (currentUser) {
@@ -47,7 +62,7 @@ const AIChatBot = () => {
         }
       }
       if (!loaded) {
-        setMessages([ { id: 1, sender: 'ai', text: lang === 'ar' ? 'مرحباً! أنا المساعد الذكي لـ GITM. كيف يمكنني مساعدتك اليوم؟' : 'Hello! I am the GITM AI Assistant. How can I help you today?', time: new Date() } ]);
+        setMessages([ { id: 1, sender: 'ai', text: lang === 'ar' ? 'مرحباً بك! أنا الذكاء الاصطناعي الخاص بمجموعة الابتكار التكنولوجي المغرب (GITM). كيف يمكنني مساعدتك؟' : 'Hello! I am the GITM AI Assistant. How can I help you today?', time: new Date() } ]);
       }
     };
     loadChat();
@@ -205,10 +220,14 @@ const AIChatBot = () => {
       Events: ${events?.map(e => e.title?.en || e.title_en || e.title_ar)?.join(' | ') || 'None'}
       `;
 
-      // Call GITM AI
-      const responseText = await chatWithGitmai(history, selectedModel, globalContext);
-      
-      setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: responseText, time: new Date() }]);
+      // Setup empty AI message first
+      const aiMsgId = Date.now() + 1;
+      setMessages(prev => [...prev, { id: aiMsgId, sender: 'ai', text: '', time: new Date() }]);
+
+      // Call GITM AI with streaming callback
+      const responseText = await chatWithGitmai(history, selectedModel, globalContext, (currentText) => {
+        setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, text: currentText } : m));
+      });
 
       // Voice Feature: Read response out loud
       if ('speechSynthesis' in window) {
@@ -253,13 +272,13 @@ const AIChatBot = () => {
                   onChange={(e) => setSelectedModel(e.target.value)}
                   className="bg-transparent text-white font-bold font-sans font-bold tracking-tight drop-shadow-md text-sm outline-none appearance-none cursor-pointer"
                 >
-                  {GITM_MODELS.map(m => (
+                  {gitmModels.map(m => (
                     <option key={m.id} value={m.id} className="text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-800">{m.name}</option>
                   ))}
                 </select>
                 <span className="flex items-center gap-1.5 text-[10px] text-teal-100 font-bold">
                   <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  {GITM_MODELS.find(m => m.id === selectedModel)?.desc}
+                  {gitmModels.find(m => m.id === selectedModel)?.desc}
                 </span>
               </div>
             </div>

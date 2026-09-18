@@ -4,6 +4,7 @@ import { auth } from '../config/firebaseAuth';
 import { onAuthStateChanged, signOut, updateProfile } from 'firebase/auth';
 import { db } from '../config/firebase';
 import { doc, getDoc, setDoc, onSnapshot, collection } from 'firebase/firestore';
+import { useAuth } from './AuthContext';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -39,12 +40,7 @@ export const LanguageProvider = ({ children }) => {
   const [selectedProfileId, setSelectedProfileId] = useState(null);
 
   // 4. Auth User State
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('gitm_user');
-    return saved ? JSON.parse(saved) : null;
-  });
-
-
+  const { currentUser: user, demoLogin, logout } = useAuth();
 
   // 5. Active Dashboard Role
   const [activeDashboardRole, setActiveDashboardRole] = useState('president');
@@ -194,50 +190,7 @@ export const LanguageProvider = ({ children }) => {
     }
   }, [theme]);
 
-  // Effect: Listen to Firebase Auth State & Sync with Firestore
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        // User is signed in
-        const userRef = doc(db, 'users', firebaseUser.uid);
-        const userSnap = await getDoc(userRef);
-        
-        let syncedUser;
-        if (userSnap.exists()) {
-          syncedUser = { ...userSnap.data(), uid: firebaseUser.uid };
-        } else {
-          // New User
-          const name = firebaseUser.displayName || firebaseUser.email.split('@')[0];
-          syncedUser = { 
-            uid: firebaseUser.uid,
-            email: firebaseUser.email, 
-            role: 'student', 
-            name, 
-            badges: [],
-            photoURL: firebaseUser.photoURL || null
-          };
-          await setDoc(userRef, syncedUser);
-          setUsers(prev => [...prev, { id: firebaseUser.uid, ...syncedUser }]);
-        }
-
-        // If they updated photo via Google, ensure we have it
-        if (firebaseUser.photoURL && syncedUser.photoURL !== firebaseUser.photoURL) {
-          syncedUser.photoURL = firebaseUser.photoURL;
-          await setDoc(userRef, { photoURL: firebaseUser.photoURL }, { merge: true });
-        }
-
-        setUser(syncedUser);
-        localStorage.setItem('gitm_user', JSON.stringify(syncedUser));
-        setActiveDashboardRole(syncedUser.role);
-      } else {
-        // User is signed out
-        setUser(null);
-        localStorage.removeItem('gitm_user');
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  // Effect: Listen to Firebase Auth State & Sync with Firestore (Removed to prevent duplication)
 
   // Effect: Listen to Data from Firestore
   useEffect(() => {
@@ -323,38 +276,21 @@ export const LanguageProvider = ({ children }) => {
   };
 
   const registerUser = (email, name) => {
-    const exists = users.find(u => u.email === email);
-    let newUser;
-    if (exists) {
-      newUser = exists;
-    } else {
-      newUser = { id: Date.now(), name: name || email.split('@')[0], email, role: 'student', badges: [] };
-      setUsers(prev => [...prev, newUser]);
-    }
-    setUser(newUser);
-    localStorage.setItem('gitm_user', JSON.stringify(newUser));
+    demoLogin(email, 'student', name);
     setActiveDashboardRole('student');
     setView('dashboard');
   };
 
   const loginUser = (email, role, name) => {
-    const foundUser = users.find(u => u.email === email);
-    const actualRole = foundUser ? foundUser.role : role;
-    const actualName = foundUser ? foundUser.name : (name || email.split('@')[0]);
-    const actualBadges = foundUser ? (foundUser.badges || []) : [];
-
-    const newUser = { email, role: actualRole, name: actualName, badges: actualBadges };
-    setUser(newUser);
-    localStorage.setItem('gitm_user', JSON.stringify(newUser));
-    setActiveDashboardRole(actualRole);
+    demoLogin(email, role, name);
+    setActiveDashboardRole(role);
     setView('dashboard');
   };
 
   const logoutUser = async () => {
     try {
-      await signOut(auth);
-      setUser(null);
-      localStorage.removeItem('gitm_user');
+      await logout();
+      setActiveDashboardRole('student');
       setView('home');
     } catch (error) {
       console.error('Error signing out', error);
@@ -383,11 +319,19 @@ export const LanguageProvider = ({ children }) => {
     return current;
   };
 
+  const t_inline = (arStr, enStr) => {
+    if (lang === 'ar') return arStr;
+    if (lang === 'en') return enStr;
+    // Fallback for other languages (fr, es, etc.)
+    return enStr;
+  };
+
   return (
     <LanguageContext.Provider value={{
       lang,
       changeLanguage,
       t,
+      t_inline,
       languages,
       isTranslating,
       targetLang,

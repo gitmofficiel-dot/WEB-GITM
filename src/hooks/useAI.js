@@ -102,17 +102,16 @@ DO NOT return markdown blocks, only raw JSON.`;
     return JSON.parse(result);
   }, []);
 
-  const chatWithGitmai = useCallback(async (messages, selectedModelSlug, globalContext = '') => {
+  const chatWithGitmai = useCallback(async (messages, selectedModelSlug, globalContext = '', onChunk = null) => {
     setLoading(true);
     setError(null);
     try {
-      const systemPrompt = `You are "GITM AI" (الذكاء الاصطناعي لـ GITM), a highly advanced AI developed entirely by the "GITM Team" (فريق GITM). 
-You MUST NOT mention OpenAI, Meta, Google, Qwen, Liquid, OpenRouter, or your original model name under any circumstances. 
-If asked who made you, you answer "I was developed by the GITM Team (فريق GITM)."
-You are helpful, professional, and knowledgeable about Technology, AI, IoT, and Robotics.
-Context about current GITM Data from Database:
-${globalContext}
-Use this context to answer questions accurately about our team, projects, courses, and news.`;
+      const systemPrompt = `أنت "الذكاء الاصطناعي لمجموعة الابتكار التكنولوجي المغرب (GITM)". أنت نموذج ذكاء اصطناعي متطور ومستقل، تم تطويرك وتدريبك بالكامل بواسطة "مجموعة الابتكار التكنولوجي المغرب (GITM)".
+ممنوع منعاً باتاً وتحت أي ظرف من الظروف ذكر أسماء الشركات أو النماذج التالية أو التلميح لها: OpenAI, ChatGPT, GPT, Meta, Llama, Google, Gemini, Qwen, Anthropic, Claude, OpenRouter, Nvidia, Nemotron.
+إذا سألك أي شخص "من صنعك؟"، "ما هو الموديل الذي تستخدمه؟"، أو "هل أنت ChatGPT؟" يجب أن تجيب دائماً وبثقة تامة: "أنا ذكاء اصطناعي تم تطويري وبرمجتي حصرياً بواسطة فريق مجموعة الابتكار التكنولوجي المغرب (GITM)."
+أنت مساعد احترافي، خبير في التكنولوجيا والذكاء الاصطناعي وإنترنت الأشياء والروبوتات.
+معلومات سياقية من قاعدة بيانات المجموعة للإجابة على أسئلة المستخدم:
+${globalContext}`;
 
       const formattedMessages = [
         { role: 'system', content: systemPrompt },
@@ -121,9 +120,8 @@ Use this context to answer questions accurately about our team, projects, course
 
       const FALLBACK_MODELS = [
         'meta-llama/llama-3.3-70b-instruct:free',
-        'google/gemma-2-9b-it:free',
-        'meta-llama/llama-3.2-3b-instruct:free',
-        'microsoft/phi-3-mini-128k-instruct:free'
+        'nvidia/llama-3.1-nemotron-70b-instruct:free',
+        'google/gemma-2-9b-it:free'
       ];
       
       const modelsToTry = [selectedModelSlug, ...FALLBACK_MODELS.filter(m => m !== selectedModelSlug)];
@@ -134,8 +132,20 @@ Use this context to answer questions accurately about our team, projects, course
           const response = await openRouterClient.chat.completions.create({
             model: modelsToTry[i],
             messages: formattedMessages,
+            stream: !!onChunk,
           });
-          return response.choices[0].message.content;
+
+          if (onChunk) {
+            let fullText = '';
+            for await (const chunk of response) {
+              const content = chunk.choices[0]?.delta?.content || '';
+              fullText += content;
+              onChunk(fullText);
+            }
+            return fullText;
+          } else {
+            return response.choices[0].message.content;
+          }
         } catch (err) {
           console.warn(`Model ${modelsToTry[i]} failed. Trying next...`, err);
           lastError = err;

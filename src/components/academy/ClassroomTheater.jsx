@@ -12,6 +12,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import HardwareLab from './HardwareLab';
 import CANBusSimulator from './CANBusSimulator';
 import IoTTelemetryDashboard from './IoTTelemetryDashboard';
+import DOMPurify from 'dompurify';
 
 // Helper to extract YouTube ID
 const getYoutubeId = (url) => {
@@ -157,7 +158,7 @@ const ClassroomTabs = ({ lesson, courseDescription }) => {
               <div className="prose dark:prose-invert max-w-none">
                 <h3 className="text-xl font-bold mb-4 text-[#1e3a5f] dark:text-white">{lesson?.title}</h3>
                 {courseDescription ? (
-                   <div dangerouslySetInnerHTML={{ __html: courseDescription }} />
+                   <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(courseDescription) }} />
                 ) : (
                    <p className="text-slate-500">{lang === 'ar' ? 'لا يوجد وصف متاح.' : 'No overview available.'}</p>
                 )}

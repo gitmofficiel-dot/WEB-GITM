@@ -1,5 +1,6 @@
 import React from 'react';
 import EmbedRenderer from './EmbedRenderer';
+import DOMPurify from 'dompurify';
 
 const RichContentRenderer = ({ content, mediaUrls = [] }) => {
   if (!content && (!mediaUrls || mediaUrls.length === 0)) return null;
@@ -9,7 +10,7 @@ const RichContentRenderer = ({ content, mediaUrls = [] }) => {
       {content && (
         <div 
           className="text-gray-300 leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: content }} 
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} 
         />
       )}
       
