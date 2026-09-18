@@ -21,17 +21,12 @@ const ActiveMembers = () => {
       .slice(0, 4);
   }
 
-  // If no members with badges, show top 4 members or mock data
+  // If no members with badges, show top 4 members
   if (topMembers.length === 0) {
-    if (users && users.length >= 4) {
+    if (users && users.length > 0) {
       topMembers = users.slice(0, 4);
     } else {
-      topMembers = [
-        { id: 'm1', name: 'Dr. Youssef', role: 'AI Researcher', badges: ['writer', 'speaker'], avatar: 'Y' },
-        { id: 'm2', name: 'Amina', role: 'Lead Developer', badges: ['developer', 'designer'], avatar: 'A' },
-        { id: 'm3', name: 'Omar', role: 'Security Expert', badges: ['political', 'developer'], avatar: 'O' },
-        { id: 'm4', name: 'Sara', role: 'UI/UX Designer', badges: ['designer'], avatar: 'S' }
-      ];
+      topMembers = [];
     }
   }
 

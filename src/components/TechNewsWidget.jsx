@@ -11,14 +11,6 @@ const TechNewsWidget = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   
-  const MOCK_NEWS = [
-    { id: 'm1', title: 'GITM Launches New AI Research Lab', by: 'GITM Official', isApi: false, url: '#' },
-    { id: 'm2', title: 'The Future of Quantum Computing in Morocco', by: 'Tech Review', isApi: true, url: '#' },
-    { id: 'm3', title: 'Global Tech Summit 2026 Announced', by: 'GITM Events', isApi: false, url: '#' },
-    { id: 'm4', title: 'Breakthrough in Renewable Energy Tech', by: 'Science Daily', isApi: true, url: '#' },
-    { id: 'm5', title: 'New Cybersecurity Standards Released', by: 'Cyber News', isApi: true, url: '#' }
-  ];
-
   useEffect(() => {
     const fetchNews = async () => {
       setLoading(true);
@@ -44,12 +36,12 @@ const TechNewsWidget = () => {
           }));
           setNews(stories);
         } else {
-          setNews(MOCK_NEWS);
+          setNews([]);
         }
         setLoading(false);
       } catch (err) {
-        console.warn("GNews Error (falling back to mock data):", err);
-        setNews(MOCK_NEWS);
+        console.warn("GNews Error:", err);
+        setNews([]);
         setLoading(false);
       }
     };

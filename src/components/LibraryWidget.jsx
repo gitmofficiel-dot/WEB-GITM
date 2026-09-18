@@ -13,13 +13,6 @@ const LibraryWidget = () => {
   const [searchQuery, setSearchQuery] = useState('programming');
   const [searchLang, setSearchLang] = useState('');
 
-  const MOCK_BOOKS = [
-    { key: '1', title: 'Clean Code', author_name: ['Robert C. Martin'], cover_i: null },
-    { key: '2', title: 'The Pragmatic Programmer', author_name: ['Andrew Hunt'], cover_i: null },
-    { key: '3', title: 'Design Patterns', author_name: ['Erich Gamma'], cover_i: null },
-    { key: '4', title: 'Refactoring', author_name: ['Martin Fowler'], cover_i: null }
-  ];
-
   const fetchBooks = async (query, langFilter = '') => {
     setLoading(true);
     setError(false);
@@ -46,12 +39,12 @@ const LibraryWidget = () => {
         }));
         setBooks(formattedBooks);
       } else {
-        setBooks(MOCK_BOOKS);
+        setBooks([]);
       }
       setLoading(false);
     } catch (err) {
-      console.warn("Google Books Error (falling back to mock data):", err);
-      setBooks(MOCK_BOOKS);
+      console.warn("Google Books Error:", err);
+      setBooks([]);
       setLoading(false);
     }
   };
