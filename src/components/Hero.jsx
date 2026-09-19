@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Cpu, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../translations/LanguageContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const isTouchDevice = () => {
   return (('ontouchstart' in window) ||
