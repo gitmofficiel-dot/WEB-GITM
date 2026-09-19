@@ -1,47 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../context/LanguageContext';
-import { ArrowRight, Play, X, Globe, Cpu } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Cpu, Globe } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../translations/LanguageContext';
 
-// Detect touch device
-const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-const titles = {
-  ar: [
-    "Ø§Ù„ÙˆØ§Ø¬Ù‡Ø© Ø§Ù„ØªÙ‚Ù†ÙŠØ© Ù„Ø¹Ø§ØµÙ…Ø© Ø§Ù„Ø§Ø¨ØªÙƒØ§Ø±.",
-    "Ù†Ø¨Ù†ÙŠ Ø£Ù†Ø¸Ù…Ø© Ø§Ù„Ø°ÙƒØ§Ø¡ Ø§Ù„Ø§ØµØ·Ù†Ø§Ø¹ÙŠ Ù„Ù„Ù…Ø³ØªÙ‚Ø¨Ù„.",
-    "Ø±Ø¤ÙŠØ© ÙˆØ·Ù†ÙŠØ© Ø¨Ø£Ø¨Ø¹Ø§Ø¯ ØªÙƒÙ†ÙˆÙ„ÙˆØ¬ÙŠØ© Ø¹Ø§Ù„Ù…ÙŠØ©.",
-    "Ù…Ù†ØµØ© Ø§Ù„Ù…Ù‡Ù†Ø¯Ø³ÙŠÙ† Ø§Ù„Ù…ØºØ§Ø±Ø¨Ø© Ù„Ù„Ø¥Ø¨Ø¯Ø§Ø¹.",
-    "Ù†ØµÙ…Ù… Ø®ÙˆØ§Ø±Ø²Ù…ÙŠØ§Øª Ø§Ù„ØºØ¯ Ø§Ù„ÙŠÙˆÙ….",
-    "Ø¯Ø¹Ù… Ø§Ù„Ø£Ø¨Ø­Ø§Ø« Ø§Ù„Ø¹Ù„Ù…ÙŠØ© Ø§Ù„Ù…ØªÙ‚Ø¯Ù…Ø©.",
-    "ØªØ·ÙˆÙŠØ± Ø±ÙˆØ¨ÙˆØªØ§Øª ØªØ®Ø¯Ù… Ø§Ù„Ù…Ø¬ØªÙ…Ø¹.",
-    "Ù†Ø¤Ø³Ø³ Ù†Ø§Ø¯ÙŠ Ø§Ù„Ø£Ù„Ø¹Ø§Ø¨ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠØ© ÙˆØ§Ù„ØªØ·ÙˆÙŠØ±.",
-    "Ù†ØªØ¹Ø§ÙˆÙ† Ù…Ø¹ Ø§Ù„Ù…Ø±ÙƒØ² Ø§Ù„Ø¬Ù‡ÙˆÙŠ Ù„Ù„Ø§Ø³ØªØ«Ù…Ø§Ø±.",
-    "Ù…Ù†ØµØ§Øª Ø³Ø­Ø§Ø¨ÙŠØ© ØªØ¹Ø²Ø² Ø§Ù„Ø§Ù‚ØªØµØ§Ø¯ Ø§Ù„Ø±Ù‚Ù…ÙŠ.",
-    "Ù†Ø­Ùˆ Ù…Ø³ØªÙ‚Ø¨Ù„ ØªÙ‚Ù†ÙŠ Ù…Ø³ØªØ¯Ø§Ù….",
-    "Ø§Ù„ÙÙŠØ¯Ø±Ø§Ù„ÙŠØ© Ø§Ù„Ù…ØºØ±Ø¨ÙŠØ© Ù„Ø®Ø¨Ø±Ø§Ø¡ Ø§Ù„ØªÙƒÙ†ÙˆÙ„ÙˆØ¬ÙŠØ§.",
-    "Ù†ØµÙ†Ø¹ Ø¬ÙŠÙ„Ø§Ù‹ Ø¬Ø¯ÙŠØ¯Ø§Ù‹ Ù…Ù† Ø§Ù„Ù…Ø¨Ø¯Ø¹ÙŠÙ†.",
-    "Ù†Ø¨ØªÙƒØ± Ø­Ù„ÙˆÙ„Ø§Ù‹ Ù„Ù„ØªØ­Ø¯ÙŠØ§Øª Ø§Ù„Ù…Ø¹Ø§ØµØ±Ø©.",
-    "Ø§Ù„ØªÙ…ÙŠØ² ÙÙŠ Ø§Ù„Ù‡Ù†Ø¯Ø³Ø© ÙˆØ§Ù„Ø¨Ø±Ù…Ø¬ÙŠØ§Øª."
-  ],
-  en: [
-    "The Technical Interface for Innovation.",
-    "Building AI Systems for the Future.",
-    "A National Vision with Global Tech Dimensions.",
-    "The Platform for Moroccan Engineers.",
-    "Designing Tomorrow's Algorithms Today.",
-    "Supporting Advanced Scientific Research.",
-    "Developing Robotics for Society.",
-    "Founding the Gaming & Development Club.",
-    "Collaborating with the Regional Investment Center.",
-    "Cloud Platforms Boosting the Digital Economy.",
-    "Towards a Sustainable Tech Future.",
-    "Moroccan Federation of Technology Experts.",
-    "Creating a New Generation of Innovators.",
-    "Innovating Solutions for Modern Challenges.",
-    "Excellence in Engineering and Software."
-  ]
+const isTouchDevice = () => {
+  return (('ontouchstart' in window) ||
+    (navigator.maxTouchPoints > 0) ||
+    (navigator.msMaxTouchPoints > 0));
 };
 
 const bgImages = [
@@ -58,19 +24,24 @@ export default function Hero() {
   const [bgIndex, setBgIndex] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  useEffect(() => {
-    const titleInterval = setInterval(() => {
-      setTitleIndex((prev) => (prev + 1) % 15);
-    }, 4000);
+  // Dynamically load titles from translation dictionary
+  const rawTitles = t('hero.titles');
+  const titles = useMemo(() => Array.isArray(rawTitles) ? rawTitles : [rawTitles], [rawTitles]);
 
+  useEffect(() => {
+    if (!titles || titles.length === 0) return;
+    const titleInterval = setInterval(() => {
+      setTitleIndex((prev) => (prev + 1) % titles.length);
+    }, 4000);
+    return () => clearInterval(titleInterval);
+  }, [titles]);
+
+  useEffect(() => {
     const bgInterval = setInterval(() => {
       setBgIndex((prev) => (prev + 1) % bgImages.length);
     }, 8000);
 
-    return () => {
-      clearInterval(titleInterval);
-      clearInterval(bgInterval);
-    };
+    return () => clearInterval(bgInterval);
   }, []);
 
   const handleMouseMove = useCallback((e) => {
@@ -110,12 +81,11 @@ export default function Hero() {
         }}
         transition={{ type: "spring", stiffness: 75, damping: 15 }}
       >
-        {/* Mobile: bottom-aligned and left-aligned, Desktop: centered */}
         <div className="max-w-5xl mx-auto text-left rtl:text-right md:text-center p-3 md:p-4">
           
           <div className="inline-flex items-center justify-start md:justify-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-blue-500/20 backdrop-blur-md text-blue-100 font-bold text-xs md:text-sm mb-4 md:mb-6 border border-blue-400/30 shadow-lg">
             <Globe size={16} className="md:w-[18px] md:h-[18px]" />
-            {lang === 'ar' ? 'ÙˆØ§Ø¬Ù‡Ø© Ø¹Ø§Ù„Ù…ÙŠØ© Ù„Ù„Ø§Ø¨ØªÙƒØ§Ø±' : 'Global Interface for Innovation'}
+            {t('hero.tagline')}
           </div>
 
           <div className="h-28 sm:h-36 md:h-48 flex items-end md:items-center justify-start md:justify-center mb-3 md:mb-4">
@@ -129,15 +99,13 @@ export default function Hero() {
                 className="text-3xl sm:text-4xl md:text-7xl font-extrabold tracking-tight text-white drop-shadow-2xl leading-tight"
                 style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}
               >
-                {lang === 'ar' ? titles.ar[titleIndex] : titles.en[titleIndex]}
+                {titles[titleIndex] || ''}
               </motion.h1>
             </AnimatePresence>
           </div>
 
           <p className="text-sm sm:text-base md:text-2xl text-gray-200 max-w-4xl mx-auto mb-6 md:mb-12 leading-relaxed font-semibold drop-shadow-lg">
-            {lang === 'ar' 
-              ? 'Ù†Ø¬Ù…Ø¹ Ù†Ø®Ø¨Ø© Ø§Ù„Ù…Ù‡Ù†Ø¯Ø³ÙŠÙ† ÙˆØ§Ù„Ù…Ø¨Ø¯Ø¹ÙŠÙ† Ù„ØªØ·ÙˆÙŠØ± Ù…Ø´Ø§Ø±ÙŠØ¹ Ø±Ø§Ø¦Ø¯Ø© ØªØ³Ù‡Ù… ÙÙŠ Ø§Ù„ØªØ­ÙˆÙ„ Ø§Ù„Ø±Ù‚Ù…ÙŠ ÙˆØ§Ù„ØªÙƒÙ†ÙˆÙ„ÙˆØ¬ÙŠ.' 
-              : 'Uniting elite engineers and creators to develop pioneering projects contributing to digital and technological transformation.'}
+            {t('hero.subtitle')}
           </p>
 
           <div className="flex flex-col sm:flex-row items-stretch md:items-center justify-start md:justify-center gap-3 md:gap-5">
@@ -146,8 +114,14 @@ export default function Hero() {
               className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-sm hover:-translate-y-1 active:scale-[0.98]"
             >
               <Cpu size={20} className="md:w-[22px] md:h-[22px]" />
-              {lang === 'ar' ? 'Ø§ÙƒØªØ´Ù Ø§Ù„ØªÙ‚Ù†ÙŠØ§Øª' : 'Discover Tech'}
-              <ArrowRight size={18} className={`md:w-5 md:h-5 ${lang === 'ar' ? 'rotate-180' : ''}`} />
+              {t('hero.ctaPrimary')}
+              <ArrowRight size={18} className={`md:w-5 md:h-5 ${lang === 'ar' || lang === 'tzm' ? 'rotate-180' : ''}`} />
+            </button>
+            <button 
+              onClick={() => navigate('/about')}
+              className="w-full sm:w-auto bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-sm border border-white/20 hover:-translate-y-1 active:scale-[0.98]"
+            >
+              {t('hero.ctaSecondary')}
             </button>
           </div>
         </div>
