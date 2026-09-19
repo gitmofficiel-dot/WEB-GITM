@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { MousePointer2, Type, Square, Circle, Share2, Save, Users, Plus } from 'lucide-react';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
 export default function CollaborationBoard() {
-  const { lang, user } = useLanguage();
+  const { lang } = useLanguage();
+  const { currentUser: user } = useAuth();
   const [activeTool, setActiveTool] = useState('cursor');
   const [elements, setElements] = useState([]);
   const boardRef = useRef(null);

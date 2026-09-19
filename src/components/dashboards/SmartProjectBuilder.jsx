@@ -4,6 +4,7 @@ import {
   Rocket, Save, X, ArrowLeft, Image as ImageIcon, Github, Users, Activity, Plus, Trash2, Percent, AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, getDocs, collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
@@ -12,7 +13,8 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
 export default function SmartProjectBuilder({ initialData, onCancel, onSave, standalone }) {
-  const { lang, user } = useLanguage();
+  const { lang } = useLanguage();
+  const { currentUser: user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [showDraftModal, setShowDraftModal] = useState(false);

@@ -219,15 +219,6 @@ export const LanguageProvider = ({ children }) => {
     };
   }, []);
 
-  // Generic Sync Helper
-  const syncToFirestore = (key, data) => {
-    if (user && data.length > 0) {
-      setDoc(doc(db, 'gitm_data', key), { items: data }, { merge: true });
-    }
-  };
-
-  // Sync tasks to Firestore when changed locally
-  useEffect(() => { syncToFirestore('tasks', tasks); }, [tasks, user]);
   // Removed auto-sync for news, gallery, events, courses since they are managed individually
 
   // Effect: Save all data (Local Fallback for smaller data or non-migrated yet)
@@ -245,19 +236,6 @@ export const LanguageProvider = ({ children }) => {
   useEffect(() => { localStorage.setItem('gitm_partners', JSON.stringify(partners)); }, [partners]);
   useEffect(() => { localStorage.setItem('gitm_saved_items', JSON.stringify(savedItems)); }, [savedItems]);
   useEffect(() => { localStorage.setItem('gitm_event_registrations', JSON.stringify(eventRegistrations)); }, [eventRegistrations]);
-
-  // Effect: Sync user role
-  useEffect(() => {
-    if (user && user.email) {
-      const found = users.find(u => u.email === user.email);
-      if (found && found.role !== user.role) {
-        const updatedUser = { ...user, role: found.role, name: found.name, badges: found.badges || [] };
-        setUser(updatedUser);
-        localStorage.setItem('gitm_user', JSON.stringify(updatedUser));
-        setActiveDashboardRole(found.role);
-      }
-    }
-  }, [users, user]);
 
   const changeLanguage = (newLang) => {
     if (newLang === lang) return;

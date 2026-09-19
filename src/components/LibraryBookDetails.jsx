@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BookOpen, Globe, ChevronLeft, ExternalLink, Bookmark, Book } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { toast } from '../utils/toast';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
@@ -9,7 +10,8 @@ const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : 
 export default function LibraryBookDetails() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { lang, savedItems, toggleSave, user } = useLanguage();
+  const { lang, savedItems, toggleSave } = useLanguage();
+  const { currentUser: user } = useAuth();
   
   const book = location.state?.book;
 

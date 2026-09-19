@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Globe, ChevronLeft, ExternalLink, Loader } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : lang === 'zh' ? zh : en;
 
 export default function GlobalNewsDetails() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { lang, user } = useLanguage();
+  const { lang } = useLanguage();
+  const { currentUser: user } = useAuth();
   
   const newsItem = location.state?.newsItem;
 

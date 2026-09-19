@@ -5,6 +5,7 @@ import {
   X, ArrowLeft, Bot, CheckCircle, Activity, Image as ImageIcon, Map, AlertCircle, Sparkles
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -15,7 +16,8 @@ import { toast } from '../../utils/toast';
 const EVENT_TYPES = ['Workshop', 'Hackathon', 'Training', 'Meetup', 'Conference'];
 
 export default function SmartEventEditor({ initialData, onCancel, onSave, standalone }) {
-  const { lang, user } = useLanguage();
+  const { lang } = useLanguage();
+  const { currentUser: user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [showDraftModal, setShowDraftModal] = useState(false);

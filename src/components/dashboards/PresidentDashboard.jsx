@@ -4,6 +4,7 @@ import { collection, onSnapshot, doc, updateDoc, addDoc, deleteDoc, serverTimest
 import { db } from '../../config/firebase';
 import UserProfileSettings from './UserProfileSettings';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import { 
   Users, BookOpen, Building, Newspaper, Activity, Shield, Award, 
   Edit, Trash2, Bot, TrendingUp, AlertTriangle, Plus, Mail, Video, 
@@ -17,7 +18,8 @@ import VisitorAnalytics from './VisitorAnalytics';
 
 export default function PresidentDashboard() {
   const navigate = useNavigate();
-  const { lang, t, user, eventRegistrations, setEventRegistrations } = useLanguage();
+  const { lang, t, eventRegistrations, setEventRegistrations } = useLanguage();
+  const { currentUser: user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
   // --- Firebase User Data State ---

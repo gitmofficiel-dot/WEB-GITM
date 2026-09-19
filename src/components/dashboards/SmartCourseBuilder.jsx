@@ -4,6 +4,7 @@ import {
   BookOpen, Plus, Trash2, Save, X, ArrowLeft, GripVertical, Video, FileText, Activity, AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -30,6 +31,7 @@ import { CSS } from '@dnd-kit/utilities';
 // --- Axis Editor Component ---
 const AxisEditor = ({ axis, moduleId, lessonId, axisIndex, onUpdateAxis, onRemoveAxis }) => {
   const { lang } = useLanguage();
+  const { currentUser: user } = useAuth();
   const [activeTab, setActiveTab] = useState('content'); // content, media, quiz
 
   const handleUpdate = (field, value) => {
@@ -277,7 +279,8 @@ const SortableModule = ({ module, onRemove, onAddLesson, onUpdateModule, onRemov
 
 // --- Main Editor ---
 export default function SmartCourseBuilder({ initialData, onCancel, onSave, standalone }) {
-  const { lang, user } = useLanguage();
+  const { lang } = useLanguage();
+  const { currentUser: user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [showDraftModal, setShowDraftModal] = useState(false);

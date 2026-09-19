@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Calendar, User, Tag, ShieldCheck, ChevronLeft, Share2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { toast } from '../utils/toast';
 import CommentsSection from './ui/CommentsSection';
 import { Languages, Loader2 } from 'lucide-react';
@@ -12,7 +13,8 @@ const txt = (lang, en, ar, fr, zh) => lang === 'ar' ? ar : lang === 'fr' ? fr : 
 export default function NewsDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { lang, news, user } = useLanguage();
+  const { lang, news } = useLanguage();
+  const { currentUser: user } = useAuth();
   const [translatedTitle, setTranslatedTitle] = React.useState(null);
   const [translatedSummary, setTranslatedSummary] = React.useState(null);
   const [translatedContent, setTranslatedContent] = React.useState(null);

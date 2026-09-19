@@ -7,6 +7,7 @@ import {
   Tag, X, Sparkles, FileText, Activity, Layers, ArrowLeft, Edit3, Globe, AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
@@ -16,7 +17,8 @@ import DOMPurify from 'dompurify';
 const PREDEFINED_CATEGORIES = ['مشاريع الأنظمة المدمجة', 'أخبار الروبوت علي', 'تغطيات الهاكاثون', 'تحديثات NABD-X', 'ورشات عمل', 'أكاديمية GITM', 'Technology'];
 
 export default function SmartArticleEditor({ initialData, onCancel, onSave, standalone }) {
-  const { lang, user } = useLanguage();
+  const { lang } = useLanguage();
+  const { currentUser: user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [showDraftModal, setShowDraftModal] = useState(false);

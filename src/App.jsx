@@ -179,11 +179,13 @@ const AppContent = () => {
 
 function App() {
   return (
-    <LanguageProvider>
-      <NotificationProvider>
-        <AppContent />
-      </NotificationProvider>
-    </LanguageProvider>
+    <AuthProvider>
+      <LanguageProvider>
+        <NotificationProvider>
+          <AppContent />
+        </NotificationProvider>
+      </LanguageProvider>
+    </AuthProvider>
   );
 }
 
