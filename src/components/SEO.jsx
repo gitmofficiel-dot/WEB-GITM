@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 export default function SEO({
   title = 'GITM | Groupe Innovation Technologique Maroc',
   description = 'المنصة الوطنية للابتكار التكنولوجي والذكاء الاصطناعي بالمغرب - Groupe Innovation Technologique Maroc',
-  keywords = 'GITM, Groupe Innovation Technologique Maroc, الذكاء الاصطناعي, إنترنت الأشياء, الأنظمة المدمجة, المغرب',
+  keywords = 'GITM, Groupe Innovation Technologique Maroc, الذكاء الاصطناعي, الابتكار التكنولوجي, المغرب, Edge AI, IoT',
   image = 'https://gitm.pages.dev/logo.png',
   type = 'website',
   schema = null

@@ -21,11 +21,11 @@ export default function About() {
           setAboutData(docSnap.data());
         } else {
           setAboutData({
-            vision_ar: 'الريادة في تطوير الذكاء الاصطناعي المغربي وتصديره للعالم، وبناء جسور متينة للإبداع التكنولوجي المبتكر والأكاديمي المتألق.',
+            vision_ar: 'ريادة تطوير الذكاء الاصطناعي المغربي وتصديره عالميا، وبناء جسور متينة للإبداع التقني المبتكر والتفوق الأكاديمي.',
             vision_en: 'Leading the development of Moroccan AI and exporting it globally, building strong bridges for innovative tech creativity and academic brilliance.',
-            mission_ar: 'توفير بيئة بحثية متقدمة للمواهب المغربية، وتمكينهم من بناء أنظمة ذكية تحل مشاكل واقعية بدعم من المؤسسات الوطنية.',
+            mission_ar: 'توفير بيئة بحثية متقدمة للمواهب المغربية لبناء أنظمة ذكية بدعم وطني.',
             mission_en: 'Providing an advanced research environment for Moroccan talents to build smart systems with national support.',
-            history_ar: 'تأسست GITM لتوحيد جهود المبدعين والمبتكرين المغاربة. نسعى لتوفير بيئة تكنولوجية متكاملة تفتح آفاقاً جديدة للشباب المغربي.',
+            history_ar: 'تأسست GITM لتوحيد المبدعين والمبتكرين المغاربة. نسعى لتوفير بيئة تكنولوجية متكاملة تفتح آفاقاً جديدة للشباب المغربي.',
             history_en: 'GITM was founded to unite Moroccan creators and innovators. We strive to provide an integrated technological environment that opens new horizons for Moroccan youth.',
             stats: { founded: '2026', projects: '15+', members: '500+' }
           });
@@ -108,8 +108,27 @@ export default function About() {
     }
   };
 
+  if (teamMembers.official.length > 0 || teamMembers.internal.length > 0) {
+    const allMembers = [...teamMembers.official, ...teamMembers.internal];
+    schemaMarkup.employee = allMembers.map(member => {
+      const socialLinks = [];
+      if (member.socialLinks?.linkedin) socialLinks.push(member.socialLinks.linkedin);
+      if (member.socialLinks?.github) socialLinks.push(member.socialLinks.github);
+      if (member.socialLinks?.facebook) socialLinks.push(member.socialLinks.facebook);
+      
+      return {
+        "@type": "Person",
+        "name": member.name,
+        "jobTitle": member.role,
+        "image": member.image,
+        "sameAs": socialLinks
+      };
+    });
+  }
+
+
   const pageTitle = lang === 'ar' ? 'من نحن | محمد غزاوني - مؤسس GITM' : 'About Us | MOHAMMED RHZAOUNI - GITM Founder';
-  const pageDesc = lang === 'ar' ? 'نحن مبادرة تكنولوجية مغربية رائدة. محمد غزاوني - MOHAMMED RHZAOUNI مؤسس مجموعة الابتكار التكنولوجي بالمغرب.' : 'We are a leading Moroccan tech initiative. MOHAMMED RHZAOUNI - محمد غزاوني is the founder of GITM.';
+  const pageDesc = lang === 'ar' ? 'نحن منصة تكنولوجية مغربية رائدة. محمد غزاوني - MOHAMMED RHZAOUNI هو مؤسس مجموعة الابتكار التكنولوجي بالمغرب GITM.' : 'We are a leading Moroccan tech initiative. MOHAMMED RHZAOUNI is the founder of GITM.';;
 
   return (
     <div className="min-h-screen bg-gitm-light dark:bg-gitm-dark pt-24 md:pt-32 pb-16 md:pb-24 relative overflow-hidden">
