@@ -8,7 +8,7 @@ import { useNotifications } from '../hooks/useNotifications';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
-  const { lang, changeLanguage, theme, toggleTheme, users } = useLanguage();
+  const { lang, changeLanguage, t, languages, theme, toggleTheme, users } = useLanguage();
   const { currentUser: user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -79,20 +79,20 @@ const Navbar = () => {
     setMobileOpen(false);
   }, [currentPath]);
 
-  // Restored full navigation items as requested
+  // Navigation items using translation keys
   const navItems = [
-    { id: 'home', path: '/', label: { ar: 'الرئيسية', en: 'Home' } },
-    { id: 'news', path: '/news', label: { ar: 'الأخبار', en: 'News' } },
-    { id: 'academy', path: '/academy', label: { ar: 'الأكاديمية', en: 'Academy' } },
-    { id: 'projects-hub', path: '/projects-hub', label: { ar: 'المشاريع', en: 'Projects' } },
-    { id: 'events', path: '/events', label: { ar: 'الفعاليات', en: 'Events' } },
-    { id: 'gallery', path: '/gallery', label: { ar: 'المعرض', en: 'Gallery' } },
-    { id: 'about-us', path: '/about-us', label: { ar: 'من نحن', en: 'About Us' } }
+    { id: 'home', path: '/', tKey: 'nav.home' },
+    { id: 'news', path: '/news', tKey: 'nav.news' },
+    { id: 'academy', path: '/academy', tKey: 'nav.academy' },
+    { id: 'projects-hub', path: '/projects-hub', tKey: 'nav.projects' },
+    { id: 'events', path: '/events', tKey: 'nav.events' },
+    { id: 'gallery', path: '/gallery', tKey: 'nav.gallery' },
+    { id: 'about-us', path: '/about-us', tKey: 'nav.about' }
   ];
 
   const toolItems = [
-    { id: 'verify', path: '/verify-certificate', label: { ar: 'التحقق من الشهادات', en: 'Verify Certificate' }, icon: '🎓' },
-    { id: 'contact', path: '/contact', label: { ar: 'اتصل بنا', en: 'Contact Us' }, icon: '✉️' }
+    { id: 'verify', path: '/verify-certificate', tKey: 'nav.verifyCertificate', icon: '\uD83C\uDF93' },
+    { id: 'contact', path: '/contact', tKey: 'nav.contactUs', icon: '\u2709\uFE0F' }
   ];
 
   return (
@@ -100,7 +100,7 @@ const Navbar = () => {
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'glass-nav py-3 shadow-soft' : 'bg-transparent py-5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           
-          {/* Restored Clean Logo */}
+          {/* Logo */}
           <button onClick={() => navigate('/')} className="flex items-center gap-3 group">
             <img 
               src="/logo.png" 
@@ -123,7 +123,7 @@ const Navbar = () => {
                       : 'text-gitm-textLight dark:text-gitm-textDark hover:text-gitm-blue dark:hover:text-gitm-cyan hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
                   }`}
                 >
-                  {lang === 'ar' ? item.label.ar : item.label.en}
+                  {t(item.tKey)}
                 </button>
               );
             })}
@@ -138,7 +138,7 @@ const Navbar = () => {
                     : 'text-gitm-textLight dark:text-gitm-textDark hover:text-gitm-blue dark:hover:text-gitm-cyan hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
                 }`}
               >
-                <span>{lang === 'ar' ? 'أدوات الابتكار' : 'Innovation Hub'}</span>
+                <span>{t('nav.innovationHub')}</span>
                 <ChevronDown size={14} className={`transition-transform duration-200 ${toolsDropdown ? 'rotate-180' : ''}`} />
               </button>
 
@@ -153,7 +153,7 @@ const Navbar = () => {
                       className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-72 bg-white/95 dark:bg-[#0d1527]/95 backdrop-blur-xl border border-gray-200 dark:border-cyan-500/20 rounded-2xl shadow-2xl z-50 p-2 grid grid-cols-1 gap-1"
                     >
                       <div className="px-3 py-2 text-xs font-bold text-gray-400 dark:text-cyan-400/80 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800">
-                        {lang === 'ar' ? 'الأدوات والخدمات المتقدمة' : 'Advanced Engineering Tools'}
+                        {t('nav.innovationHubDesc')}
                       </div>
                       {toolItems.map(tool => (
                         <button
@@ -162,7 +162,7 @@ const Navbar = () => {
                           className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10 hover:text-gitm-blue dark:hover:text-cyan-300 transition-all text-left rtl:text-right"
                         >
                           <span className="text-base">{tool.icon}</span>
-                          <span>{lang === 'ar' ? tool.label.ar : tool.label.en}</span>
+                          <span>{t(tool.tKey)}</span>
                         </button>
                       ))}
                     </motion.div>
@@ -187,7 +187,7 @@ const Navbar = () => {
                   >
                     <input 
                       type="text" 
-                      placeholder={lang === 'ar' ? 'الاسم أو رقم العضوية...' : 'Name or Member ID...'}
+                      placeholder={t('nav.searchFull')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full p-2 text-sm bg-gray-100 dark:bg-gray-800 border-none outline-none rounded-lg text-gitm-textLight dark:text-gitm-textDark focus:ring-2 focus:ring-gitm-blue"
@@ -223,7 +223,7 @@ const Navbar = () => {
                       ))
                     ) : (
                       <div className="px-4 py-3 text-sm text-center text-gitm-mutedLight dark:text-gitm-mutedDark">
-                        {lang === 'ar' ? 'لا توجد نتائج' : 'No results found'}
+                        {t('nav.noResults')}
                       </div>
                     )}
                   </motion.div>
@@ -255,11 +255,11 @@ const Navbar = () => {
                         className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-80 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden"
                       >
                         <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
-                          <h4 className="font-bold text-sm text-gitm-textLight dark:text-gitm-textDark">{lang === 'ar' ? 'الإشعارات' : 'Notifications'}</h4>
+                          <h4 className="font-bold text-sm text-gitm-textLight dark:text-gitm-textDark">{t('nav.notifications')}</h4>
                           <div className="flex gap-2 items-center">
                             {unreadCount > 0 && (
                               <button onClick={() => markAllAsRead()} className="text-xs text-gitm-blue hover:underline">
-                                {lang === 'ar' ? 'تحديد كـ مقروء' : 'Mark all read'}
+                                {t('nav.markAllRead')}
                               </button>
                             )}
                             <span className="text-xs bg-gitm-blue text-white px-2 py-0.5 rounded-full">{unreadCount}</span>
@@ -268,7 +268,7 @@ const Navbar = () => {
                         <div className="max-h-72 overflow-y-auto">
                           {notifications.length === 0 ? (
                             <div className="p-4 text-center text-gray-500 text-sm">
-                              {lang === 'ar' ? 'لا توجد إشعارات' : 'No notifications'}
+                              {t('nav.noNotifications')}
                             </div>
                           ) : (
                             notifications.map(n => (
@@ -310,13 +310,18 @@ const Navbar = () => {
                     <div className="fixed inset-0 z-40" onClick={() => setLangDropdown(false)} />
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                      className="absolute top-full mt-2 right-0 w-32 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden py-1"
+                      className="absolute top-full mt-2 right-0 w-40 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden py-1"
                     >
-                      <button onClick={() => {changeLanguage('ar'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">العربية (AR)</button>
-                      <button onClick={() => {changeLanguage('en'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">English (EN)</button>
-                      <button onClick={() => {changeLanguage('fr'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">Français (FR)</button>
-                      <button onClick={() => {changeLanguage('zh'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">中文 (ZH)</button>
-                      <button onClick={() => {changeLanguage('tzm'); setLangDropdown(false)}} className="w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">ⵜⴰⵎⴰⵣⵉⵖⵜ (TZM)</button>
+                      {Object.entries(languages).map(([code, langInfo]) => (
+                        <button 
+                          key={code}
+                          onClick={() => {changeLanguage(code); setLangDropdown(false)}} 
+                          className={`w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2 ${lang === code ? 'text-gitm-blue font-bold' : ''}`}
+                        >
+                          <span>{langInfo.flag}</span>
+                          <span>{langInfo.name}</span>
+                        </button>
+                      ))}
                     </motion.div>
                   </>
                 )}
@@ -360,10 +365,10 @@ const Navbar = () => {
                           </div>
                         </div>
                         <button onClick={() => {navigate('/dashboard'); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
-                          <LayoutDashboard size={16} className="text-gitm-blue"/> {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
+                          <LayoutDashboard size={16} className="text-gitm-blue"/> {t('nav.dashboard')}
                         </button>
                         <button onClick={async () => { await logout(); navigate('/'); setProfileDropdown(false); }} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 mt-1">
-                          <LogOut size={16}/> {lang === 'ar' ? 'تسجيل الخروج' : 'Logout'}
+                          <LogOut size={16}/> {t('nav.logout')}
                         </button>
                       </motion.div>
                     </>
@@ -375,7 +380,7 @@ const Navbar = () => {
                 onClick={() => navigate('/login')}
                 className="bg-gitm-blue hover:bg-blue-700 text-white px-3 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold ml-1 sm:ml-2 transition-colors"
               >
-                {lang === 'ar' ? 'الدخول' : 'Sign In'}
+                {t('nav.login')}
               </button>
             )}
 
@@ -412,7 +417,7 @@ const Navbar = () => {
                 <Search size={18} className="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 -translate-y-1/2 text-gray-400" />
                 <input 
                   type="text" 
-                  placeholder={lang === 'ar' ? 'بحث...' : 'Search...'}
+                  placeholder={t('nav.search')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full p-3 pl-10 rtl:pr-10 rtl:pl-3 text-sm bg-gray-100 dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl text-gitm-textLight dark:text-gitm-textDark focus:ring-2 focus:ring-gitm-blue outline-none"
@@ -431,7 +436,7 @@ const Navbar = () => {
                         : 'bg-gray-50 dark:bg-gitm-cardDark hover:bg-gray-100 dark:hover:bg-gray-800'
                     }`}
                   >
-                    {lang === 'ar' ? item.label.ar : item.label.en}
+                    {t(item.tKey)}
                   </button>
                 );
               })}
@@ -439,7 +444,7 @@ const Navbar = () => {
               {/* Innovation Tools in Mobile Menu */}
               <div className="mt-2 pt-4 border-t border-gray-200 dark:border-gitm-borderDark">
                 <h4 className="text-xs font-bold text-gray-500 dark:text-cyan-400 uppercase tracking-wider mb-2 px-1">
-                  {lang === 'ar' ? 'أدوات الابتكار والخدمات' : 'Innovation Hub'}
+                  {t('nav.innovationHub')}
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
                   {toolItems.map(tool => (
@@ -449,7 +454,7 @@ const Navbar = () => {
                       className="flex items-center gap-2 p-2.5 rounded-xl bg-gray-50 dark:bg-gitm-cardDark hover:bg-cyan-500/10 text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors text-left rtl:text-right"
                     >
                       <span>{tool.icon}</span>
-                      <span className="truncate">{lang === 'ar' ? tool.label.ar : tool.label.en}</span>
+                      <span className="truncate">{t(tool.tKey)}</span>
                     </button>
                   ))}
                 </div>
@@ -461,7 +466,7 @@ const Navbar = () => {
                   onClick={toggleTheme} 
                   className="w-full flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gitm-cardDark"
                 >
-                  <span className="font-bold text-sm">{lang === 'ar' ? 'الوضع الليلي' : 'Dark Mode'}</span>
+                  <span className="font-bold text-sm">{t('nav.darkMode')}</span>
                   <div className={`w-12 h-7 rounded-full relative transition-colors ${theme === 'dark' ? 'bg-gitm-blue' : 'bg-gray-300'}`}>
                     <div className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform ${theme === 'dark' ? 'translate-x-5 rtl:-translate-x-5' : 'translate-x-0.5 rtl:-translate-x-0.5'}`} />
                   </div>
@@ -471,14 +476,18 @@ const Navbar = () => {
               {/* Language Selection */}
               <div className="mt-2 pt-4 border-t border-gray-200 dark:border-gitm-borderDark">
                 <h4 className="text-xs font-bold text-gitm-mutedLight dark:text-gitm-mutedDark uppercase tracking-wider mb-3 px-1">
-                  {lang === 'ar' ? 'اختر اللغة' : 'Language'}
+                  {t('nav.chooseLanguage')}
                 </h4>
                 <div className="grid grid-cols-3 gap-2">
-                  <button onClick={() => changeLanguage('ar')} className={`py-2.5 text-center rounded-lg text-sm font-bold transition-colors active:scale-95 ${lang === 'ar' ? 'bg-gitm-blue text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800'}`}>العربية</button>
-                  <button onClick={() => changeLanguage('en')} className={`py-2.5 text-center rounded-lg text-sm font-bold transition-colors active:scale-95 ${lang === 'en' ? 'bg-gitm-blue text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800'}`}>English</button>
-                  <button onClick={() => changeLanguage('fr')} className={`py-2.5 text-center rounded-lg text-sm font-bold transition-colors active:scale-95 ${lang === 'fr' ? 'bg-gitm-blue text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800'}`}>Français</button>
-                  <button onClick={() => changeLanguage('zh')} className={`py-2.5 text-center rounded-lg text-sm font-bold transition-colors active:scale-95 ${lang === 'zh' ? 'bg-gitm-blue text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800'}`}>中文</button>
-                  <button onClick={() => changeLanguage('tzm')} className={`col-span-2 py-2.5 text-center rounded-lg text-sm font-bold transition-colors active:scale-95 ${lang === 'tzm' ? 'bg-gitm-blue text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800'}`}>ⵜⴰⵎⴰⵣⵉⵖⵜ</button>
+                  {Object.entries(languages).map(([code, langInfo]) => (
+                    <button 
+                      key={code}
+                      onClick={() => changeLanguage(code)} 
+                      className={`py-2.5 text-center rounded-lg text-sm font-bold transition-colors active:scale-95 ${lang === code ? 'bg-gitm-blue text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800'}`}
+                    >
+                      {langInfo.name}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -490,27 +499,27 @@ const Navbar = () => {
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-gray-200/80 dark:border-gitm-borderDark mobile-bottom-nav px-2 sm:px-4 pt-2 pb-3 flex justify-between items-center shadow-[0_-4px_30px_rgba(0,0,0,0.12)]">
         <button onClick={() => navigate('/')} className={`flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl transition-colors active:scale-95 ${currentPath === '/' ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
           <Home size={20} strokeWidth={currentPath === '/' ? 2.5 : 1.5} />
-          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{lang === 'ar' ? 'الرئيسية' : 'Home'}</span>
+          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{t('nav.home')}</span>
           {currentPath === '/' && <span className="mobile-nav-active-dot" />}
         </button>
         <button onClick={() => navigate('/news')} className={`flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl transition-colors active:scale-95 ${currentPath.startsWith('/news') ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
           <Compass size={20} strokeWidth={currentPath.startsWith('/news') ? 2.5 : 1.5} />
-          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{lang === 'ar' ? 'اكتشف' : 'Explore'}</span>
+          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{t('nav.explore')}</span>
           {currentPath.startsWith('/news') && <span className="mobile-nav-active-dot" />}
         </button>
         <button onClick={() => navigate('/academy')} className={`flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl transition-colors active:scale-95 ${currentPath === '/academy' ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
           <BookOpen size={20} strokeWidth={currentPath === '/academy' ? 2.5 : 1.5} />
-          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{lang === 'ar' ? 'الأكاديمية' : 'Academy'}</span>
+          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{t('nav.academy')}</span>
           {currentPath === '/academy' && <span className="mobile-nav-active-dot" />}
         </button>
         <button onClick={() => navigate('/events')} className={`flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl transition-colors active:scale-95 ${currentPath.startsWith('/events') ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
           <Calendar size={20} strokeWidth={currentPath.startsWith('/events') ? 2.5 : 1.5} />
-          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{lang === 'ar' ? 'الفعاليات' : 'Events'}</span>
+          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{t('nav.events')}</span>
           {currentPath.startsWith('/events') && <span className="mobile-nav-active-dot" />}
         </button>
         <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl text-gray-400 dark:text-gray-500 active:scale-95 transition-transform">
           <Menu size={20} strokeWidth={1.5} />
-          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{lang === 'ar' ? 'المزيد' : 'More'}</span>
+          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{t('nav.more')}</span>
         </button>
       </div>
     </>

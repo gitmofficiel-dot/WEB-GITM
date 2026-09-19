@@ -70,7 +70,7 @@ const Section = ({ title, subtitle, icon: Icon, children, bgClass, linkText, lin
 };
 
 export default function Home() {
-  const { lang } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <div className="flex flex-col w-full bg-transparent">
@@ -81,12 +81,12 @@ export default function Home() {
 
       {/* 1. News Section (Full Width) */}
       <Section 
-        title={lang === 'ar' ? 'أخبار المؤسسة' : 'Foundation News'}
-        subtitle={lang === 'ar' ? 'آخر التطورات التقنية والأنشطة الإدارية الخاصة بالمجموعة.' : 'Latest tech developments and administrative activities of the group.'}
+        title={t('home.newsTitle')}
+        subtitle={t('home.newsSubtitle')}
         icon={Newspaper}
         bgClass="bg-white/10 dark:bg-black/20 backdrop-blur-sm border-b border-white/20 dark:border-white/5"
         colorTheme="red"
-        linkText={lang === 'ar' ? 'تصفح كل الأخبار' : 'Browse All News'}
+        linkText={t('home.newsBrowseAll')}
         linkUrl="/news"
       >
         <div className="glass-card p-3 md:p-8 rounded-2xl md:rounded-3xl shadow-xl">
@@ -96,12 +96,12 @@ export default function Home() {
 
       {/* 2. Events Section (Full Width) */}
       <Section 
-        title={lang === 'ar' ? 'الفعاليات والمعارض' : 'Events & Exhibitions'}
-        subtitle={lang === 'ar' ? 'مشاركاتنا في المعارض الوطنية والدولية والفعاليات التقنية.' : 'Our participation in national and international tech exhibitions.'}
+        title={t('home.eventsTitle')}
+        subtitle={t('home.eventsSubtitle')}
         icon={Calendar}
         bgClass="bg-black/5 dark:bg-black/30 backdrop-blur-md border-b border-white/20 dark:border-white/5"
         colorTheme="blue"
-        linkText={lang === 'ar' ? 'جدول الفعاليات' : 'Events Schedule'}
+        linkText={t('home.eventsSchedule')}
         linkUrl="/events"
       >
         <div className="glass-card p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-xl">
@@ -111,12 +111,12 @@ export default function Home() {
 
       {/* 3. Academy Section (Full Width) */}
       <Section
-        title={lang === 'ar' ? 'الأكاديمية والتداريب' : 'Academy & Training'}
-        subtitle={lang === 'ar' ? 'برامج تدريبية تواكب مستوى الجامعات العالمية وتؤهلك للمستقبل.' : 'Training programs matching global universities to prepare you for the future.'}
+        title={t('home.academyTitle')}
+        subtitle={t('home.academySubtitle')}
         icon={GraduationCap}
         bgClass="bg-white/10 dark:bg-black/20 backdrop-blur-sm border-b border-white/20 dark:border-white/5"
         colorTheme="green"
-        linkText={lang === 'ar' ? 'استكشف المناهج' : 'Explore Curriculum'}
+        linkText={t('home.academyExplore')}
         linkUrl="/academy"
       >
         <div className="glass-card p-4 md:p-10 rounded-2xl md:rounded-3xl shadow-xl">
@@ -126,12 +126,12 @@ export default function Home() {
 
       {/* 4. Team Section */}
       <Section
-        title={lang === 'ar' ? 'قيادة الابتكار' : 'Innovation Leadership'}
-        subtitle={lang === 'ar' ? 'نخبة المهندسين والخبراء المغاربة الذين يصنعون الفارق.' : 'The elite Moroccan engineers and experts making a difference.'}
+        title={t('home.teamTitle')}
+        subtitle={t('home.teamSubtitle')}
         icon={Users}
         bgClass="bg-black/5 dark:bg-black/30 backdrop-blur-md"
         colorTheme="red"
-        linkText={lang === 'ar' ? 'تعرف علينا' : 'About Us'}
+        linkText={t('home.teamAbout')}
         linkUrl="/about-us"
       >
         <div className="glass-card p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-xl">
