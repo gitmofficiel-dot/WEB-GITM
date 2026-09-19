@@ -9,21 +9,21 @@ const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints
 
 const titles = {
   ar: [
-    "الواجهة التقنية لعاصمة الابتكار.",
-    "نبني أنظمة الذكاء الاصطناعي للمستقبل.",
-    "رؤية وطنية بأبعاد تكنولوجية عالمية.",
-    "منصة المهندسين المغاربة للإبداع.",
-    "نصمم خوارزميات الغد اليوم.",
-    "دعم الأبحاث العلمية المتقدمة.",
-    "تطوير روبوتات تخدم المجتمع.",
-    "نؤسس نادي الألعاب الإلكترونية والتطوير.",
-    "نتعاون مع المركز الجهوي للاستثمار.",
-    "منصات سحابية تعزز الاقتصاد الرقمي.",
-    "نحو مستقبل تقني مستدام.",
-    "الفيدرالية المغربية لخبراء التكنولوجيا.",
-    "نصنع جيلاً جديداً من المبدعين.",
-    "نبتكر حلولاً للتحديات المعاصرة.",
-    "التميز في الهندسة والبرمجيات."
+    "Ø§Ù„ÙˆØ§Ø¬Ù‡Ø© Ø§Ù„ØªÙ‚Ù†ÙŠØ© Ù„Ø¹Ø§ØµÙ…Ø© Ø§Ù„Ø§Ø¨ØªÙƒØ§Ø±.",
+    "Ù†Ø¨Ù†ÙŠ Ø£Ù†Ø¸Ù…Ø© Ø§Ù„Ø°ÙƒØ§Ø¡ Ø§Ù„Ø§ØµØ·Ù†Ø§Ø¹ÙŠ Ù„Ù„Ù…Ø³ØªÙ‚Ø¨Ù„.",
+    "Ø±Ø¤ÙŠØ© ÙˆØ·Ù†ÙŠØ© Ø¨Ø£Ø¨Ø¹Ø§Ø¯ ØªÙƒÙ†ÙˆÙ„ÙˆØ¬ÙŠØ© Ø¹Ø§Ù„Ù…ÙŠØ©.",
+    "Ù…Ù†ØµØ© Ø§Ù„Ù…Ù‡Ù†Ø¯Ø³ÙŠÙ† Ø§Ù„Ù…ØºØ§Ø±Ø¨Ø© Ù„Ù„Ø¥Ø¨Ø¯Ø§Ø¹.",
+    "Ù†ØµÙ…Ù… Ø®ÙˆØ§Ø±Ø²Ù…ÙŠØ§Øª Ø§Ù„ØºØ¯ Ø§Ù„ÙŠÙˆÙ….",
+    "Ø¯Ø¹Ù… Ø§Ù„Ø£Ø¨Ø­Ø§Ø« Ø§Ù„Ø¹Ù„Ù…ÙŠØ© Ø§Ù„Ù…ØªÙ‚Ø¯Ù…Ø©.",
+    "ØªØ·ÙˆÙŠØ± Ø±ÙˆØ¨ÙˆØªØ§Øª ØªØ®Ø¯Ù… Ø§Ù„Ù…Ø¬ØªÙ…Ø¹.",
+    "Ù†Ø¤Ø³Ø³ Ù†Ø§Ø¯ÙŠ Ø§Ù„Ø£Ù„Ø¹Ø§Ø¨ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠØ© ÙˆØ§Ù„ØªØ·ÙˆÙŠØ±.",
+    "Ù†ØªØ¹Ø§ÙˆÙ† Ù…Ø¹ Ø§Ù„Ù…Ø±ÙƒØ² Ø§Ù„Ø¬Ù‡ÙˆÙŠ Ù„Ù„Ø§Ø³ØªØ«Ù…Ø§Ø±.",
+    "Ù…Ù†ØµØ§Øª Ø³Ø­Ø§Ø¨ÙŠØ© ØªØ¹Ø²Ø² Ø§Ù„Ø§Ù‚ØªØµØ§Ø¯ Ø§Ù„Ø±Ù‚Ù…ÙŠ.",
+    "Ù†Ø­Ùˆ Ù…Ø³ØªÙ‚Ø¨Ù„ ØªÙ‚Ù†ÙŠ Ù…Ø³ØªØ¯Ø§Ù….",
+    "Ø§Ù„ÙÙŠØ¯Ø±Ø§Ù„ÙŠØ© Ø§Ù„Ù…ØºØ±Ø¨ÙŠØ© Ù„Ø®Ø¨Ø±Ø§Ø¡ Ø§Ù„ØªÙƒÙ†ÙˆÙ„ÙˆØ¬ÙŠØ§.",
+    "Ù†ØµÙ†Ø¹ Ø¬ÙŠÙ„Ø§Ù‹ Ø¬Ø¯ÙŠØ¯Ø§Ù‹ Ù…Ù† Ø§Ù„Ù…Ø¨Ø¯Ø¹ÙŠÙ†.",
+    "Ù†Ø¨ØªÙƒØ± Ø­Ù„ÙˆÙ„Ø§Ù‹ Ù„Ù„ØªØ­Ø¯ÙŠØ§Øª Ø§Ù„Ù…Ø¹Ø§ØµØ±Ø©.",
+    "Ø§Ù„ØªÙ…ÙŠØ² ÙÙŠ Ø§Ù„Ù‡Ù†Ø¯Ø³Ø© ÙˆØ§Ù„Ø¨Ø±Ù…Ø¬ÙŠØ§Øª."
   ],
   en: [
     "The Technical Interface for Innovation.",
@@ -51,7 +51,7 @@ const bgImages = [
 ];
 
 export default function Hero() {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const navigate = useNavigate();
   
   const [titleIndex, setTitleIndex] = useState(0);
@@ -115,7 +115,7 @@ export default function Hero() {
           
           <div className="inline-flex items-center justify-start md:justify-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-blue-500/20 backdrop-blur-md text-blue-100 font-bold text-xs md:text-sm mb-4 md:mb-6 border border-blue-400/30 shadow-lg">
             <Globe size={16} className="md:w-[18px] md:h-[18px]" />
-            {lang === 'ar' ? 'واجهة عالمية للابتكار' : 'Global Interface for Innovation'}
+            {lang === 'ar' ? 'ÙˆØ§Ø¬Ù‡Ø© Ø¹Ø§Ù„Ù…ÙŠØ© Ù„Ù„Ø§Ø¨ØªÙƒØ§Ø±' : 'Global Interface for Innovation'}
           </div>
 
           <div className="h-28 sm:h-36 md:h-48 flex items-end md:items-center justify-start md:justify-center mb-3 md:mb-4">
@@ -136,7 +136,7 @@ export default function Hero() {
 
           <p className="text-sm sm:text-base md:text-2xl text-gray-200 max-w-4xl mx-auto mb-6 md:mb-12 leading-relaxed font-semibold drop-shadow-lg">
             {lang === 'ar' 
-              ? 'نجمع نخبة المهندسين والمبدعين لتطوير مشاريع رائدة تسهم في التحول الرقمي والتكنولوجي.' 
+              ? 'Ù†Ø¬Ù…Ø¹ Ù†Ø®Ø¨Ø© Ø§Ù„Ù…Ù‡Ù†Ø¯Ø³ÙŠÙ† ÙˆØ§Ù„Ù…Ø¨Ø¯Ø¹ÙŠÙ† Ù„ØªØ·ÙˆÙŠØ± Ù…Ø´Ø§Ø±ÙŠØ¹ Ø±Ø§Ø¦Ø¯Ø© ØªØ³Ù‡Ù… ÙÙŠ Ø§Ù„ØªØ­ÙˆÙ„ Ø§Ù„Ø±Ù‚Ù…ÙŠ ÙˆØ§Ù„ØªÙƒÙ†ÙˆÙ„ÙˆØ¬ÙŠ.' 
               : 'Uniting elite engineers and creators to develop pioneering projects contributing to digital and technological transformation.'}
           </p>
 
@@ -146,7 +146,7 @@ export default function Hero() {
               className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-sm hover:-translate-y-1 active:scale-[0.98]"
             >
               <Cpu size={20} className="md:w-[22px] md:h-[22px]" />
-              {lang === 'ar' ? 'اكتشف التقنيات' : 'Discover Tech'}
+              {lang === 'ar' ? 'Ø§ÙƒØªØ´Ù Ø§Ù„ØªÙ‚Ù†ÙŠØ§Øª' : 'Discover Tech'}
               <ArrowRight size={18} className={`md:w-5 md:h-5 ${lang === 'ar' ? 'rotate-180' : ''}`} />
             </button>
           </div>
