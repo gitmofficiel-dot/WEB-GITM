@@ -125,13 +125,27 @@
     </script>
     <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <style>
-      /* Hide the Google Translate UI */
-      .goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon { display: none !important; }
-      body { top: 0px !important; }
+      /* Hide the Google Translate UI completely */
+      .goog-te-banner-frame.skiptranslate, 
+      .goog-te-gadget-icon,
+      .skiptranslate > iframe,
+      .VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+      .VIpgJd-ZVi9od-ORHb-OEVmcd,
+      #goog-gt-tt { 
+        display: none !important; 
+      }
+      body { 
+        top: 0px !important; 
+        position: static !important; 
+      }
       #google_translate_element { display: none !important; }
       .goog-tooltip { display: none !important; }
       .goog-tooltip:hover { display: none !important; }
-      .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+      .goog-text-highlight { 
+        background-color: transparent !important; 
+        border: none !important; 
+        box-shadow: none !important; 
+      }
     </style>
   </head>
   <body class="bg-slate-50 dark:bg-cyber-bg text-slate-900 dark:text-cyber-text transition-colors duration-300">
