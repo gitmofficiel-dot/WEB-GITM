@@ -119,7 +119,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
     }, 3000); // Auto-save 3 seconds after last keystroke
 
     return () => clearTimeout(timer);
-  }, [titleAr, titleEn, content, tags, selectedCategory, mainImage, fbVideo, ytVideo, updates, additions]);
+  }, [titles, contents, tags, selectedCategory, mainImage, fbVideo, ytVideo, updates, additions]);
 
   // --- Quill Modules ---
   const modules = {
@@ -214,7 +214,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
   };
 
   const handlePublish = async () => {
-    const articleData = { titleAr, titleEn, title: titleAr || titleEn, content, tags, category: selectedCategory, attachments, imageUrl: mainImage, mainImage, fbVideo, ytVideo, updates, additions };
+    const articleData = { titleAr: titles.ar, titleEn: titles.en, titleFr: titles.fr, titleZh: titles.zh, titleTzm: titles.tzm, title: titles.ar || titles.en, contentAr: contents.ar, contentEn: contents.en, contentFr: contents.fr, contentZh: contents.zh, contentTzm: contents.tzm, content: contents.ar || contents.en, tags, category: selectedCategory, attachments, imageUrl: mainImage, mainImage, fbVideo, ytVideo, updates, additions };
     localStorage.removeItem('gitm_article_draft');
     
     if (standalone) {
@@ -386,7 +386,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
           
           <div 
             className="prose dark:prose-invert max-w-none prose-img:rounded-2xl prose-img:shadow-xl prose-pre:bg-white dark:bg-slate-900 prose-pre:rounded-xl"
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content || (lang === 'ar' ? '<p>محتوى المقال...</p>' : '<p>Article content...</p>')) }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(contents.ar || contents.en || '<p>محتوى المقال...</p>') }}
           />
 
           {(updates || additions) && (
@@ -541,7 +541,7 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
           </button>
           <button 
             onClick={handlePublish}
-            disabled={saveStatus === 'saving' || (!titleAr && !titleEn)}
+            disabled={saveStatus === 'saving' || (!titles.ar && !titles.en)}
             className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl font-bold shadow-lg hover:shadow-cyan-500/30 hover:scale-105 transition-all disabled:opacity-50"
           >
             <Save size={18}/> {lang === 'ar' ? 'نشر المقال' : 'Publish'}
