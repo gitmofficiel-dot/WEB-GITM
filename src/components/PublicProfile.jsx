@@ -83,7 +83,7 @@ export default function PublicProfile() {
     stats: {
       projects: Math.floor(Math.random() * 20) + 5,
       certifications: Math.floor(Math.random() * 10) + 2,
-      volunteerHours: Math.floor(Math.random() * 200) + 50
+      innovationHours: Math.floor(Math.random() * 200) + 50
     },
     social: firebaseMember.socials || {},
     skills: ['Python', 'TensorFlow', 'React', 'Robotics', 'Embedded Systems', 'Leadership', 'System Architecture'],
@@ -107,7 +107,7 @@ export default function PublicProfile() {
     stats: {
       projects: 0,
       certifications: 0,
-      volunteerHours: 0
+      innovationHours: 0
     },
     social: firebaseMember.socialLinks || {},
     skills: firebaseMember.skills || [],
@@ -210,8 +210,8 @@ export default function PublicProfile() {
           <div className="glass-card rounded-2xl p-6 flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400"><Heart size={24}/></div>
             <div>
-              <p className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{profile.stats.volunteerHours || 120}</p>
-              <p className="text-sm font-semibold text-slate-500 uppercase">{lang === 'ar' ? 'ساعات التطوع' : 'Volunteer Hours'}</p>
+              <p className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{profile.stats.innovationHours || 120}</p>
+              <p className="text-sm font-semibold text-slate-500 uppercase">{lang === 'ar' ? 'ساعات الابتكار' : 'Innovation Hours'}</p>
             </div>
           </div>
         </motion.div>

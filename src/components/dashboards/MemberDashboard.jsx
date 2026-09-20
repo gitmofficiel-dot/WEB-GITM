@@ -172,7 +172,7 @@ export default function MemberDashboard() {
               </div>
               <div className="glass-card p-6 bg-gradient-to-br from-blue-500/10 to-transparent border-t-2 border-blue-500 hover-lift">
                 <Heart size={32} className="text-blue-400 mb-4" />
-                <h4 className="text-gray-400">{lang === 'ar' ? 'العمل التطوعي' : 'Volunteer Hours'}</h4>
+                <h4 className="text-gray-400">{lang === 'ar' ? 'ساعات الابتكار' : 'Innovation Hours'}</h4>
                 <p className="text-3xl font-bold text-white mt-2">48h</p>
               </div>
             </div>
