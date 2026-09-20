@@ -17,7 +17,7 @@ export async function onRequest(context) {
 
   try {
     const body = await request.json();
-    const { messages, model, response_format } = body;
+    const { messages, model, response_format, stream } = body;
 
     const OPENROUTER_API_KEY = env.OPENROUTER_API_KEY;
 
@@ -47,6 +47,10 @@ export async function onRequest(context) {
         if (response_format) {
           payload.response_format = response_format;
         }
+        
+        if (stream) {
+          payload.stream = true;
+        }
 
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
@@ -65,6 +69,18 @@ export async function onRequest(context) {
           continue;
         }
 
+        // If streaming is requested, we just return the streaming response directly!
+        if (stream) {
+          const newHeaders = new Headers(response.headers);
+          newHeaders.set("Access-Control-Allow-Origin", "*");
+          return new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: newHeaders
+          });
+        }
+
+        // If not streaming, parse json
         const data = await response.json();
         
         if (data.error) {
