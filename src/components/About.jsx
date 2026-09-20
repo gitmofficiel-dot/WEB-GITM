@@ -216,15 +216,47 @@ export default function About() {
               <h2 className="text-xl md:text-2xl text-gitm-red font-bold mb-6">
                 {lang === 'ar' ? 'مؤسس المجموعة والمشرف العام' : 'Founder & General Supervisor'}
               </h2>
-              <div className="space-y-4 text-gitm-mutedLight dark:text-gitm-mutedDark leading-relaxed font-medium text-lg">
+                            <div className="space-y-6 text-gitm-mutedLight dark:text-gitm-mutedDark leading-relaxed font-medium text-lg">
                 <p>
                   {lang === 'ar' ? 'تاريخ ومكان الازدياد: 31 يناير 2004 بمدينة وادي زم، المغرب.' : 'Born: January 31, 2004 in Oued Zem, Morocco.'}
                 </p>
-                <p>
-                  {lang === 'ar' 
-                    ? 'محمد غزاوني هو شاب مغربي يمتلك شغفاً كبيراً بمجال التكنولوجيا والابتكار. يكرس جهده من خلال هذه المجموعة لقيادة المشاريع التقنية وتوفير بيئة خصبة للإبداع التكنولوجي، إيماناً منه بقدرة الشباب المغربي على التميز وصناعة المستقبل.' 
-                    : 'Mohammed Rhzaouni is a young Moroccan with a great passion for technology and innovation. He dedicates his effort through this group to lead technical projects and provide a fertile environment for technological creativity.'}
-                </p>
+                <div>
+                  <h3 className="text-xl font-bold text-gitm-textLight dark:text-white mb-2">
+                    {lang === 'ar' ? 'القيادة التقنية والمهارات:' : 'Technical Leadership & Skills:'}
+                  </h3>
+                  <p>
+                    {lang === 'ar' 
+                      ? 'أسس في يونيو 2026 "مجموعة الابتكار التكنولوجي بالمغرب" (GITM) لقيادة مبادرات الروبوتات والذكاء الاصطناعي. يحمل شهادة مهندس برمجيات موثقة من منصة HackerRank، ويتقن العمل بلغات وتقنيات متعددة مثل Python، C++، JavaScript، و Node.js.' 
+                      : 'Founded the "Moroccan Innovation and Technology Group" (GITM) in June 2026 to lead robotics and AI initiatives. Holds a certified Software Engineer credential from HackerRank, and is proficient in multiple languages and technologies such as Python, C++, JavaScript, and Node.js.'}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gitm-textLight dark:text-white mb-2">
+                    {lang === 'ar' ? 'المشاريع والابتكارات:' : 'Projects & Innovations:'}
+                  </h3>
+                  <ul className="list-disc list-inside space-y-2">
+                    <li>
+                      {lang === 'ar'
+                        ? 'مطور مشروع "نبض إكس" (NABD-X)، وهو مشروع شخصي حصري يهدف إلى بناء بيئة مدن ذكية باستخدام إنترنت الأشياء والذكاء الاصطناعي.'
+                        : 'Developer of the "NABD-X" project, an exclusive personal project aimed at building a smart city environment using IoT and AI.'}
+                    </li>
+                    <li>
+                      {lang === 'ar'
+                        ? 'صمم وابتكر الروبوت المجنزر "علي" (Ali) المعتمد على الذكاء الاصطناعي والمتحكمات الدقيقة.'
+                        : 'Designed and created the tracked robot "Ali" based on AI and microcontrollers.'}
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gitm-textLight dark:text-white mb-2">
+                    {lang === 'ar' ? 'الاهتمامات المتنوعة:' : 'Diverse Interests:'}
+                  </h3>
+                  <p>
+                    {lang === 'ar'
+                      ? 'إلى جانب شغفه ببرمجيات الويب، الأنظمة المدمجة، وبروتوكولات تشخيص السيارات، يهتم بالتصوير الفوتوغرافي للطبيعة، وتصميم الإضاءة المحيطية والديكور، والزراعة العضوية، بالإضافة إلى مشاركته الفعالة في العمل التطوعي وتأطير الشباب.'
+                      : 'Besides his passion for web software, embedded systems, and automotive diagnostic protocols, he is interested in nature photography, ambient lighting and decor design, organic farming, in addition to his active participation in volunteer work and youth mentoring.'}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
