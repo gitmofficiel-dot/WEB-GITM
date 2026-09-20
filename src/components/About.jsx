@@ -104,7 +104,31 @@ export default function About() {
         "@type": "Place",
         "name": "وادي زم، المغرب"
       },
-      "jobTitle": "مؤسس المجموعة والمشرف العام"
+      "jobTitle": "مؤسس المجموعة والمشرف العام",
+      "description": "أسس في يونيو 2026 مجموعة الابتكار التكنولوجي بالمغرب GITM لقيادة مبادرات الروبوتات والذكاء الاصطناعي. مطور مشروع نبض إكس NABD-X لمدن الذكية، ومبتكر الروبوت المجنزر علي Ali. مهتم بالأنظمة المدمجة، وبروتوكولات تشخيص السيارات، التصوير، الديكور، والزراعة العضوية، بالإضافة للعمل التطوعي.",
+      "knowsAbout": [
+        "Robotics",
+        "Artificial Intelligence",
+        "Python",
+        "C++",
+        "JavaScript",
+        "Node.js",
+        "Embedded Systems",
+        "IoT",
+        "Smart Cities",
+        "Automotive Diagnostic Protocols",
+        "Nature Photography",
+        "Ambient Lighting Design",
+        "Organic Farming"
+      ],
+      "hasCredential": {
+        "@type": "EducationalOccupationalCredential",
+        "name": "Software Engineer Certification",
+        "recognizedBy": {
+          "@type": "Organization",
+          "name": "HackerRank"
+        }
+      }
     }
   };
 
