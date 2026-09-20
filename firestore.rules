@@ -22,13 +22,19 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher';
     }
 
+    function isRoleUnchanged() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
+    }
+    
+    function isNewUserDefaultRole() {
+      return !('role' in request.resource.data) || request.resource.data.role == 'student' || request.resource.data.role == 'member';
+    }
+
     // Users Collection
     match /users/{userId} {
-      // Anyone can read user profiles (needed for roster)
-      allow read: if true;
-      // Users can update their own basic profile, Admins can update any profile (including roles)
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId) || isAdminOrPresident();
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId) && isNewUserDefaultRole();
+      allow update: if (isOwner(userId) && isRoleUnchanged()) || isAdminOrPresident();
       allow delete: if isAdminOrPresident();
     }
 
@@ -51,11 +57,13 @@ service cloud.firestore {
     }
     match /courses/{docId} {
       allow read: if true;
-      allow write: if isTeacher() || isAdminOrPresident();
+      allow create: if isTeacher() || isAdminOrPresident();
+      allow update, delete: if isAdminOrPresident() || (isTeacher() && resource.data.teacherId == request.auth.uid);
     }
     match /grades/{docId} {
-      allow read: if true;
-      allow write: if isTeacher() || isAdminOrPresident();
+      allow read: if isAdminOrPresident() || isTeacher() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
+      allow create: if isTeacher() || isAdminOrPresident();
+      allow update, delete: if isAdminOrPresident() || (isTeacher() && resource.data.teacherId == request.auth.uid);
     }
     
     // Default Deny
