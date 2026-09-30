@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { autoFetchNewsAndEvents } from '../../services/autoFetchService';
 import { useNavigate } from 'react-router-dom';
 import { collection, onSnapshot, doc, updateDoc, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
@@ -84,6 +85,25 @@ export default function PresidentDashboard() {
     });
     return () => { unsubNews(); unsubCourses(); unsubEvents(); unsubGallery(); unsubProjects(); unsubPartners(); unsubAbout(); unsubUsers(); };
   }, []);
+
+  useEffect(() => {
+    const runAutoFetch = async () => {
+      const lastFetch = localStorage.getItem('last_gitm_auto_fetch');
+      const today = new Date().toISOString().split('T')[0];
+      if (lastFetch !== today) {
+        console.log('Running daily auto-fetch for news and events...');
+        const res = await autoFetchNewsAndEvents();
+        if (res && res.success && (res.addedNews > 0 || res.addedEvents > 0)) {
+           toast.success(lang === 'ar' ? `تم جلب ${res.addedNews} خبر و ${res.addedEvents} فعالية تلقائياً` : `Auto-fetched ${res.addedNews} News & ${res.addedEvents} Events`);
+           localStorage.setItem('last_gitm_auto_fetch', today);
+        } else if (res && res.success) {
+           localStorage.setItem('last_gitm_auto_fetch', today);
+        }
+      }
+    };
+    runAutoFetch();
+  }, [lang]);
+
 
   const [aiSettings, setAiSettings] = useState({
     moderation: { model: 'meta-llama/llama-3.3-70b-instruct', actions: 1450, active: true },

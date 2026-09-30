@@ -318,6 +318,24 @@ export const translations = {
       submit: '发送消息',
     },
 
+    contact: {
+      title: '联系我们',
+      subtitle: '我们随时准备回答您的问题并听取您的建议',
+      infoTitle: '联系方式',
+      infoDesc: '您可以通过官方电子邮件联系我们或安排会议。',
+      officialEmail: '官方邮箱: contact@gitm.ma',
+      location: '地点: 摩洛哥',
+      scheduleBtn: '安排会议',
+      formTitle: '发送消息',
+      success: '您的消息已成功发送。我们将尽快与您联系。',
+      name: '全名',
+      email: '电子邮件',
+      subject: '主题',
+      message: '消息',
+      sending: '发送中...',
+      submit: '发送消息',
+    },
+
   },
 
   // ═══════════════════════════════════════════
@@ -376,6 +394,24 @@ export const translations = {
       teamSubtitle: 'ⵉⵎⵊⴷⴰⵢⵏ ⴷ ⵉⵎⵙⵙⵏⵏ ⵉⵎⵖⵔⵉⴱⵉⵢⵏ ⵉⵜⵜⴰⵡⵙⵏ.',
       teamAbout: 'ⵖⴼ ⴰⵏⵖ',
     },
+    contact: {
+      title: 'ⴰⵏⵎⵢⴰⵡⴰⴹ',
+      subtitle: 'ⵏⵍⵍⴰ ⴷⴰ ⵃⵎⴰ ⴰⴷ ⵏⵔⴰⵔ ⵖⴼ ⵉⵙⵇⵙⵉⵜⵏ ⵏⵏⵓⵏ',
+      infoTitle: 'ⵉⵏⵖⵎⵉⵙⵏ ⵏ ⵓⵎⵢⴰⵡⴰⴹ',
+      infoDesc: 'ⵜⵣⵎⵔⵎ ⴰⴷ ⵜⵎⵢⴰⵡⴰⴹⵎ ⵢⵉⴷⵏⵖ.',
+      officialEmail: 'ⵜⴰⴱⵔⴰⵜ ⵜⴰⵎⴰⴷⴷⵓⴷⵜ: contact@gitm.ma',
+      location: 'ⴰⴷⵖⴰⵔ: ⵍⵎⵖⵔⵉⴱ',
+      scheduleBtn: 'ⵙⵡⵓⵜⵜⵓ ⴰⵏⵎⵓⵇⵇⴰⵔ',
+      formTitle: 'ⴰⵣⵏ ⵜⴰⴱⵔⴰⵜ',
+      success: 'ⵜⴻⵜⵜⵡⴰⵣⵏ ⵜⴱⵔⴰⵜ ⵏⵏⵓⵏ ⵙ ⵓⵎⵓⵔⵙ.',
+      name: 'ⵉⵙⵎ ⵉⵎⵎⵉⴷⵏ',
+      email: 'ⵜⴰⵏⴼⵉⵍⵓⵜ ⵜⴰⵍⵉⴽⵟⵕⵓⵏⵉⵜ',
+      subject: 'ⴰⵙⵏⵜⵍ',
+      message: 'ⵜⴰⴱⵔⴰⵜ',
+      sending: 'ⴰⵣⴰⵏ...',
+      submit: 'ⴰⵣⵏ ⵜⴰⴱⵔⴰⵜ',
+    },
+
     contact: {
       title: 'ⴰⵏⵎⵢⴰⵡⴰⴹ',
       subtitle: 'ⵏⵍⵍⴰ ⴷⴰ ⵃⵎⴰ ⴰⴷ ⵏⵔⴰⵔ ⵖⴼ ⵉⵙⵇⵙⵉⵜⵏ ⵏⵏⵓⵏ',

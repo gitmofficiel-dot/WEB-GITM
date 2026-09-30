@@ -1,6 +1,11 @@
+import { handleContentFeed } from './content-feed.js';
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === '/api/content') {
+      return handleContentFeed(request, { cache: caches.default });
+    }
     const userAgent = request.headers.get('User-Agent') || '';
     
     // Check if it's a bot/crawler

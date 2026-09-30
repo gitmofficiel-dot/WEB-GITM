@@ -7,6 +7,7 @@ import { db } from '../config/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import SearchBar from './ui/SearchBar';
 import Pagination from './ui/Pagination';
+import AutomaticContent from './AutomaticContent';
 
 export default function EventsPage() {
   const { lang } = useLanguage();
@@ -100,6 +101,8 @@ export default function EventsPage() {
         </p>
       </div>
 
+      <AutomaticContent kind="events" />
+      <h2 className="text-2xl font-bold mb-6">{lang === 'ar' ? 'فعاليات GITM' : 'GITM Events'}</h2>
       {/* Search */}
       <div className="max-w-2xl mx-auto mb-8 md:mb-12">
         <SearchBar 

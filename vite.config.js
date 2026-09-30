@@ -1,12 +1,26 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { handleContentFeed } from './public/content-feed.js'
+
+const contentApi = {
+  name: 'gitm-content-api',
+  configureServer(server) {
+    server.middlewares.use('/api/content', async (req, res) => {
+      const response = await handleContentFeed(new Request(`http://localhost/api/content${req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''}`, { method: req.method }));
+      res.writeHead(response.status, Object.fromEntries(response.headers));
+      res.end(await response.text());
+    });
+  },
+}
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    contentApi,
     react(),
     VitePWA({
+      workbox: { globIgnores: ['**/_worker.js', '**/content-feed.js'], navigateFallbackDenylist: [/^\/api\//] },
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'logo.png'],
       manifest: {

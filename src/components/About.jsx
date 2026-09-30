@@ -60,11 +60,11 @@ export default function About() {
         // Add defaults if none found from DB
         if (official.length === 0 && internal.length === 0) {
           official.push(
-            { id: 1, name: 'Dr. Yassine', name_ar: 'د. ياسين', role: 'President & Founder', role_ar: 'الرئيس والمؤسس', projectsCount: 12, image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400', socialLinks: { linkedin: '#', github: '#' } 
+            { id: 1, name: 'Dr. Yassine', name_ar: 'د. ياسين', role: 'President & Founder', role_ar: 'الرئيس والمؤسس', projectsCount: 12, image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400', socialLinks: { linkedin: '#', github: '#' } },
             { id: 2, name: 'Eng. Fatima', name_ar: 'م. فاطمة', role: 'Head of Robotics', role_ar: 'رئيسة قسم الروبوتات', projectsCount: 8, image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400', socialLinks: { linkedin: '#' } }
           );
           internal.push(
-            { id: 4, name: 'Karim', name_ar: 'كريم', role: 'AI Researcher', role_ar: 'باحث في الذكاء الاصطناعي', projectsCount: 15, image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400', socialLinks: { github: '#' } 
+            { id: 4, name: 'Karim', name_ar: 'كريم', role: 'AI Researcher', role_ar: 'باحث في الذكاء الاصطناعي', projectsCount: 15, image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400', socialLinks: { github: '#' } },
             { id: 5, name: 'Sara', name_ar: 'سارة', role: 'UI/UX Lead', role_ar: 'قائدة تصميم الواجهات', projectsCount: 10, image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400', socialLinks: {} }
           );
         }
@@ -78,7 +78,7 @@ export default function About() {
       }
     };
     fetchAboutData();
-   []);
+  }, []);
 
   if (loading) {
     return (
@@ -99,11 +99,10 @@ export default function About() {
       "@type": "Person",
       "name": "محمد غزاوني",
       "alternateName": "MOHAMMED RHZAOUNI",
-      
-      
-        
+      "birthPlace": {
+        "@type": "Place",
         "name": "وادي زم، المغرب"
-      
+      },
       "jobTitle": "مؤسس المجموعة والمشرف العام",
       "description": "أسس في يونيو 2026 مجموعة الابتكار التكنولوجي بالمغرب GITM لقيادة مبادرات الروبوتات والذكاء الاصطناعي. مطور مشروع نبض إكس NABD-X لمدن الذكية، ومبتكر الروبوت المجنزر علي Ali. مهتم بالأنظمة المدمجة، وبروتوكولات تشخيص السيارات، التصوير، الديكور، والزراعة العضوية، بالإضافة للعمل التطوعي.",
       "knowsAbout": [

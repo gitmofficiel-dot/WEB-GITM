@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Newspaper, AlertCircle, Loader2, Calendar as CalendarIcon, Globe, Home } from 'lucide-react';
+import { AlertCircle, Loader2, Calendar as CalendarIcon } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../config/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import SearchBar from './ui/SearchBar';
 import Pagination from './ui/Pagination';
+import AutomaticContent from './AutomaticContent';
 
 export default function NewsPage() {
   const { lang } = useLanguage();
@@ -18,11 +19,6 @@ export default function NewsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-
-  // Global News
-  const [newsType, setNewsType] = useState('local'); // 'local' or 'global'
-  const [globalNews, setGlobalNews] = useState([]);
-  const [loadingGlobal, setLoadingGlobal] = useState(false);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -48,48 +44,6 @@ export default function NewsPage() {
     fetchNews();
   }, []);
 
-  const fetchGlobalNews = async (query = '"Artificial Intelligence" OR "AI" OR "IoT" OR "Internet of Things"') => {
-    if (globalNews.length > 0 && !searchQuery) return;
-    setLoadingGlobal(true);
-    try {
-      const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
-      if (!apiKey) {
-        console.warn('GNews API Key missing');
-        return;
-      }
-      const q = searchQuery || query;
-      const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(q)}&lang=en&max=20&apikey=${apiKey}`;
-      const response = await fetch(url);
-      const data = await response.json();
-      
-      if (data.articles) {
-        const mapped = data.articles.map((art, idx) => ({
-          id: `global-${idx}`,
-          title_en: art.title,
-          title_ar: art.title, // GNews doesn't auto-translate, we just fallback
-          date: art.publishedAt ? art.publishedAt.split('T')[0] : 'TBA',
-          image: art.image,
-          url: art.url,
-          source: art.source?.name
-        }));
-        setGlobalNews(mapped);
-      }
-    } catch (error) {
-      console.error('Error fetching global news:', error);
-    } finally {
-      setLoadingGlobal(false);
-    }
-  };
-
-  useEffect(() => {
-    if (newsType === 'global') {
-      const timeoutId = setTimeout(() => {
-        fetchGlobalNews();
-      }, 500);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [newsType, searchQuery]);
-
   const getLocalized = (obj, field, l) => {
     if (!obj) return '';
     // Support new camelCase format (titleAr, titleEn) from SmartArticleEditor
@@ -107,11 +61,10 @@ export default function NewsPage() {
     return obj[field] || '';
   };
 
-  const activeNewsList = newsType === 'local' ? newsList : globalNews;
+  const activeNewsList = newsList;
 
   const filteredNews = activeNewsList.filter(news => {
-    if (!searchQuery && newsType === 'local') return true;
-    if (newsType === 'global') return true; // Handled by API
+    if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     const title = getLocalized(news, 'title', lang).toLowerCase();
     return title.includes(q);
@@ -136,33 +89,9 @@ export default function NewsPage() {
         </p>
       </div>
 
-      {/* Search & Toggle */}
-      <div className="max-w-2xl mx-auto mb-8 md:mb-12 flex flex-col items-center gap-4 md:gap-6">
-        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl md:rounded-2xl w-full sm:w-auto">
-          <button
-            onClick={() => { setNewsType('local'); setCurrentPage(1); setSearchQuery(''); }}
-            className={`flex items-center justify-center gap-1.5 md:gap-2 flex-1 sm:flex-none px-4 md:px-6 py-2.5 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-sm transition-all ${
-              newsType === 'local' 
-                ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' 
-                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-            }`}
-          >
-            <Home size={16} />
-            {lang === 'ar' ? 'أخبار GITM' : 'GITM News'}
-          </button>
-          <button
-            onClick={() => { setNewsType('global'); setCurrentPage(1); setSearchQuery(''); }}
-            className={`flex items-center justify-center gap-1.5 md:gap-2 flex-1 sm:flex-none px-4 md:px-6 py-2.5 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-sm transition-all ${
-              newsType === 'global' 
-                ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' 
-                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-            }`}
-          >
-            <Globe size={16} />
-            {lang === 'ar' ? 'أخبار عالمية' : 'Global News'}
-          </button>
-        </div>
-
+      <AutomaticContent kind="news" />
+      <h2 className="text-2xl font-bold mb-6">{lang === 'ar' ? 'أخبار GITM' : 'GITM News'}</h2>
+      <div className="max-w-2xl mx-auto mb-8 md:mb-12">
         <SearchBar 
           onSearch={(val) => { setSearchQuery(val); setCurrentPage(1); }}
           placeholder={lang === 'ar' ? 'ابحث في الأخبار...' : 'Search news...'}
@@ -170,7 +99,7 @@ export default function NewsPage() {
       </div>
 
       {/* Grid */}
-      {(newsType === 'local' ? loading : loadingGlobal) ? (
+      {loading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <Loader2 className="w-12 h-12 text-teal-500 animate-spin mb-4" />
         </div>
@@ -195,13 +124,7 @@ export default function NewsPage() {
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.3 }}
                   key={news.id}
-                  onClick={() => {
-                    if (newsType === 'global' && news.url) {
-                      window.open(news.url, '_blank');
-                    } else {
-                      navigate(`/news/${news.id}`);
-                    }
-                  }}
+                  onClick={() => navigate(`/news/${news.id}`)}
                   className="group flex flex-col w-full rounded-3xl overflow-hidden cursor-pointer bg-white dark:bg-slate-800 shadow-lg hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 transition-all duration-300 border border-transparent hover:border-cyan-200 dark:hover:border-slate-600"
                 >
                   <div className="relative aspect-video w-full overflow-hidden">
@@ -220,7 +143,7 @@ export default function NewsPage() {
                     
                     <div className="flex items-center justify-between gap-4 text-sm text-slate-500 dark:text-slate-400 mt-auto pt-4 border-t border-slate-100 dark:border-slate-700">
                        <div className="flex items-center gap-1.5 font-medium"><CalendarIcon size={16} className="text-cyan-500"/> {news.date || 'TBA'}</div>
-                       {newsType === 'global' && news.source && (
+                       {news.source && (
                          <div className="flex items-center gap-1.5 font-medium bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-md text-xs">
                            {news.source}
                          </div>
