@@ -1,9 +1,40 @@
 // Shared by the Pages worker and Vite's development server. No browser API keys.
 export const REFRESH_SECONDS = 900;
+export const NEWS_EDITION = 'tech-environment-v1';
 const NEWS_SOURCES = {
-  morocco: { name: 'هسبريس', url: 'https://www.hespress.com/feed' },
-  world: { name: 'BBC عربي', url: 'https://feeds.bbci.co.uk/arabic/rss.xml' },
+  morocco: [
+    { name: 'هسبريس', url: 'https://www.hespress.com/feed' },
+    ...['التكنولوجيا', 'الذكاء الاصطناعي', 'البيئة'].map(term => ({ name: 'اليوم 24', url: `https://alyaoum24.com/?s=${encodeURIComponent(term)}&feed=rss2` })),
+    { name: 'الأيام 24', url: 'https://www.alayam24.com/feed' },
+  ],
+  world: [
+    { name: 'البوابة العربية للأخبار التقنية', url: 'https://aitnews.com/feed/', topic: 'technology' },
+    { name: 'أخبار الأمم المتحدة — المناخ', url: 'https://news.un.org/feed/subscribe/ar/news/topic/climate-change/feed/rss.xml', topic: 'environment' },
+    { name: 'BBC Technology', url: 'https://feeds.bbci.co.uk/news/technology/rss.xml', topic: 'technology' },
+    { name: 'BBC Science & Environment', url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml' },
+  ],
 };
+
+export function newsTopic(item, dedicatedTopic) {
+  if (['technology', 'environment'].includes(dedicatedTopic)) return dedicatedTopic;
+  // Only the headline and explicit subject categories count. Passing mentions in
+  // a political article's body must not turn it into a technology/environment story.
+  const title = item.title.normalize('NFKC').replace(/[\u064B-\u065F\u0670\u0640]/g, '').replace(/[أإآ]/g, 'ا').toLowerCase();
+  if (/الانتخابات|الانتخابي|شراء الاصوات|تشكيل الحكومة|المشاورات الحكومية/.test(title)) return null;
+  const categories = (item.categories || []).map(category => category.trim().toLowerCase());
+  if (categories.some(category => /^(تكنولوجيا|تقنية|تكنولوجيا المعلومات|technology|tech)$/.test(category)) ||
+    /تكنولوج|الذكاء الاصطناعي|ذكاء اصطناعي|روبوت|رقمنة|التحول الرقمي|سيبراني|برمجيات|برمجة|حوسبة|انترنت|الهواتف|هاتف ذكي|هواتف ذكية|سامسونج|مايكروسوفت|الامن الرقمي|\b(ai|artificial intelligence|technology|robotics|robots?|software|cybersecurity|smartphones?|semiconductors?|computing|openai|microsoft|samsung)\b/i.test(title)) return 'technology';
+  if (categories.some(category => /^(بيئة|البيئة|مناخ|environment|climate)$/.test(category)) ||
+    /تغير المناخ|التغير المناخي|الاحتباس الحراري|التلوث|تلوث|الطاقة المتجددة|الطاقات المتجددة|الطاقة الشمسية|الطاقة الريحية|الوقود الاحفوري|التنوع البيولوجي|النفايات|اعادة التدوير|الجفاف|تحلية المياه|حماية البيئة|بيئي|ازالة الغابات|حرائق الغابات|الانبعاثات|الكربون|الهيدروجين الاخضر|\b(climate|environmental|pollution|renewable|biodiversity|wildlife|conservation|recycling|deforestation|drought|emissions|carbon|solar energy|wind energy|nature reserve)\b/i.test(title)) return 'environment';
+  return null;
+}
+
+export function isMoroccanNews(item) {
+  const text = `${item.title} ${item.summary} ${(item.categories || []).join(' ')}`;
+  return /المغرب|مغربي|مغاربة|\b(morocco|moroccan|maroc|marocain|rabat|casablanca|tangier|marrakech|kenitra|agadir)\b/i.test(text) ||
+    /(?:^|[^\p{L}])[وبل]?(?:الرباط|الدار البيضاء|طنجة|القنيطرة|مراكش|أكادير|اكادير|وجدة|تطوان|فاس|مكناس|تازة|بني ملال|وادي زم|آسفي|اسفي|الصويرة|الناظور|ورزازات)(?=$|[^\p{L}])/u.test(text) ||
+    /(?:مدينة |إقليم |اقليم |ب)(?:الجديدة|بركان|العيون|الداخلة)/.test(text);
+}
 let conferenceRequest;
 let conferenceFetchedAt = 0;
 const ORGANIZER_PAGES = ['https://devoxx.ma/', 'https://www.waxconf.fr/', 'https://www.volcamp.io/'];
@@ -72,6 +103,7 @@ export function parseNews(xml, source, scope) {
     return {
       id: url, title: plainText(tag(block, 'title'), 240),
       summary: plainText(tag(block, 'description'), 450) || plainText(tag(block, 'content:encoded'), 450),
+      categories: [...block.matchAll(/<category\b[^>]*>([\s\S]*?)<\/category>/gi)].map(([, value]) => plainText(value, 100)),
       image: safeUrl(imageTag?.[1] || embeddedImage?.[1]), url,
       date: Number.isFinite(rawDate) ? new Date(rawDate).toISOString() : null,
       source: source.name, sourceUrl: source.url, scope, kind: 'news',
@@ -150,25 +182,24 @@ export async function handleContentFeed(request, { cache, fetcher = fetch } = {}
     return Response.json({ error: 'Invalid kind or scope' }, { status: 400 });
   }
   // Canonical keys prevent arbitrary query strings from bypassing the source cache.
-  const key = new Request(`${url.origin}/api/content?kind=${kind}&scope=${scope}`);
+  const key = new Request(`${url.origin}/api/content?kind=${kind}&scope=${scope}${kind === 'news' ? `&edition=${NEWS_EDITION}` : ''}`);
   const cached = cache && await cache.match(key);
   if (cached) return cached;
   try {
     let items;
     let partial = false;
     if (kind === 'news') {
-      const sources = scope === 'morocco' ? [NEWS_SOURCES.morocco,
-        { name: 'اليوم 24', url: 'https://alyaoum24.com/feed' },
-        { name: 'الأيام 24', url: 'https://www.alayam24.com/feed' },
-      ] : [NEWS_SOURCES.world];
-      const results = await Promise.allSettled(sources.map(async source => parseNews(await readSource(source.url, fetcher), source, scope)));
+      const results = await Promise.allSettled(NEWS_SOURCES[scope].map(async source =>
+        parseNews(await readSource(source.url, fetcher), source, scope)
+          .map(item => ({ ...item, topic: newsTopic(item, source.topic) }))
+          .filter(item => item.topic && (scope !== 'morocco' || isMoroccanNews(item)))));
+      if (results.every(result => result.status === 'rejected')) throw new Error('News sources unavailable');
       const seen = new Set();
       items = results.flatMap(result => result.status === 'fulfilled' ? result.value : []).filter(item => {
         if (seen.has(item.url)) return false;
         seen.add(item.url);
         return true;
       }).sort((a, b) => Date.parse(b.date || 0) - Date.parse(a.date || 0)).slice(0, 30);
-      if (!items.length) throw new Error('News feed has no usable items');
     } else {
       const endpoint = new URL('https://www.eventmedium.ai/api/events/feed.json');
       endpoint.searchParams.set('status', 'upcoming');

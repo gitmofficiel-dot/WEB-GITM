@@ -16,7 +16,10 @@ function SourceImage({ src, title, fallback }) {
 export default function AutomaticContent({ kind }) {
   const { lang } = useLanguage();
   const t = labels[lang] || labels.en;
+  const heading = kind === 'news' ? ({ ar: 'أخبار التكنولوجيا والبيئة', fr: 'Actualités technologie et environnement', en: 'Technology & environment news' }[lang] || 'Technology & environment news') : t[kind];
+  const topicLabels = { ar: { technology: 'تكنولوجيا', environment: 'بيئة' }, fr: { technology: 'Technologie', environment: 'Environnement' }, en: { technology: 'Technology', environment: 'Environment' } };
   const [scope, setScope] = useState('morocco');
+  const [topic, setTopic] = useState('all');
   const [query, setQuery] = useState('');
   const [limit, setLimit] = useState(9);
   const [attempt, setAttempt] = useState(0);
@@ -31,11 +34,12 @@ export default function AutomaticContent({ kind }) {
       activeController = new AbortController();
       const timeout = setTimeout(() => activeController.abort(), 40000);
       try {
-        const response = await fetch(`/api/content?kind=${kind}&scope=${scope}`, { signal: activeController.signal });
+        const response = await fetch(`/api/content?kind=${kind}&scope=${scope}${kind === 'news' ? '&edition=tech-environment-v1' : ''}`, { signal: activeController.signal });
         if (!response.ok) throw new Error('Feed unavailable');
         const data = await response.json();
         if (!Array.isArray(data.items)) throw new Error('Invalid feed');
-        if (!disposed) setState({ key, items: data.items, updatedAt: data.updatedAt, loading: false, error: Boolean(data.partial) });
+        const relevantItems = kind === 'news' ? data.items.filter(item => ['technology', 'environment'].includes(item.topic)) : data.items;
+        if (!disposed) setState({ key, items: relevantItems, updatedAt: data.updatedAt, loading: false, error: Boolean(data.partial) });
       } catch {
         if (!disposed) setState(previous => ({ key, items: previous.key === key ? previous.items : [], updatedAt: previous.key === key ? previous.updatedAt : null, loading: false, error: true }));
       } finally { clearTimeout(timeout); }
@@ -46,16 +50,21 @@ export default function AutomaticContent({ kind }) {
   }, [kind, scope, key, attempt]);
 
   const current = state.key === key;
-  const items = current ? state.items.filter(item => `${item.title} ${item.summary} ${item.location || ''}`.toLowerCase().includes(query.toLowerCase())) : [];
+  const items = current ? state.items.filter(item => (kind !== 'news' || topic === 'all' || item.topic === topic) && `${item.title} ${item.summary} ${item.location || ''}`.toLowerCase().includes(query.toLowerCase())) : [];
   const date = value => new Date(value).toLocaleDateString(lang === 'ar' ? 'ar-MA' : lang === 'fr' ? 'fr-FR' : 'en-GB');
 
-  return <section className="mb-14 rounded-3xl border border-cyan-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 p-4 md:p-7" dir={lang === 'ar' ? 'rtl' : 'ltr'} aria-label={t[kind]}>
-    <h2 className="text-2xl font-bold mb-2">{t[kind]}</h2>
+  return <section className="mb-14 rounded-3xl border border-cyan-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 p-4 md:p-7" dir={lang === 'ar' ? 'rtl' : 'ltr'} aria-label={heading}>
+    <h2 className="text-2xl font-bold mb-2">{heading}</h2>
     <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">{t.intro}</p>
     <div className="flex flex-wrap gap-3 items-center mb-5">
       {['morocco', 'world'].map(value => <button key={value} type="button" aria-pressed={scope === value} onClick={() => { setScope(value); setLimit(9); setQuery(''); }} className={`px-5 py-2 rounded-xl font-bold ${scope === value ? 'bg-teal-600 text-white' : 'bg-slate-100 dark:bg-slate-800'}`}>{t[value]}</button>)}
       <input type="search" aria-label={t.search} placeholder={t.search} value={query} onChange={event => { setQuery(event.target.value); setLimit(9); }} className="min-w-0 flex-1 basis-56 p-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800" />
     </div>
+    {kind === 'news' && <div className="flex flex-wrap gap-2 mb-5" role="group" aria-label={heading}>
+      {['all', 'technology', 'environment'].map(value => <button type="button" key={value} aria-pressed={topic === value} onClick={() => { setTopic(value); setLimit(9); }} className={`px-4 py-2 rounded-full text-sm font-semibold ${topic === value ? 'bg-teal-600 text-white' : 'bg-slate-100 dark:bg-slate-800'}`}>
+        {value === 'all' ? (lang === 'ar' ? 'الكل' : lang === 'fr' ? 'Tout' : 'All') : (topicLabels[lang] || topicLabels.en)[value]}
+      </button>)}
+    </div>}
     {kind === 'events' && <p className="text-sm text-slate-500 mb-4">{t.eventNote}</p>}
     {current && state.updatedAt && <p className="text-xs text-slate-500 mb-4">{t.updated}: {new Date(state.updatedAt).toLocaleString(lang === 'ar' ? 'ar-MA' : lang === 'fr' ? 'fr-FR' : 'en-GB')}</p>}
     {current && state.error && <div role="alert" className="p-4 mb-4 rounded-xl bg-amber-50 text-amber-900">{t.error} <button className="underline font-bold px-2" onClick={() => setAttempt(value => value + 1)}>{t.retry}</button></div>}
@@ -65,6 +74,7 @@ export default function AutomaticContent({ kind }) {
         {items.slice(0, limit).map(item => <article key={item.id} className="rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex flex-col shadow-sm">
           <SourceImage key={item.image} src={item.image} title={item.title} fallback={t.image} />
           <div className="p-5 flex flex-col flex-1 gap-3">
+            {kind === 'news' && item.topic && <span className="self-start rounded-full bg-teal-50 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 px-3 py-1 text-xs font-bold">{(topicLabels[lang] || topicLabels.en)[item.topic]}</span>}
             <p className="text-xs text-teal-700 dark:text-teal-300">{t.source}: <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">{item.source}</a>{item.date && <> · <time dateTime={item.date}>{date(item.date)}</time></>}</p>
             <h3 className="text-lg font-bold" dir="auto">{item.title}</h3>
             <p className="text-sm leading-7 text-slate-600 dark:text-slate-300" dir="auto">{(lang === 'ar' && item.summaryAr) || item.summary || t.noSummary}</p>

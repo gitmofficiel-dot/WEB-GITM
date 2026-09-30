@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { handleContentFeed, normalizeEvents, normalizeDeveloperEvents, parseNews, safeUrl } from '../public/content-feed.js';
+import { handleContentFeed, normalizeEvents, normalizeDeveloperEvents, parseNews, safeUrl, newsTopic, isMoroccanNews } from '../public/content-feed.js';
 
 test('RSS extracts safe source links, image and plain-text excerpt, deduplicating articles', () => {
   const item = `<item><title><![CDATA[News &amp; updates]]></title><link>https://example.org/a</link><description><![CDATA[<p>A summary.</p><script>alert(1)</script>]]></description><content:encoded><![CDATA[<img src="https://example.org/photo.jpg">]]></content:encoded><pubDate>Wed, 30 Sep 2026 10:00:00 GMT</pubDate></item>`;
@@ -33,8 +33,10 @@ test('API caches successful content with canonical keys and leaves failures unca
   const fetcher = async () => { calls++; return new Response('<rss><channel><item><title>Example</title><link>https://example.org/news</link></item></channel></rss>'); };
   const first = await handleContentFeed(new Request('https://gitm.test/api/content?scope=world&ignored=a'), { cache, fetcher });
   assert.equal(first.status, 200);
+  const initialCalls = calls;
   await handleContentFeed(new Request('https://gitm.test/api/content?scope=world&ignored=b'), { cache, fetcher });
-  assert.equal(calls, 1);
+  assert.equal(calls, initialCalls);
+  assert.match([...entries.keys()][0], /edition=tech-environment-v1/);
   const failed = await handleContentFeed(new Request('https://gitm.test/api/content?scope=morocco'), { cache, fetcher: async () => new Response('Unavailable', { status: 503 }) });
   assert.equal(failed.status, 502);
   assert.equal(entries.size, 1);
@@ -56,10 +58,33 @@ test('conference fallback retains upcoming Moroccan events and their source attr
 
 test('Morocco news remains available when the primary publisher rejects server requests', async () => {
   const fetcher = async url => url.includes('hespress') ? new Response('Blocked', { status: 403 }) :
-    new Response('<rss><channel><item><title>Morocco news</title><link>https://alyaoum24.com/news</link><description>A source excerpt</description></item></channel></rss>');
+    new Response('<rss><channel><item><title>المغرب يطور الذكاء الاصطناعي</title><link>https://alyaoum24.com/news</link><description>A source excerpt</description></item></channel></rss>');
   const response = await handleContentFeed(new Request('https://gitm.test/api/content?scope=morocco'), { fetcher });
   assert.equal(response.status, 200);
   const data = await response.json();
   assert.equal(data.items.length, 1);
   assert.equal(data.items[0].source, 'اليوم 24');
+});
+
+test('topic classification excludes political and health news, including passing mentions in descriptions', () => {
+  for (const title of ['مشاورات تشكيل الحكومة مع الأحزاب', 'مديرية التعليم تحذر من الدفتيريا', 'الحزب يناقش البيئة السياسية', 'المنتخب يغير جهازه التقني', 'تقرير ملاحظة الانتخابات: الرقمنة تفرز خروقات أكثر صعوبة في الرصد']) {
+    assert.equal(newsTopic({ title, summary: 'التكنولوجيا والذكاء الاصطناعي وحماية البيئة' }), null);
+  }
+  assert.equal(newsTopic({ title: 'المغرب وصربيا يعززان التعاون في الذكاء الاصطناعي' }), 'technology');
+  assert.equal(newsTopic({ title: 'مشروع جديد لتحلية المياه بالطاقة الشمسية' }), 'environment');
+  assert.equal(newsTopic({ title: 'Climate change threatens wildlife' }), 'environment');
+  assert.equal(newsTopic({ title: 'New smartphone software announced' }), 'technology');
+});
+
+test('national news must concern Morocco rather than just come from a Moroccan publisher', () => {
+  assert.equal(isMoroccanNews({ title: 'رئيس شركة أمريكية يدعو إلى تنظيم الذكاء الاصطناعي', summary: 'أعلنت الشركة في نيويورك خطتها الجديدة.' }), false);
+  assert.equal(isMoroccanNews({ title: 'القنيطرة: جمعية بيئية تطالب بإغلاق مطرح النفايات', summary: '' }), true);
+  assert.equal(isMoroccanNews({ title: 'مشروع جديد للطاقة الشمسية', summary: 'وقعت المملكة المغربية اتفاقية لبناء المحطة.' }), true);
+});
+
+test('no relevant Moroccan news produces an empty feed without reverting to general news', async () => {
+  const fetcher = async () => new Response('<rss><channel><item><title>مشاورات تشكيل الحكومة</title><link>https://example.org/politics</link><description>ناقش الحزب الذكاء الاصطناعي ضمن برنامجه</description></item></channel></rss>');
+  const response = await handleContentFeed(new Request('https://gitm.test/api/content?scope=morocco'), { fetcher });
+  assert.equal(response.status, 200);
+  assert.deepEqual((await response.json()).items, []);
 });
