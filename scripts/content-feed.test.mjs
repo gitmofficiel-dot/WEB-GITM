@@ -53,3 +53,13 @@ test('conference fallback retains upcoming Moroccan events and their source attr
   assert.match(items[0].summaryAr, /java/);
   assert.equal(items[0].license, 'CC BY-NC 4.0');
 });
+
+test('Morocco news remains available when the primary publisher rejects server requests', async () => {
+  const fetcher = async url => url.includes('hespress') ? new Response('Blocked', { status: 403 }) :
+    new Response('<rss><channel><item><title>Morocco news</title><link>https://alyaoum24.com/news</link><description>A source excerpt</description></item></channel></rss>');
+  const response = await handleContentFeed(new Request('https://gitm.test/api/content?scope=morocco'), { fetcher });
+  assert.equal(response.status, 200);
+  const data = await response.json();
+  assert.equal(data.items.length, 1);
+  assert.equal(data.items[0].source, 'اليوم 24');
+});

@@ -157,8 +157,17 @@ export async function handleContentFeed(request, { cache, fetcher = fetch } = {}
     let items;
     let partial = false;
     if (kind === 'news') {
-      const source = NEWS_SOURCES[scope];
-      items = parseNews(await readSource(source.url, fetcher), source, scope);
+      const sources = scope === 'morocco' ? [NEWS_SOURCES.morocco,
+        { name: 'اليوم 24', url: 'https://alyaoum24.com/feed' },
+        { name: 'الأيام 24', url: 'https://www.alayam24.com/feed' },
+      ] : [NEWS_SOURCES.world];
+      const results = await Promise.allSettled(sources.map(async source => parseNews(await readSource(source.url, fetcher), source, scope)));
+      const seen = new Set();
+      items = results.flatMap(result => result.status === 'fulfilled' ? result.value : []).filter(item => {
+        if (seen.has(item.url)) return false;
+        seen.add(item.url);
+        return true;
+      }).sort((a, b) => Date.parse(b.date || 0) - Date.parse(a.date || 0)).slice(0, 30);
       if (!items.length) throw new Error('News feed has no usable items');
     } else {
       const endpoint = new URL('https://www.eventmedium.ai/api/events/feed.json');
