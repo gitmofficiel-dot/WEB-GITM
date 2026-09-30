@@ -88,20 +88,24 @@ export default function PresidentDashboard() {
 
   useEffect(() => {
     const runAutoFetch = async () => {
-      const lastFetch = localStorage.getItem('last_gitm_auto_fetch');
-      const today = new Date().toISOString().split('T')[0];
-      if (lastFetch !== today) {
-        console.log('Running daily auto-fetch for news and events...');
+      const lastFetchTimestamp = parseInt(localStorage.getItem('last_gitm_auto_fetch_ts') || '0', 10);
+      const now = Date.now();
+      const FIFTEEN_MINUTES = 15 * 60 * 1000;
+      
+      if (now - lastFetchTimestamp > FIFTEEN_MINUTES) {
+        console.log('Running 15-min auto-fetch for news and events...');
         const res = await autoFetchNewsAndEvents();
         if (res && res.success && (res.addedNews > 0 || res.addedEvents > 0)) {
            toast.success(lang === 'ar' ? `تم جلب ${res.addedNews} خبر و ${res.addedEvents} فعالية تلقائياً` : `Auto-fetched ${res.addedNews} News & ${res.addedEvents} Events`);
-           localStorage.setItem('last_gitm_auto_fetch', today);
+           localStorage.setItem('last_gitm_auto_fetch_ts', now.toString());
         } else if (res && res.success) {
-           localStorage.setItem('last_gitm_auto_fetch', today);
+           localStorage.setItem('last_gitm_auto_fetch_ts', now.toString());
         }
       }
     };
     runAutoFetch();
+    const interval = setInterval(runAutoFetch, 15 * 60 * 1000);
+    return () => clearInterval(interval);
   }, [lang]);
 
 
