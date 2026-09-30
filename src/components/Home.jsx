@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
-import { ArrowRight, Newspaper, Calendar, GraduationCap, Users } from 'lucide-react';
+import { ArrowRight, Newspaper, Calendar, GraduationCap, Users, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import Hero from './Hero';
@@ -124,7 +124,53 @@ export default function Home() {
         </div>
       </Section>
 
-      {/* 4. Team Section */}
+      {/* 4. Join GITM Section */}
+      <Section
+        title={t('home.joinTitle')}
+        subtitle={t('home.joinSubtitle')}
+        icon={UserPlus}
+        bgClass="bg-white/10 dark:bg-black/20 backdrop-blur-sm border-b border-white/20 dark:border-white/5"
+        colorTheme="blue"
+      >
+        <div className="glass-card p-6 md:p-12 rounded-2xl md:rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 bg-gradient-to-br from-blue-50 to-white dark:from-blue-900/30 dark:to-slate-900/50">
+          <div className="flex-1">
+            <h3 className="text-2xl md:text-3xl font-bold text-gitm-textLight dark:text-white mb-4">
+              {lang === 'ar' ? 'معايير الانضمام إلى الجمعية' : lang === 'fr' ? 'Critères d\'adhésion à l\'association' : 'Association Membership Criteria'}
+            </h3>
+            <ul className="space-y-3 mb-6 text-slate-700 dark:text-slate-300">
+              <li className="flex items-start gap-2">
+                <ArrowRight size={18} className={`mt-1 text-blue-500 shrink-0 ${lang === 'ar' ? 'rotate-180' : ''}`} />
+                <span>{lang === 'ar' ? 'طالب هندسة أو تكنولوجيا، أو خريج شغوف بالابتكار.' : 'Engineering or technology student, or a graduate passionate about innovation.'}</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ArrowRight size={18} className={`mt-1 text-blue-500 shrink-0 ${lang === 'ar' ? 'rotate-180' : ''}`} />
+                <span>{lang === 'ar' ? 'الالتزام بحضور الفعاليات والمساهمة الفعالة في مشاريع الجمعية.' : 'Commitment to attend events and actively contribute to the association\'s projects.'}</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <ArrowRight size={18} className={`mt-1 text-blue-500 shrink-0 ${lang === 'ar' ? 'rotate-180' : ''}`} />
+                <span>{lang === 'ar' ? 'الموافقة على سياسة الخصوصية وقانون الجمعية الداخلي.' : 'Agreement to the privacy policy and the association\'s internal regulations.'}</span>
+              </li>
+            </ul>
+          </div>
+          <div className="flex flex-col gap-4 w-full md:w-auto">
+            <button 
+              onClick={() => navigate('/register')}
+              className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-1"
+            >
+              <UserPlus size={22} />
+              {lang === 'ar' ? 'سجل كعضو جديد' : 'Register as a New Member'}
+            </button>
+            <button 
+              onClick={() => navigate('/contact')}
+              className="w-full md:w-auto bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-sm"
+            >
+              {lang === 'ar' ? 'تواصل معنا للاستفسار' : 'Contact Us for Inquiries'}
+            </button>
+          </div>
+        </div>
+      </Section>
+
+      {/* 5. Team Section */}
       <Section
         title={t('home.teamTitle')}
         subtitle={t('home.teamSubtitle')}

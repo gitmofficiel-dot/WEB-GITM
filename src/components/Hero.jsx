@@ -88,7 +88,7 @@ export default function Hero() {
             {t('hero.tagline')}
           </div>
 
-          <div className="h-28 sm:h-36 md:h-48 flex items-end md:items-center justify-start md:justify-center mb-3 md:mb-4">
+          <div className="min-h-[7rem] sm:min-h-[9rem] md:min-h-[12rem] flex items-end md:items-center justify-start md:justify-center mb-3 md:mb-4">
             <AnimatePresence mode="wait">
               <motion.h1
                 key={titleIndex}
@@ -96,7 +96,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
-                className="text-3xl sm:text-4xl md:text-7xl font-extrabold tracking-tight text-white drop-shadow-2xl leading-tight"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white drop-shadow-2xl leading-snug line-clamp-3"
                 style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}
               >
                 {titles[titleIndex] || ''}

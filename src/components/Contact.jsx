@@ -13,18 +13,25 @@ const Contact = () => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
     
+    const lastSubmit = localStorage.getItem('lastContactSubmit');
+    if (lastSubmit && Date.now() - parseInt(lastSubmit) < 60000) {
+      toast.error(t('contact.rateLimit') || 'Please wait a minute before sending another message.');
+      return;
+    }
+
     try {
       setStatus('sending');
       await addDoc(collection(db, 'contact_messages'), {
         ...formData,
         submittedAt: serverTimestamp()
       });
+      localStorage.setItem('lastContactSubmit', Date.now().toString());
       setStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
       setTimeout(() => setStatus('idle'), 5000);
     } catch (error) {
       console.error('Error submitting contact form:', error);
-      toast.error('Failed to send message. Please try again later.');
+      toast.error(t('contact.error') || 'Failed to send message. Please try again later.');
       setStatus('idle');
     }
   };

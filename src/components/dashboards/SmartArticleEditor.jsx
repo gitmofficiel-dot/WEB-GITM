@@ -278,13 +278,10 @@ export default function SmartArticleEditor({ initialData, onCancel, onSave, stan
 
       for (const model of fallbackModels) {
         try {
-          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          const response = await fetch("/api/ai", {
             method: "POST",
             headers: {
-              "Authorization": `Bearer ${apiKey}`,
-              "Content-Type": "application/json",
-              "HTTP-Referer": "https://gitm.ma",
-              "X-Title": "GITM Dashboard"
+              "Content-Type": "application/json"
             },
             body: JSON.stringify({
               model: model,

@@ -245,7 +245,12 @@ export default function UserProfileSettings({ currentUser: propUser }) {
             <div>
               <h2 className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{formData.nameLatin || currentUser.name}</h2>
               {formData.nameAr && <h3 className="text-xl font-bold text-[#1e3a5f]/80 dark:text-white/80 font-cairo mt-1">{formData.nameAr}</h3>}
-              <p className="text-blue-600 dark:text-cyan-400 font-semibold text-lg uppercase tracking-wider mt-1">{currentUser.role} @ GITM</p>
+              <p className="text-blue-600 dark:text-cyan-400 font-semibold text-lg uppercase tracking-wider mt-1">
+                {currentUser.role === 'president' ? (lang === 'ar' ? 'رئيس' : 'President') :
+                 currentUser.role === 'teacher' ? (lang === 'ar' ? 'أستاذ' : 'Teacher') :
+                 currentUser.role === 'supervisor' ? (lang === 'ar' ? 'مشرف' : 'Supervisor') :
+                 (lang === 'ar' ? 'طالب' : 'Student')} @ GITM
+              </p>
             </div>
             {currentUser.membershipId ? (
               <div className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 shrink-0">

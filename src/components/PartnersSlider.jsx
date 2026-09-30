@@ -16,7 +16,14 @@ export default function PartnersSlider() {
   const { lang, partners } = useLanguage();
   
   // Clean structure from context - default if not provided
-  const partnerList = partners && Array.isArray(partners) ? partners : [];
+  const rawPartners = partners && Array.isArray(partners) ? partners : [];
+  
+  // Deduplicate by name
+  const partnerList = rawPartners.filter((partner, index, self) =>
+    index === self.findIndex((p) => (
+      p.name === partner.name
+    ))
+  );
   
   // Double the array for infinite seamless scrolling
   const duplicatedPartners = partnerList.length > 0 ? [...partnerList, ...partnerList] : [];
@@ -42,20 +49,25 @@ export default function PartnersSlider() {
         <div className="flex animate-marquee group-hover:[animation-play-state:paused] gap-8 px-4">
           {duplicatedPartners.map((partner, index) => (
             <div 
-              key={`${partner.id}-${index}`} 
-              className="flex items-center gap-4 min-w-[300px] p-4 bg-gray-50 dark:bg-[#1a1a1a] border border-gray-100 dark:border-gitm-borderDark rounded-2xl cursor-pointer hover:border-gitm-red hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              key={`${partner.id || partner.name}-${index}`} 
+              className="flex items-center gap-4 min-w-[320px] max-w-[400px] p-4 bg-gray-50 dark:bg-[#1a1a1a] border border-gray-100 dark:border-gitm-borderDark rounded-2xl cursor-pointer hover:border-gitm-red hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
-              <div className="p-3 bg-white dark:bg-black rounded-xl shadow-sm">
+              <div className="p-3 bg-white dark:bg-black rounded-xl shadow-sm shrink-0">
                 {partner.icon ? (
                   <img src={partner.icon} alt={partner.name} className="w-8 h-8 object-contain" />
                 ) : (
                   getPartnerIcon(partner.type)
                 )}
               </div>
-              <div>
-                <h4 className="font-bold text-sm text-gitm-textLight dark:text-white line-clamp-2">
+              <div className="flex-1 min-w-0">
+                <h4 className="font-bold text-sm text-gitm-textLight dark:text-white truncate">
                   {lang === 'ar' ? (partner.nameAr || partner.name) : (partner.nameEn || partner.name)}
                 </h4>
+                {partner.description && (
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2" title={lang === 'ar' ? (partner.descriptionAr || partner.description) : (partner.descriptionEn || partner.description)}>
+                    {lang === 'ar' ? (partner.descriptionAr || partner.description) : (partner.descriptionEn || partner.description)}
+                  </p>
+                )}
               </div>
             </div>
           ))}

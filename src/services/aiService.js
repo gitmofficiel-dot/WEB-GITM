@@ -1,7 +1,4 @@
-const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-// We should ideally use an env variable. If not set, it will fail gracefully.
-// Make sure to add VITE_OPENROUTER_API_KEY to your .env file
-const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '';
+const API_URL = '/api/ai';
 
 export const systemPrompt = {
   ar: "أنت المساعد الذكي الرسمي لنادي التكنولوجيا والابتكار GITM (Group of Innovation and Technology of Morocco). مهمتك هي مساعدة الأعضاء والطلاب في أسئلتهم حول التكنولوجيا، الأكواد البرمجية، الأكاديمية، والمشاريع. أجب بطريقة احترافية، مشجعة، ومختصرة.",
@@ -15,15 +12,10 @@ export const systemPrompt = {
  * @returns {Promise<void>}
  */
 export async function streamChatCompletion(messages, onChunk) {
-  if (!API_KEY) {
-    throw new Error('OpenRouter API Key is missing. Please add VITE_OPENROUTER_API_KEY to your .env file.');
-  }
-
   try {
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${API_KEY}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': window.location.origin, // For OpenRouter rankings
         'X-Title': 'GITM Platform' // For OpenRouter rankings

@@ -105,10 +105,23 @@ export default function TechProjectsPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass-card max-w-2xl mx-auto p-12 text-center rounded-2xl border border-teal-500/30"
+            className="glass-card max-w-2xl mx-auto p-12 text-center rounded-2xl border border-teal-500/30 flex flex-col items-center"
           >
             <Code className="w-16 h-16 text-slate-500 mx-auto mb-6 opacity-50" />
-            <h3 className="text-2xl font-sans font-bold tracking-tight text-white mb-2">{emptyMessage[lang] || emptyMessage.en}</h3>
+            <h3 className="text-2xl font-sans font-bold tracking-tight text-white mb-4">
+              {lang === 'ar' ? 'المشاريع قيد الإعداد' : lang === 'fr' ? 'Projets en cours de préparation' : 'Projects Under Construction'}
+            </h3>
+            <p className="text-slate-400 mb-8 max-w-md text-center">
+              {lang === 'ar' ? 'نعمل حالياً على إضافة مشاريعنا التقنية إلى هذه المنصة. تواصل معنا لمعرفة المزيد أو للمساهمة.' 
+                : lang === 'fr' ? 'Nous ajoutons actuellement nos projets tech à cette plateforme. Contactez-nous pour en savoir plus ou pour contribuer.' 
+                : 'We are currently adding our tech projects to this platform. Contact us to learn more or contribute.'}
+            </p>
+            <button 
+              onClick={() => navigate('/contact')}
+              className="bg-teal-500 hover:bg-teal-400 text-[#0B132B] font-bold py-3 px-8 rounded-full transition-colors flex items-center gap-2"
+            >
+              {lang === 'ar' ? 'تواصل معنا' : 'Contact Us'}
+            </button>
           </motion.div>
         ) : (
           <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

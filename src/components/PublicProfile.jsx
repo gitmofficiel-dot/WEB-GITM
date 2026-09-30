@@ -98,7 +98,7 @@ export default function PublicProfile() {
     ]
   } : {
     name: firebaseMember.nameLatin || firebaseMember.name || 'GITM Member',
-    title: firebaseMember.role === 'president' ? 'President' : firebaseMember.role === 'teacher' ? 'Teacher' : 'Student / Member',
+    title: firebaseMember.role === 'president' ? (lang === 'ar' ? 'رئيس' : 'President') : firebaseMember.role === 'teacher' ? (lang === 'ar' ? 'أستاذ' : 'Teacher') : (lang === 'ar' ? 'طالب / عضو' : 'Student / Member'),
     email: firebaseMember.email || '',
     location: lang === 'ar' ? 'المغرب' : 'Morocco',
     bio: firebaseMember.bio || '',

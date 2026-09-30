@@ -27,7 +27,7 @@ export default function About() {
             mission_en: 'Providing an advanced research environment for Moroccan talents to build smart systems with national support.',
             history_ar: 'تأسست GITM لتوحيد المبدعين والمبتكرين المغاربة. نسعى لتوفير بيئة تكنولوجية متكاملة تفتح آفاقاً جديدة للشباب المغربي.',
             history_en: 'GITM was founded to unite Moroccan creators and innovators. We strive to provide an integrated technological environment that opens new horizons for Moroccan youth.',
-            stats: { founded: '2026', projects: '15+', members: '500+' }
+            stats: { founded: '2026', projects: '3', members: '45' }
           });
         }
 
@@ -60,11 +60,11 @@ export default function About() {
         // Add defaults if none found from DB
         if (official.length === 0 && internal.length === 0) {
           official.push(
-            { id: 1, name: 'Dr. Yassine', name_ar: 'د. ياسين', role: 'President & Founder', role_ar: 'الرئيس والمؤسس', projectsCount: 12, image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400', socialLinks: { linkedin: '#', github: '#' } },
+            { id: 1, name: 'Dr. Yassine', name_ar: 'د. ياسين', role: 'President & Founder', role_ar: 'الرئيس والمؤسس', projectsCount: 12, image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400', socialLinks: { linkedin: '#', github: '#' } 
             { id: 2, name: 'Eng. Fatima', name_ar: 'م. فاطمة', role: 'Head of Robotics', role_ar: 'رئيسة قسم الروبوتات', projectsCount: 8, image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400', socialLinks: { linkedin: '#' } }
           );
           internal.push(
-            { id: 4, name: 'Karim', name_ar: 'كريم', role: 'AI Researcher', role_ar: 'باحث في الذكاء الاصطناعي', projectsCount: 15, image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400', socialLinks: { github: '#' } },
+            { id: 4, name: 'Karim', name_ar: 'كريم', role: 'AI Researcher', role_ar: 'باحث في الذكاء الاصطناعي', projectsCount: 15, image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400', socialLinks: { github: '#' } 
             { id: 5, name: 'Sara', name_ar: 'سارة', role: 'UI/UX Lead', role_ar: 'قائدة تصميم الواجهات', projectsCount: 10, image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400', socialLinks: {} }
           );
         }
@@ -78,7 +78,7 @@ export default function About() {
       }
     };
     fetchAboutData();
-  }, []);
+   []);
 
   if (loading) {
     return (
@@ -99,11 +99,11 @@ export default function About() {
       "@type": "Person",
       "name": "محمد غزاوني",
       "alternateName": "MOHAMMED RHZAOUNI",
-      "birthDate": "2004-01-31",
-      "birthPlace": {
-        "@type": "Place",
+      
+      
+        
         "name": "وادي زم، المغرب"
-      },
+      
       "jobTitle": "مؤسس المجموعة والمشرف العام",
       "description": "أسس في يونيو 2026 مجموعة الابتكار التكنولوجي بالمغرب GITM لقيادة مبادرات الروبوتات والذكاء الاصطناعي. مطور مشروع نبض إكس NABD-X لمدن الذكية، ومبتكر الروبوت المجنزر علي Ali. مهتم بالأنظمة المدمجة، وبروتوكولات تشخيص السيارات، التصوير، الديكور، والزراعة العضوية، بالإضافة للعمل التطوعي.",
       "knowsAbout": [
@@ -176,8 +176,8 @@ export default function About() {
           </h1>
           <p className="text-base md:text-2xl text-gitm-mutedLight dark:text-gitm-mutedDark leading-relaxed">
             {lang === 'ar' 
-              ? 'المجموعة المغربية للابتكار التكنولوجي (GITM) تقود التحول الرقمي بالتعاون مع كبرى المؤسسات وتفتح آفاقاً للشباب المغربي للتألق في الجامعات العالمية.' 
-              : 'The Moroccan Group for Technological Innovation (GITM) leads digital transformation and opens horizons for Moroccan youth globally.'}
+              ? 'المجموعة المغربية للابتكار التكنولوجي (GITM) تساهم في التحول الرقمي وتفتح آفاقاً للشباب المغربي لتطوير مهاراتهم التقنية.' 
+              : 'The Moroccan Group for Technological Innovation (GITM) contributes to digital transformation and opens horizons for Moroccan youth to develop their tech skills.'}
           </p>
         </motion.div>
 
@@ -328,17 +328,17 @@ export default function About() {
                     {member.socialLinks && (
                       <div className="flex items-center gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
                         {member.socialLinks.linkedin && (
-                          <a href={member.socialLinks.linkedin} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors">
+                          <a href={member.socialLinks.linkedin} target="_blank" rel="noreferrer" aria-label={`${member.name} LinkedIn`} className="text-gray-400 hover:text-blue-600 transition-colors">
                             <Linkedin size={18} />
                           </a>
                         )}
                         {member.socialLinks.github && (
-                          <a href={member.socialLinks.github} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                          <a href={member.socialLinks.github} target="_blank" rel="noreferrer" aria-label={`${member.name} GitHub`} className="text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors">
                             <Github size={18} />
                           </a>
                         )}
                         {member.socialLinks.facebook && (
-                          <a href={member.socialLinks.facebook} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-500 transition-colors">
+                          <a href={member.socialLinks.facebook} target="_blank" rel="noreferrer" aria-label={`${member.name} Facebook`} className="text-gray-400 hover:text-blue-500 transition-colors">
                             <Globe size={18} />
                           </a>
                         )}
@@ -375,17 +375,17 @@ export default function About() {
                     {member.socialLinks && (
                       <div className="flex items-center gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
                         {member.socialLinks.linkedin && (
-                          <a href={member.socialLinks.linkedin} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors">
+                          <a href={member.socialLinks.linkedin} target="_blank" rel="noreferrer" aria-label={`${member.name} LinkedIn`} className="text-gray-400 hover:text-blue-600 transition-colors">
                             <Linkedin size={18} />
                           </a>
                         )}
                         {member.socialLinks.github && (
-                          <a href={member.socialLinks.github} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                          <a href={member.socialLinks.github} target="_blank" rel="noreferrer" aria-label={`${member.name} GitHub`} className="text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors">
                             <Github size={18} />
                           </a>
                         )}
                         {member.socialLinks.facebook && (
-                          <a href={member.socialLinks.facebook} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-500 transition-colors">
+                          <a href={member.socialLinks.facebook} target="_blank" rel="noreferrer" aria-label={`${member.name} Facebook`} className="text-gray-400 hover:text-blue-500 transition-colors">
                             <Globe size={18} />
                           </a>
                         )}

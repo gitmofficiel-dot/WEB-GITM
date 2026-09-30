@@ -40,6 +40,8 @@ const TalentHub = lazy(() => import('./components/TalentHub'));
 const Contact = lazy(() => import('./components/Contact'));
 const Archive = lazy(() => import('./components/Archive'));
 const Methodology = lazy(() => import('./components/Methodology'));
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./components/TermsOfService'));
 
 // Dashboards
 const PresidentDashboard = lazy(() => import('./components/dashboards/PresidentDashboard'));
@@ -119,6 +121,8 @@ const AppContent = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/archive" element={<Archive />} />
         <Route path="/methodology" element={<Methodology />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/login" element={<AuthForms initialMode="login" />} />
         <Route path="/register" element={<AuthForms initialMode="register" />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

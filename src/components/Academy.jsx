@@ -396,12 +396,20 @@ export default function Academy() {
                 <h3 className="font-bold text-lg">{lang === 'ar' ? 'تصفية النتائج' : 'Filters'}</h3>
               </div>
               
-              <div className="mb-8">
+               <div className="mb-8">
                 <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 md:mb-3">
                   {lang === 'ar' ? 'التخصصات' : 'Categories'}
                 </h4>
                 <div className="flex flex-row flex-wrap lg:flex-col gap-2 md:gap-2">
-                   {categories.map(cat => (
+                   {categories.map(cat => {
+                     const catLabel = lang === 'ar' ? (
+                       cat === 'All' ? 'الكل' :
+                       cat === 'Web Dev' ? 'تطوير الويب' :
+                       cat === 'Security' ? 'الأمن السيبراني' :
+                       cat === 'Data Science' ? 'علوم البيانات' :
+                       cat === 'Cloud' ? 'الحوسبة السحابية' : cat
+                     ) : cat;
+                     return (
                      <label key={cat} className="flex items-center gap-3 cursor-pointer group">
                         <input 
                           type="radio" 
@@ -411,10 +419,10 @@ export default function Academy() {
                           className="w-4 h-4 text-teal-500 focus:ring-teal-500 border-gray-300"
                         />
                         <span className={`text-slate-700 dark:text-slate-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors ${selectedCategory === cat ? 'font-bold text-teal-600 dark:text-teal-400' : ''}`}>
-                          {cat}
+                          {catLabel}
                         </span>
                      </label>
-                   ))}
+                   )})}
                 </div>
               </div>
 
@@ -424,7 +432,14 @@ export default function Academy() {
                     {lang === 'ar' ? 'المستوى' : 'Level'}
                   </h4>
                   <div className="flex flex-row flex-wrap lg:flex-col gap-2 md:gap-2">
-                     {levels.map(lvl => (
+                     {levels.map(lvl => {
+                       const lvlLabel = lang === 'ar' ? (
+                         lvl === 'All' ? 'الكل' :
+                         lvl === 'Beginner' ? 'مبتدئ' :
+                         lvl === 'Intermediate' ? 'متوسط' :
+                         lvl === 'Advanced' ? 'متقدم' : lvl
+                       ) : lvl;
+                       return (
                        <label key={lvl} className="flex items-center gap-3 cursor-pointer group">
                           <input 
                             type="radio" 
@@ -434,10 +449,10 @@ export default function Academy() {
                             className="w-4 h-4 text-teal-500 focus:ring-teal-500 border-gray-300"
                           />
                           <span className={`text-slate-700 dark:text-slate-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors ${selectedLevel === lvl ? 'font-bold text-teal-600 dark:text-teal-400' : ''}`}>
-                            {lvl}
+                            {lvlLabel}
                           </span>
                        </label>
-                     ))}
+                     )})}
                   </div>
                 </div>
               ) : (
