@@ -70,7 +70,8 @@ const Section = ({ title, subtitle, icon: Icon, children, bgClass, linkText, lin
 };
 
 export default function Home() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col w-full bg-transparent">
