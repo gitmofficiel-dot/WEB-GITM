@@ -7,10 +7,31 @@ const labels = {
   fr: { morocco: 'Maroc', world: 'Monde', news: 'Actualités nationales et mondiales', events: 'Événements nationaux et mondiaux', intro: 'Actualisation automatique toutes les 15 minutes pendant la consultation · Extraits des sources', loading: 'Chargement…', error: 'Actualisation impossible. Réessayez.', retry: 'Réessayer', empty: 'Aucun résultat disponible auprès de la source.', search: 'Rechercher un titre ou un lieu…', read: 'Détails à la source', updated: 'Dernière mise à jour', image: 'Aucune image fournie', noSummary: 'Aucun résumé fourni. Consultez la source.', eventNote: 'Dates fournies par l’annuaire : vérifiez auprès de l’organisateur avant toute inscription. La couverture du Maroc peut être limitée.', source: 'Source', more: 'Afficher plus' },
 };
 
-function SourceImage({ src, title, fallback }) {
+function SourceImage({ src, title, fallback, kind }) {
   const [failed, setFailed] = useState(false);
-  return src && !failed ? <img src={src} alt={title} loading="lazy" referrerPolicy="no-referrer" onError={() => setFailed(true)} className="w-full aspect-video object-cover" /> :
-    <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-teal-100 to-cyan-100 dark:from-slate-800 dark:to-slate-700 text-slate-500 text-sm">{fallback}</div>;
+  const defaultImage = kind === 'events' 
+    ? 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80' 
+    : 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80';
+  
+  const imageSrc = (src && !failed) ? src : defaultImage;
+  
+  return (
+    <div className="relative aspect-video bg-slate-100 dark:bg-slate-800">
+      <img 
+        src={imageSrc} 
+        alt={title} 
+        loading="lazy" 
+        referrerPolicy="no-referrer" 
+        onError={() => setFailed(true)} 
+        className="w-full h-full object-cover" 
+      />
+      {(!src || failed) && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-sm font-bold opacity-0 hover:opacity-100 transition-opacity">
+          {fallback}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function AutomaticContent({ kind }) {
@@ -72,7 +93,7 @@ export default function AutomaticContent({ kind }) {
       {!items.length && !state.error && <p role="status" className="py-8 text-center text-slate-500">{t.empty}</p>}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {items.slice(0, limit).map(item => <article key={item.id} className="rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex flex-col shadow-sm">
-          <SourceImage key={item.image} src={item.image} title={item.title} fallback={t.image} />
+          <SourceImage key={item.image} src={item.image} title={item.title} fallback={t.image} kind={kind} />
           <div className="p-5 flex flex-col flex-1 gap-3">
             {kind === 'news' && item.topic && <span className="self-start rounded-full bg-teal-50 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 px-3 py-1 text-xs font-bold">{(topicLabels[lang] || topicLabels.en)[item.topic]}</span>}
             <p className="text-xs text-teal-700 dark:text-teal-300">{t.source}: <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">{item.source}</a>{item.date && <> · <time dateTime={item.date}>{date(item.date)}</time></>}</p>
