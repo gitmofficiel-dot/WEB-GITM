@@ -1,8 +1,12 @@
 import { handleContentFeed } from './content-feed.js';
+import { onRequest as handleAI } from './ai-proxy.js';
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === '/api/ai' || url.pathname === '/api/chat/completions') {
+      return handleAI({ request, env });
+    }
     if (url.pathname === '/api/content') {
       return handleContentFeed(request, { cache: caches.default });
     }

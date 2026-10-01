@@ -20,7 +20,7 @@ export default defineConfig({
     contentApi,
     react(),
     VitePWA({
-      workbox: { globIgnores: ['**/_worker.js', '**/content-feed.js'], navigateFallbackDenylist: [/^\/api\//] },
+      workbox: { globIgnores: ['**/_worker.js', '**/content-feed.js', '**/ai-proxy.js'], navigateFallbackDenylist: [/^\/api\//] },
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'logo.png'],
       manifest: {

@@ -9,11 +9,11 @@ export const useAI = () => {
   const [error, setError] = useState(null);
 
   const MODEL_ROUTER = {
-    'translation': 'google/gemma-2-9b-it:free', 
-    'generation': 'meta-llama/llama-3.2-3b-instruct:free', 
-    'complex_json': 'meta-llama/llama-3.3-70b-instruct:free', 
-    'moderation': 'meta-llama/llama-3.3-70b-instruct:free', 
-    'default': 'meta-llama/llama-3.3-70b-instruct:free'
+    'translation': 'openrouter/free',
+    'generation': 'openrouter/free',
+    'complex_json': 'openrouter/free',
+    'moderation': 'openrouter/free',
+    'default': 'openrouter/free'
   };
 
   const callOpenRouter = async (systemPrompt, userPrompt, jsonFormat = false, taskType = 'default', specificModel = null) => {
@@ -130,13 +130,7 @@ ${globalContext}`;
         ...messages
       ];
 
-      const FALLBACK_MODELS = [
-        'meta-llama/llama-3.3-70b-instruct:free',
-        'nvidia/llama-3.1-nemotron-70b-instruct:free',
-        'google/gemma-2-9b-it:free'
-      ];
-      
-      const modelsToTry = [selectedModelSlug, ...FALLBACK_MODELS.filter(m => m !== selectedModelSlug)];
+      const modelsToTry = [selectedModelSlug || 'openrouter/free'];
       let lastError = null;
 
       for (let i = 0; i < modelsToTry.length; i++) {

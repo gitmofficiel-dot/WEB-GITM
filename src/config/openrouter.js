@@ -1,10 +1,11 @@
 import OpenAI from 'openai';
 
-// NOTE: In a real production environment, you should never expose your API keys in the frontend code.
-// For this prototype, we are using the key provided by the user directly.
+// The server proxy owns the provider credential; this SDK token is a placeholder.
 export const openRouterClient = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: import.meta.env.VITE_OPENROUTER_API_KEY || 'sk-or-v1-missing',
+  baseURL: `${window.location.origin}/api`,
+  apiKey: 'server-managed',
+  timeout: 130000,
+  maxRetries: 0,
   dangerouslyAllowBrowser: true // Required since we are calling it from the client side (React)
 });
 

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Bot, User, Sparkles, Mic, MicOff, Paperclip, Trash2, Image as ImageIcon } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X, Send, Bot, User, Sparkles, Mic, MicOff, Paperclip, Trash2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { toast } from '../utils/toast';
 import { useAI } from '../hooks/useAI';
@@ -8,7 +8,7 @@ import { db } from '../config/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const AIChatBot = () => {
-  const { lang, t, users, courses, news, events } = useLanguage();
+  const { lang, users, courses, news, events } = useLanguage();
   const { chatWithGitmai } = useAI();
   const { currentUser } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -19,10 +19,7 @@ const AIChatBot = () => {
   const fileInputRef = useRef(null);
   
   const defaultModels = [
-    { id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'GITM Pro', desc: lang === 'ar' ? 'النموذج الأقوى (احترافي)' : 'Professional Model' },
-    { id: 'nvidia/llama-3.1-nemotron-70b-instruct:free', name: 'GITM Ultra', desc: lang === 'ar' ? 'نموذج فائق الدقة' : 'Ultra Accurate' },
-    { id: 'google/gemma-2-9b-it:free', name: 'GITM Fast', desc: lang === 'ar' ? 'سريع وعملي' : 'Fast & Efficient' },
-    { id: 'qwen/qwen-2.5-coder-32b-instruct:free', name: 'GITM Coder', desc: lang === 'ar' ? 'مطور الأكواد' : 'Code Developer' }
+    { id: 'openrouter/free', name: 'GITM AI', desc: lang === 'ar' ? 'مساعد الابتكار والتكنولوجيا' : 'Innovation & technology assistant' }
   ];
 
   const [gitmModels, setGitmModels] = useState(defaultModels);
@@ -55,11 +52,13 @@ const AIChatBot = () => {
           }
         } catch(e) { console.error(e); }
       } else {
+        try {
         const local = localStorage.getItem('gitm_chat');
         if (local) {
           setMessages(JSON.parse(local).map(m => ({ ...m, time: new Date(m.time) })));
           loaded = true;
         }
+        } catch { /* Ignore corrupt or unavailable storage. */ }
       }
       if (!loaded) {
         setMessages([ { id: 1, sender: 'ai', text: lang === 'ar' ? 'مرحباً بك! أنا الذكاء الاصطناعي الخاص بمجموعة الابتكار التكنولوجي المغرب (GITM). كيف يمكنني مساعدتك؟' : 'Hello! I am the GITM AI Assistant. How can I help you today?', time: new Date() } ]);
@@ -69,20 +68,20 @@ const AIChatBot = () => {
   }, [currentUser, lang]);
 
   useEffect(() => {
-    if (messages.length > 1) {
+    if (messages.length > 1 && !isTyping) {
       const saveChat = async () => {
         const msgsToSave = messages.map(m => ({ ...m, time: m.time.toISOString() }));
         if (currentUser) {
           try {
             await setDoc(doc(db, 'userChats', currentUser.uid), { messages: msgsToSave }, { merge: true });
-          } catch(e) {}
+          } catch { /* Saving is best effort. */ }
         } else {
-          localStorage.setItem('gitm_chat', JSON.stringify(msgsToSave));
+          try { localStorage.setItem('gitm_chat', JSON.stringify(msgsToSave)); } catch { /* Storage may be full. */ }
         }
       };
       saveChat();
     }
-  }, [messages, currentUser]);
+  }, [messages, currentUser, isTyping]);
 
   const startListening = () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -123,7 +122,7 @@ const AIChatBot = () => {
     const defaultMsg = [ { id: 1, sender: 'ai', text: lang === 'ar' ? 'مرحباً! أنا المساعد الذكي لـ GITM. كيف يمكنني مساعدتك اليوم؟' : 'Hello! I am the GITM AI Assistant. How can I help you today?', time: new Date() } ];
     setMessages(defaultMsg);
     if (currentUser) {
-      try { await setDoc(doc(db, 'userChats', currentUser.uid), { messages: [] }, { merge: true }); } catch(e){}
+      try { await setDoc(doc(db, 'userChats', currentUser.uid), { messages: [] }, { merge: true }); } catch { /* Saving is best effort. */ }
     } else {
       localStorage.removeItem('gitm_chat');
     }
@@ -132,7 +131,11 @@ const AIChatBot = () => {
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file || isTyping) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error(lang === 'ar' ? 'الحد الأقصى للملف 2 ميغابايت' : 'Maximum file size: 2 MB');
+      return;
+    }
 
     const isImage = file.type.startsWith('image/');
     const reader = new FileReader();
@@ -165,38 +168,17 @@ const AIChatBot = () => {
   ];
 
   const handleSend = async (text = input, attachmentMsg = null) => {
-    if (!text.trim() && !attachmentMsg) return;
+    if (isTyping || (!text.trim() && !attachmentMsg)) return;
 
-    const newUserMsg = attachmentMsg || { id: Date.now(), sender: 'user', text, time: new Date() };
+    const newUserMsg = attachmentMsg || { id: crypto.randomUUID(), sender: 'user', text, time: new Date() };
     const updatedMessages = [...messages, newUserMsg];
     setMessages(updatedMessages);
     setInput('');
     setIsTyping(true);
 
     try {
-      // Hardcoded quick answers for specific triggers
-      if (!attachmentMsg) {
-        const lowerText = text.toLowerCase();
-        let hardcodedResponse = null;
-        if (lowerText.includes('dashboard') || lowerText.includes('لوحة')) {
-          hardcodedResponse = lang === 'ar' ? 'جاري توجيهك إلى لوحة التحكم الخاصة بك...' : 'Redirecting you to your dashboard...';
-          setTimeout(() => window.location.hash = '#dashboard', 1000);
-        } else if (lowerText.includes('lab') || lowerText.includes('مختبر')) {
-           hardcodedResponse = lang === 'ar' ? 'جاري توجيهك إلى المختبر الافتراضي 3D...' : 'Redirecting you to the 3D Virtual Lab...';
-           setTimeout(() => window.location.hash = '#virtual-lab', 1000);
-        }
-
-        if (hardcodedResponse) {
-          setTimeout(() => {
-            setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: hardcodedResponse, time: new Date() }]);
-            setIsTyping(false);
-          }, 1000);
-          return;
-        }
-      }
-
       // Prepare history for AI
-      const history = updatedMessages.map(m => {
+      const history = updatedMessages.filter(m => m.text || m.image).slice(-20).map(m => {
         if (m.image) {
           return {
             role: m.sender === 'user' ? 'user' : 'assistant',
@@ -221,7 +203,7 @@ const AIChatBot = () => {
       `;
 
       // Setup empty AI message first
-      const aiMsgId = Date.now() + 1;
+      const aiMsgId = crypto.randomUUID();
       setMessages(prev => [...prev, { id: aiMsgId, sender: 'ai', text: '', time: new Date() }]);
 
       // Call GITM AI with streaming callback
@@ -229,19 +211,10 @@ const AIChatBot = () => {
         setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, text: currentText } : m));
       });
 
-      // Voice Feature: Read response out loud
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); // Stop any previous speech
-        const utterance = new SpeechSynthesisUtterance(responseText);
-        utterance.lang = lang === 'ar' ? 'ar-SA' : 'en-US';
-        // Try to select a natural voice if available
-        const voices = window.speechSynthesis.getVoices();
-        const targetVoice = voices.find(v => v.lang.startsWith(lang === 'ar' ? 'ar' : 'en'));
-        if (targetVoice) utterance.voice = targetVoice;
-        window.speechSynthesis.speak(utterance);
-      }
-    } catch (error) {
-      setMessages(prev => [...prev, { id: Date.now(), sender: 'ai', text: lang === 'ar' ? 'عذراً، حدث خطأ أثناء الاتصال بالخادم.' : 'Sorry, an error occurred while connecting to the server.', time: new Date() }]);
+      if (!responseText?.trim()) throw new Error('Empty response');
+      setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, text: responseText } : m));
+    } catch {
+      setMessages(prev => [...prev.filter(m => m.text || m.image), { id: Date.now(), sender: 'ai', text: lang === 'ar' ? 'عذراً، حدث خطأ أثناء الاتصال بالخادم.' : 'Sorry, an error occurred while connecting to the server.', time: new Date() }]);
     } finally {
       setIsTyping(false);
     }
@@ -252,22 +225,27 @@ const AIChatBot = () => {
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 shadow-xl ${isOpen ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/30' : 'bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-400 hover:to-blue-500 text-white shadow-teal-500/30'}`}
+        aria-label={lang === 'ar' ? 'مساعد GITM الذكي' : 'GITM AI assistant'}
+        aria-expanded={isOpen}
+        aria-controls="gitm-ai-panel"
+        className="h-12 md:h-14 px-4 rounded-2xl flex items-center justify-center gap-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border border-slate-700 dark:border-white shadow-lg transition-colors hover:bg-slate-800 dark:hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
       >
-        {isOpen ? <X size={22} /> : <MessageCircle size={24} />}
+        {isOpen ? <X size={20} /> : <Sparkles size={20} strokeWidth={1.7} />}
+        <span className="text-sm font-semibold tracking-wide" dir="ltr">GITM AI</span>
       </button>
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed inset-0 sm:absolute sm:inset-auto sm:bottom-20 sm:right-0 sm:rtl:left-0 sm:rtl:right-auto sm:w-96 sm:h-[500px] sm:min-h-[400px] sm:max-h-[600px] w-full h-full sm:rounded-3xl bg-white dark:bg-slate-900 flex flex-col overflow-hidden shadow-2xl border-0 sm:border sm:border-slate-200 sm:dark:border-slate-800 z-[70] sm:origin-bottom-right sm:rtl:origin-bottom-left animate-in zoom-in-95 duration-200">
+        <div id="gitm-ai-panel" role="dialog" aria-label={lang === 'ar' ? 'مساعد GITM' : 'GITM assistant'} dir={lang === 'ar' ? 'rtl' : 'ltr'} className="fixed inset-0 sm:absolute sm:inset-auto sm:bottom-20 sm:right-0 sm:rtl:left-0 sm:rtl:right-auto sm:w-96 sm:h-[500px] sm:min-h-[400px] sm:max-h-[calc(100dvh-120px)] w-full h-full sm:rounded-3xl bg-white dark:bg-slate-900 flex flex-col overflow-hidden shadow-2xl border-0 sm:border sm:border-slate-200 sm:dark:border-slate-800 z-[70] sm:origin-bottom-right sm:rtl:origin-bottom-left animate-in zoom-in-95 duration-200">
           {/* Header */}
-          <div className="px-5 py-4 bg-gradient-to-r from-teal-500 to-blue-600 text-white flex items-center justify-between">
+          <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border border-white/30 backdrop-blur-sm relative group">
-                <Bot size={22} />
+                <Sparkles size={22} strokeWidth={1.7} />
               </div>
               <div className="flex flex-col">
                 <select 
+                  aria-label={lang === 'ar' ? 'نموذج المساعد' : 'Assistant model'}
                   value={selectedModel}
                   onChange={(e) => setSelectedModel(e.target.value)}
                   className="bg-transparent text-white font-bold font-sans font-bold tracking-tight drop-shadow-md text-sm outline-none appearance-none cursor-pointer"
@@ -277,22 +255,22 @@ const AIChatBot = () => {
                   ))}
                 </select>
                 <span className="flex items-center gap-1.5 text-[10px] text-teal-100 font-bold">
-                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+
                   {gitmModels.find(m => m.id === selectedModel)?.desc}
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={clearChat} title={lang === 'ar' ? 'مسح المحادثة' : 'Clear Chat'} className="text-teal-200 hover:text-white transition-colors p-1">
+              <button disabled={isTyping} onClick={clearChat} title={lang === 'ar' ? 'مسح المحادثة' : 'Clear Chat'} className="text-teal-200 hover:text-white transition-colors p-1">
                 <Trash2 size={18} />
               </button>
-              <Sparkles className="text-teal-200" size={18} />
+              <button type="button" onClick={() => setIsOpen(false)} aria-label={lang === 'ar' ? 'إغلاق المساعد' : 'Close assistant'} className="p-2 rounded-lg hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white"><X size={20} /></button>
             </div>
           </div>
 
           {/* Messages Area */}
           <div className="flex-1 p-5 overflow-y-auto flex flex-col gap-4 scrollbar-none bg-slate-50 dark:bg-[#0f172a]">
-            {messages.map((msg) => (
+            {messages.filter(msg => msg.text || msg.image).map((msg) => (
               <div key={msg.id} className={`flex gap-3 max-w-[85%] ${msg.sender === 'user' ? 'self-end flex-row-reverse' : 'self-start'}`}>
                 <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center shadow-sm ${msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-teal-500 text-white'}`}>
                   {msg.sender === 'user' ? <User size={16} /> : <Bot size={16} />}
@@ -305,7 +283,7 @@ const AIChatBot = () => {
                       </div>
                     )}
                     {msg.text && (
-                      <div className="whitespace-pre-wrap">{msg.text.length > 500 && !msg.image ? `${msg.text.substring(0, 100)}... [File attached]` : msg.text}</div>
+                      <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.text}</div>
                     )}
                   </div>
                   <span className={`text-[10px] text-slate-500 dark:text-slate-400 ${msg.sender === 'user' ? 'text-right rtl:text-left' : 'text-left rtl:text-right'}`}>
@@ -351,11 +329,13 @@ const AIChatBot = () => {
               className="relative flex items-center"
             >
               <input
+                aria-label={lang === 'ar' ? 'رسالتك' : 'Your message'}
+                maxLength={8000}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={lang === 'ar' ? 'اكتب رسالتك هنا...' : 'Type your message...'}
-                className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-2xl py-3 pl-4 pr-20 rtl:pr-4 rtl:pl-20 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition-all shadow-inner"
+                className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-2xl py-3 pl-4 pr-32 rtl:pr-4 rtl:pl-32 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition-all shadow-inner"
               />
               <div className="absolute right-2 rtl:left-2 rtl:right-auto flex items-center">
                 <input
@@ -363,10 +343,12 @@ const AIChatBot = () => {
                   ref={fileInputRef}
                   onChange={handleFileUpload}
                   className="hidden"
-                  accept="image/*,.txt,.pdf,.csv"
+                  accept="image/*,.txt,.csv"
                 />
                 <button
                   type="button"
+                  disabled={isTyping}
+                  aria-label={lang === 'ar' ? 'إرفاق صورة أو نص' : 'Attach image or text'}
                   onClick={() => fileInputRef.current?.click()}
                   className="p-2 rounded-full transition-colors text-slate-400 hover:text-teal-600 dark:hover:text-teal-400"
                 >
@@ -374,12 +356,15 @@ const AIChatBot = () => {
                 </button>
                 <button
                   type="button"
+                  disabled={isTyping || isListening}
+                  aria-label={lang === 'ar' ? 'الإدخال الصوتي' : 'Voice input'}
                   onClick={startListening}
                   className={`p-2 rounded-full transition-colors mr-1 rtl:mr-0 rtl:ml-1 ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-slate-400 hover:text-teal-600 dark:hover:text-teal-400'}`}
                 >
                   {isListening ? <Mic size={18} /> : <MicOff size={18} />}
                 </button>
                 <button
+                  aria-label={lang === 'ar' ? 'إرسال' : 'Send'}
                   type="submit"
                   disabled={!input.trim() || isTyping}
                   className="p-2 text-teal-600 dark:text-teal-400 hover:text-teal-700 disabled:opacity-50 transition-colors"
