@@ -21,7 +21,7 @@ export async function streamChatCompletion(messages, onChunk) {
         'X-Title': 'GITM Platform' // For OpenRouter rankings
       },
       body: JSON.stringify({
-        model: 'qwen/qwen3-coder:free',
+        model: 'google/gemini-2.0-flash-lite-preview-02-05:free',
         messages: messages,
         stream: true
       })

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Send, Bot, User, Sparkles, Mic, MicOff, Paperclip, Trash2 } from 'lucide-react';
+import { X, Send, Bot, User, Sparkles, Mic, MicOff, Paperclip, Trash2, BrainCircuit } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { toast } from '../utils/toast';
 import { useAI } from '../hooks/useAI';
@@ -214,7 +214,7 @@ const AIChatBot = () => {
       if (!responseText?.trim()) throw new Error('Empty response');
       setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, text: responseText } : m));
     } catch {
-      setMessages(prev => [...prev.filter(m => m.text || m.image), { id: Date.now(), sender: 'ai', text: lang === 'ar' ? 'عذراً، حدث خطأ أثناء الاتصال بالخادم.' : 'Sorry, an error occurred while connecting to the server.', time: new Date() }]);
+      setMessages(prev => [...prev.filter(m => m.text || m.image), { id: Date.now(), sender: 'ai', text: lang === 'ar' ? 'عذراً، المساعد الذكي غير متاح حالياً للتحديث. يرجى المحاولة لاحقاً.' : 'Sorry, the AI Assistant is currently offline for updates. Please try again later.', time: new Date() }]);
     } finally {
       setIsTyping(false);
     }
@@ -230,7 +230,7 @@ const AIChatBot = () => {
         aria-controls="gitm-ai-panel"
         className="h-12 md:h-14 px-4 rounded-2xl flex items-center justify-center gap-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border border-slate-700 dark:border-white shadow-lg transition-colors hover:bg-slate-800 dark:hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
       >
-        {isOpen ? <X size={20} /> : <Sparkles size={20} strokeWidth={1.7} />}
+        {isOpen ? <X size={20} /> : <BrainCircuit size={20} strokeWidth={2} />}
         <span className="text-sm font-semibold tracking-wide" dir="ltr">GITM AI</span>
       </button>
 
