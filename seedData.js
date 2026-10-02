@@ -1,8 +1,12 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config(); // Reads from current working directory
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../../../e:/GITM/.env') }); // This is ugly, let's just copy it to the gitm folder and run it there.
 
 const firebaseConfig = {
   apiKey: process.env.VITE_FIREBASE_API_KEY,
@@ -18,9 +22,9 @@ const db = getFirestore(app);
 
 const projects = [
   {
-    title: 'نظام الري الذكي بالطاقة الشمسية',
-    description: 'نظام ري يعتمد على الذكاء الاصطناعي مدعوم بألواح شمسية لتحسين استخدام المياه في الزراعة المغربية.',
-    members: [{ id: '1', name: 'يوسف الفاسي', role: 'مهندس أجهزة', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200' }],
+    title: 'Smart Solar Irrigation System',
+    description: 'An AI-driven irrigation system powered by solar panels to optimize water usage in Moroccan agriculture.',
+    members: [{ id: '1', name: 'Youssef El Fassi', role: 'Hardware Engineer', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200' }],
     status: 'completed',
     progress: 100,
     category: 'IoT',
@@ -30,9 +34,9 @@ const projects = [
     createdAt: serverTimestamp()
   },
   {
-    title: 'تراث المغرب بالواقع الافتراضي',
-    description: 'تطبيق واقع افتراضي يتيح للمستخدمين استكشاف المعالم التاريخية المغربية بسلاسة في بيئة ثلاثية الأبعاد.',
-    members: [{ id: '2', name: 'خديجة العمراني', role: 'فنانة 3D', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200' }],
+    title: 'Morocco Heritage VR',
+    description: 'A virtual reality application allowing users to explore historical Moroccan landmarks seamlessly in 3D.',
+    members: [{ id: '2', name: 'Khadija Amrani', role: '3D Artist', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200' }],
     status: 'in-progress',
     progress: 65,
     category: 'Web',
@@ -42,9 +46,9 @@ const projects = [
     createdAt: serverTimestamp()
   },
   {
-    title: 'منصة إديوكونيكت',
-    description: 'منصة تعلم إلكتروني شاملة سحابية مخصصة لتقديم التعليم التقني للمناطق القروية.',
-    members: [{ id: '3', name: 'عمر بنيس', role: 'مطور Full Stack', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200' }],
+    title: 'EduConnect Platform',
+    description: 'A comprehensive cloud-based e-learning platform dedicated to bringing technical education to rural areas.',
+    members: [{ id: '3', name: 'Omar Bennis', role: 'Full Stack Dev', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200' }],
     status: 'in-progress',
     progress: 40,
     category: 'Cloud',
@@ -57,19 +61,19 @@ const projects = [
 
 const courses = [
   {
-    title: 'مقدمة في الذكاء الاصطناعي وتعلم الآلة',
-    description: 'دورة تدريبية وورشة عمل شاملة تغطي أساسيات الذكاء الاصطناعي والشبكات العصبية وتطبيقاتها في البرمجيات الحديثة.',
+    title: 'Introduction to AI & Machine Learning',
+    description: 'A comprehensive workshop and course covering the fundamentals of Artificial Intelligence, neural networks, and their applications in modern software.',
     category: 'Robotics',
     level: 'Beginner',
-    instructor: 'د. أمين التازي',
+    instructor: 'Dr. Amine Tazi',
     teacherEmail: 'amine.tazi@gitm.ma',
-    duration: '4 أسابيع',
+    duration: '4 Weeks',
     type: 'course',
     lessons: [
-      { title: 'الأسبوع 1: أساسيات الذكاء الاصطناعي', duration: 'ساعتان' },
-      { title: 'الأسبوع 2: أساسيات الشبكات العصبية', duration: '2.5 ساعة' },
-      { title: 'الأسبوع 3: تعلم الآلة العملي ببايثون', duration: '3 ساعات' },
-      { title: 'الأسبوع 4: المشروع النهائي', duration: '4 ساعات' }
+      { title: 'Week 1: AI Fundamentals', duration: '2 Hours' },
+      { title: 'Week 2: Neural Networks Basics', duration: '2.5 Hours' },
+      { title: 'Week 3: Practical ML with Python', duration: '3 Hours' },
+      { title: 'Week 4: Final Project', duration: '4 Hours' }
     ],
     coverImage: 'https://images.unsplash.com/photo-1555255707-c07966088b7b?w=800',
     createdAt: serverTimestamp()

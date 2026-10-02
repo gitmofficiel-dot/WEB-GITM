@@ -28,7 +28,10 @@ export async function onRequest(context) {
       return new Response(JSON.stringify({ error: "Missing API Key on server" }), { status: 500, headers: { "Access-Control-Allow-Origin": "*" } });
     }
 
-    const modelsToTry = model && model !== 'openrouter/free' ? [model, 'openrouter/free'] : ['openrouter/free'];
+    let modelsToTry = [model];
+    if (!model || model === 'openrouter/free') {
+      modelsToTry = ['google/gemini-2.0-flash-lite-preview-02-05:free', 'openrouter/free'];
+    }
 
 
 
