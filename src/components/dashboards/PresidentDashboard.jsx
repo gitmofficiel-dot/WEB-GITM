@@ -81,7 +81,17 @@ export default function PresidentDashboard() {
       if (docSnap.exists()) setAboutData(docSnap.data());
     });
     const unsubUsers = onSnapshot(collection(db, 'users'), snap => {
-      setAllUsers(snap.docs.map(d => ({id: d.id, ...d.data()})));
+    const unsubUsers = onSnapshot(collection(db, 'users'), snap => {
+      const usersData = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      const roleOrder = { 'president': 1, 'supervisor': 2, 'teacher': 3, 'partner': 4, 'university': 5, 'content_manager': 6, 'member': 7, 'student': 8, 'suspended': 9 };
+      usersData.sort((a, b) => {
+        const orderA = roleOrder[a.role] || 10;
+        const orderB = roleOrder[b.role] || 10;
+        if (orderA !== orderB) return orderA - orderB;
+        return (a.nameLatin || a.name || '').localeCompare(b.nameLatin || b.name || '');
+      });
+      setAllUsers(usersData);
+    });
     });
     return () => { unsubNews(); unsubCourses(); unsubEvents(); unsubGallery(); unsubProjects(); unsubPartners(); unsubAbout(); unsubUsers(); };
   }, []);

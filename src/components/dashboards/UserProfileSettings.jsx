@@ -114,7 +114,6 @@ export default function UserProfileSettings({ currentUser: propUser }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Expanded Form Data
   const [formData, setFormData] = useState({
     nameLatin: currentUser.nameLatin || currentUser.name || '',
     nameAr: currentUser.nameAr || '',
@@ -125,6 +124,26 @@ export default function UserProfileSettings({ currentUser: propUser }) {
     facebook: currentUser.socialLinks?.facebook || '',
     instagram: currentUser.socialLinks?.instagram || '',
   });
+
+  useEffect(() => {
+    if (currentUser) {
+      setFormData(prev => ({
+        ...prev,
+        nameLatin: currentUser.nameLatin || currentUser.name || prev.nameLatin,
+        nameAr: currentUser.nameAr || prev.nameAr,
+        email: currentUser.email || prev.email,
+        bio: currentUser.bio || prev.bio,
+        github: currentUser.socialLinks?.github || prev.github,
+        linkedin: currentUser.socialLinks?.linkedin || prev.linkedin,
+        facebook: currentUser.socialLinks?.facebook || prev.facebook,
+        instagram: currentUser.socialLinks?.instagram || prev.instagram,
+      }));
+      if (currentUser.imageUrl) setProfileImage(currentUser.imageUrl);
+      if (currentUser.skills) setSkills(currentUser.skills);
+      if (currentUser.interests) setInterests(currentUser.interests);
+      if (currentUser.academicPaths) setAcademicPaths(currentUser.academicPaths);
+    }
+  }, [currentUser]);
 
   const [academicPaths, setAcademicPaths] = useState(currentUser.academicPaths || []);
   const [newPath, setNewPath] = useState({ degree: '', startYear: '', startMonth: '', endYear: '', endMonth: '' });
@@ -189,14 +208,26 @@ export default function UserProfileSettings({ currentUser: propUser }) {
   const handleSaveProfile = async () => {
     setSaveStatus('loading');
     try {
-      const profileId = currentUser?.membershipId || currentUser?.uid;
+      const profileId = currentUser?.uid || currentUser?.id;
       if (profileId) {
         let finalImageUrl = currentUser.imageUrl || '';
+        let imageUploadFailed = false;
+        
         if (selectedFile) {
-          finalImageUrl = await uploadToCloudinary(selectedFile, 'image');
+          try {
+            finalImageUrl = await uploadToCloudinary(selectedFile, 'image');
+          } catch (uploadError) {
+            console.error('Cloudinary upload error:', uploadError);
+            imageUploadFailed = true;
+            toast.error(lang === 'ar' 
+              ? 'فشل رفع الصورة (تأكد من إعداد Upload Preset في Cloudinary). سيتم حفظ باقي البيانات.' 
+              : 'Image upload failed (Check Cloudinary Upload Preset). Other data will be saved.');
+          }
         }
 
         const userRef = doc(db, 'users', profileId);
+        const isOfficialRole = ['president', 'supervisor', 'teacher'].includes(currentUser.role);
+          
         await setDoc(userRef, {
           imageUrl: finalImageUrl,
           nameLatin: formData.nameLatin,
@@ -213,9 +244,14 @@ export default function UserProfileSettings({ currentUser: propUser }) {
           academicPaths,
           skills: skills,
           interests: interests,
+          isTeamMember: isOfficialRole || currentUser.isTeamMember || false,
           updatedAt: new Date().toISOString()
         }, { merge: true });
+        
         setSaveStatus('success');
+        if (!imageUploadFailed) {
+          toast.success(lang === 'ar' ? 'تم الحفظ بنجاح' : 'Profile saved successfully');
+        }
       } else {
         await new Promise(resolve => setTimeout(resolve, 1000));
         setSaveStatus('success');
@@ -223,6 +259,7 @@ export default function UserProfileSettings({ currentUser: propUser }) {
       setTimeout(() => setSaveStatus(''), 3000);
     } catch (error) {
       console.error('Error saving profile:', error);
+      toast.error(error.message || 'Error saving profile');
       setSaveStatus('error');
       setTimeout(() => setSaveStatus(''), 3000);
     }

@@ -6,7 +6,7 @@ import {
   signOut, 
   onAuthStateChanged 
 } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
 const AuthContext = createContext();
 
@@ -55,35 +55,44 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    let unsubscribeDoc = null;
+    
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Fetch custom user data from Firestore to get their real role
-        try {
-          const docRef = doc(db, 'users', user.uid);
-          const docSnap = await getDoc(docRef);
-          
+        const docRef = doc(db, 'users', user.uid);
+        unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
           if (docSnap.exists()) {
             setCurrentUser({ ...user, ...docSnap.data() });
           } else {
             setCurrentUser({ ...user, role: 'student', badges: [] });
           }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
+          setLoading(false);
+        }, (error) => {
+          console.error("Error listening to user data:", error);
           setCurrentUser({ ...user, role: 'student', badges: [] });
-        }
+          setLoading(false);
+        });
       } else {
-        // Fallback to local storage for demo accounts
+        if (unsubscribeDoc) {
+          unsubscribeDoc();
+          unsubscribeDoc = null;
+        }
         const saved = localStorage.getItem('gitm_user');
         if (saved) {
           setCurrentUser(JSON.parse(saved));
         } else {
           setCurrentUser(null);
         }
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeDoc) {
+        unsubscribeDoc();
+      }
+    };
   }, []);
 
   const demoLogin = (email, role, name) => {

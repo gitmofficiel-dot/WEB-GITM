@@ -41,10 +41,10 @@ export default function About() {
           const data = docSnap.data();
           const member = {
             id: docSnap.id,
-            name: data.name || data.firstName || 'Unknown',
-            name_ar: data.name || data.firstName || 'مجهول',
+            name: data.nameLatin || data.name || data.firstName || 'Unknown',
+            name_ar: data.nameAr || data.name || data.firstName || 'مجهول',
             role: data.role || 'member',
-            role_ar: data.role || 'عضو',
+            role_ar: data.roleAr || data.role || 'عضو',
             projectsCount: Math.floor(Math.random() * 15) + 1, // Simulated projects count
             image: data.imageUrl || data.photoURL || `https://ui-avatars.com/api/?name=${data.name || 'GITM'}&background=random`,
             socialLinks: data.socialLinks || {}

@@ -14,13 +14,17 @@ export const autoFetchNewsAndEvents = async () => {
     let addedEvents = 0;
 
     // 1. Fetch Global Tech News
-    const globalRes = await fetch(`https://gnews.io/api/v4/search?q="Artificial Intelligence" OR "IoT" OR "Tech"&lang=ar&max=5&apikey=${GNEWS_API_KEY}`);
-    const globalData = await globalRes.json();
+    const globalApiUrl = `https://gnews.io/api/v4/search?q="Artificial Intelligence" OR "IoT" OR "Tech"&lang=ar&max=5&apikey=${GNEWS_API_KEY}`;
+    const globalRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(globalApiUrl)}`);
+    const globalRaw = await globalRes.json();
+    const globalData = globalRaw.contents ? JSON.parse(globalRaw.contents) : globalRaw;
     
     // 2. Fetch National (Morocco) News & Events
     const nationalQuery = '"\u0627\u0644\u0645\u063A\u0631\u0628" AND ("\u062A\u0643\u0646\u0648\u0644\u0648\u062C\u064A\u0627" OR "\u0647\u0627\u0643\u0627\u062B\u0648\u0646" OR "\u0627\u0628\u062A\u0643\u0627\u0631" OR "\u0641\u0639\u0627\u0644\u064A\u0629" OR "\u0630\u0643\u0627\u0621 \u0627\u0635\u0637\u0646\u0627\u0639\u064A")';
-    const nationalRes = await fetch(`https://gnews.io/api/v4/search?q=${encodeURIComponent(nationalQuery)}&lang=ar&country=ma&max=5&apikey=${GNEWS_API_KEY}`);
-    const nationalData = await nationalRes.json();
+    const nationalApiUrl = `https://gnews.io/api/v4/search?q=${encodeURIComponent(nationalQuery)}&lang=ar&country=ma&max=5&apikey=${GNEWS_API_KEY}`;
+    const nationalRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(nationalApiUrl)}`);
+    const nationalRaw = await nationalRes.json();
+    const nationalData = nationalRaw.contents ? JSON.parse(nationalRaw.contents) : nationalRaw;
 
     const processArticles = async (articles, isEvent = false) => {
       if (!articles || !Array.isArray(articles)) return 0;

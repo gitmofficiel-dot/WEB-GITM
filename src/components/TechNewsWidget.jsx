@@ -17,12 +17,14 @@ const TechNewsWidget = () => {
       setError(false);
       try {
         const apiKey = import.meta.env.VITE_GNEWS_API_KEY || 'demo';
-        const url = `https://gnews.io/api/v4/search?q="Artificial Intelligence" OR "AI" OR "IoT" OR "Internet of Things"&lang=${newsLang}&max=5&apikey=${apiKey}`;
+        const apiUrl = `https://gnews.io/api/v4/search?q="Artificial Intelligence" OR "AI" OR "IoT" OR "Internet of Things"&lang=${newsLang}&max=5&apikey=${apiKey}`;
+        const url = `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`;
         
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         
-        const data = await res.json();
+        const rawData = await res.json();
+        const data = rawData.contents ? JSON.parse(rawData.contents) : rawData;
         
         if (data.articles && data.articles.length > 0) {
           const stories = data.articles.map(article => ({
