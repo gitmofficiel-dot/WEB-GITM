@@ -22,7 +22,7 @@ export async function onRequest(context) {
     if (!Array.isArray(messages) || !messages.length || messages.length > 40) {
       return Response.json({ error: 'Invalid messages' }, { status: 400 });
     }
-    const OPENROUTER_API_KEY = env.OPENROUTER_API_KEY;
+    const OPENROUTER_API_KEY = env.OPENROUTER_API_KEY || env.VITE_OPENROUTER_API_KEY;
 
     if (!OPENROUTER_API_KEY) {
       return new Response(JSON.stringify({ error: "Missing API Key on server" }), { status: 500, headers: { "Access-Control-Allow-Origin": "*" } });
