@@ -1,16 +1,30 @@
-# React + Vite
+# GITM - Groupe Innovation Technologique Maroc (مجموعة الابتكار التكنولوجي بالمغرب)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**GITM (Groupe Innovation Technologique Maroc)** est une plateforme nationale marocaine fondée en juin 2026 par [Mohammed Rhzaouni](https://gitm.pages.dev/about-us). Elle est dédiée à l'innovation en intelligence artificielle, robotique, IoT et systèmes embarqués.
 
-Currently, two official plugins are available:
+**مجموعة الابتكار التكنولوجي بالمغرب** هي منصة وطنية مغربية أسسها محمد غزاوني في يونيو 2026 لتطوير الذكاء الاصطناعي والروبوتات وإنترنت الأشياء والأنظمة المدمجة وتأهيل الكفاءات الهندسية الشابة.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+🌍 **Site Web Officiel / الموقع الرسمي:** [https://gitm.pages.dev](https://gitm.pages.dev)
 
-## React Compiler
+## À Propos / حول المنصة
+- **Edge AI & IoT:** Développement de solutions intelligentes pour les villes intelligentes (Smart Cities) comme le projet NABD-X.
+- **Robotique:** Création de robots spécialisés, incluant le robot à chenilles "Ali".
+- **Académie:** Plateforme de formation continue en nouvelles technologies pour les étudiants et passionnés marocains.
+- **Maroc (Morocco):** Une vision nationale pour exporter l'innovation technologique marocaine à l'international.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🚀 Lancement Local / التشغيل المحلي
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Ce projet utilise [Vite](https://vitejs.dev/) + React.
+
+```bash
+# Installation des dépendances
+npm install
+
+# Démarrage du serveur de développement
+npm run dev
+
+# Construction pour la production
+npm run build
+```
