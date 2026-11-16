@@ -43,6 +43,15 @@ export default {
   }
 };
 
+function escapeHtml(str = '') {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 async function handleDynamicSeo(request, env, collection, subCollection, id) {
   // Fetch the default index.html from Cloudflare Pages assets
   const url = new URL(request.url);
@@ -102,20 +111,20 @@ async function handleDynamicSeo(request, env, collection, subCollection, id) {
     return new HTMLRewriter()
       .on('title', {
         element(e) {
-          e.setInnerContent(title);
+          e.setInnerContent(escapeHtml(title));
         }
       })
       .on('head', {
         element(e) {
-          e.append(`<meta name="description" content="${description}">`, { html: true });
-          e.append(`<meta property="og:title" content="${title}">`, { html: true });
-          e.append(`<meta property="og:description" content="${description}">`, { html: true });
-          e.append(`<meta property="og:image" content="${imageUrl}">`, { html: true });
-          e.append(`<meta property="og:url" content="${url.href}">`, { html: true });
+          e.append(`<meta name="description" content="${escapeHtml(description)}">`, { html: true });
+          e.append(`<meta property="og:title" content="${escapeHtml(title)}">`, { html: true });
+          e.append(`<meta property="og:description" content="${escapeHtml(description)}">`, { html: true });
+          e.append(`<meta property="og:image" content="${escapeHtml(imageUrl)}">`, { html: true });
+          e.append(`<meta property="og:url" content="${escapeHtml(url.href)}">`, { html: true });
           e.append(`<meta name="twitter:card" content="summary_large_image">`, { html: true });
-          e.append(`<meta name="twitter:title" content="${title}">`, { html: true });
-          e.append(`<meta name="twitter:description" content="${description}">`, { html: true });
-          e.append(`<meta name="twitter:image" content="${imageUrl}">`, { html: true });
+          e.append(`<meta name="twitter:title" content="${escapeHtml(title)}">`, { html: true });
+          e.append(`<meta name="twitter:description" content="${escapeHtml(description)}">`, { html: true });
+          e.append(`<meta name="twitter:image" content="${escapeHtml(imageUrl)}">`, { html: true });
         }
       })
       .transform(indexResponse);
