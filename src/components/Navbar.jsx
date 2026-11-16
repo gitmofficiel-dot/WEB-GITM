@@ -76,7 +76,7 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    setMobileOpen(false);
+    setMobileOpen(false); setLangDropdown(false); setProfileDropdown(false); setToolsDropdown(false); setSearchOpen(false);
   }, [currentPath]);
 
   // Navigation items using translation keys
@@ -316,7 +316,7 @@ const Navbar = () => {
                         <button 
                           key={code}
                           onClick={() => {changeLanguage(code); setLangDropdown(false)}} 
-                          className={`w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2 ${lang === code ? 'text-gitm-blue font-bold' : ''}`}
+                          className={`w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2 ${lang === code ? 'text-gitm-blue font-bold' : 'text-gray-800 dark:text-gray-100'}`}
                         >
                           <span>{langInfo.flag}</span>
                           <span>{langInfo.name}</span>
