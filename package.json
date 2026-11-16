@@ -41,7 +41,7 @@
     "react-router-dom": "^7.18.1",
     "recharts": "^3.9.1",
     "rss-parser": "^3.13.0",
-    "three": "^0.184.0"
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
