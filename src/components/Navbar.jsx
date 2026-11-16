@@ -312,7 +312,7 @@ const Navbar = () => {
                       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
                       className="absolute top-full mt-2 right-0 w-40 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden py-1"
                     >
-                      {Object.entries(languages).map(([code, langInfo]) => (
+                      {Object.entries(languages).filter(([code]) => code !== 'tzm').map(([code, langInfo]) => (
                         <button 
                           key={code}
                           onClick={() => {changeLanguage(code); setLangDropdown(false)}} 
@@ -479,7 +479,7 @@ const Navbar = () => {
                   {t('nav.chooseLanguage')}
                 </h4>
                 <div className="grid grid-cols-3 gap-2">
-                  {Object.entries(languages).map(([code, langInfo]) => (
+                  {Object.entries(languages).filter(([code]) => code !== 'tzm').map(([code, langInfo]) => (
                     <button 
                       key={code}
                       onClick={() => changeLanguage(code)} 
