@@ -32,8 +32,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'Outfit', 'Cairo', 'sans-serif'],
-        heading: ['Outfit', 'Cairo', 'sans-serif'],
+        sans: ['Inter', 'Outfit', 'Cairo', 'Noto Sans Tifinagh', 'sans-serif'],
+        heading: ['Outfit', 'Cairo', 'Noto Sans Tifinagh', 'sans-serif'],
       },
       boxShadow: {
         '3d': '0 20px 40px -10px rgba(0,0,0,0.2), 0 0 20px rgba(193, 39, 45, 0.05)',
