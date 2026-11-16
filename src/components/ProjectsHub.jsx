@@ -117,6 +117,10 @@ const ProjectsHub = () => {
                   <img 
                     src={proj.coverImage || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80'} 
                     alt={getLocalized(proj, 'title')} 
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80';
+                      }}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   
