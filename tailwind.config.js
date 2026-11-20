@@ -27,8 +27,8 @@ export default {
 
           textDark: '#f8fafc',
           textLight: '#111827',
-          mutedDark: '#9ca3af',
-          mutedLight: '#4b5563'
+          mutedDark: '#d1d5db',
+          mutedLight: '#374151'
         }
       },
       fontFamily: {
