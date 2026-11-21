@@ -1,20 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
-import { Activity, Users, MousePointerClick, Clock, TrendingUp, Monitor, RefreshCw } from 'lucide-react';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { Activity, Users, MousePointerClick, Clock, Monitor } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../config/firebase';
-
-const baseTrafficData = [
-  { name: 'Mon', active: 420, new: 240 },
-  { name: 'Tue', active: 510, new: 320 },
-  { name: 'Wed', active: 680, new: 450 },
-  { name: 'Thu', active: 590, new: 390 },
-  { name: 'Fri', active: 780, new: 520 },
-  { name: 'Sat', active: 890, new: 610 },
-  { name: 'Sun', active: 940, new: 730 },
-];
 
 export default function VisitorAnalytics() {
   const { lang } = useLanguage();
@@ -51,7 +41,7 @@ export default function VisitorAnalytics() {
           totalProjects: projectsSnap.size || 0,
           totalArticles: articlesSnap.size || 0
         });
-setEventData(eventsList.slice(0, 5));
+        setEventData(eventsList.slice(0, 5));
       } catch (err) {
         console.warn('Error fetching live metrics:', err);
       } finally {
@@ -63,17 +53,17 @@ setEventData(eventsList.slice(0, 5));
   }, []);
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.4 } })
+    hidden: { opacity: 0, y: 16 },
+    visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.35 } })
   };
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-[#181825] border border-slate-700 p-3 rounded-xl shadow-xl">
-          <p className="text-white font-bold mb-2">{label}</p>
+          <p className="text-white font-bold text-xs sm:text-sm mb-1.5">{label}</p>
           {payload.map((entry, index) => (
-            <p key={index} style={{ color: entry.color }} className="text-sm font-medium">
+            <p key={index} style={{ color: entry.color }} className="text-xs sm:text-sm font-medium">
               {entry.name}: {entry.value}
             </p>
           ))}
@@ -84,21 +74,22 @@ setEventData(eventsList.slice(0, 5));
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center flex-wrap gap-4">
-        <div>
-          <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
-            <Activity className="text-rose-500" /> 
-            {lang === 'ar' ? 'تحليلات المنصة وحركة الزوار' : 'Live Platform & Visitor Analytics'}
+    <div className="space-y-5 md:space-y-6 w-full min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 md:gap-4">
+        <div className="min-w-0">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+            <Activity className="text-rose-500 shrink-0" size={22} />
+            <span>{lang === 'ar' ? 'تحليلات المنصة وحركة الزوار' : 'Live Platform & Visitor Analytics'}</span>
           </h3>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1">
             {lang === 'ar' ? 'تتبع تفاعل المستخدمين والطلاب في الوقت الفعلي مع السحابة' : 'Real-time analytics and engagement metrics across GITM platform'}
           </p>
         </div>
-        <select 
-          value={timeRange} 
+        <select
+          aria-label={lang === 'ar' ? 'الفترة الزمنية' : 'Time range'}
+          value={timeRange}
           onChange={(e) => setTimeRange(e.target.value)}
-          className="bg-white dark:bg-[#181825] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-sm font-medium focus:outline-none focus:border-rose-500"
+          className="w-full sm:w-auto min-h-[44px] bg-white dark:bg-[#181825] border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white px-4 py-2 rounded-xl text-base sm:text-sm font-medium focus:outline-none focus:border-rose-500"
         >
           <option value="24h">{lang === 'ar' ? 'آخر 24 ساعة' : 'Last 24 Hours'}</option>
           <option value="7d">{lang === 'ar' ? 'آخر 7 أيام' : 'Last 7 Days'}</option>
@@ -106,55 +97,73 @@ setEventData(eventsList.slice(0, 5));
         </select>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards — Single column on 375px mobile, 2 on sm, 4 on lg */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { icon: Users, label: lang === 'ar' ? 'الأعضاء المسجلين' : 'Registered Members', value: stats.totalMembers, trend: '+18%', color: 'from-blue-500 to-cyan-500' },
-          { icon: MousePointerClick, label: lang === 'ar' ? 'المشاريع المنشورة' : 'Active Projects', value: stats.totalProjects, trend: '+25%', color: 'from-emerald-500 to-teal-500' },
-          { icon: Clock, label: lang === 'ar' ? 'الفعاليات والمعارض' : 'Events & Exhibitions', value: stats.totalEvents, trend: '+12%', color: 'from-purple-500 to-indigo-500' },
-          { icon: Monitor, label: lang === 'ar' ? 'المقالات والأخبار' : 'Published Articles', value: stats.totalArticles, trend: '+30%', color: 'from-orange-500 to-rose-500' },
+          { icon: Users, label: lang === 'ar' ? 'الأعضاء المسجلين' : 'Registered Members', value: stats.totalMembers, color: 'from-blue-500 to-cyan-500' },
+          { icon: MousePointerClick, label: lang === 'ar' ? 'المشاريع المنشورة' : 'Active Projects', value: stats.totalProjects, color: 'from-emerald-500 to-teal-500' },
+          { icon: Clock, label: lang === 'ar' ? 'الفعاليات والمعارض' : 'Events & Exhibitions', value: stats.totalEvents, color: 'from-purple-500 to-indigo-500' },
+          { icon: Monitor, label: lang === 'ar' ? 'المقالات والأخبار' : 'Published Articles', value: stats.totalArticles, color: 'from-orange-500 to-rose-500' },
         ].map((kpi, i) => (
-          <motion.div key={i} custom={i} variants={cardVariants} initial="hidden" animate="visible"
-            className="glass-card p-5 rounded-2xl border border-slate-200/50 dark:border-slate-800 relative overflow-hidden"
+          <motion.div
+            key={i}
+            custom={i}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            className="glass-card p-4 sm:p-5 rounded-2xl border border-slate-200/70 dark:border-slate-800 relative overflow-hidden"
           >
-            
-            <div className="flex justify-between items-start mb-4">
+            <div className="flex justify-between items-start mb-3">
               <div className={`p-2.5 rounded-xl bg-gradient-to-br ${kpi.color} text-white`}>
                 <kpi.icon size={20} />
               </div>
-      
             </div>
             <div>
-              <p className="text-3xl font-bold text-[#1e3a5f] dark:text-white mb-1">{kpi.value}</p>
-              <p className="text-sm font-medium text-slate-500">{kpi.label}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-[#1e3a5f] dark:text-white mb-1">
+                {loading ? '...' : kpi.value}
+              </p>
+              <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">{kpi.label}</p>
             </div>
           </motion.div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
-      
-
-        {/* Secondary Chart */}
-        <motion.div variants={cardVariants} custom={5} initial="hidden" animate="visible" className="glass-card p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800">
-          <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white mb-6 flex items-center gap-2">
-            <Activity className="text-rose-500" size={18} />
-            {lang === 'ar' ? 'تفاعل الفعاليات والمشاركات' : 'Events & Workshops Engagement'}
+      {/* Full-Width Responsive Chart Card */}
+      <div className="grid grid-cols-1 gap-6 w-full min-w-0">
+        <motion.div
+          variants={cardVariants}
+          custom={5}
+          initial="hidden"
+          animate="visible"
+          className="glass-card p-4 sm:p-6 rounded-2xl border border-slate-200/70 dark:border-slate-800 w-full min-w-0"
+        >
+          <h4 className="font-bold text-base sm:text-lg text-[#1e3a5f] dark:text-white mb-5 flex items-center gap-2">
+            <Activity className="text-rose-500 shrink-0" size={18} />
+            <span>{lang === 'ar' ? 'تفاعل الفعاليات والمشاركات' : 'Events & Workshops Engagement'}</span>
           </h4>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={eventData} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={true} vertical={false} opacity={0.2} />
-                <XAxis type="number" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} hide />
-                <YAxis dataKey="name" type="category" stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} width={90} />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-                <Bar dataKey="views" name={lang === 'ar' ? 'مشاهدات' : 'Views'} fill="#f43f5e" radius={[0, 4, 4, 0]} barSize={12} />
-                <Bar dataKey="clicks" name={lang === 'ar' ? 'تسجيلات' : 'Registrations'} fill="#f59e0b" radius={[0, 4, 4, 0]} barSize={12} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <p className="text-xs text-slate-500 text-center mt-4">
+
+          {loading ? (
+            <div className="h-[240px] sm:h-[300px] w-full rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+          ) : eventData.length === 0 ? (
+            <div className="h-[180px] w-full flex items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/70 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-300 text-center px-4">
+              {lang === 'ar' ? 'لا توجد بيانات تفاعل للفعاليات حالياً.' : 'No event engagement data available yet.'}
+            </div>
+          ) : (
+            <div className="h-[240px] sm:h-[300px] w-full min-w-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={eventData} layout="vertical" margin={{ top: 4, right: 12, left: 4, bottom: 4 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={true} vertical={false} opacity={0.2} />
+                  <XAxis type="number" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} hide />
+                  <YAxis dataKey="name" type="category" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} width={88} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+                  <Bar dataKey="views" name={lang === 'ar' ? 'مشاهدات' : 'Views'} fill="#f43f5e" radius={[0, 4, 4, 0]} barSize={12} />
+                  <Bar dataKey="clicks" name={lang === 'ar' ? 'تسجيلات' : 'Registrations'} fill="#f59e0b" radius={[0, 4, 4, 0]} barSize={12} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          <p className="text-xs text-slate-600 dark:text-slate-400 text-center mt-4">
             {lang === 'ar' ? 'مزامنة حية مع قاعدة بيانات الفعاليات' : 'Live synchronized event participation metrics'}
           </p>
         </motion.div>
