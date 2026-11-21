@@ -13,7 +13,7 @@ export const NotificationProvider = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    if (!currentUser) {
+    if (!currentUser || !currentUser.uid) {
       setNotifications([]);
       setUnreadCount(0);
       return;
