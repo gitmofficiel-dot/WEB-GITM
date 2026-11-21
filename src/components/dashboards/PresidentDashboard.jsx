@@ -529,10 +529,10 @@ export default function PresidentDashboard() {
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <StatCard title={lang === 'ar' ? 'إجمالي الأعضاء والطلاب' : 'Total Registered'} value={firebaseUsers.length.toString()} icon={Users} color="blue" trend="+12%" />
-                  <StatCard title={lang === 'ar' ? 'المشاريع والفعاليات' : 'Events & Projects'} value={events.length.toString()} icon={Activity} color="emerald" trend="+5%" />
-                  <StatCard title={lang === 'ar' ? 'الدورات التدريبية' : 'Courses'} value={courses.length.toString()} icon={BookOpen} color="purple" trend="+18%" />
-                  <StatCard title={lang === 'ar' ? 'المقالات والأخبار' : 'News Articles'} value={news.length.toString()} icon={Newspaper} color="pink" trend="+2%" />
+                  <StatCard title={lang === 'ar' ? 'إجمالي الأعضاء والطلاب' : 'Total Registered'} value={firebaseUsers.length.toString()} icon={Users} color="blue" />
+                  <StatCard title={lang === 'ar' ? 'المشاريع والفعاليات' : 'Events & Projects'} value={((events?.length || 0) + (projects?.length || 0)).toString()} icon={Activity} color="emerald" />
+                  <StatCard title={lang === 'ar' ? 'الدورات التدريبية' : 'Courses'} value={courses.length.toString()} icon={BookOpen} color="purple" />
+                  <StatCard title={lang === 'ar' ? 'المقالات والأخبار' : 'News Articles'} value={news.length.toString()} icon={Newspaper} color="pink" />
                 </div>
 
                 <div className="glass-card rounded-3xl p-5 md:p-8 border-pink-500/30 shadow-sm bg-gradient-to-br from-white to-pink-50 dark:from-slate-900 dark:to-pink-950/20 relative overflow-hidden">
