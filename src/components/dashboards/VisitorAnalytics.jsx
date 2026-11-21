@@ -46,10 +46,10 @@ export default function VisitorAnalytics() {
         }));
 
         setStats({
-          totalMembers: usersSnap.size || 24,
-          totalEvents: eventsSnap.size || 8,
-          totalProjects: projectsSnap.size || 15,
-          totalArticles: articlesSnap.size || 12
+          totalMembers: usersSnap.size || 0,
+          totalEvents: eventsSnap.size || 0,
+          totalProjects: projectsSnap.size || 0,
+          totalArticles: articlesSnap.size || 0
         });
 
         if (eventsList.length > 0) {
