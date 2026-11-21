@@ -24,7 +24,7 @@ const CourseCard = ({ course, lang }) => {
   const courseTitle = course.title?.[lang] || course.title?.en || course.title_ar || course.title;
 
   return (
-    <div className="w-[85vw] max-w-[300px] md:w-[340px] md:max-w-[340px] snap-center flex-shrink-0 group">
+    <div className="w-full md:w-[340px] md:max-w-[340px] snap-center min-w-0 flex-shrink-0 group">
       <div className="glass-card bg-white dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-cyan-500/10 transition-all duration-300 hover:-translate-y-1 h-full flex flex-col">
 
         {/* 16:9 Course Cover with Unified Fallback Placeholder */}
@@ -64,7 +64,7 @@ const CourseCard = ({ course, lang }) => {
           </h3>
 
           {/* Instructor + Rating */}
-          <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-2 mb-4">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className={`w-9 h-9 shrink-0 rounded-full bg-gradient-to-br ${course.avatarGradient} flex items-center justify-center text-white font-bold text-xs shadow ring-2 ring-white dark:ring-slate-700`}>
                 {course.initials}
