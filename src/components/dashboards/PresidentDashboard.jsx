@@ -758,8 +758,8 @@ export default function PresidentDashboard() {
 
                   {/* Horizontal Scroll Container for Table */}
                   <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-                    <table className="w-full min-w-[680px] text-start border-collapse">
-                      <thead>
+                    <table className="block sm:table w-full sm:min-w-[680px] text-start border-collapse">
+                      <thead className="hidden sm:table-header-group">
                         <tr className="border-b-2 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 uppercase tracking-wider text-xs">
                           <th className="p-3 font-bold text-start">User</th>
                           <th className="p-3 font-bold text-start">Current Role</th>
@@ -767,34 +767,34 @@ export default function PresidentDashboard() {
                           <th className="p-3 font-bold text-end">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                      <tbody className="block sm:table-row-group divide-y divide-slate-100 dark:divide-slate-800">
                         {allUsers.map(m => (
-                          <tr key={m.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors ${m.role === 'suspended' ? 'opacity-50' : ''}`}>
-                            <td className="p-3">
+                          <tr key={m.id} className={`flex flex-col gap-2 py-3 sm:py-0 sm:table-row hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors ${m.role === 'suspended' ? 'opacity-50' : ''}`}>
+                            <td className="block sm:table-cell px-1 py-1 sm:p-3">
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 text-white flex items-center justify-center font-bold shadow-sm">
                                   {m.name ? m.name.charAt(0).toUpperCase() : '?'}
                                 </div>
-                                <div className="min-w-0">
-                                  <p className="font-bold text-sm text-[#1e3a5f] dark:text-white flex items-center gap-2">
-                                    <span className="truncate">{m.name}</span>
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-bold text-sm text-[#1e3a5f] dark:text-white flex flex-wrap items-center gap-x-2 gap-y-1">
+                                    <span className="break-words">{m.name}</span>
                                     {m.membershipId && <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full border border-amber-200 shrink-0">{m.membershipId}</span>}
                                   </p>
                                   <p className="text-xs text-slate-600 dark:text-slate-400 truncate" dir="ltr">{m.email}</p>
                                 </div>
                               </div>
                             </td>
-                            <td className="p-3">
+                            <td className="block sm:table-cell px-1 py-1 sm:p-3">
                               <span className={`px-2.5 py-1 text-xs rounded-md uppercase font-bold ${
                                 m.role === 'student' ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200' :
                                   m.role === 'suspended' ? 'bg-red-100 text-red-700' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                               }`}>{m.role}</span>
                             </td>
-                            <td className="p-3">
+                            <td className="block sm:table-cell px-1 py-1 sm:p-3">
                               <select
                                 value={m.role || 'student'}
                                 onChange={(e) => updateUserRole(m.id, e.target.value)}
-                                className="min-h-[44px] bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer"
+                                className="w-full sm:w-auto min-h-[44px] bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer"
                               >
                                 <option value="student">Student (Default)</option>
                                 <option value="member">Member</option>
@@ -807,8 +807,8 @@ export default function PresidentDashboard() {
                                 <option value="suspended" className="text-red-500 font-bold">Suspend Account</option>
                               </select>
                             </td>
-                            <td className="p-3 text-end">
-                              <div className="flex justify-end gap-2 items-center">
+                            <td className="block sm:table-cell px-1 py-1 sm:p-3 text-start sm:text-end">
+                              <div className="flex flex-wrap sm:justify-end gap-2 items-center">
                                 <label className="min-h-[44px] flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors whitespace-nowrap">
                                   <input
                                     type="checkbox"
