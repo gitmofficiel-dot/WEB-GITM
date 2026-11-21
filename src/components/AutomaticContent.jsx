@@ -101,7 +101,7 @@ export default function AutomaticContent({ kind }) {
             <p className="text-sm leading-7 text-slate-600 dark:text-slate-300" dir="auto">{(lang === 'ar' && item.summaryAr) || item.summary || t.noSummary}</p>
             {item.license && <a href={item.licenseUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-500 underline">{item.license} · {lang === 'ar' ? 'بيانات منسقة ومختصرة' : 'Formatted and summarized data'}</a>}
             {item.location && <p className="text-sm text-slate-500" dir="auto">{item.location}</p>}
-            <a href={item.url} target="_blank" rel="noopener noreferrer" className="mt-auto pt-3 font-bold text-teal-700 dark:text-teal-300 underline underline-offset-4">{t.read}<span className="sr-only">: {item.title}</span></a>
+            <a href={item.url} target="_blank" rel="noopener noreferrer" className="mt-auto pt-3 font-bold text-teal-700 dark:text-teal-300 underline underline-offset-4">{t.read}</a>
           </div>
         </article>)}
       </div>
