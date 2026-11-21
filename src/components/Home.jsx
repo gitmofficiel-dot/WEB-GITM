@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { ArrowRight, Newspaper, Calendar, GraduationCap, Users, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 import Hero from './Hero';
 import LatestNews from './LatestNews';
@@ -71,6 +72,7 @@ const Section = ({ title, subtitle, icon: Icon, children, bgClass, linkText, lin
 };
 
 export default function Home() {
+  const { currentUser } = useAuth();
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
 
@@ -159,14 +161,25 @@ export default function Home() {
             </ul>
           </div>
           <div className="flex flex-col gap-3 md:gap-4 w-full md:w-auto">
-            <button
-              type="button"
-              onClick={() => navigate('/register')}
-              className="w-full md:w-auto min-h-[48px] bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]"
-            >
-              <UserPlus size={20} className="md:w-[22px] md:h-[22px]" />
-              <span>{lang === 'ar' ? 'سجل كعضو جديد' : 'Register as a New Member'}</span>
-            </button>
+            {currentUser ? (
+              <button
+                type="button"
+                onClick={() => navigate('/dashboard')}
+                className="w-full md:w-auto min-h-[48px] bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg active:scale-[0.98]"
+              >
+                <UserPlus size={20} className="md:w-[22px] md:h-[22px]" />
+                <span>{lang === 'ar' ? 'أنت عضو في GITM، افتح لوحة التحكم' : lang === 'fr' ? 'Vous êtes membre GITM, ouvrir le tableau de bord' : 'You are a GITM member, open your dashboard'}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => navigate('/register')}
+                className="w-full md:w-auto min-h-[48px] bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]"
+              >
+                <UserPlus size={20} className="md:w-[22px] md:h-[22px]" />
+                <span>{lang === 'ar' ? 'سجل كعضو جديد' : 'Register as a New Member'}</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => navigate('/contact')}
