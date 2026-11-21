@@ -37,7 +37,7 @@ export default function Footer() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-cyan-900/20 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-8 md:mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12 mb-6 md:mb-16">
 
           {/* Brand & About */}
           <div className="space-y-4 md:space-y-6">
@@ -93,10 +93,10 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4 md:mb-6 border-b border-slate-700 pb-2 inline-block">
+            <h3 className="text-white font-bold text-lg mb-3 md:mb-6 border-b border-slate-700 pb-2 inline-block">
               {lang === 'ar' ? 'روابط سريعة' : 'Quick Links'}
             </h3>
-            <ul className="grid grid-cols-2 sm:grid-cols-1 gap-1 md:space-y-2.5">
+            <ul className="grid grid-cols-2 sm:grid-cols-1 gap-x-4 gap-y-0 md:space-y-2.5">
               {[
                 { key: 'home', path: '/', label: lang === 'ar' ? 'الرئيسية' : 'Home' },
                 { key: 'news', path: '/news', label: lang === 'ar' ? 'الأخبار' : 'News' },
@@ -108,7 +108,7 @@ export default function Footer() {
                   <button
                     type="button"
                     onClick={() => navigate(link.path)}
-                    className="min-h-[44px] md:min-h-0 text-slate-300 hover:text-cyan-400 transition-colors flex items-center gap-2 group text-sm"
+                    className="min-h-[40px] md:min-h-0 text-slate-300 hover:text-cyan-400 transition-colors flex items-center gap-2 group text-sm"
                   >
                     <ArrowRight size={14} className="hidden md:block opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all rtl:rotate-180" />
                     <span>{link.label}</span>
@@ -120,7 +120,7 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4 md:mb-6 border-b border-slate-700 pb-2 inline-block">
+            <h3 className="text-white font-bold text-lg mb-3 md:mb-6 border-b border-slate-700 pb-2 inline-block">
               {lang === 'ar' ? 'تواصل معنا' : 'Contact Us'}
             </h3>
             <ul className="space-y-3.5">
@@ -141,7 +141,7 @@ export default function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4 md:mb-6 border-b border-slate-700 pb-2 inline-block">
+            <h3 className="text-white font-bold text-lg mb-3 md:mb-6 border-b border-slate-700 pb-2 inline-block">
               {lang === 'ar' ? 'النشرة البريدية' : 'Newsletter'}
             </h3>
             <p className="text-slate-300 text-sm mb-4">
