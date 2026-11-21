@@ -41,8 +41,8 @@ export default function VisitorAnalytics() {
 
         const eventsList = eventsSnap.docs.map(doc => ({
           name: doc.data().title_en || doc.data().title_ar || doc.data().title || 'Event',
-          views: doc.data().views || Math.floor(Math.random() * 2000 + 1500),
-          clicks: doc.data().attendees || Math.floor(Math.random() * 400 + 100)
+          views: doc.data().views || 0,
+          clicks: doc.data().attendees || 0
         }));
 
         setStats({
@@ -51,16 +51,7 @@ export default function VisitorAnalytics() {
           totalProjects: projectsSnap.size || 0,
           totalArticles: articlesSnap.size || 0
         });
-
-        if (eventsList.length > 0) {
-          setEventData(eventsList.slice(0, 5));
-        } else {
-          setEventData([
-            { name: 'AI Hackathon', views: 3200, clicks: 840 },
-            { name: 'IoT Workshop', views: 2400, clicks: 520 },
-            { name: 'Robotics Demo', views: 1890, clicks: 430 }
-          ]);
-        }
+setEventData(eventsList.slice(0, 5));
       } catch (err) {
         console.warn('Error fetching live metrics:', err);
       } finally {
@@ -131,9 +122,7 @@ export default function VisitorAnalytics() {
               <div className={`p-2.5 rounded-xl bg-gradient-to-br ${kpi.color} text-white`}>
                 <kpi.icon size={20} />
               </div>
-              <span className={`text-xs font-bold px-2 py-1 rounded-lg ${kpi.trend.startsWith('+') ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400'}`}>
-                {kpi.trend}
-              </span>
+      
             </div>
             <div>
               <p className="text-3xl font-bold text-[#1e3a5f] dark:text-white mb-1">{kpi.value}</p>
@@ -144,36 +133,8 @@ export default function VisitorAnalytics() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Chart */}
-        <motion.div variants={cardVariants} custom={4} initial="hidden" animate="visible" className="lg:col-span-2 glass-card p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800">
-          <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white mb-6 flex items-center gap-2">
-            <TrendingUp className="text-cyan-500" size={18} />
-            {lang === 'ar' ? 'حركة مرور المنصة وتفاعل الأعضاء' : 'Platform Traffic & Member Interactions'}
-          </h4>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={baseTrafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorActive" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorNew" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} opacity={0.2} />
-                <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
-                <Area type="monotone" name={lang === 'ar' ? 'تفاعلات الأعضاء' : 'Active Interactions'} dataKey="active" stroke="#06b6d4" strokeWidth={3} fillOpacity={1} fill="url(#colorActive)" />
-                <Area type="monotone" name={lang === 'ar' ? 'زيارات جديدة' : 'New Page Views'} dataKey="new" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorNew)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
+      
+      
 
         {/* Secondary Chart */}
         <motion.div variants={cardVariants} custom={5} initial="hidden" animate="visible" className="glass-card p-6 rounded-2xl border border-slate-200/50 dark:border-slate-800">
