@@ -132,11 +132,13 @@ const Navbar = () => {
               onClick={() => navigate('/')}
               className="flex items-center gap-3 group min-h-[44px]"
             >
-              <img
-                src="/logo.png"
-                alt="GITM Logo"
-                className="h-9 md:h-12 w-auto object-contain bg-transparent group-hover:scale-105 transition-transform dark:invert dark:hue-rotate-180 dark:mix-blend-screen"
-              />
+              <span className="inline-flex items-center justify-center bg-white rounded-xl p-1 md:p-1.5 shadow-sm">
+                <img
+                  src="/logo.png"
+                  alt="GITM Logo"
+                  className="h-8 md:h-10 w-auto object-contain group-hover:scale-105 transition-transform"
+                />
+              </span>
             </button>
           </div>
 
@@ -471,11 +473,13 @@ const Navbar = () => {
             >
               <div className="px-4 h-16 shrink-0 flex justify-between items-center border-b border-gray-200 dark:border-gitm-borderDark">
                 <div className="flex items-center gap-2.5">
-                  <img
-                    src="/logo.png"
-                    alt="GITM"
-                    className="h-8 w-auto bg-transparent dark:invert dark:hue-rotate-180 dark:mix-blend-screen object-contain"
-                  />
+                  <span className="inline-flex items-center justify-center bg-white rounded-xl p-1 shadow-sm">
+                    <img
+                      src="/logo.png"
+                      alt="GITM"
+                      className="h-7 w-auto object-contain"
+                    />
+                  </span>
                   <span className="font-bold text-lg tracking-tight">GITM</span>
                 </div>
                 <button
@@ -700,4 +704,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
