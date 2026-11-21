@@ -102,7 +102,7 @@ export default function TeamShowcase() {
         <div className="grid grid-cols-1 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
           {[1, 2, 3, 4].map((n) => (
             <div key={n} className="rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 animate-pulse">
-              <div className="aspect-square sm:aspect-[4/3] bg-slate-200 dark:bg-slate-700" />
+              <div className="aspect-[2/1] max-h-36 sm:max-h-none sm:aspect-[4/3] bg-slate-200 dark:bg-slate-700" />
               <div className="p-4 space-y-2">
                 <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
                 <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
@@ -124,7 +124,7 @@ export default function TeamShowcase() {
                 onClick={() => navigate(`/profile/${member.id}`)}
                 className="tilt-card group overflow-hidden flex flex-col shadow-soft cursor-pointer hover:shadow-2xl transition-shadow max-w-[400px] mx-auto w-full sm:max-w-none"
               >
-                <div className="relative aspect-square sm:aspect-[4/3] w-full overflow-hidden bg-gray-100 dark:bg-[#1a1a1a]">
+                <div className="relative aspect-[2/1] max-h-36 sm:max-h-none sm:aspect-[4/3] w-full overflow-hidden bg-gray-100 dark:bg-[#1a1a1a]">
                   <MemberAvatar src={member.image} alt={member.nameEn} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
