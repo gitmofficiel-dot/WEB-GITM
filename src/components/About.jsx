@@ -11,7 +11,7 @@ const MemberCardImage = ({ src, alt }) => {
   const [failed, setFailed] = useState(false);
 
   return (
-    <div className="aspect-square md:aspect-[4/5] overflow-hidden relative bg-gradient-to-br from-slate-200 via-slate-100 to-blue-100 dark:from-slate-800 dark:via-slate-900 dark:to-blue-950">
+    <div className="aspect-[2/1] max-h-40 md:max-h-none md:aspect-[4/5] overflow-hidden relative bg-gradient-to-br from-slate-200 via-slate-100 to-blue-100 dark:from-slate-800 dark:via-slate-900 dark:to-blue-950">
       {!loaded && !failed && src && (
         <div className="absolute inset-0 animate-pulse bg-slate-200 dark:bg-slate-800" />
       )}
