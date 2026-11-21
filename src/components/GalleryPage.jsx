@@ -1,10 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, X, ZoomIn, MapPin, Calendar, Loader2 } from 'lucide-react';
+import { Camera, X, ZoomIn, MapPin, Calendar } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../config/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import Pagination from './ui/Pagination';
+
+const GalleryTileImage = ({ src, alt }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setLoaded(false);
+    setFailed(false);
+  }, [src]);
+
+  return (
+    <div className="relative w-full h-full bg-gradient-to-br from-teal-500/15 via-cyan-500/15 to-blue-600/20 dark:from-teal-950/60 dark:via-slate-800 dark:to-cyan-950/50">
+      {!loaded && !failed && src && (
+        <div className="absolute inset-0 animate-pulse bg-slate-200 dark:bg-slate-800" />
+      )}
+      {src && !failed ? (
+        <img
+          src={src}
+          alt={alt}
+          onLoad={() => setLoaded(true)}
+          onError={() => setFailed(true)}
+          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${
+            loaded ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center text-teal-700 dark:text-cyan-300">
+          <div className="w-11 h-11 rounded-2xl bg-white/85 dark:bg-slate-900/80 flex items-center justify-center shadow-sm border border-teal-200/70 dark:border-cyan-500/30">
+            <Camera size={22} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function GalleryPage() {
   const { lang } = useLanguage();
@@ -24,7 +59,7 @@ export default function GalleryPage() {
           id: doc.id,
           ...doc.data()
         }));
-        
+
         if (fetchedGallery.length > 0) {
           setGallery(fetchedGallery);
         } else {
@@ -65,56 +100,59 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className="min-h-screen grid-bg py-12 md:py-24 px-4 md:px-12 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen grid-bg pt-24 pb-16 md:py-28 px-4 md:px-12 relative overflow-hidden" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto relative z-10">
-        
+
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-start md:text-center mb-8 md:mb-14">
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-card border border-teal-500/30 mb-6"
+            className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-500/30 mb-4 md:mb-6"
           >
-            <Camera className="w-5 h-5 text-teal-400" />
-            <span className="font-sans font-bold tracking-tight text-teal-300 font-medium tracking-wide">
+            <Camera className="w-4 h-4 md:w-5 md:h-5 text-teal-600 dark:text-teal-400" />
+            <span className="font-sans font-bold text-xs sm:text-sm text-teal-700 dark:text-teal-300 tracking-wide">
               {lang === 'ar' ? 'معرض الصور' : lang === 'fr' ? 'Notre Galerie' : 'Our Gallery'}
             </span>
           </motion.div>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-3xl md:text-6xl font-bold mb-4 md:mb-6 font-sans font-bold tracking-tight gradient-text"
+            className="text-2xl sm:text-3xl md:text-6xl font-bold mb-3 md:mb-6 font-sans tracking-tight text-slate-900 dark:text-white leading-tight"
           >
-            {lang === 'ar' ? 'التقاط الابتكار' : lang === 'fr' ? 'Capturer l\'Innovation' : 'Capturing Innovation'}
+            {lang === 'ar' ? 'التقاط الابتكار' : lang === 'fr' ? "Capturer l'Innovation" : 'Capturing Innovation'}
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg"
+            className="text-slate-700 dark:text-slate-300 max-w-2xl md:mx-auto text-sm sm:text-base md:text-lg leading-relaxed"
           >
-            {lang === 'ar' ? 'استكشف اللحظات من فعالياتنا ومشاريعنا الابتكارية عبر المغرب.' : 
-             lang === 'fr' ? 'Explorez les moments de nos événements et projets innovants à travers le Maroc.' : 
-             'Explore moments from our events and innovative projects across Morocco.'}
+            {lang === 'ar'
+              ? 'استكشف اللحظات من فعالياتنا ومشاريعنا الابتكارية عبر المغرب.'
+              : lang === 'fr'
+                ? 'Explorez les moments de nos événements et projets innovants à travers le Maroc.'
+                : 'Explore moments from our events and innovative projects across Morocco.'}
           </motion.p>
         </div>
 
-        {/* Filters */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+        {/* Scrollable Filter Chips (>=44px touch targets) */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex flex-wrap justify-center gap-3 mb-12"
+          transition={{ delay: 0.2 }}
+          className="filter-scroll md:flex-wrap md:justify-center pb-2 mb-6 md:mb-12"
         >
           {filters.map((f) => (
             <button
               key={f.id}
+              type="button"
               onClick={() => { setFilter(f.id); setCurrentPage(1); }}
-              className={`px-5 py-2 rounded-full font-medium transition-all duration-300 ${
-                filter === f.id 
-                  ? 'bg-teal-500 text-white shadow-sm' 
-                  : 'glass text-slate-600 dark:text-slate-300 hover:text-teal-300 hover:bg-teal-500/10'
+              className={`min-h-[44px] px-4 md:px-5 py-2 rounded-full text-xs sm:text-sm font-bold border whitespace-nowrap transition-all duration-300 ${
+                filter === f.id
+                  ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
+                  : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-300'
               }`}
             >
               {f.label[lang] || f.label.en}
@@ -122,55 +160,69 @@ export default function GalleryPage() {
           ))}
         </motion.div>
 
-        {/* Gallery Grid */}
+        {/* Gallery Grid — 2 columns on mobile (1:1), 3 on desktop (4:3), with matching Skeleton */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-12 h-12 text-teal-400 animate-spin mb-4" />
-            <p className="text-teal-300 font-sans font-bold tracking-tight animate-pulse">
-              {lang === 'ar' ? 'جاري التحميل...' : lang === 'fr' ? 'Chargement...' : 'Loading...'}
-            </p>
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div
+                key={n}
+                className="aspect-square md:aspect-[4/3] rounded-xl md:rounded-2xl overflow-hidden bg-slate-200 dark:bg-slate-800 animate-pulse border border-slate-200/70 dark:border-slate-700/70"
+              />
+            ))}
           </div>
         ) : currentGallery.length === 0 ? (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass-card max-w-2xl mx-auto p-12 text-center rounded-2xl border border-teal-500/30"
+            className="bg-white dark:bg-slate-900 max-w-2xl mx-auto p-8 md:p-12 text-center rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm"
           >
-            <Camera className="w-16 h-16 text-slate-500 mx-auto mb-6 opacity-50" />
-            <h3 className="text-2xl font-sans font-bold tracking-tight text-white mb-2">{emptyMessage[lang] || emptyMessage.en}</h3>
+            <Camera className="w-12 h-12 md:w-16 md:h-16 text-slate-400 mx-auto mb-4 opacity-70" />
+            <h3 className="text-lg md:text-2xl font-sans font-bold tracking-tight text-slate-900 dark:text-white">
+              {emptyMessage[lang] || emptyMessage.en}
+            </h3>
           </motion.div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <motion.div layout className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
             <AnimatePresence>
               {currentGallery.map((item) => (
-                <motion.div
+                <motion.button
+                  type="button"
                   layout
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.3 }}
                   key={item.id}
-                  className="group relative rounded-2xl overflow-hidden glass-card card-3d cursor-pointer h-72"
+                  className="group relative aspect-square md:aspect-[4/3] w-full rounded-xl md:rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer shadow-sm hover:shadow-xl transition-shadow text-start"
                   onClick={() => setSelectedImg(item)}
                 >
-                  <img 
-                    src={item.imageUrl || item.url || item.image} 
-                    alt={getLocalized(item, 'title', lang)} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  <GalleryTileImage
+                    src={item.imageUrl || item.url || item.image}
+                    alt={getLocalized(item, 'title', lang)}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                    <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      <h3 className="text-xl font-bold text-white mb-2 font-sans font-bold tracking-tight">{getLocalized(item, 'title', lang)}</h3>
-                      <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-300">
-                        <span className="flex items-center gap-1"><MapPin className="w-4 h-4 text-teal-400"/> {getLocalized(item, 'location', lang)}</span>
-                        <span className="flex items-center gap-1"><Calendar className="w-4 h-4 text-teal-400"/> {item.date}</span>
-                      </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 md:p-5">
+                    <h3 className="text-xs sm:text-sm md:text-lg font-bold text-white leading-snug line-clamp-2">
+                      {getLocalized(item, 'title', lang)}
+                    </h3>
+                    <div className="hidden md:flex items-center gap-4 text-xs text-slate-200 mt-1.5">
+                      {getLocalized(item, 'location', lang) && (
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5 text-teal-400" />
+                          {getLocalized(item, 'location', lang)}
+                        </span>
+                      )}
+                      {item.date && (
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5 text-teal-400" />
+                          {item.date}
+                        </span>
+                      )}
                     </div>
-                    <div className="absolute top-4 right-4 bg-teal-500/20 p-2 rounded-full backdrop-blur-md border border-teal-500/30">
-                      <ZoomIn className="w-5 h-5 text-teal-300" />
+                    <div className="hidden md:flex absolute top-3 end-3 bg-slate-900/70 p-2 rounded-full backdrop-blur-md border border-white/20">
+                      <ZoomIn className="w-4 h-4 text-teal-300" />
                     </div>
                   </div>
-                </motion.div>
+                </motion.button>
               ))}
             </AnimatePresence>
           </motion.div>
@@ -178,8 +230,8 @@ export default function GalleryPage() {
 
         {/* Pagination */}
         {!loading && totalPages > 1 && (
-          <div className="mt-12 flex justify-center">
-            <Pagination 
+          <div className="mt-8 md:mt-12 flex justify-center">
+            <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}
@@ -187,39 +239,57 @@ export default function GalleryPage() {
           </div>
         )}
 
-        {/* Lightbox */}
+        {/* Mobile-Friendly Full-Screen Lightbox */}
         <AnimatePresence>
           {selectedImg && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/ dark:bg-slate-900/ backdrop-blur-sm lightbox-overlay"
+              role="dialog"
+              aria-modal="true"
+              className="fixed inset-0 z-[999] flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md lightbox-overlay"
               onClick={() => setSelectedImg(null)}
             >
-              <button 
-                className="absolute top-6 right-6 p-2 bg-slate-50/ dark:bg-slate-800/ hover:bg-teal-500/20 rounded-full text-slate-600 dark:text-slate-300 hover:text-white transition-colors border border-slate-200 dark:border-slate-700 hover:border-teal-500/50"
+              <button
+                type="button"
+                aria-label={lang === 'ar' ? 'إغلاق المعاينة' : 'Close preview'}
+                className="fixed top-4 end-4 z-20 flex items-center justify-center w-11 h-11 bg-slate-900/90 hover:bg-teal-600 rounded-full text-white transition-colors border border-white/25 shadow-lg active:scale-95"
                 onClick={(e) => { e.stopPropagation(); setSelectedImg(null); }}
               >
                 <X className="w-6 h-6" />
               </button>
               <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
+                initial={{ scale: 0.94, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="relative max-w-5xl w-full rounded-2xl overflow-hidden glass-card border border-teal-500/20"
+                exit={{ scale: 0.94, opacity: 0 }}
+                className="relative max-w-4xl w-full max-h-[90dvh] rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col"
                 onClick={(e) => e.stopPropagation()}
               >
-                <img 
-                  src={selectedImg.imageUrl || selectedImg.url || selectedImg.image} 
-                  alt={getLocalized(selectedImg, 'title', lang)}
-                  className="w-full max-h-[80vh] object-contain bg-white/ dark:bg-slate-900/"
-                />
-                <div className="p-6 bg-white/ dark:bg-slate-900/ backdrop-blur-md border-t border-teal-500/20">
-                  <h3 className="text-2xl font-bold text-white mb-2 font-sans font-bold tracking-tight">{getLocalized(selectedImg, 'title', lang)}</h3>
-                  <div className="flex items-center gap-6 text-slate-600 dark:text-slate-300">
-                    <span className="flex items-center gap-2"><MapPin className="w-5 h-5 text-teal-400"/> {getLocalized(selectedImg, 'location', lang)}</span>
-                    <span className="flex items-center gap-2"><Calendar className="w-5 h-5 text-teal-400"/> {selectedImg.date}</span>
+                <div className="flex-1 min-h-0 flex items-center justify-center bg-black p-2">
+                  <img
+                    src={selectedImg.imageUrl || selectedImg.url || selectedImg.image}
+                    alt={getLocalized(selectedImg, 'title', lang)}
+                    className="max-w-full max-h-[68dvh] w-auto h-auto object-contain rounded-lg"
+                  />
+                </div>
+                <div className="p-4 sm:p-6 bg-slate-950 border-t border-slate-800 shrink-0">
+                  <h3 className="text-base sm:text-xl md:text-2xl font-bold text-white mb-2 leading-snug break-words">
+                    {getLocalized(selectedImg, 'title', lang)}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm text-slate-300">
+                    {getLocalized(selectedImg, 'location', lang) && (
+                      <span className="flex items-center gap-1.5">
+                        <MapPin className="w-4 h-4 text-teal-400 shrink-0" />
+                        {getLocalized(selectedImg, 'location', lang)}
+                      </span>
+                    )}
+                    {selectedImg.date && (
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-teal-400 shrink-0" />
+                        {selectedImg.date}
+                      </span>
+                    )}
                   </div>
                 </div>
               </motion.div>
