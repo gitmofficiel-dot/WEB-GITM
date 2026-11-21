@@ -1,3 +1,5 @@
+import { missingKeys } from './missingKeys';
+
 export const languages = {
   ar: { name: 'العربية', dir: 'rtl', flag: '🇲🇦' },
   en: { name: 'English', dir: 'ltr', flag: '🇬🇧' },
@@ -417,3 +419,18 @@ export const translations = {
 
   },
 };
+
+// Fill keys that are used in the UI but absent above. Existing keys always win.
+const fillMissing = (target, source) => {
+  for (const [key, value] of Object.entries(source || {})) {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      if (target[key] === undefined) target[key] = {};
+      if (typeof target[key] === 'object') fillMissing(target[key], value);
+    } else if (target[key] === undefined) {
+      target[key] = value;
+    }
+  }
+};
+for (const lang of Object.keys(missingKeys)) {
+  if (translations[lang]) fillMissing(translations[lang], missingKeys[lang]);
+}
