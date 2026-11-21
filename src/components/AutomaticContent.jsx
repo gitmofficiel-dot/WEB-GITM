@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Newspaper, Calendar, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const labels = {
@@ -8,26 +9,37 @@ const labels = {
 };
 
 function SourceImage({ src, title, fallback, kind }) {
+  const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
-  const defaultImage = kind === 'events' 
-    ? 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80' 
-    : 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80';
-  
-  const imageSrc = (src && !failed) ? src : defaultImage;
-  
+  const Icon = kind === 'events' ? Calendar : Newspaper;
+
+  useEffect(() => {
+    setLoaded(false);
+    setFailed(false);
+  }, [src]);
+
   return (
-    <div className="relative aspect-video bg-slate-100 dark:bg-slate-800">
-      <img 
-        src={imageSrc} 
-        alt={title} 
-        loading="lazy" 
-        referrerPolicy="no-referrer" 
-        onError={() => setFailed(true)} 
-        className="w-full h-full object-cover" 
-      />
-      {(!src || failed) && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-sm font-bold opacity-0 hover:opacity-100 transition-opacity">
-          {fallback}
+    <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-teal-500/15 via-cyan-500/15 to-blue-600/20 dark:from-teal-950/60 dark:via-slate-800 dark:to-cyan-950/50">
+      {!loaded && !failed && src && (
+        <div className="absolute inset-0 animate-pulse bg-slate-200 dark:bg-slate-800" />
+      )}
+      {src && !failed ? (
+        <img
+          src={src}
+          alt={title}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onLoad={() => setLoaded(true)}
+          onError={() => setFailed(true)}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${
+            loaded ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      ) : (
+        <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 text-teal-700 dark:text-cyan-300" title={fallback}>
+          <div className="w-12 h-12 rounded-2xl bg-white/85 dark:bg-slate-900/80 flex items-center justify-center shadow-sm border border-teal-200/70 dark:border-cyan-500/30">
+            <Icon size={26} />
+          </div>
         </div>
       )}
     </div>
@@ -37,8 +49,14 @@ function SourceImage({ src, title, fallback, kind }) {
 export default function AutomaticContent({ kind }) {
   const { lang } = useLanguage();
   const t = labels[lang] || labels.en;
-  const heading = kind === 'news' ? ({ ar: 'أخبار التكنولوجيا والبيئة', fr: 'Actualités technologie et environnement', en: 'Technology & environment news' }[lang] || 'Technology & environment news') : t[kind];
-  const topicLabels = { ar: { technology: 'تكنولوجيا', environment: 'بيئة' }, fr: { technology: 'Technologie', environment: 'Environnement' }, en: { technology: 'Technology', environment: 'Environment' } };
+  const heading = kind === 'news'
+    ? ({ ar: 'أخبار التكنولوجيا والبيئة', fr: 'Actualités technologie et environnement', en: 'Technology & environment news' }[lang] || 'Technology & environment news')
+    : t[kind];
+  const topicLabels = {
+    ar: { technology: 'تكنولوجيا', environment: 'بيئة' },
+    fr: { technology: 'Technologie', environment: 'Environnement' },
+    en: { technology: 'Technology', environment: 'Environment' }
+  };
   const [scope, setScope] = useState('morocco');
   const [topic, setTopic] = useState('all');
   const [query, setQuery] = useState('');
@@ -71,41 +89,185 @@ export default function AutomaticContent({ kind }) {
   }, [kind, scope, key, attempt]);
 
   const current = state.key === key;
-  const items = current ? state.items.filter(item => (kind !== 'news' || topic === 'all' || item.topic === topic) && `${item.title} ${item.summary} ${item.location || ''}`.toLowerCase().includes(query.toLowerCase())) : [];
+  const items = current
+    ? state.items.filter(item => (kind !== 'news' || topic === 'all' || item.topic === topic) && `${item.title} ${item.summary} ${item.location || ''}`.toLowerCase().includes(query.toLowerCase()))
+    : [];
   const date = value => new Date(value).toLocaleDateString(lang === 'ar' ? 'ar-MA' : lang === 'fr' ? 'fr-FR' : 'en-GB');
 
-  return <section className="mb-14 rounded-3xl border border-cyan-200 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 p-4 md:p-7" dir={lang === 'ar' ? 'rtl' : 'ltr'} aria-label={heading}>
-    <h2 className="text-2xl font-bold mb-2">{heading}</h2>
-    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">{t.intro}</p>
-    <div className="flex flex-wrap gap-3 items-center mb-5">
-      {['morocco', 'world'].map(value => <button key={value} type="button" aria-pressed={scope === value} onClick={() => { setScope(value); setLimit(9); setQuery(''); }} className={`px-5 py-2 rounded-xl font-bold ${scope === value ? 'bg-teal-600 text-white' : 'bg-slate-100 dark:bg-slate-800'}`}>{t[value]}</button>)}
-      <input type="search" aria-label={t.search} placeholder={t.search} value={query} onChange={event => { setQuery(event.target.value); setLimit(9); }} className="min-w-0 flex-1 basis-56 p-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800" />
-    </div>
-    {kind === 'news' && <div className="flex flex-wrap gap-2 mb-5" role="group" aria-label={heading}>
-      {['all', 'technology', 'environment'].map(value => <button type="button" key={value} aria-pressed={topic === value} onClick={() => { setTopic(value); setLimit(9); }} className={`px-4 py-2 rounded-full text-sm font-semibold ${topic === value ? 'bg-teal-600 text-white' : 'bg-slate-100 dark:bg-slate-800'}`}>
-        {value === 'all' ? (lang === 'ar' ? 'الكل' : lang === 'fr' ? 'Tout' : 'All') : (topicLabels[lang] || topicLabels.en)[value]}
-      </button>)}
-    </div>}
-    {kind === 'events' && <p className="text-sm text-slate-500 mb-4">{t.eventNote}</p>}
-    {current && state.updatedAt && <p className="text-xs text-slate-500 mb-4">{t.updated}: {new Date(state.updatedAt).toLocaleString(lang === 'ar' ? 'ar-MA' : lang === 'fr' ? 'fr-FR' : 'en-GB')}</p>}
-    {current && state.error && <div role="alert" className="p-4 mb-4 rounded-xl bg-amber-50 text-amber-900">{t.error} <button className="underline font-bold px-2" onClick={() => setAttempt(value => value + 1)}>{t.retry}</button></div>}
-    {!current || state.loading ? <p role="status" className="py-8 text-center">{t.loading}</p> : <>
-      {!items.length && !state.error && <p role="status" className="py-8 text-center text-slate-500">{t.empty}</p>}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {items.slice(0, limit).map(item => <article key={item.id} className="rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex flex-col shadow-sm">
-          <SourceImage key={item.image} src={item.image} title={item.title} fallback={t.image} kind={kind} />
-          <div className="p-5 flex flex-col flex-1 gap-3">
-            {kind === 'news' && item.topic && <span className="self-start rounded-full bg-teal-50 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 px-3 py-1 text-xs font-bold">{(topicLabels[lang] || topicLabels.en)[item.topic]}</span>}
-            <p className="text-xs text-teal-700 dark:text-teal-300">{t.source}: <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">{item.source}</a>{item.date && <> · <time dateTime={item.date}>{date(item.date)}</time></>}</p>
-            <h3 className="text-lg font-bold" dir="auto">{item.title}</h3>
-            <p className="text-sm leading-7 text-slate-600 dark:text-slate-300" dir="auto">{(lang === 'ar' && item.summaryAr) || item.summary || t.noSummary}</p>
-            {item.license && <a href={item.licenseUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-500 underline">{item.license} · {lang === 'ar' ? 'بيانات منسقة ومختصرة' : 'Formatted and summarized data'}</a>}
-            {item.location && <p className="text-sm text-slate-500" dir="auto">{item.location}</p>}
-            <a href={item.url} target="_blank" rel="noopener noreferrer" className="mt-auto pt-3 font-bold text-teal-700 dark:text-teal-300 underline underline-offset-4">{t.read}</a>
-          </div>
-        </article>)}
+  return (
+    <section
+      className="mb-10 md:mb-14 rounded-2xl md:rounded-3xl border border-cyan-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/70 p-4 md:p-7"
+      dir={lang === 'ar' ? 'rtl' : 'ltr'}
+      aria-label={heading}
+    >
+      <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-1.5">{heading}</h2>
+      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">{t.intro}</p>
+
+      {/* Scope Tabs (Equal width on mobile) + Search */}
+      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 items-stretch sm:items-center mb-4 md:mb-5">
+        <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
+          {['morocco', 'world'].map(value => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={scope === value}
+              onClick={() => { setScope(value); setLimit(9); setQuery(''); }}
+              className={`min-h-[44px] px-4 md:px-5 py-2 rounded-xl text-sm font-bold transition-colors ${
+                scope === value
+                  ? 'bg-teal-600 text-white shadow-sm'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'
+              }`}
+            >
+              {t[value]}
+            </button>
+          ))}
+        </div>
+        <input
+          type="search"
+          aria-label={t.search}
+          placeholder={t.search}
+          value={query}
+          onChange={event => { setQuery(event.target.value); setLimit(9); }}
+          className="min-w-0 flex-1 basis-56 min-h-[48px] sm:min-h-[44px] px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-base sm:text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500/40"
+        />
       </div>
-      {items.length > limit && <button className="block mx-auto mt-6 px-6 py-2 rounded-xl bg-teal-600 text-white" onClick={() => setLimit(value => value + 9)}>{t.more}</button>}
-    </>}
-  </section>;
+
+      {/* Scrollable Topic Filter Chips for News */}
+      {kind === 'news' && (
+        <div className="filter-scroll md:flex-wrap pb-1 mb-4 md:mb-5" role="group" aria-label={heading}>
+          {['all', 'technology', 'environment'].map(value => (
+            <button
+              type="button"
+              key={value}
+              aria-pressed={topic === value}
+              onClick={() => { setTopic(value); setLimit(9); }}
+              className={`min-h-[44px] px-4 py-2 rounded-full text-xs sm:text-sm font-bold border whitespace-nowrap transition-colors ${
+                topic === value
+                  ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700'
+              }`}
+            >
+              {value === 'all' ? (lang === 'ar' ? 'الكل' : lang === 'fr' ? 'Tout' : 'All') : (topicLabels[lang] || topicLabels.en)[value]}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {kind === 'events' && <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-3 leading-relaxed">{t.eventNote}</p>}
+      {current && state.updatedAt && (
+        <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
+          {t.updated}: {new Date(state.updatedAt).toLocaleString(lang === 'ar' ? 'ar-MA' : lang === 'fr' ? 'fr-FR' : 'en-GB')}
+        </p>
+      )}
+      {current && state.error && (
+        <div role="alert" className="p-4 mb-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-sm flex flex-wrap items-center gap-2">
+          <span>{t.error}</span>
+          <button
+            type="button"
+            className="min-h-[44px] sm:min-h-0 px-3 py-1 rounded-lg bg-amber-200/70 dark:bg-amber-900/60 underline font-bold"
+            onClick={() => setAttempt(value => value + 1)}
+          >
+            {t.retry}
+          </button>
+        </div>
+      )}
+
+      {/* 16:9 Skeleton Loading Cards */}
+      {!current || state.loading ? (
+        <div role="status" aria-label={t.loading} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+          {[1, 2, 3].map(n => (
+            <div key={n} className="rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 animate-pulse">
+              <div className="aspect-video w-full bg-slate-200 dark:bg-slate-700" />
+              <div className="p-4 space-y-3">
+                <div className="h-5 w-20 bg-slate-200 dark:bg-slate-700 rounded-full" />
+                <div className="h-4 w-1/2 bg-slate-200 dark:bg-slate-700 rounded" />
+                <div className="h-5 w-4/5 bg-slate-200 dark:bg-slate-700 rounded" />
+                <div className="h-4 w-full bg-slate-200 dark:bg-slate-700 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          {!items.length && !state.error && (
+            <p role="status" className="py-8 text-center text-sm text-slate-600 dark:text-slate-300">
+              {t.empty}
+            </p>
+          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+            {items.slice(0, limit).map(item => (
+              <article key={item.id} className="rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col shadow-sm hover:shadow-md transition-shadow">
+                <SourceImage key={item.image} src={item.image} title={item.title} fallback={t.image} kind={kind} />
+                <div className="p-4 md:p-5 flex flex-col flex-1 gap-2.5">
+                  {/* Topic Badge on its own row */}
+                  {kind === 'news' && item.topic && (
+                    <div>
+                      <span className="inline-block rounded-full bg-teal-50 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 px-3 py-1 text-xs font-bold">
+                        {(topicLabels[lang] || topicLabels.en)[item.topic]}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Source + Date */}
+                  <p className="text-xs text-teal-700 dark:text-teal-300 font-medium">
+                    {t.source}:{' '}
+                    <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">
+                      {item.source}
+                    </a>
+                    {item.date && (
+                      <>
+                        {' · '}
+                        <time dateTime={item.date}>{date(item.date)}</time>
+                      </>
+                    )}
+                  </p>
+
+                  {/* Single Clean Title */}
+                  <h3 className="text-base md:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words" dir="auto">
+                    {item.title}
+                  </h3>
+
+                  <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 line-clamp-3" dir="auto">
+                    {(lang === 'ar' && item.summaryAr) || item.summary || t.noSummary}
+                  </p>
+
+                  {item.license && (
+                    <a href={item.licenseUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-600 dark:text-slate-400 underline">
+                      {item.license} · {lang === 'ar' ? 'بيانات منسقة ومختصرة' : 'Formatted and summarized data'}
+                    </a>
+                  )}
+
+                  {item.location && (
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium" dir="auto">
+                      {item.location}
+                    </p>
+                  )}
+
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-auto min-h-[44px] inline-flex items-center gap-1.5 pt-2 font-bold text-sm text-teal-700 dark:text-teal-300 underline underline-offset-4 hover:text-teal-800 dark:hover:text-teal-200"
+                  >
+                    <span>{t.read}</span>
+                    <ExternalLink size={14} className="shrink-0" />
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {items.length > limit && (
+            <button
+              type="button"
+              className="w-full sm:w-auto min-h-[48px] sm:min-h-[44px] block mx-auto mt-6 px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm transition-colors"
+              onClick={() => setLimit(value => value + 9)}
+            >
+              {t.more}
+            </button>
+          )}
+        </>
+      )}
+    </section>
+  );
 }
