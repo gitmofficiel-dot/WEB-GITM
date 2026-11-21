@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Package, Search, Calendar, CheckCircle2, AlertTriangle, Scan, Camera } from 'lucide-react';
 import { toast } from '../utils/toast';
