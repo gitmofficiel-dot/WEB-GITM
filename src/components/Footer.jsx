@@ -42,11 +42,13 @@ export default function Footer() {
           {/* Brand & About */}
           <div className="space-y-4 md:space-y-6">
             <div className="flex items-center gap-3">
-              <img
-                src="/logo.png"
-                alt="GITM Logo"
-                className="w-11 h-11 md:w-12 md:h-12 object-contain bg-transparent invert hue-rotate-180 mix-blend-screen"
-              />
+              <span className="inline-flex items-center justify-center bg-white rounded-xl p-1.5 shadow-sm shrink-0">
+                <img
+                  src="/logo.png"
+                  alt="GITM Logo"
+                  className="w-9 h-9 md:w-10 md:h-10 object-contain"
+                />
+              </span>
               <h2 className="font-sans font-bold text-2xl text-white tracking-wider">GITM</h2>
             </div>
             <p className="text-slate-300 leading-relaxed text-sm">
@@ -192,4 +194,3 @@ export default function Footer() {
     </footer>
   );
 }
-
