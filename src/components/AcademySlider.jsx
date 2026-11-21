@@ -23,7 +23,7 @@ const CourseCard = ({ course, lang }) => {
   const isNew = course.progress === 0;
 
   return (
-    <div className="min-w-[300px] md:min-w-[340px] snap-center flex-shrink-0 group">
+    <div className="w-[85vw] max-w-[300px] md:w-[340px] md:max-w-[340px] snap-center flex-shrink-0 group">
       <div className="glass-card bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-md hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-cyan-500/10 transition-all duration-500 hover:-translate-y-2 h-full flex flex-col">
         {/* Header: Avatar + Category Badge */}
         <div className="flex items-start justify-between mb-5">
@@ -33,7 +33,7 @@ const CourseCard = ({ course, lang }) => {
               {course.initials}
             </div>
             <div>
-              <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider">
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-medium uppercase tracking-wider">
                 {lang === 'ar' ? 'المدرب' : 'Instructor'}
               </p>
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -48,14 +48,14 @@ const CourseCard = ({ course, lang }) => {
         </div>
 
         {/* Course Title */}
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 leading-snug line-clamp-2 group-hover:text-emerald-600 dark:group-hover:text-cyan-400 transition-colors">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 leading-snug whitespace-normal break-words group-hover:text-emerald-600 dark:group-hover:text-cyan-400 transition-colors">
           {course.title?.[lang] || course.title?.en || course.title_ar || course.title}
         </h3>
 
         {/* Rating + Duration */}
         <div className="flex items-center justify-between mb-5">
           <StarRating rating={course.rating} />
-          <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-300">
             <Clock size={14} className="text-emerald-500 dark:text-cyan-400" />
             <span className="font-semibold">{course.hours}h</span>
           </div>
@@ -67,14 +67,14 @@ const CourseCard = ({ course, lang }) => {
         {/* Progress Section */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
               {lang === 'ar' ? 'التقدم' : 'Progress'}
             </span>
             <div className="flex items-center gap-1.5">
               {isCompleted && (
                 <Award size={14} className="text-emerald-500" />
               )}
-              <span className={`text-xs font-bold ${isCompleted ? 'text-emerald-500' : isNew ? 'text-slate-600 dark:text-slate-400' : 'text-cyan-600 dark:text-cyan-400'}`}>
+              <span className={`text-xs font-bold ${isCompleted ? 'text-emerald-500' : isNew ? 'text-slate-600 dark:text-slate-300' : 'text-cyan-600 dark:text-cyan-400'}`}>
                 {isCompleted
                   ? (lang === 'ar' ? '✓ مكتمل' : '✓ Completed')
                   : isNew
