@@ -20,8 +20,9 @@ export default defineConfig({
     contentApi,
     react(),
     VitePWA({
-      workbox: { globIgnores: ['**/_worker.js', '**/content-feed.js', '**/ai-proxy.js'], navigateFallbackDenylist: [/^\/api\//] },
+      workbox: { skipWaiting: true, clientsClaim: true, cleanupOutdatedCaches: true, globIgnores: ['**/_worker.js', '**/content-feed.js', '**/ai-proxy.js'], navigateFallbackDenylist: [/^\/api\//] },
       registerType: 'autoUpdate',
+      injectRegister: false,
       includeAssets: ['favicon.svg', 'logo.png'],
       manifest: {
         name: 'GITM Innovation Tech',
