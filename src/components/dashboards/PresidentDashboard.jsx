@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { autoFetchNewsAndEvents } from '../../services/autoFetchService';
 import { useNavigate } from 'react-router-dom';
-import { collection, onSnapshot, doc, updateDoc, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, onSnapshot, doc, updateDoc, setDoc, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import UserProfileSettings from './UserProfileSettings';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  Users, BookOpen, Building, Newspaper, Activity, Shield, Award, 
-  Edit, Trash2, Bot, TrendingUp, AlertTriangle, Plus, Mail, Video, 
-  Megaphone, CheckCircle, XCircle, LayoutDashboard, Settings, BrainCircuit,
-  GraduationCap, Calendar, Database, Eye, Image, X, Save, Target, MapPin,
-  Link, UserPlus, Handshake, Info, Search, Zap, Rocket
+import {
+  Users, BookOpen, Newspaper, Activity, Shield,
+  Edit, Trash2, Bot, TrendingUp, AlertTriangle, Plus,
+  CheckCircle, XCircle, LayoutDashboard, Settings, BrainCircuit,
+  GraduationCap, Calendar, Eye, Image, X, Save, Target, MapPin,
+  Link, Handshake, Info, Rocket
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '../../utils/toast';
@@ -19,7 +19,7 @@ import VisitorAnalytics from './VisitorAnalytics';
 
 export default function PresidentDashboard() {
   const navigate = useNavigate();
-  const { lang, t, eventRegistrations, setEventRegistrations } = useLanguage();
+  const { lang, eventRegistrations, setEventRegistrations } = useLanguage();
   const { currentUser: user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -42,14 +42,14 @@ export default function PresidentDashboard() {
         try {
           const userRef = doc(db, 'users', userId);
           const updates = { role: newRole };
-          
+
           if (newRole === 'member') {
-            const user = firebaseUsers.find(u => u.id === userId);
-            if (!user.membershipId) {
+            const targetUser = firebaseUsers.find(u => u.id === userId);
+            if (!targetUser?.membershipId) {
               updates.membershipId = `GITM-MBR-${Math.floor(Math.random() * 10000)}`;
             }
           }
-          
+
           await updateDoc(userRef, updates);
           toast.success(lang === 'ar' ? 'تم تغيير الصلاحية بنجاح' : 'Role updated successfully');
         } catch (err) {
@@ -71,19 +71,18 @@ export default function PresidentDashboard() {
   const [allUsers, setAllUsers] = useState([]);
 
   useEffect(() => {
-    const unsubNews = onSnapshot(collection(db, 'news'), snap => setNews(snap.docs.map(d => ({id: d.id, ...d.data()}))));
-    const unsubCourses = onSnapshot(collection(db, 'courses'), snap => setCourses(snap.docs.map(d => ({id: d.id, ...d.data()}))));
-    const unsubEvents = onSnapshot(collection(db, 'events'), snap => setEvents(snap.docs.map(d => ({id: d.id, ...d.data()}))));
-    const unsubGallery = onSnapshot(collection(db, 'gallery'), snap => setGallery(snap.docs.map(d => ({id: d.id, ...d.data()}))));
-    const unsubProjects = onSnapshot(collection(db, 'projects'), snap => setProjects(snap.docs.map(d => ({id: d.id, ...d.data()}))));
-    const unsubPartners = onSnapshot(collection(db, 'partners'), snap => setPartners(snap.docs.map(d => ({id: d.id, ...d.data()}))));
+    const unsubNews = onSnapshot(collection(db, 'news'), snap => setNews(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
+    const unsubCourses = onSnapshot(collection(db, 'courses'), snap => setCourses(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
+    const unsubEvents = onSnapshot(collection(db, 'events'), snap => setEvents(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
+    const unsubGallery = onSnapshot(collection(db, 'gallery'), snap => setGallery(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
+    const unsubProjects = onSnapshot(collection(db, 'projects'), snap => setProjects(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
+    const unsubPartners = onSnapshot(collection(db, 'partners'), snap => setPartners(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
     const unsubAbout = onSnapshot(doc(db, 'settings', 'about'), docSnap => {
       if (docSnap.exists()) setAboutData(docSnap.data());
     });
     const unsubUsers = onSnapshot(collection(db, 'users'), snap => {
-    const unsubUsers = onSnapshot(collection(db, 'users'), snap => {
-      const usersData = snap.docs.map(d => ({id: d.id, ...d.data()}));
-      const roleOrder = { 'president': 1, 'supervisor': 2, 'teacher': 3, 'partner': 4, 'university': 5, 'content_manager': 6, 'member': 7, 'student': 8, 'suspended': 9 };
+      const usersData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const roleOrder = { president: 1, supervisor: 2, teacher: 3, partner: 4, university: 5, content_manager: 6, member: 7, student: 8, suspended: 9 };
       usersData.sort((a, b) => {
         const orderA = roleOrder[a.role] || 10;
         const orderB = roleOrder[b.role] || 10;
@@ -91,7 +90,6 @@ export default function PresidentDashboard() {
         return (a.nameLatin || a.name || '').localeCompare(b.nameLatin || b.name || '');
       });
       setAllUsers(usersData);
-    });
     });
     return () => { unsubNews(); unsubCourses(); unsubEvents(); unsubGallery(); unsubProjects(); unsubPartners(); unsubAbout(); unsubUsers(); };
   }, []);
@@ -101,15 +99,15 @@ export default function PresidentDashboard() {
       const lastFetchTimestamp = parseInt(localStorage.getItem('last_gitm_auto_fetch_ts') || '0', 10);
       const now = Date.now();
       const FIFTEEN_MINUTES = 15 * 60 * 1000;
-      
+
       if (now - lastFetchTimestamp > FIFTEEN_MINUTES) {
         console.log('Running 15-min auto-fetch for news and events...');
         const res = await autoFetchNewsAndEvents();
         if (res && res.success && (res.addedNews > 0 || res.addedEvents > 0)) {
-           toast.success(lang === 'ar' ? `تم جلب ${res.addedNews} خبر و ${res.addedEvents} فعالية تلقائياً` : `Auto-fetched ${res.addedNews} News & ${res.addedEvents} Events`);
-           localStorage.setItem('last_gitm_auto_fetch_ts', now.toString());
+          toast.success(lang === 'ar' ? `تم جلب ${res.addedNews} خبر و ${res.addedEvents} فعالية تلقائياً` : `Auto-fetched ${res.addedNews} News & ${res.addedEvents} Events`);
+          localStorage.setItem('last_gitm_auto_fetch_ts', now.toString());
         } else if (res && res.success) {
-           localStorage.setItem('last_gitm_auto_fetch_ts', now.toString());
+          localStorage.setItem('last_gitm_auto_fetch_ts', now.toString());
         }
       }
     };
@@ -117,7 +115,6 @@ export default function PresidentDashboard() {
     const interval = setInterval(runAutoFetch, 15 * 60 * 1000);
     return () => clearInterval(interval);
   }, [lang]);
-
 
   const [aiSettings, setAiSettings] = useState({
     moderation: { model: 'meta-llama/llama-3.3-70b-instruct', actions: 1450, active: true },
@@ -135,8 +132,6 @@ export default function PresidentDashboard() {
     setConfirmDialog({ isOpen: true, title, message, onConfirm });
   };
 
-  // --- Editor Handlers Removed (Moved to Standalone Editors) ---
-
   // --- CRUD Handlers ---
   const handleSaveAbout = async () => {
     try {
@@ -151,9 +146,9 @@ export default function PresidentDashboard() {
   const updateUserRole = async (userId, newRole) => {
     try {
       const isLeadership = ['president', 'teacher', 'supervisor', 'content_manager', 'member'].includes(newRole);
-      await updateDoc(doc(db, 'users', userId), { 
+      await updateDoc(doc(db, 'users', userId), {
         role: newRole,
-        isTeamMember: isLeadership 
+        isTeamMember: isLeadership
       });
       toast.success(lang === 'ar' ? 'تم تحديث الصلاحية والربط بالصفحة الرئيسية بنجاح' : 'Role and visibility updated successfully');
     } catch (err) {
@@ -174,11 +169,11 @@ export default function PresidentDashboard() {
 
   const handleSave = async (formData) => {
     const isEdit = !!modalState.data;
-    const colName = modalState.type === 'event' ? 'events' : 
-                    modalState.type === 'course' ? 'courses' : 
-                    modalState.type === 'news' ? 'news' : 
-                    modalState.type === 'partner' ? 'partners' : 
-                    modalState.type === 'gallery' ? 'gallery' : null;
+    const colName = modalState.type === 'event' ? 'events' :
+      modalState.type === 'course' ? 'courses' :
+        modalState.type === 'news' ? 'news' :
+          modalState.type === 'partner' ? 'partners' :
+            modalState.type === 'gallery' ? 'gallery' : null;
 
     if (!colName) return closeModal();
 
@@ -187,10 +182,10 @@ export default function PresidentDashboard() {
         await updateDoc(doc(db, colName, modalState.data.id), { ...formData, updatedAt: serverTimestamp() });
       } else {
         const extraData = modalState.type === 'event' ? { attendees: 0, status: 'Planning' } :
-                          modalState.type === 'course' ? { enrolled: 0, status: 'Upcoming' } :
-                          modalState.type === 'news' ? { date: new Date().toISOString().split('T')[0], status: 'Draft' } :
-                          modalState.type === 'partner' ? { status: 'Active' } :
-                          modalState.type === 'gallery' ? { type: 'image' } : {};
+          modalState.type === 'course' ? { enrolled: 0, status: 'Upcoming' } :
+            modalState.type === 'news' ? { date: new Date().toISOString().split('T')[0], status: 'Draft' } :
+              modalState.type === 'partner' ? { status: 'Active' } :
+                modalState.type === 'gallery' ? { type: 'image' } : {};
         await addDoc(collection(db, colName), { ...formData, ...extraData, createdAt: serverTimestamp() });
       }
       toast.success(lang === 'ar' ? 'تم الحفظ بنجاح' : 'Saved successfully');
@@ -211,12 +206,12 @@ export default function PresidentDashboard() {
           setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
           return;
         }
-        const colName = type === 'event' ? 'events' : 
-                        type === 'course' ? 'courses' : 
-                        type === 'news' ? 'news' : 
-                        type === 'project' ? 'projects' : 
-                        type === 'partner' ? 'partners' : 
-                        type === 'gallery' ? 'gallery' : null;
+        const colName = type === 'event' ? 'events' :
+          type === 'course' ? 'courses' :
+            type === 'news' ? 'news' :
+              type === 'project' ? 'projects' :
+                type === 'partner' ? 'partners' :
+                  type === 'gallery' ? 'gallery' : null;
         if (colName) {
           try {
             await deleteDoc(doc(db, colName, id));
@@ -236,20 +231,20 @@ export default function PresidentDashboard() {
   };
 
   const StatCard = ({ title, value, icon: Icon, color, trend }) => (
-    <motion.div whileHover={{ y: -5 }} className="glass-card p-6 rounded-2xl relative overflow-hidden group">
-      <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-10 bg-${color}-500 group-hover:scale-150 transition-transform duration-500`}></div>
-      <div className="flex justify-between items-start relative z-10">
-        <div>
-          <p className="text-slate-500 dark:text-slate-400 font-medium mb-1">{title}</p>
-          <h3 className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{value}</h3>
-         {trend && (
-      <p className={`text-sm mt-2 font-medium ${trend.startsWith('+') ? 'text-emerald-500' : 'text-amber-500'}`}>
-            {trend} this month
-          </p>
-       )}
+    <motion.div whileHover={{ y: -3 }} className="glass-card p-5 md:p-6 rounded-2xl relative overflow-hidden group border border-slate-200/70 dark:border-slate-800">
+      <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-10 bg-${color}-500 group-hover:scale-150 transition-transform duration-500`} />
+      <div className="flex justify-between items-start gap-3 relative z-10">
+        <div className="min-w-0">
+          <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm font-medium mb-1">{title}</p>
+          <h3 className="text-2xl sm:text-3xl font-bold text-[#1e3a5f] dark:text-white">{value}</h3>
+          {trend && (
+            <p className={`text-xs sm:text-sm mt-2 font-medium ${trend.startsWith('+') ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
+              {trend} this month
+            </p>
+          )}
         </div>
-        <div className={`p-3 rounded-xl bg-${color}-100 dark:bg-${color}-900/30 text-${color}-600 dark:text-${color}-400`}>
-          <Icon size={24} />
+        <div className={`p-3 rounded-xl shrink-0 bg-${color}-100 dark:bg-${color}-900/30 text-${color}-600 dark:text-${color}-400`}>
+          <Icon size={22} />
         </div>
       </div>
     </motion.div>
@@ -274,171 +269,183 @@ export default function PresidentDashboard() {
   const CrudModal = () => {
     if (!modalState.isOpen) return null;
     const isEdit = !!modalState.data;
-    
-    // Create local state for form data
     const [formData, setFormData] = useState(modalState.data || {});
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    const inputClass = "w-full min-h-[48px] p-3 mb-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-base sm:text-sm";
+    const labelClass = "text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 mb-1 block";
 
     const renderFields = () => {
       switch (modalState.type) {
         case 'event':
           return (
             <>
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"عنوان الحدث (عربي)":"Event Title (Arabic)"}</label>
-              <input name="title_ar" value={formData.title_ar || formData.title || ''} onChange={handleChange} placeholder={lang==='ar'?"عنوان الحدث":"Event Title"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"عنوان الحدث (إنجليزي)":"Event Title (English)"}</label>
-              <input name="title_en" value={formData.title_en || ''} onChange={handleChange} placeholder="Event Title" className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"التاريخ":"Date"}</label>
-              <input type="date" name="date" value={formData.date || ''} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"المكان":"Location"}</label>
-              <input name="location" value={formData.location || ''} onChange={handleChange} placeholder={lang==='ar'?"المكان":"Location"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"وصف الحدث":"Description"}</label>
-              <textarea name="description_ar" value={formData.description_ar || ''} onChange={handleChange} rows={3} placeholder={lang==='ar'?"الوصف بالعربية":"Arabic Description"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"نوع الحدث":"Event Type"}</label>
-              <select name="type" value={formData.type || 'workshop'} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                  <option value="workshop">{lang==='ar'?"ورشة عمل":"Workshop"}</option>
-                  <option value="conference">{lang==='ar'?"مؤتمر":"Conference"}</option>
-                  <option value="hackathon">{lang==='ar'?"هاكاثون":"Hackathon"}</option>
-                  <option value="meetup">{lang==='ar'?"لقاء":"Meetup"}</option>
+              <label className={labelClass}>{lang === 'ar' ? "عنوان الحدث (عربي)" : "Event Title (Arabic)"}</label>
+              <input name="title_ar" value={formData.title_ar || formData.title || ''} onChange={handleChange} placeholder={lang === 'ar' ? "عنوان الحدث" : "Event Title"} className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "عنوان الحدث (إنجليزي)" : "Event Title (English)"}</label>
+              <input name="title_en" value={formData.title_en || ''} onChange={handleChange} placeholder="Event Title" className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "التاريخ" : "Date"}</label>
+              <input type="date" name="date" value={formData.date || ''} onChange={handleChange} className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "المكان" : "Location"}</label>
+              <input name="location" value={formData.location || ''} onChange={handleChange} placeholder={lang === 'ar' ? "المكان" : "Location"} className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "وصف الحدث" : "Description"}</label>
+              <textarea name="description_ar" value={formData.description_ar || ''} onChange={handleChange} rows={3} placeholder={lang === 'ar' ? "الوصف بالعربية" : "Arabic Description"} className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "نوع الحدث" : "Event Type"}</label>
+              <select name="type" value={formData.type || 'workshop'} onChange={handleChange} className={inputClass}>
+                <option value="workshop">{lang === 'ar' ? "ورشة عمل" : "Workshop"}</option>
+                <option value="conference">{lang === 'ar' ? "مؤتمر" : "Conference"}</option>
+                <option value="hackathon">{lang === 'ar' ? "هاكاثون" : "Hackathon"}</option>
+                <option value="meetup">{lang === 'ar' ? "لقاء" : "Meetup"}</option>
               </select>
               {isEdit && (
-                  <>
-                  <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الحالة":"Status"}</label>
-                  <select name="status" value={formData.status || ''} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                      <option value="Planning">Planning</option>
-                      <option value="Confirmed">Confirmed</option>
-                      <option value="Completed">Completed</option>
+                <>
+                  <label className={labelClass}>{lang === 'ar' ? "الحالة" : "Status"}</label>
+                  <select name="status" value={formData.status || ''} onChange={handleChange} className={inputClass}>
+                    <option value="Planning">Planning</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Completed">Completed</option>
                   </select>
-                  </>
+                </>
               )}
             </>
           );
         case 'partner':
           return (
             <>
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"اسم الشريك / الجمعية":"Partner / NGO Name"}</label>
-              <input name="name" value={formData.name || ''} onChange={handleChange} placeholder={lang==='ar'?"الاسم":"Name"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"نوع الشراكة":"Partnership Type"}</label>
-              <select name="type" value={formData.type || 'corporate'} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                  <option value="corporate">{lang==='ar'?"شريك مؤسسي":"Corporate Partner"}</option>
-                  <option value="academic">{lang==='ar'?"شريك أكاديمي":"Academic Partner"}</option>
-                  <option value="ngo">{lang==='ar'?"جمعية":"NGO"}</option>
+              <label className={labelClass}>{lang === 'ar' ? "اسم الشريك / الجمعية" : "Partner / NGO Name"}</label>
+              <input name="name" value={formData.name || ''} onChange={handleChange} placeholder={lang === 'ar' ? "الاسم" : "Name"} className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "نوع الشراكة" : "Partnership Type"}</label>
+              <select name="type" value={formData.type || 'corporate'} onChange={handleChange} className={inputClass}>
+                <option value="corporate">{lang === 'ar' ? "شريك مؤسسي" : "Corporate Partner"}</option>
+                <option value="academic">{lang === 'ar' ? "شريك أكاديمي" : "Academic Partner"}</option>
+                <option value="ngo">{lang === 'ar' ? "جمعية" : "NGO"}</option>
               </select>
               {isEdit && (
-                  <>
-                  <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الحالة":"Status"}</label>
-                  <select name="status" value={formData.status || ''} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
+                <>
+                  <label className={labelClass}>{lang === 'ar' ? "الحالة" : "Status"}</label>
+                  <select name="status" value={formData.status || ''} onChange={handleChange} className={inputClass}>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
                   </select>
-                  </>
+                </>
               )}
             </>
           );
         case 'course':
           return (
             <>
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"اسم الدورة (عربي)":"Course Title (Arabic)"}</label>
-              <input name="title_ar" value={formData.title_ar || formData.title || ''} onChange={handleChange} placeholder={lang==='ar'?"اسم الدورة":"Course Title"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"اسم الدورة (إنجليزي)":"Course Title (English)"}</label>
-              <input name="title_en" value={formData.title_en || ''} onChange={handleChange} placeholder="Course Title" className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"المدرب":"Instructor"}</label>
-              <input name="instructor" value={formData.instructor || ''} onChange={handleChange} placeholder={lang==='ar'?"المدرب":"Instructor"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"وصف الدورة":"Description"}</label>
-              <textarea name="description_ar" value={formData.description_ar || ''} onChange={handleChange} rows={3} placeholder={lang==='ar'?"الوصف":"Description"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الوضع":"Mode"}</label>
-              <select name="mode" value={formData.mode || 'remote'} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                  <option value="remote">{lang==='ar'?"عن بعد":"Remote"}</option>
-                  <option value="in-person">{lang==='ar'?"حضوري":"In-Person"}</option>
+              <label className={labelClass}>{lang === 'ar' ? "اسم الدورة (عربي)" : "Course Title (Arabic)"}</label>
+              <input name="title_ar" value={formData.title_ar || formData.title || ''} onChange={handleChange} placeholder={lang === 'ar' ? "اسم الدورة" : "Course Title"} className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "اسم الدورة (إنجليزي)" : "Course Title (English)"}</label>
+              <input name="title_en" value={formData.title_en || ''} onChange={handleChange} placeholder="Course Title" className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "المدرب" : "Instructor"}</label>
+              <input name="instructor" value={formData.instructor || ''} onChange={handleChange} placeholder={lang === 'ar' ? "المدرب" : "Instructor"} className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "وصف الدورة" : "Description"}</label>
+              <textarea name="description_ar" value={formData.description_ar || ''} onChange={handleChange} rows={3} placeholder={lang === 'ar' ? "الوصف" : "Description"} className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "الوضع" : "Mode"}</label>
+              <select name="mode" value={formData.mode || 'remote'} onChange={handleChange} className={inputClass}>
+                <option value="remote">{lang === 'ar' ? "عن بعد" : "Remote"}</option>
+                <option value="in-person">{lang === 'ar' ? "حضوري" : "In-Person"}</option>
               </select>
               {isEdit && (
-                  <>
-                  <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الحالة":"Status"}</label>
-                  <select name="status" value={formData.status || ''} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                      <option value="Upcoming">Upcoming</option>
-                      <option value="Active">Active</option>
-                      <option value="Archived">Archived</option>
+                <>
+                  <label className={labelClass}>{lang === 'ar' ? "الحالة" : "Status"}</label>
+                  <select name="status" value={formData.status || ''} onChange={handleChange} className={inputClass}>
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="Active">Active</option>
+                    <option value="Archived">Archived</option>
                   </select>
-                  </>
+                </>
               )}
             </>
           );
         case 'news':
           return (
             <>
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"عنوان المقال (عربي)":"Article Title (Arabic)"}</label>
-              <input name="title_ar" value={formData.title_ar || formData.title || ''} onChange={handleChange} placeholder={lang==='ar'?"عنوان المقال":"Article Title"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"عنوان المقال (إنجليزي)":"Article Title (English)"}</label>
-              <input name="title_en" value={formData.title_en || ''} onChange={handleChange} placeholder="Article Title" className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"المحتوى (عربي)":"Content (Arabic)"}</label>
-              <textarea name="content_ar" value={formData.content_ar || ''} onChange={handleChange} rows={4} placeholder={lang==='ar'?"محتوى المقال":"Article Content"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"صورة المقال (رابط)":"Image URL"}</label>
-              <input name="imageUrl" value={formData.imageUrl || ''} onChange={handleChange} placeholder="https://..." className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"القسم":"Category"}</label>
-              <select name="category" value={formData.category || 'Technology'} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                  <option value="Technology">Technology</option>
-                  <option value="Events">Events</option>
-                  <option value="Academy">Academy</option>
-                  <option value="Partners">Partners</option>
+              <label className={labelClass}>{lang === 'ar' ? "عنوان المقال (عربي)" : "Article Title (Arabic)"}</label>
+              <input name="title_ar" value={formData.title_ar || formData.title || ''} onChange={handleChange} placeholder={lang === 'ar' ? "عنوان المقال" : "Article Title"} className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "عنوان المقال (إنجليزي)" : "Article Title (English)"}</label>
+              <input name="title_en" value={formData.title_en || ''} onChange={handleChange} placeholder="Article Title" className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "المحتوى (عربي)" : "Content (Arabic)"}</label>
+              <textarea name="content_ar" value={formData.content_ar || ''} onChange={handleChange} rows={4} placeholder={lang === 'ar' ? "محتوى المقال" : "Article Content"} className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "صورة المقال (رابط)" : "Image URL"}</label>
+              <input name="imageUrl" value={formData.imageUrl || ''} onChange={handleChange} placeholder="https://..." className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "القسم" : "Category"}</label>
+              <select name="category" value={formData.category || 'Technology'} onChange={handleChange} className={inputClass}>
+                <option value="Technology">Technology</option>
+                <option value="Events">Events</option>
+                <option value="Academy">Academy</option>
+                <option value="Partners">Partners</option>
               </select>
               {isEdit && (
-                  <>
-                  <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الحالة":"Status"}</label>
-                  <select name="status" value={formData.status || ''} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                      <option value="Draft">Draft</option>
-                      <option value="Published">Published</option>
+                <>
+                  <label className={labelClass}>{lang === 'ar' ? "الحالة" : "Status"}</label>
+                  <select name="status" value={formData.status || ''} onChange={handleChange} className={inputClass}>
+                    <option value="Draft">Draft</option>
+                    <option value="Published">Published</option>
                   </select>
-                  </>
+                </>
               )}
             </>
           );
         case 'gallery':
           return (
             <>
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"اسم الصورة/الملف":"File Name"}</label>
-              <input name="name" value={formData.name || ''} onChange={handleChange} placeholder={lang==='ar'?"اسم الصورة/الملف":"File Name"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الصورة":"Image"}</label>
-              <input type="file" className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
+              <label className={labelClass}>{lang === 'ar' ? "اسم الصورة/الملف" : "File Name"}</label>
+              <input name="name" value={formData.name || ''} onChange={handleChange} placeholder={lang === 'ar' ? "اسم الصورة/الملف" : "File Name"} className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "الصورة" : "Image"}</label>
+              <input type="file" className={inputClass} />
             </>
           );
         case 'ai':
-           return (
-             <>
-               <label className="text-sm font-bold text-slate-500 mb-1 block">AI Model</label>
-               <input name="model" value={formData.model || ''} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-               <label className="text-sm font-bold text-slate-500 mb-1 block">Parameter</label>
-               <input type="number" name="param" value={formData.param || ''} onChange={handleChange} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-             </>
-           )
+          return (
+            <>
+              <label className={labelClass}>AI Model</label>
+              <input name="model" value={formData.model || ''} onChange={handleChange} className={inputClass} />
+              <label className={labelClass}>Parameter</label>
+              <input type="number" name="param" value={formData.param || ''} onChange={handleChange} className={inputClass} />
+            </>
+          );
         case 'member':
-            return (
-              <>
-                <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"الاسم":"Name"}</label>
-                <input name="name" value={formData.name || ''} onChange={handleChange} placeholder={lang==='ar'?"الاسم":"Name"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-                <label className="text-sm font-bold text-slate-500 mb-1 block">{lang==='ar'?"البريد الإلكتروني":"Email"}</label>
-                <input name="email" value={formData.email || ''} onChange={handleChange} placeholder={lang==='ar'?"البريد الإلكتروني":"Email"} className="w-full p-3 mb-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white" />
-              </>
-            )
+          return (
+            <>
+              <label className={labelClass}>{lang === 'ar' ? "الاسم" : "Name"}</label>
+              <input name="name" value={formData.name || ''} onChange={handleChange} placeholder={lang === 'ar' ? "الاسم" : "Name"} className={inputClass} />
+              <label className={labelClass}>{lang === 'ar' ? "البريد الإلكتروني" : "Email"}</label>
+              <input name="email" value={formData.email || ''} onChange={handleChange} placeholder={lang === 'ar' ? "البريد الإلكتروني" : "Email"} className={inputClass} />
+            </>
+          );
         default:
           return null;
       }
     };
 
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/ dark:bg-slate-900/ backdrop-blur-sm animate-fade-in">
-        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white">
-              {isEdit ? (lang==='ar'?'تعديل':'Edit') : (lang==='ar'?'إضافة جديد':'Add New')}
+      <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-6 w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-700 max-h-[90dvh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-5">
+            <h3 className="text-lg sm:text-xl font-bold text-[#1e3a5f] dark:text-white">
+              {isEdit ? (lang === 'ar' ? 'تعديل' : 'Edit') : (lang === 'ar' ? 'إضافة جديد' : 'Add New')}
             </h3>
-            <button onClick={closeModal} className="text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors p-2"><X size={20}/></button>
+            <button
+              type="button"
+              aria-label={lang === 'ar' ? 'إغلاق' : 'Close'}
+              onClick={closeModal}
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            >
+              <X size={20} />
+            </button>
           </div>
-          <div className="mb-6">
+          <div className="mb-5">
             {renderFields()}
           </div>
-          <button onClick={() => handleSave(formData)} className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3 rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all flex justify-center items-center gap-2">
-            <Save size={20}/> {lang==='ar'?'حفظ التغييرات':'Save Changes'}
+          <button
+            type="button"
+            onClick={() => handleSave(formData)}
+            className="w-full min-h-[48px] bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3 rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all flex justify-center items-center gap-2"
+          >
+            <Save size={20} /> {lang === 'ar' ? 'حفظ التغييرات' : 'Save Changes'}
           </button>
         </div>
       </div>
@@ -449,18 +456,26 @@ export default function PresidentDashboard() {
   const ConfirmDialog = () => {
     if (!confirmDialog.isOpen) return null;
     return (
-      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-white/ dark:bg-slate-900/ backdrop-blur-sm animate-fade-in">
-        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-700 text-center">
-          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AlertTriangle size={32} />
+      <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-6 w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-700 text-center">
+          <div className="w-14 h-14 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle size={28} />
           </div>
-          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-2">{confirmDialog.title}</h3>
-          <p className="text-slate-500 dark:text-slate-400 mb-6">{confirmDialog.message}</p>
+          <h3 className="text-lg sm:text-xl font-bold text-[#1e3a5f] dark:text-white mb-2">{confirmDialog.title}</h3>
+          <p className="text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">{confirmDialog.message}</p>
           <div className="flex gap-3">
-            <button onClick={() => setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null })} className="flex-1 py-3 font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl transition-colors">
+            <button
+              type="button"
+              onClick={() => setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null })}
+              className="flex-1 min-h-[44px] py-3 font-bold text-sm text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl transition-colors"
+            >
               {lang === 'ar' ? 'إلغاء' : 'Cancel'}
             </button>
-            <button onClick={confirmDialog.onConfirm} className="flex-1 py-3 font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl shadow-lg shadow-red-500/30 transition-all">
+            <button
+              type="button"
+              onClick={confirmDialog.onConfirm}
+              className="flex-1 min-h-[44px] py-3 font-bold text-sm text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-lg shadow-red-500/30 transition-all"
+            >
               {lang === 'ar' ? 'تأكيد' : 'Confirm'}
             </button>
           </div>
@@ -470,44 +485,75 @@ export default function PresidentDashboard() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 animate-fade-in-up pb-24 md:pb-10 min-h-screen relative w-full max-w-[100vw] overflow-x-hidden">
-      
-      {/* Mobile Header */}
-      <div className="md:hidden flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm mb-2 sticky top-20 z-40">
-        <div>
-          <h2 className="text-xl font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'رئاسة المنظمة' : 'Executive Office'}</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{user?.name || 'GITM President'}</p>
+    <div className="flex flex-col md:flex-row gap-5 md:gap-6 animate-fade-in-up pb-12 md:pb-10 min-h-screen relative w-full max-w-[100vw] overflow-x-hidden">
+
+      {/* Mobile Header + Scrollable Top Tabs (no collision with global bottom nav) */}
+      <div className="md:hidden space-y-3">
+        <div className="flex items-center justify-between bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="min-w-0">
+            <h2 className="text-lg font-bold text-[#1e3a5f] dark:text-white truncate">
+              {lang === 'ar' ? 'رئاسة المنظمة' : 'Executive Office'}
+            </h2>
+            <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5 truncate">
+              {user?.name || 'GITM President'}
+            </p>
+          </div>
+          <div className="w-10 h-10 shrink-0 rounded-full bg-slate-900 dark:bg-blue-600 flex items-center justify-center text-white font-bold shadow-md">
+            {(user?.name || 'P').charAt(0)}
+          </div>
         </div>
-        <div className="w-10 h-10 rounded-full bg-slate-900 dark:bg-blue-600 flex items-center justify-center text-white font-bold shadow-md">
-          {(user?.name || 'P').charAt(0)}
-        </div>
+
+        {/* Scrollable Horizontal Tab Strip (>=44px touch targets) */}
+        <nav
+          aria-label={lang === 'ar' ? 'تبويبات لوحة التحكم' : 'Dashboard tabs'}
+          className="filter-scroll pb-1 -mx-1 px-1"
+        >
+          {tabs.map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`min-h-[44px] flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border whitespace-nowrap transition-all ${
+                  isActive
+                    ? 'bg-slate-900 dark:bg-blue-600 text-white border-slate-900 dark:border-blue-600 shadow-sm'
+                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-800'
+                }`}
+              >
+                <Icon size={16} className="shrink-0" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
       </div>
 
-      {/* Sidebar Navigation */}
+      {/* Desktop Sidebar Navigation */}
       <div className="hidden md:block w-full md:w-64 shrink-0 min-w-0">
         <div className="glass-card rounded-3xl p-4 sticky top-24 border border-slate-200 dark:border-slate-800 shadow-lg">
-          <div className="mb-4 md:mb-6 px-2 flex justify-between items-center md:block">
-            <div>
-              <h2 className="text-lg md:text-xl font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'رئاسة المنظمة' : 'Executive Office'}</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 hidden md:block">{lang === 'ar' ? 'الحوكمة والإشراف العام' : 'Governance & Administration'}</p>
-            </div>
+          <div className="mb-6 px-2">
+            <h2 className="text-xl font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'رئاسة المنظمة' : 'Executive Office'}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{lang === 'ar' ? 'الحوكمة والإشراف العام' : 'Governance & Administration'}</p>
           </div>
-          <nav className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar w-full snap-x snap-mandatory">
+          <nav className="flex flex-col gap-2 w-full">
             {tabs.map(tab => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
+                  type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-shrink-0 md:w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
-                    isActive 
-                    ? 'bg-slate-900 dark:bg-blue-600 text-white shadow-sm' 
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
+                    isActive
+                      ? 'bg-slate-900 dark:bg-blue-600 text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  <Icon size={18} />
-                  {tab.label}
+                  <Icon size={18} className="shrink-0" />
+                  <span className="truncate">{tab.label}</span>
                 </button>
               );
             })}
@@ -526,7 +572,7 @@ export default function PresidentDashboard() {
             transition={{ duration: 0.2 }}
             className="space-y-6 w-full"
           >
-            
+
             {/* OVERVIEW TAB */}
             {activeTab === 'overview' && (
               <div className="space-y-6">
@@ -537,28 +583,34 @@ export default function PresidentDashboard() {
                   <StatCard title={lang === 'ar' ? 'المقالات والأخبار' : 'News Articles'} value={news.length.toString()} icon={Newspaper} color="pink" />
                 </div>
 
-                <div className="glass-card rounded-3xl p-5 md:p-8 border-pink-500/30 shadow-sm bg-gradient-to-br from-white to-pink-50 dark:from-slate-900 dark:to-pink-950/20 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-8 opacity-5"><Bot size={150} /></div>
-                  <div className="flex justify-between items-center mb-6 relative z-10">
+                <div className="glass-card rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-8 border border-pink-500/30 shadow-sm bg-gradient-to-br from-white to-pink-50 dark:from-slate-900 dark:to-pink-950/20 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none"><Bot size={150} /></div>
+                  <div className="flex justify-between items-center mb-5 relative z-10">
                     <div className="flex items-center gap-3">
-                      <div className="p-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl shadow-lg shadow-pink-500/30 text-white"><Bot size={24} /></div>
-                      <h3 className="text-xl font-bold font-sans font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 dark:from-pink-400 dark:to-purple-400">
+                      <div className="p-2.5 md:p-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl shadow-lg shadow-pink-500/30 text-white shrink-0"><Bot size={22} /></div>
+                      <h3 className="text-lg md:text-xl font-bold font-sans tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 dark:from-pink-400 dark:to-purple-400">
                         {lang === 'ar' ? 'موجز الذكاء الاصطناعي التنبؤي' : 'AI Predictive Summary'}
                       </h3>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-                    <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-2xl p-6 border border-pink-200 dark:border-pink-900/50">
-                      <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-3 flex items-center gap-2 text-sm"><TrendingUp size={16} className="text-emerald-500" /> {lang === 'ar' ? 'نمو الأكاديمية' : 'Academy Growth'}</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-300">
-                        {lang === 'ar' 
-                          ? `تمتلك الأكاديمية حالياً ${courses.length} دورة تقنية. تشير التحليلات إلى نمو مستمر في المحتوى التعليمي.` 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 relative z-10">
+                    <div className="bg-white/80 dark:bg-slate-900/70 backdrop-blur-sm rounded-2xl p-4 md:p-6 border border-pink-200 dark:border-pink-900/50">
+                      <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-2.5 flex items-center gap-2 text-sm">
+                        <TrendingUp size={16} className="text-emerald-500 shrink-0" />
+                        <span>{lang === 'ar' ? 'نمو الأكاديمية' : 'Academy Growth'}</span>
+                      </h4>
+                      <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                        {lang === 'ar'
+                          ? `تمتلك الأكاديمية حالياً ${courses.length} دورة تقنية. تشير التحليلات إلى نمو مستمر في المحتوى التعليمي.`
                           : `The academy currently has ${courses.length} tech courses. Analytics indicate continuous growth in educational content.`}
                       </p>
                     </div>
-                    <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-2xl p-6 border border-pink-200 dark:border-pink-900/50">
-                      <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-3 flex items-center gap-2 text-sm"><AlertTriangle size={16} className="text-amber-500" /> {lang === 'ar' ? 'تحليل تفاعل الأعضاء' : 'Member Engagement'}</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-300">
+                    <div className="bg-white/80 dark:bg-slate-900/70 backdrop-blur-sm rounded-2xl p-4 md:p-6 border border-pink-200 dark:border-pink-900/50">
+                      <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-2.5 flex items-center gap-2 text-sm">
+                        <AlertTriangle size={16} className="text-amber-500 shrink-0" />
+                        <span>{lang === 'ar' ? 'تحليل تفاعل الأعضاء' : 'Member Engagement'}</span>
+                      </h4>
+                      <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                         {lang === 'ar'
                           ? `لدينا ${allUsers.filter(u => u.role === 'member' || u.role === 'student').length} عضو (طالب/عضو) في مجتمعنا. ننصح بإطلاق فعاليات جديدة لتعزيز تفاعل الأعضاء وتطوير المهارات.`
                           : `We have ${allUsers.filter(u => u.role === 'member' || u.role === 'student').length} members (students/members) in our community. We recommend launching new events to boost engagement.`}
@@ -574,48 +626,49 @@ export default function PresidentDashboard() {
             {/* STRATEGIC VISION TAB */}
             {activeTab === 'vision' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-5 md:p-8 border-t-4 border-cyan-500">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <Target className="text-cyan-500" size={28}/> {lang === 'ar' ? 'الأهداف الاستراتيجية لـ GITM' : 'GITM Strategic Goals'}
+                <div className="glass-card rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-8 border-t-4 border-cyan-500">
+                  <div className="flex justify-between items-center mb-5 md:mb-6">
+                    <h3 className="text-xl md:text-2xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Target className="text-cyan-500 shrink-0" size={24} />
+                      <span>{lang === 'ar' ? 'الأهداف الاستراتيجية لـ GITM' : 'GITM Strategic Goals'}</span>
                     </h3>
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
-                      <div className="flex justify-between items-start mb-4">
-                        <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'تدريب الكفاءات المغربية' : 'Train Moroccan Talents'}</h4>
-                        <span className="text-cyan-600 font-bold">{Math.min((allUsers.filter(u => u.role === 'student' || u.role === 'member').length / 10000) * 100, 100).toFixed(1)}%</span>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div className="bg-white/80 dark:bg-slate-900/70 p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                      <div className="flex justify-between items-start gap-2 mb-3">
+                        <h4 className="font-bold text-base md:text-lg text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'تدريب الكفاءات المغربية' : 'Train Moroccan Talents'}</h4>
+                        <span className="text-cyan-600 dark:text-cyan-400 font-bold shrink-0">{Math.min((allUsers.filter(u => u.role === 'student' || u.role === 'member').length / 10000) * 100, 100).toFixed(1)}%</span>
                       </div>
-                      <p className="text-sm text-slate-500 mb-4">{lang === 'ar' ? 'الهدف: تدريب 10,000 طالب في مجالات الذكاء الاصطناعي والتكنولوجيا المتقدمة بحلول 2028.' : 'Goal: Train 10,000 students in AI and advanced tech by 2028.'}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">{lang === 'ar' ? 'الهدف: تدريب 10,000 طالب في مجالات الذكاء الاصطناعي والتكنولوجيا المتقدمة بحلول 2028.' : 'Goal: Train 10,000 students in AI and advanced tech by 2028.'}</p>
                       <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-cyan-400 to-blue-500 h-3 rounded-full" style={{ width: `${Math.min((allUsers.filter(u => u.role === 'student' || u.role === 'member').length / 10000) * 100, 100)}%` }}></div>
+                        <div className="bg-gradient-to-r from-cyan-400 to-blue-500 h-3 rounded-full" style={{ width: `${Math.min((allUsers.filter(u => u.role === 'student' || u.role === 'member').length / 10000) * 100, 100)}%` }} />
                       </div>
-                      <p className="text-right text-xs mt-2 font-bold text-slate-500">{allUsers.filter(u => u.role === 'student' || u.role === 'member').length.toLocaleString()} / 10,000</p>
+                      <p className="text-end text-xs mt-2 font-bold text-slate-600 dark:text-slate-300">{allUsers.filter(u => u.role === 'student' || u.role === 'member').length.toLocaleString()} / 10,000</p>
                     </div>
 
-                    <div className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
-                      <div className="flex justify-between items-start mb-4">
-                        <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'التوسع الإقليمي' : 'Regional Expansion'}</h4>
-                        <span className="text-purple-600 font-bold">{Math.min((2 / 5) * 100, 100).toFixed(1)}%</span>
+                    <div className="bg-white/80 dark:bg-slate-900/70 p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                      <div className="flex justify-between items-start gap-2 mb-3">
+                        <h4 className="font-bold text-base md:text-lg text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'التوسع الإقليمي' : 'Regional Expansion'}</h4>
+                        <span className="text-purple-600 dark:text-purple-400 font-bold shrink-0">{Math.min((2 / 5) * 100, 100).toFixed(1)}%</span>
                       </div>
-                      <p className="text-sm text-slate-500 mb-4">{lang === 'ar' ? 'الهدف: افتتاح مختبرات GITM في 5 مدن مغربية رئيسية (الدار البيضاء، الرباط، طنجة، مراكش، أكادير).' : 'Goal: Open GITM labs in 5 major Moroccan cities.'}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">{lang === 'ar' ? 'الهدف: افتتاح مختبرات GITM في 5 مدن مغربية رئيسية (الدار البيضاء، الرباط، طنجة، مراكش، أكادير).' : 'Goal: Open GITM labs in 5 major Moroccan cities.'}</p>
                       <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-purple-400 to-pink-500 h-3 rounded-full" style={{ width: `${Math.min((2 / 5) * 100, 100)}%` }}></div>
+                        <div className="bg-gradient-to-r from-purple-400 to-pink-500 h-3 rounded-full" style={{ width: `${Math.min((2 / 5) * 100, 100)}%` }} />
                       </div>
-                      <p className="text-right text-xs mt-2 font-bold text-slate-500 flex items-center justify-end gap-1"><MapPin size={12}/> 2 / 5 Cities</p>
+                      <p className="text-end text-xs mt-2 font-bold text-slate-600 dark:text-slate-300 flex items-center justify-end gap-1"><MapPin size={12} /> 2 / 5 Cities</p>
                     </div>
-                    
-                    <div className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 md:col-span-2">
-                      <div className="flex justify-between items-start mb-4">
-                        <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'البحث والتطوير (R&D)' : 'Research & Development'}</h4>
-                        <span className="text-emerald-600 font-bold">{Math.min(((projects.length || 1) / 5) * 100, 100).toFixed(1)}%</span>
+
+                    <div className="bg-white/80 dark:bg-slate-900/70 p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 md:col-span-2">
+                      <div className="flex justify-between items-start gap-2 mb-3">
+                        <h4 className="font-bold text-base md:text-lg text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'البحث والتطوير (R&D)' : 'Research & Development'}</h4>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">{Math.min(((projects.length || 1) / 5) * 100, 100).toFixed(1)}%</span>
                       </div>
-                      <p className="text-sm text-slate-500 mb-4">{lang === 'ar' ? 'الهدف: إطلاق نظام ذكاء اصطناعي مغربي 100% للشركات الناشئة.' : 'Goal: Launch a 100% Moroccan AI system for startups.'}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">{lang === 'ar' ? 'الهدف: إطلاق نظام ذكاء اصطناعي مغربي 100% للشركات الناشئة.' : 'Goal: Launch a 100% Moroccan AI system for startups.'}</p>
                       <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-emerald-400 to-teal-500 h-3 rounded-full" style={{ width: `${Math.min(((projects.length || 1) / 5) * 100, 100)}%` }}></div>
+                        <div className="bg-gradient-to-r from-emerald-400 to-teal-500 h-3 rounded-full" style={{ width: `${Math.min(((projects.length || 1) / 5) * 100, 100)}%` }} />
                       </div>
-                      <p className="text-right text-xs mt-2 font-bold text-slate-500">{lang === 'ar' ? 'مرحلة الاختبار التجريبي' : 'Beta Testing Phase'}</p>
+                      <p className="text-end text-xs mt-2 font-bold text-slate-600 dark:text-slate-300">{lang === 'ar' ? 'مرحلة الاختبار التجريبي' : 'Beta Testing Phase'}</p>
                     </div>
                   </div>
                 </div>
@@ -625,112 +678,124 @@ export default function PresidentDashboard() {
             {/* ABOUT US CMS TAB */}
             {activeTab === 'about_cms' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-4 md:p-8 border-t-4 border-emerald-500">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <Info className="text-cyan-500" size={24}/> {lang === 'ar' ? 'نظام إدارة محتوى (من نحن)' : 'About Us Content Management'}
+                <div className="glass-card rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-8 border-t-4 border-emerald-500">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                    <h3 className="text-lg md:text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Info className="text-cyan-500 shrink-0" size={22} />
+                      <span>{lang === 'ar' ? 'نظام إدارة محتوى (من نحن)' : 'About Us Content Management'}</span>
                     </h3>
-                    <button onClick={handleSaveAbout} className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-lg hover:shadow-cyan-500/30 transition-shadow">
+                    <button
+                      type="button"
+                      onClick={handleSaveAbout}
+                      className="w-full sm:w-auto min-h-[44px] bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:shadow-cyan-500/30 transition-shadow"
+                    >
                       {lang === 'ar' ? 'حفظ التغييرات ونشر' : 'Save & Publish'}
                     </button>
                   </div>
-                  
-                  <div className="space-y-6">
+
+                  <div className="space-y-5">
                     <div>
-                      <label className="block text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">
                         {lang === 'ar' ? 'رؤية المجموعة (Vision)' : 'Our Vision'}
                       </label>
-                      <textarea 
-                        className="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[#1e3a5f] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all h-24"
+                      <textarea
+                        className="w-full bg-white dark:bg-slate-900/70 border border-slate-300 dark:border-slate-700 rounded-xl p-3.5 text-base sm:text-sm text-[#1e3a5f] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all h-28"
                         value={lang === 'ar' ? aboutData.vision_ar || '' : aboutData.vision_en || ''}
                         onChange={(e) => setAboutData({ ...aboutData, [lang === 'ar' ? 'vision_ar' : 'vision_en']: e.target.value })}
-                      ></textarea>
+                      />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">
                         {lang === 'ar' ? 'رسالتنا (Mission)' : 'Our Mission'}
                       </label>
-                      <textarea 
-                        className="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[#1e3a5f] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all h-24"
+                      <textarea
+                        className="w-full bg-white dark:bg-slate-900/70 border border-slate-300 dark:border-slate-700 rounded-xl p-3.5 text-base sm:text-sm text-[#1e3a5f] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all h-28"
                         value={lang === 'ar' ? aboutData.mission_ar || '' : aboutData.mission_en || ''}
                         onChange={(e) => setAboutData({ ...aboutData, [lang === 'ar' ? 'mission_ar' : 'mission_en']: e.target.value })}
-                      ></textarea>
+                      />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-bold text-slate-600 dark:text-slate-300 mb-2">
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">
                         {lang === 'ar' ? 'تاريخ وإنجازات المجموعة (History & Milestones)' : 'Group History & Milestones'}
                       </label>
-                      <textarea 
-                        className="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[#1e3a5f] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all h-32"
+                      <textarea
+                        className="w-full bg-white dark:bg-slate-900/70 border border-slate-300 dark:border-slate-700 rounded-xl p-3.5 text-base sm:text-sm text-[#1e3a5f] dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all h-36"
                         value={lang === 'ar' ? aboutData.history_ar || '' : aboutData.history_en || ''}
                         onChange={(e) => setAboutData({ ...aboutData, [lang === 'ar' ? 'history_ar' : 'history_en']: e.target.value })}
-                      ></textarea>
+                      />
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* MEMBERS TAB (ROLE MANAGEMENT) */}
+            {/* MEMBERS TAB (ROLE MANAGEMENT — Horizontally Scrollable Table) */}
             {activeTab === 'members' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-4 md:p-8 border-t-4 border-blue-500">
-                  <div className="flex justify-between items-center mb-6">
+                <div className="glass-card rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-8 border-t-4 border-blue-500">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
-                      <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white mb-1">
-                        <Shield className="text-blue-500" size={24}/> {lang === 'ar' ? 'إدارة التوظيف والترقيات' : 'Roles & Promotions Management'}
+                      <h3 className="text-lg md:text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white mb-1">
+                        <Shield className="text-blue-500 shrink-0" size={22} />
+                        <span>{lang === 'ar' ? 'إدارة التوظيف والترقيات' : 'Roles & Promotions Management'}</span>
                       </h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                         {lang === 'ar' ? 'جميع المسجلين الجدد هم (طالب). لا أحد يرتقي إلا بتغيير صلاحياته من هنا، أو بإرسال رابط دعوة خاص.' : 'All new signups are Students. Upgrade their roles here or send a direct invite link.'}
                       </p>
                     </div>
-                    <button onClick={() => {
+                    <button
+                      type="button"
+                      onClick={() => {
                         toast.success(lang === 'ar' ? 'تم نسخ رابط الدعوة للفريق: https://gitm.ma/invite/XYZ-123' : 'Team Invite Link Copied: https://gitm.ma/invite/XYZ-123');
-                    }} className="bg-slate-50 dark:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg hover:bg-slate-700 transition-colors">
-                      <Link size={16}/> {lang === 'ar' ? 'إنشاء رابط دعوة' : 'Generate Invite Link'}
+                      }}
+                      className="w-full sm:w-auto min-h-[44px] bg-slate-900 dark:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors shrink-0"
+                    >
+                      <Link size={16} /> {lang === 'ar' ? 'إنشاء رابط دعوة' : 'Generate Invite Link'}
                     </button>
                   </div>
-                  
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+
+                  {/* Horizontal Scroll Container for Table */}
+                  <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+                    <table className="w-full min-w-[680px] text-start border-collapse">
                       <thead>
-                        <tr className="border-b-2 border-slate-200 dark:border-slate-800 text-slate-500 uppercase tracking-wider text-xs">
-                          <th className="p-3 font-bold">User</th>
-                          <th className="p-3 font-bold">Current Role</th>
-                          <th className="p-3 font-bold">Promote To</th>
-                          <th className="p-3 font-bold text-right">Actions</th>
+                        <tr className="border-b-2 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 uppercase tracking-wider text-xs">
+                          <th className="p-3 font-bold text-start">User</th>
+                          <th className="p-3 font-bold text-start">Current Role</th>
+                          <th className="p-3 font-bold text-start">Promote To</th>
+                          <th className="p-3 font-bold text-end">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                         {allUsers.map(m => (
-                          <tr key={m.id} className={`hover:bg-slate-50 dark:hover:bg-slate-50/ dark:bg-slate-800/ transition-colors ${m.role === 'suspended' ? 'opacity-50' : ''}`}>
+                          <tr key={m.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors ${m.role === 'suspended' ? 'opacity-50' : ''}`}>
                             <td className="p-3">
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 text-white flex items-center justify-center font-bold shadow-sm">
+                                <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 text-white flex items-center justify-center font-bold shadow-sm">
                                   {m.name ? m.name.charAt(0).toUpperCase() : '?'}
                                 </div>
-                                <div>
-                                  <p className="font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
-                                    {m.name} 
-                                    {m.membershipId && <span className="text-[10px] bg-amber-100 text-amber-700 px-2 rounded-full border border-amber-200">{m.membershipId}</span>}
+                                <div className="min-w-0">
+                                  <p className="font-bold text-sm text-[#1e3a5f] dark:text-white flex items-center gap-2">
+                                    <span className="truncate">{m.name}</span>
+                                    {m.membershipId && <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full border border-amber-200 shrink-0">{m.membershipId}</span>}
                                   </p>
-                                  <p className="text-xs text-slate-500">{m.email}</p>
+                                  <p className="text-xs text-slate-600 dark:text-slate-400 truncate" dir="ltr">{m.email}</p>
                                 </div>
                               </div>
                             </td>
                             <td className="p-3">
-                              <span className={`px-2 py-1 text-[10px] rounded uppercase font-bold ${
-                                m.role === 'student' ? 'bg-slate-100 text-slate-600' : 
-                                m.role === 'suspended' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
+                              <span className={`px-2.5 py-1 text-xs rounded-md uppercase font-bold ${
+                                m.role === 'student' ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200' :
+                                  m.role === 'suspended' ? 'bg-red-100 text-red-700' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                               }`}>{m.role}</span>
                             </td>
                             <td className="p-3">
-                              <select 
+                              <select
                                 value={m.role || 'student'}
                                 onChange={(e) => updateUserRole(m.id, e.target.value)}
-                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer">
+                                className="min-h-[44px] bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer"
+                              >
                                 <option value="student">Student (Default)</option>
                                 <option value="member">Member</option>
                                 <option value="teacher">Teacher</option>
@@ -742,19 +807,33 @@ export default function PresidentDashboard() {
                                 <option value="suspended" className="text-red-500 font-bold">Suspend Account</option>
                               </select>
                             </td>
-                            <td className="p-3 text-right">
+                            <td className="p-3 text-end">
                               <div className="flex justify-end gap-2 items-center">
-                                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                                  <input 
-                                    type="checkbox" 
-                                    checked={!!m.isTeamMember} 
+                                <label className="min-h-[44px] flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors whitespace-nowrap">
+                                  <input
+                                    type="checkbox"
+                                    checked={!!m.isTeamMember}
                                     onChange={() => toggleTeamMember(m.id, !!m.isTeamMember)}
                                     className="accent-cyan-500 w-4 h-4"
                                   />
                                   {lang === 'ar' ? 'فريق About' : 'About Team'}
                                 </label>
-                                <button onClick={() => navigate(`/profile/${m.id}`)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-cyan-500 transition-colors bg-slate-100 dark:bg-slate-800 rounded-lg"><Eye size={16}/></button>
-                                <button onClick={() => handleDelete('user', m.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors bg-slate-100 dark:bg-slate-800 rounded-lg"><Trash2 size={16}/></button>
+                                <button
+                                  type="button"
+                                  aria-label={lang === 'ar' ? 'عرض الملف' : 'View profile'}
+                                  onClick={() => navigate(`/profile/${m.id}`)}
+                                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-cyan-600 transition-colors bg-slate-100 dark:bg-slate-800 rounded-xl"
+                                >
+                                  <Eye size={17} />
+                                </button>
+                                <button
+                                  type="button"
+                                  aria-label={lang === 'ar' ? 'حذف' : 'Delete'}
+                                  onClick={() => handleDelete('user', m.id)}
+                                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-red-500 transition-colors bg-slate-100 dark:bg-slate-800 rounded-xl"
+                                >
+                                  <Trash2 size={17} />
+                                </button>
                               </div>
                             </td>
                           </tr>
@@ -769,31 +848,38 @@ export default function PresidentDashboard() {
             {/* PARTNERS & NGOs TAB */}
             {activeTab === 'partners' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <Handshake className="text-emerald-500" size={24}/> {lang === 'ar' ? 'إدارة الشراكات والجمعيات' : 'Partnerships & NGOs'}
+                <div className="glass-card rounded-2xl md:rounded-3xl p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                    <h3 className="text-lg md:text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Handshake className="text-emerald-500 shrink-0" size={22} />
+                      <span>{lang === 'ar' ? 'إدارة الشراكات والجمعيات' : 'Partnerships & NGOs'}</span>
                     </h3>
-                    <button onClick={() => openModal('partner')} className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'إضافة شريك جديد' : 'Add Partner'}</button>
+                    <button
+                      type="button"
+                      onClick={() => openModal('partner')}
+                      className="w-full sm:w-auto min-h-[44px] bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-transform active:scale-[0.98]"
+                    >
+                      <Plus size={16} /> {lang === 'ar' ? 'إضافة شريك جديد' : 'Add Partner'}
+                    </button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {partners.length === 0 ? (
-                      <p className="text-slate-500 text-sm">No partners added yet.</p>
+                      <p className="text-slate-600 dark:text-slate-300 text-sm">No partners added yet.</p>
                     ) : (
                       partners.map(partner => (
-                        <div key={partner.id} className="p-5 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/50 flex justify-between items-center hover:shadow-md transition-shadow">
-                          <div>
-                            <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{partner.name}</h4>
-                            <p className="text-sm text-slate-500 flex items-center gap-1">
-                              <CheckCircle size={14} className="text-emerald-500"/> 
-                              {partner.type === 'corporate' ? 'Corporate Partner' : partner.type === 'academic' ? 'Academic Partner' : 'NGO'}
+                        <div key={partner.id} className="p-4 sm:p-5 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:shadow-md transition-shadow">
+                          <div className="min-w-0">
+                            <h4 className="font-bold text-base sm:text-lg text-[#1e3a5f] dark:text-white break-words">{partner.name}</h4>
+                            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 flex items-center gap-1.5 mt-1">
+                              <CheckCircle size={14} className="text-emerald-500 shrink-0" />
+                              <span>{partner.type === 'corporate' ? 'Corporate Partner' : partner.type === 'academic' ? 'Academic Partner' : 'NGO'}</span>
                             </p>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <span className={`px-3 py-1 font-bold text-xs rounded-full ${partner.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{partner.status}</span>
-                            <div className="flex gap-2">
-                              <button onClick={() => openModal('partner', partner)} className="text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors p-1"><Edit size={16}/></button>
-                              <button onClick={() => handleDelete('partner', partner.id)} className="text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors p-1"><Trash2 size={16}/></button>
+                          <div className="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
+                            <span className={`px-3 py-1 font-bold text-xs rounded-full ${partner.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>{partner.status}</span>
+                            <div className="flex gap-1.5">
+                              <button type="button" aria-label="Edit" onClick={() => openModal('partner', partner)} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><Edit size={17} /></button>
+                              <button type="button" aria-label="Delete" onClick={() => handleDelete('partner', partner.id)} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><Trash2 size={17} /></button>
                             </div>
                           </div>
                         </div>
@@ -807,26 +893,33 @@ export default function PresidentDashboard() {
             {/* ACADEMY TAB */}
             {activeTab === 'academy' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <GraduationCap className="text-purple-500" size={24}/> {lang === 'ar' ? 'الإدارة الأكاديمية والتداريب' : 'Academy & Training Management'}
+                <div className="glass-card rounded-2xl md:rounded-3xl p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                    <h3 className="text-lg md:text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <GraduationCap className="text-purple-500 shrink-0" size={22} />
+                      <span>{lang === 'ar' ? 'الإدارة الأكاديمية والتداريب' : 'Academy & Training Management'}</span>
                     </h3>
-                    <button onClick={() => window.open('/editor/course/new', '_blank')} className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-purple-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'دورة جديدة' : 'New Course'}</button>
+                    <button
+                      type="button"
+                      onClick={() => window.open('/editor/course/new', '_blank')}
+                      className="w-full sm:w-auto min-h-[44px] bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-transform active:scale-[0.98]"
+                    >
+                      <Plus size={16} /> {lang === 'ar' ? 'دورة جديدة' : 'New Course'}
+                    </button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {courses.map(course => (
-                      <div key={course.id} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 hover:border-purple-300 dark:hover:border-purple-900 transition-colors">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-bold text-[#1e3a5f] dark:text-white">{course.title}</h4>
-                          <span className={`px-2 py-1 text-[10px] rounded uppercase font-bold ${course.status === 'Active' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>{course.status}</span>
+                      <div key={course.id} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-purple-300 dark:hover:border-purple-900 transition-colors">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h4 className="font-bold text-base text-[#1e3a5f] dark:text-white break-words">{course.title}</h4>
+                          <span className={`px-2.5 py-1 text-xs rounded-full uppercase font-bold shrink-0 ${course.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>{course.status}</span>
                         </div>
-                        <p className="text-sm text-slate-500 mb-4 flex items-center gap-2"><Users size={14}/> {course.enrolled || 0} {lang==='ar'?'طالب مسجل':'Students Enrolled'}</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-300 mb-3 flex items-center gap-2"><Users size={14} /> {course.enrolled || 0} {lang === 'ar' ? 'طالب مسجل' : 'Students Enrolled'}</p>
                         <div className="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800">
-                          <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Inst: {course.instructor || 'Admin'}</span>
-                          <div className="flex gap-2">
-                              <button onClick={() => window.open(`/editor/course/edit/${course.id}`, '_blank')} className="text-blue-500 p-1 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded"><Edit size={16}/></button>
-                              <button onClick={() => handleDelete('course', course.id)} className="text-red-500 p-1 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"><Trash2 size={16}/></button>
+                          <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">Inst: {course.instructor || 'Admin'}</span>
+                          <div className="flex gap-1.5">
+                            <button type="button" aria-label="Edit" onClick={() => window.open(`/editor/course/edit/${course.id}`, '_blank')} className="min-w-[44px] min-h-[44px] flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl"><Edit size={17} /></button>
+                            <button type="button" aria-label="Delete" onClick={() => handleDelete('course', course.id)} className="min-w-[44px] min-h-[44px] flex items-center justify-center text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl"><Trash2 size={17} /></button>
                           </div>
                         </div>
                       </div>
@@ -839,28 +932,33 @@ export default function PresidentDashboard() {
             {/* PROJECTS TAB */}
             {activeTab === 'projects' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <Rocket className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة المشاريع وفرق العمل' : 'Projects & Teams Management'}
+                <div className="glass-card rounded-2xl md:rounded-3xl p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                    <h3 className="text-lg md:text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Rocket className="text-amber-500 shrink-0" size={22} />
+                      <span>{lang === 'ar' ? 'إدارة المشاريع وفرق العمل' : 'Projects & Teams Management'}</span>
                     </h3>
-                    <button onClick={() => window.open('/editor/project/new', '_blank')} className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:scale-105 transition-transform">
-                      <Plus size={16}/> {lang === 'ar' ? 'مشروع جديد' : 'New Project'}
+                    <button
+                      type="button"
+                      onClick={() => window.open('/editor/project/new', '_blank')}
+                      className="w-full sm:w-auto min-h-[44px] bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-transform active:scale-[0.98]"
+                    >
+                      <Plus size={16} /> {lang === 'ar' ? 'مشروع جديد' : 'New Project'}
                     </button>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3.5">
                     {projects.map(project => (
-                      <div key={project.id} className="bg-white/60 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h4 className="font-bold text-xl text-[#1e3a5f] dark:text-white">{project.titleAr || project.title}</h4>
-                            <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-full mt-2 inline-block uppercase">{project.status}</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <button onClick={() => window.open(`/editor/project/edit/${project.id}`, '_blank')} className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors"><Edit size={16}/></button>
-                            <button onClick={() => handleDelete('project', project.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
-                          </div>
+                      <div key={project.id} className="bg-white/80 dark:bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-base sm:text-xl text-[#1e3a5f] dark:text-white break-words">{project.titleAr || project.title}</h4>
+                          {project.status && (
+                            <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full mt-2 inline-block uppercase">{project.status}</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
+                          <button type="button" aria-label="Edit" onClick={() => window.open(`/editor/project/edit/${project.id}`, '_blank')} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><Edit size={17} /></button>
+                          <button type="button" aria-label="Delete" onClick={() => handleDelete('project', project.id)} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><Trash2 size={17} /></button>
                         </div>
                       </div>
                     ))}
@@ -872,48 +970,62 @@ export default function PresidentDashboard() {
             {/* EVENTS TAB */}
             {activeTab === 'events' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <Calendar className="text-amber-500" size={24}/> {lang === 'ar' ? 'إدارة الفعاليات والهاكاثونات' : 'Events & Hackathons Management'}
+                <div className="glass-card rounded-2xl md:rounded-3xl p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                    <h3 className="text-lg md:text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Calendar className="text-amber-500 shrink-0" size={22} />
+                      <span>{lang === 'ar' ? 'إدارة الفعاليات والهاكاثونات' : 'Events & Hackathons Management'}</span>
                     </h3>
-                    <button onClick={() => window.open('/editor/event/new', '_blank')} className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'حدث جديد' : 'New Event'}</button>
+                    <button
+                      type="button"
+                      onClick={() => window.open('/editor/event/new', '_blank')}
+                      className="w-full sm:w-auto min-h-[44px] bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-transform active:scale-[0.98]"
+                    >
+                      <Plus size={16} /> {lang === 'ar' ? 'حدث جديد' : 'New Event'}
+                    </button>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-3.5">
                     {events.map(event => (
-                      <div key={event.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800">
-                        <div>
-                          <h4 className="font-bold text-[#1e3a5f] dark:text-white text-lg">{event.titleAr || event.title}</h4>
-                          <p className="text-sm text-slate-500 flex items-center gap-2"><Calendar size={14}/> {event.startDate || event.date} • <Users size={14}/> {event.attendees || 0} Registered</p>
+                      <div key={event.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-800 gap-3">
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-[#1e3a5f] dark:text-white text-base sm:text-lg break-words">{event.titleAr || event.title}</h4>
+                          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 flex flex-wrap items-center gap-2 mt-1">
+                            <span className="inline-flex items-center gap-1"><Calendar size={14} /> {event.startDate || event.date}</span>
+                            <span>•</span>
+                            <span className="inline-flex items-center gap-1"><Users size={14} /> {event.attendees || 0} Registered</span>
+                          </p>
                         </div>
-                        <div className="flex items-center gap-3 mt-4 md:mt-0">
-                          <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs font-bold">{event.status || 'Published'}</span>
-                          <button onClick={() => window.open(`/editor/event/edit/${event.id}`, '_blank')} className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors"><Edit size={16}/></button>
-                          <button onClick={() => handleDelete('event', event.id)} className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
+                        <div className="flex items-center justify-between md:justify-end gap-2 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800">
+                          <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-full text-xs font-bold">{event.status || 'Published'}</span>
+                          <div className="flex gap-1.5">
+                            <button type="button" aria-label="Edit" onClick={() => window.open(`/editor/event/edit/${event.id}`, '_blank')} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><Edit size={17} /></button>
+                            <button type="button" aria-label="Delete" onClick={() => handleDelete('event', event.id)} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><Trash2 size={17} /></button>
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="glass-card rounded-3xl p-6">
-                  <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                    <CheckCircle className="text-emerald-500" size={20}/> {lang === 'ar' ? 'طلبات تسجيل الحضور/المشاريع' : 'Registration Requests'}
+                <div className="glass-card rounded-2xl md:rounded-3xl p-4 sm:p-6">
+                  <h3 className="text-base sm:text-lg font-bold mb-4 flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                    <CheckCircle className="text-emerald-500 shrink-0" size={20} />
+                    <span>{lang === 'ar' ? 'طلبات تسجيل الحضور/المشاريع' : 'Registration Requests'}</span>
                   </h3>
                   {(!eventRegistrations || eventRegistrations.length === 0) ? (
-                    <p className="text-sm text-slate-500 text-center py-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl">No pending requests at the moment.</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 text-center py-5 bg-slate-50 dark:bg-slate-900/50 rounded-xl">No pending requests at the moment.</p>
                   ) : (
                     <div className="space-y-3">
                       {eventRegistrations.map(reg => (
-                        <div key={reg.id} className="p-3 border border-slate-200 dark:border-slate-700 rounded-xl flex justify-between items-center bg-white dark:bg-slate-900/50">
+                        <div key={reg.id} className="p-3.5 border border-slate-200 dark:border-slate-700 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900/60">
                           <div>
-                            <p className="font-bold text-[#1e3a5f] dark:text-white">{reg.eventTitle}</p>
-                            <p className="text-xs text-slate-500">{reg.userName} - {reg.status}</p>
+                            <p className="font-bold text-sm sm:text-base text-[#1e3a5f] dark:text-white">{reg.eventTitle}</p>
+                            <p className="text-xs text-slate-600 dark:text-slate-300">{reg.userName} - {reg.status}</p>
                           </div>
                           {reg.status === 'pending' && (
                             <div className="flex gap-2">
-                              <button onClick={() => handleUpdateRegStatus(reg.id, 'approved')} className="text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 p-2 rounded-lg"><CheckCircle size={18}/></button>
-                              <button onClick={() => handleUpdateRegStatus(reg.id, 'rejected')} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 p-2 rounded-lg"><XCircle size={18}/></button>
+                              <button type="button" aria-label="Approve" onClick={() => handleUpdateRegStatus(reg.id, 'approved')} className="min-w-[44px] min-h-[44px] flex items-center justify-center text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-xl"><CheckCircle size={20} /></button>
+                              <button type="button" aria-label="Reject" onClick={() => handleUpdateRegStatus(reg.id, 'rejected')} className="min-w-[44px] min-h-[44px] flex items-center justify-center text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl"><XCircle size={20} /></button>
                             </div>
                           )}
                         </div>
@@ -927,25 +1039,32 @@ export default function PresidentDashboard() {
             {/* NEWS TAB */}
             {activeTab === 'news' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <Newspaper className="text-blue-500" size={24}/> {lang === 'ar' ? 'إدارة الأخبار والميديا' : 'News & Media Management'}
+                <div className="glass-card rounded-2xl md:rounded-3xl p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                    <h3 className="text-lg md:text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Newspaper className="text-blue-500 shrink-0" size={22} />
+                      <span>{lang === 'ar' ? 'إدارة الأخبار والميديا' : 'News & Media Management'}</span>
                     </h3>
-                    <button onClick={() => window.open('/editor/article/new', '_blank')} className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'مقال جديد' : 'Write Article'}</button>
+                    <button
+                      type="button"
+                      onClick={() => window.open('/editor/article/new', '_blank')}
+                      className="w-full sm:w-auto min-h-[44px] bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-transform active:scale-[0.98]"
+                    >
+                      <Plus size={16} /> {lang === 'ar' ? 'مقال جديد' : 'Write Article'}
+                    </button>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-3.5">
                     {news.map(n => (
-                      <div key={n.id} className="flex justify-between items-center p-4 border border-slate-200 dark:border-slate-800 rounded-2xl hover:shadow-md transition-shadow bg-white dark:bg-slate-900/50">
-                        <div>
-                          <h4 className="font-bold text-lg text-[#1e3a5f] dark:text-white">{n.title}</h4>
-                          <p className="text-sm text-slate-500">{n.date}</p>
+                      <div key={n.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border border-slate-200 dark:border-slate-800 rounded-2xl hover:shadow-md transition-shadow bg-white dark:bg-slate-900/60">
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-base sm:text-lg text-[#1e3a5f] dark:text-white break-words">{n.title}</h4>
+                          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1">{n.date}</p>
                         </div>
-                        <div className="flex items-center gap-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${n.status === 'Published' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>{n.status}</span>
-                          <div className="flex gap-2 border-l border-slate-200 dark:border-slate-700 pl-4">
-                            <button onClick={() => window.open(`/editor/article/edit/${n.id}`, '_blank')} className="text-slate-600 dark:text-slate-400 hover:text-blue-500 p-2 transition-colors"><Edit size={16}/></button>
-                            <button onClick={() => handleDelete('news', n.id)} className="text-slate-600 dark:text-slate-400 hover:text-red-500 p-2 transition-colors"><Trash2 size={16}/></button>
+                        <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${n.status === 'Published' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'}`}>{n.status}</span>
+                          <div className="flex gap-1.5 sm:border-s sm:border-slate-200 sm:dark:border-slate-700 sm:ps-3">
+                            <button type="button" aria-label="Edit" onClick={() => window.open(`/editor/article/edit/${n.id}`, '_blank')} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><Edit size={17} /></button>
+                            <button type="button" aria-label="Delete" onClick={() => handleDelete('news', n.id)} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-300 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><Trash2 size={17} /></button>
                           </div>
                         </div>
                       </div>
@@ -958,25 +1077,32 @@ export default function PresidentDashboard() {
             {/* GALLERY TAB */}
             {activeTab === 'gallery' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
-                      <Image className="text-indigo-500" size={24}/> {lang === 'ar' ? 'إدارة المعرض والصور' : 'Gallery Management'}
+                <div className="glass-card rounded-2xl md:rounded-3xl p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                    <h3 className="text-lg md:text-xl font-bold flex items-center gap-2 text-[#1e3a5f] dark:text-white">
+                      <Image className="text-indigo-500 shrink-0" size={22} />
+                      <span>{lang === 'ar' ? 'إدارة المعرض والصور' : 'Gallery Management'}</span>
                     </h3>
-                    <button onClick={() => openModal('gallery')} className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-indigo-500/30 hover:scale-105 transition-transform"><Plus size={16}/> {lang === 'ar' ? 'رفع صور جديدة' : 'Upload Media'}</button>
+                    <button
+                      type="button"
+                      onClick={() => openModal('gallery')}
+                      className="w-full sm:w-auto min-h-[44px] bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md transition-transform active:scale-[0.98]"
+                    >
+                      <Plus size={16} /> {lang === 'ar' ? 'رفع صور جديدة' : 'Upload Media'}
+                    </button>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                     {gallery.map(img => (
                       <div key={img.id} className="relative group rounded-xl overflow-hidden aspect-square bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 mix-blend-overlay"></div>
+                        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 mix-blend-overlay" />
                         <div className="absolute inset-0 flex items-center justify-center opacity-30 group-hover:scale-110 transition-transform duration-500">
-                          <Image size={48} className="text-slate-600 dark:text-slate-400" />
+                          <Image size={42} className="text-slate-600 dark:text-slate-400" />
                         </div>
-                        <div className="absolute inset-0 bg-white/ dark:bg-slate-900/ opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
-                          <button onClick={() => openModal('gallery', img)} className="p-2 bg-white/10 hover:bg-blue-500 text-white rounded-lg transition-colors"><Edit size={16}/></button>
-                          <button onClick={() => handleDelete('gallery', img.id)} className="p-2 bg-white/10 hover:bg-red-500 text-white rounded-lg transition-colors"><Trash2 size={16}/></button>
+                        <div className="absolute inset-0 bg-slate-950/60 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[1px]">
+                          <button type="button" aria-label="Edit" onClick={() => openModal('gallery', img)} className="min-w-[44px] min-h-[44px] flex items-center justify-center bg-white/15 hover:bg-blue-500 text-white rounded-xl transition-colors"><Edit size={17} /></button>
+                          <button type="button" aria-label="Delete" onClick={() => handleDelete('gallery', img.id)} className="min-w-[44px] min-h-[44px] flex items-center justify-center bg-white/15 hover:bg-red-500 text-white rounded-xl transition-colors"><Trash2 size={17} /></button>
                         </div>
-                        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
+                        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/85 to-transparent">
                           <p className="text-white text-xs font-bold truncate">{img.name}</p>
                         </div>
                       </div>
@@ -989,48 +1115,71 @@ export default function PresidentDashboard() {
             {/* AI TAB */}
             {activeTab === 'ai' && (
               <div className="space-y-6">
-                <div className="glass-card rounded-3xl p-6 border border-pink-200 dark:border-pink-900/30">
-                  <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-pink-600 dark:text-pink-400">
-                    <BrainCircuit size={24}/> {lang === 'ar' ? 'إعدادات وكلاء الذكاء الاصطناعي' : 'AI Agents Configuration'}
+                <div className="glass-card rounded-2xl md:rounded-3xl p-4 sm:p-6 border border-pink-200 dark:border-pink-900/30">
+                  <h3 className="text-lg md:text-xl font-bold mb-5 flex items-center gap-2 text-pink-600 dark:text-pink-400">
+                    <BrainCircuit size={22} className="shrink-0" />
+                    <span>{lang === 'ar' ? 'إعدادات وكلاء الذكاء الاصطناعي' : 'AI Agents Configuration'}</span>
                   </h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="p-5 bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h4 className="font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2"><Bot size={18} className="text-blue-500"/> Content Moderation AI</h4>
-                          <p className="text-xs text-slate-500 mt-1">Scans forums and comments for policy violations.</p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div className="p-4 sm:p-5 bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
+                      <div className="flex justify-between items-start gap-3 mb-4">
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2"><Bot size={18} className="text-blue-500 shrink-0" /> Content Moderation AI</h4>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">Scans forums and comments for policy violations.</p>
                         </div>
-                        <div 
-                          onClick={() => setAiSettings({...aiSettings, moderation: {...aiSettings.moderation, active: !aiSettings.moderation.active}})}
-                          className={`w-10 h-6 rounded-full relative cursor-pointer transition-colors ${aiSettings.moderation.active ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
-                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${aiSettings.moderation.active ? 'right-1' : 'left-1'}`}></div>
-                        </div>
+                        <button
+                          type="button"
+                          aria-label="Toggle Content Moderation AI"
+                          onClick={() => setAiSettings({ ...aiSettings, moderation: { ...aiSettings.moderation, active: !aiSettings.moderation.active } })}
+                          className="min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0"
+                        >
+                          <div className={`w-11 h-6 rounded-full relative transition-colors ${aiSettings.moderation.active ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
+                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${aiSettings.moderation.active ? 'right-1' : 'left-1'}`} />
+                          </div>
+                        </button>
                       </div>
-                      <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                        <p className="flex justify-between"><span>Model:</span> <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 rounded">{aiSettings.moderation.model}</span></p>
+                      <div className="space-y-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+                        <p className="flex flex-wrap justify-between gap-2"><span>Model:</span> <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded break-all">{aiSettings.moderation.model}</span></p>
                         <p className="flex justify-between"><span>Actions/Day:</span> <span className="font-bold">{aiSettings.moderation.actions}</span></p>
                       </div>
-                      <button onClick={() => openModal('ai', {type: 'moderation', model: aiSettings.moderation.model, param: aiSettings.moderation.actions})} className="mt-4 w-full py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#1e3a5f] dark:text-white hover:bg-slate-50 dark:hover:bg-slate-50 dark:bg-slate-800 transition-colors">Configure Rules</button>
+                      <button
+                        type="button"
+                        onClick={() => openModal('ai', { type: 'moderation', model: aiSettings.moderation.model, param: aiSettings.moderation.actions })}
+                        className="mt-4 w-full min-h-[44px] py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-bold text-[#1e3a5f] dark:text-white bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      >
+                        Configure Rules
+                      </button>
                     </div>
 
-                    <div className="p-5 bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h4 className="font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2"><Bot size={18} className="text-purple-500"/> Predictive Analytics AI</h4>
-                          <p className="text-xs text-slate-500 mt-1">Generates weekly growth and risk reports.</p>
+                    <div className="p-4 sm:p-5 bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
+                      <div className="flex justify-between items-start gap-3 mb-4">
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2"><Bot size={18} className="text-purple-500 shrink-0" /> Predictive Analytics AI</h4>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">Generates weekly growth and risk reports.</p>
                         </div>
-                        <div 
-                          onClick={() => setAiSettings({...aiSettings, predictive: {...aiSettings.predictive, active: !aiSettings.predictive.active}})}
-                          className={`w-10 h-6 rounded-full relative cursor-pointer transition-colors ${aiSettings.predictive.active ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
-                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${aiSettings.predictive.active ? 'right-1' : 'left-1'}`}></div>
-                        </div>
+                        <button
+                          type="button"
+                          aria-label="Toggle Predictive Analytics AI"
+                          onClick={() => setAiSettings({ ...aiSettings, predictive: { ...aiSettings.predictive, active: !aiSettings.predictive.active } })}
+                          className="min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0"
+                        >
+                          <div className={`w-11 h-6 rounded-full relative transition-colors ${aiSettings.predictive.active ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
+                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${aiSettings.predictive.active ? 'right-1' : 'left-1'}`} />
+                          </div>
+                        </button>
                       </div>
-                      <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                        <p className="flex justify-between"><span>Model:</span> <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 rounded">{aiSettings.predictive.model}</span></p>
+                      <div className="space-y-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+                        <p className="flex flex-wrap justify-between gap-2"><span>Model:</span> <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded break-all">{aiSettings.predictive.model}</span></p>
                         <p className="flex justify-between"><span>Confidence Threshold:</span> <span className="font-bold">{aiSettings.predictive.threshold}%</span></p>
                       </div>
-                      <button onClick={() => openModal('ai', {type: 'predictive', model: aiSettings.predictive.model, param: aiSettings.predictive.threshold})} className="mt-4 w-full py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#1e3a5f] dark:text-white hover:bg-slate-50 dark:hover:bg-slate-50 dark:bg-slate-800 transition-colors">Adjust Parameters</button>
+                      <button
+                        type="button"
+                        onClick={() => openModal('ai', { type: 'predictive', model: aiSettings.predictive.model, param: aiSettings.predictive.threshold })}
+                        className="mt-4 w-full min-h-[44px] py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-bold text-[#1e3a5f] dark:text-white bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      >
+                        Adjust Parameters
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -1045,34 +1194,10 @@ export default function PresidentDashboard() {
           </motion.div>
         </AnimatePresence>
       </div>
-      
+
       {/* Dynamic Modal Overlay */}
       <CrudModal />
       <ConfirmDialog />
-
-      {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 z-50 px-2 py-2 flex justify-between items-center overflow-x-auto hide-scrollbar shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
-        {tabs.map(tab => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center justify-center p-2 min-w-[64px] rounded-xl transition-all ${
-                isActive
-                ? 'text-cyan-600 dark:text-cyan-400 font-bold scale-105'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-              }`}
-            >
-              <div className={`p-1.5 rounded-lg mb-1 ${isActive ? 'bg-cyan-100 dark:bg-cyan-900/30' : ''}`}>
-                <Icon size={20} className={isActive ? 'animate-bounce' : ''} />
-              </div>
-              <span className="text-[9px] whitespace-nowrap">{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
     </div>
   );
 }
