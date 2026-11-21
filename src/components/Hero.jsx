@@ -15,9 +15,9 @@ const isTouchOrMobile = () => {
 };
 
 const bgImages = [
-  "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1527443195645-1133f7f28990?auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80"
+  "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=70",
+  "https://images.unsplash.com/photo-1527443195645-1133f7f28990?auto=format&fit=crop&w=1200&q=70",
+  "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=70"
 ];
 
 export default function Hero() {
