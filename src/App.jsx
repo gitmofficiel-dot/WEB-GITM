@@ -82,7 +82,7 @@ const AppContent = () => {
   const isTheaterMode = location.pathname.includes('/academy/course/');
 
   const renderDashboard = () => {
-    if (!currentUser) return <Navigate to="/login" replace />;
+    if (!currentUser || !currentUser.uid) return <Navigate to="/login" replace />;
     
     switch (currentUser.role) {
       case 'president': return <PresidentDashboard />;
