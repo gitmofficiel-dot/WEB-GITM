@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client'
 window.addEventListener('vite:preloadError', () => {
   window.location.reload()
 })
+import { registerSW } from 'virtual:pwa-register'
 import { BrowserRouter } from 'react-router-dom'
 import posthog from 'posthog-js'
 import './index.css'
@@ -27,3 +28,16 @@ createRoot(document.getElementById('root')).render(
     </AuthProvider>
   </BrowserRouter>,
 )
+
+// Keep installed/long-lived tabs on the latest deploy: check for a new service worker
+// on open, every 10 minutes, and whenever the tab becomes visible again. autoUpdate reloads when it activates.
+registerSW({
+  immediate: true,
+  onRegisteredSW(_url, reg) {
+    if (!reg) return
+    setInterval(() => reg.update().catch(() => {}), 10 * 60 * 1000)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') reg.update().catch(() => {})
+    })
+  }
+})
