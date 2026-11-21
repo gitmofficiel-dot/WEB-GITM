@@ -209,7 +209,7 @@ export default function ContentManagerDashboard() {
       if (articleImage) {
         imageUrl = await uploadToCloudinary(articleImage);
       }
-      
+
       const articleData = {
         title: articleForm.title || articleForm.titleEn,
         titleEn: articleForm.titleEn || articleForm.title,
@@ -230,7 +230,7 @@ export default function ContentManagerDashboard() {
         articleData.views = 0;
         await addDoc(collection(db, 'news'), articleData);
       }
-      
+
       setShowArticleModal(false);
       setEditingArticle(null);
       setArticleForm({ title: '', titleEn: '', author: '', status: 'Draft', content: '', category: '' });
@@ -269,7 +269,7 @@ export default function ContentManagerDashboard() {
         await addDoc(collection(db, 'news'), articleData);
         toast.success(lang === 'ar' ? 'تم نشر المقال بنجاح' : 'Article published successfully');
       }
-      
+
       setShowArticleModal(false);
       setEditingArticle(null);
       fetchArticles();
@@ -306,7 +306,7 @@ export default function ContentManagerDashboard() {
       if (imageFile) {
         imageUrl = await uploadToCloudinary(imageFile);
       }
-      
+
       const eventData = {
         ...data,
         imageUrl,
@@ -322,7 +322,7 @@ export default function ContentManagerDashboard() {
         await addDoc(collection(db, 'events'), eventData);
         toast.success(lang === 'ar' ? 'تم نشر الفعالية بنجاح' : 'Event published successfully');
       }
-      
+
       setShowEventEditor(false);
       setEditingEvent(null);
       fetchEvents();
@@ -369,7 +369,7 @@ export default function ContentManagerDashboard() {
         await addDoc(collection(db, 'courses'), dataToSave);
         toast.success(lang === 'ar' ? 'تم نشر المسار بنجاح' : 'Course published successfully');
       }
-      
+
       setShowCourseEditor(false);
       setEditingCourse(null);
       fetchCourses();
@@ -416,7 +416,7 @@ export default function ContentManagerDashboard() {
         await addDoc(collection(db, 'projects'), dataToSave);
         toast.success(lang === 'ar' ? 'تم حفظ المشروع بنجاح' : 'Project saved successfully');
       }
-      
+
       setShowProjectEditor(false);
       setEditingProject(null);
       fetchProjects();
@@ -448,10 +448,10 @@ export default function ContentManagerDashboard() {
 
   const handleEditArticle = (article) => {
     setEditingArticle(article);
-    setArticleForm({ 
-      title: article.title || '', 
+    setArticleForm({
+      title: article.title || '',
       titleEn: article.titleEn || '',
-      author: article.author || '', 
+      author: article.author || '',
       status: article.status || 'Draft',
       content: article.content || '',
       category: article.category || ''
@@ -467,7 +467,7 @@ export default function ContentManagerDashboard() {
       const uploadPromises = mediaFiles.map(async (file) => {
         const url = await uploadToCloudinary(file);
         const isVideo = file.type.startsWith('video/');
-        
+
         const mediaData = {
           title: mediaForm.title ? (mediaFiles.length > 1 ? `${mediaForm.title} - ${file.name}` : mediaForm.title) : file.name,
           category: mediaForm.category || 'General',
@@ -482,7 +482,7 @@ export default function ContentManagerDashboard() {
       });
 
       await Promise.all(uploadPromises);
-      
+
       toast.success(lang === 'ar' ? `تم رفع ${mediaFiles.length} ملفات بنجاح` : `Successfully uploaded ${mediaFiles.length} files`);
       setShowMediaModal(false);
       setMediaForm({ title: '', category: '' });
@@ -549,18 +549,24 @@ export default function ContentManagerDashboard() {
   const ConfirmDialogComponent = () => {
     if (!confirmDialog.isOpen) return null;
     return (
-      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-white/ dark:bg-slate-900/ backdrop-blur-sm animate-fade-in">
-        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-700 text-center">
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm animate-fade-in">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-700 text-center overflow-hidden">
           <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle size={32} />
           </div>
           <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-2">{confirmDialog.title}</h3>
-          <p className="text-slate-500 dark:text-slate-400 mb-6">{confirmDialog.message}</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">{confirmDialog.message}</p>
           <div className="flex gap-3">
-            <button onClick={() => setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null })} className="flex-1 py-3 font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl transition-colors">
+            <button
+              onClick={() => setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null })}
+              className="flex-1 min-h-[44px] py-3 font-bold text-sm text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl transition-colors"
+            >
               {lang === 'ar' ? 'إلغاء' : 'Cancel'}
             </button>
-            <button onClick={confirmDialog.onConfirm} className="flex-1 py-3 font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl shadow-lg shadow-red-500/30 transition-all">
+            <button
+              onClick={confirmDialog.onConfirm}
+              className="flex-1 min-h-[44px] py-3 font-bold text-sm text-white bg-red-500 hover:bg-red-600 rounded-xl shadow-lg shadow-red-500/30 transition-all"
+            >
               {lang === 'ar' ? 'تأكيد' : 'Confirm'}
             </button>
           </div>
@@ -570,26 +576,70 @@ export default function ContentManagerDashboard() {
   };
 
   return (
-    <div className={`flex flex-col md:flex-row gap-6 animate-fade-in-up pb-24 md:pb-10 min-h-screen relative ${lang === 'ar' ? 'md:flex-row-reverse' : ''}`}>
+    <div
+      dir={lang === 'ar' ? 'rtl' : 'ltr'}
+      className={`flex flex-col md:flex-row gap-5 md:gap-6 animate-fade-in-up pb-24 md:pb-10 md:min-h-screen relative w-full max-w-full overflow-x-hidden ${lang === 'ar' ? 'md:flex-row-reverse' : ''}`}
+    >
       <ConfirmDialogComponent />
-      
-      {/* Mobile Header */}
-      <div className="md:hidden flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm mb-2 sticky top-20 z-40">
-        <div>
-          <h2 className="text-xl font-sans font-bold tracking-tight font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'مدير المحتوى' : 'Content Manager'}</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{managerName}</p>
+
+      {/* Mobile Header + Horizontal Scrollable Tab Strip */}
+      <div className="md:hidden space-y-3 w-full min-w-0">
+        <div className="flex items-center justify-between gap-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg font-sans font-bold tracking-tight text-[#1e3a5f] dark:text-white truncate">
+              {lang === 'ar' ? 'مدير المحتوى' : 'Content Manager'}
+            </h2>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 truncate">{managerName}</p>
+          </div>
+          <div className="w-11 h-11 shrink-0 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-md">
+            {managerName?.charAt(0) || 'M'}
+          </div>
         </div>
-        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg">
-          {managerName?.charAt(0) || 'M'}
-        </div>
+
+        <nav
+          aria-label={lang === 'ar' ? 'أقسام إدارة المحتوى' : 'Content manager sections'}
+          className="filter-scroll flex items-center gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+        >
+          {tabs.map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`shrink-0 min-h-[44px] px-3.5 py-2 rounded-xl flex items-center gap-2 text-xs font-bold transition-all whitespace-nowrap border ${
+                  isActive
+                    ? 'bg-rose-600 text-white border-rose-600 shadow-sm'
+                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`}
+              >
+                <Icon size={16} className="shrink-0" />
+                <span className="truncate max-w-[140px]">{tab.label}</span>
+                {tab.id === 'queue' && publishQueue.length > 0 && (
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-[11px] font-bold leading-none ${
+                      isActive
+                        ? 'bg-white/25 text-white'
+                        : 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
+                    }`}
+                  >
+                    {publishQueue.length}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
       </div>
 
-      {/* Sidebar */}
+      {/* Desktop Sidebar */}
       <div className="hidden md:block w-full md:w-64 shrink-0 min-w-0">
-        <div className="glass-card rounded-3xl p-4 sticky top-24 border border-rose-200 dark:border-rose-900/30 shadow-xl">
+        <div className="glass-card rounded-3xl p-4 sticky top-24 border border-rose-200 dark:border-rose-900/30 shadow-xl overflow-hidden">
           <div className="mb-6 px-2">
-            <h2 className="text-xl font-sans font-bold tracking-tight font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? 'مدير المحتوى' : 'Content Manager'}</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{managerName}</p>
+            <h2 className="text-xl font-sans font-bold tracking-tight text-[#1e3a5f] dark:text-white">
+              {lang === 'ar' ? 'مدير المحتوى' : 'Content Manager'}
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">{managerName}</p>
           </div>
           <nav className="space-y-2">
             {tabs.map(tab => {
@@ -598,15 +648,18 @@ export default function ContentManagerDashboard() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
+                  className={`w-full min-h-[44px] flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
                     activeTab === tab.id
-                    ? 'bg-rose-600 text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      ? 'bg-rose-600 text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  <Icon size={18} /> {tab.label}
+                  <Icon size={18} className="shrink-0" />
+                  <span className="truncate">{tab.label}</span>
                   {tab.id === 'queue' && publishQueue.length > 0 && (
-                    <span className="ml-auto bg-white/30 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{publishQueue.length}</span>
+                    <span className="ms-auto bg-white/30 text-white text-[11px] font-bold px-2 py-0.5 rounded-full">
+                      {publishQueue.length}
+                    </span>
                   )}
                 </button>
               );
@@ -618,162 +671,155 @@ export default function ContentManagerDashboard() {
       {/* Main Content */}
       <div className="flex-1 w-full min-w-0 max-w-full">
         <AnimatePresence mode="wait">
-          <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }} className="space-y-6">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-5 md:space-y-6 w-full min-w-0"
+          >
 
             {/* ═══════════════ ANALYTICS TAB ═══════════════ */}
             {activeTab === 'analytics' && (
-              <div className="space-y-6">
+              <div className="space-y-6 w-full min-w-0">
                 <VisitorAnalytics />
               </div>
             )}
 
             {/* ═══════════════ ARTICLES TAB ═══════════════ */}
             {activeTab === 'articles' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
-                    <PenTool className="text-rose-500"/> {lang === 'ar' ? 'إدارة المقالات' : 'Article Management'}
+              <div className="space-y-5 md:space-y-6 w-full min-w-0">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                  <h3 className="text-xl md:text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 min-w-0">
+                    <PenTool className="text-rose-500 shrink-0" size={22} />
+                    <span className="truncate">{lang === 'ar' ? 'إدارة المقالات' : 'Article Management'}</span>
                   </h3>
                   <button
-                    onClick={() => { 
-                      setEditingArticle(null); 
-                      setArticleForm({ title: '', titleEn: '', author: '', status: 'Draft', content: '', category: '' }); 
+                    onClick={() => {
+                      setEditingArticle(null);
+                      setArticleForm({ title: '', titleEn: '', author: '', status: 'Draft', content: '', category: '' });
                       setArticleImage(null);
-                      setShowArticleModal(true); 
+                      setShowArticleModal(true);
                     }}
-                    className="bg-gradient-to-r from-rose-500 to-pink-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-rose-500/20 transition-all hover:scale-105"
+                    className="w-full sm:w-auto min-h-[44px] justify-center bg-gradient-to-r from-rose-500 to-pink-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-rose-500/20 transition-all md:hover:scale-105"
                   >
-                    <Plus size={16}/> {lang === 'ar' ? 'مقال جديد (المحرر الذكي)' : 'New Article (Smart)'}
+                    <Plus size={18} className="shrink-0" />
+                    <span>{lang === 'ar' ? 'مقال جديد (المحرر الذكي)' : 'New Article (Smart)'}</span>
                   </button>
                 </div>
 
                 {showArticleModal ? (
-                  <SmartArticleEditor 
-                    initialData={editingArticle || null}
-                    onCancel={() => setShowArticleModal(false)}
-                    onSave={(data) => {
-                      handleSaveArticleFromEditor(data);
-                    }}
-                  />
+                  <div className="w-full min-w-0 overflow-x-auto">
+                    <SmartArticleEditor
+                      initialData={editingArticle || null}
+                      onCancel={() => setShowArticleModal(false)}
+                      onSave={(data) => {
+                        handleSaveArticleFromEditor(data);
+                      }}
+                    />
+                  </div>
                 ) : (
                   <>
                     {/* Stats */}
-                <div className="grid grid-cols-3 gap-4">
-                  {[
-                    { label: lang === 'ar' ? 'منشور' : 'Published', value: articles.filter(a => a.status === 'Published').length, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-                    { label: lang === 'ar' ? 'مسودة' : 'Drafts', value: articles.filter(a => a.status === 'Draft').length, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
-                    { label: lang === 'ar' ? 'أرشيف' : 'Archived', value: articles.filter(a => a.status === 'Archived').length, color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800/50' },
-                  ].map((s, i) => (
-                    <motion.div key={i} custom={i} variants={cardVariants} initial="hidden" animate="visible" className={`glass-card rounded-2xl p-4 text-center ${s.bg}`}>
-                      <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-                      <p className="text-xs text-slate-500 font-semibold mt-1">{s.label}</p>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Articles List */}
-                <div className="glass-card rounded-2xl p-6">
-                  {loadingArticles ? (
-                    <div className="flex justify-center p-8"><Loader2 className="animate-spin text-rose-500" size={32}/></div>
-                  ) : (
-                    <div className="space-y-3">
-                      {articles.map((art, i) => (
-                        <motion.div key={art.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
-                          className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow gap-3"
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                      {[
+                        { label: lang === 'ar' ? 'منشور' : 'Published', value: articles.filter(a => a.status === 'Published').length, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+                        { label: lang === 'ar' ? 'مسودة' : 'Drafts', value: articles.filter(a => a.status === 'Draft').length, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+                        { label: lang === 'ar' ? 'أرشيف' : 'Archived', value: articles.filter(a => a.status === 'Archived').length, color: 'text-slate-600 dark:text-slate-300', bg: 'bg-slate-50 dark:bg-slate-800/50' },
+                      ].map((s, i) => (
+                        <motion.div
+                          key={i}
+                          custom={i}
+                          variants={cardVariants}
+                          initial="hidden"
+                          animate="visible"
+                          className={`glass-card rounded-2xl p-4 text-center overflow-hidden ${s.bg}`}
                         >
-                          <div className="flex-1 flex items-center gap-4">
-                            {art.imageUrl && (
-                              <img src={art.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover hidden sm:block" />
-                            )}
-                            <div>
-                              <h4 className="font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? (art.title || art.titleEn) : (art.titleEn || art.title)}</h4>
-                              <div className="flex flex-wrap gap-3 mt-1">
-                                <span className="text-xs text-slate-500 flex items-center gap-1"><Calendar size={12}/> {art.date}</span>
-                                <span className="text-xs text-slate-500">{lang === 'ar' ? 'الكاتب: ' : 'By: '}{art.author}</span>
-                                {art.views > 0 && <span className="text-xs text-slate-500 flex items-center gap-1"><Eye size={12}/> {art.views}</span>}
-                                {art.category && <span className="text-xs text-slate-500 flex items-center gap-1"><Filter size={12}/> {art.category}</span>}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-                            <span className={`px-3 py-1 text-[10px] rounded-full uppercase font-bold ${statusColors[art.status] || statusColors.Draft}`}>{art.status || 'Draft'}</span>
-                            <div className="flex gap-1 border-l border-slate-200 dark:border-slate-700 pl-3">
-                              <button onClick={() => handleEditArticle(art)} className="text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg transition-colors"><Edit size={15}/></button>
-                              <button onClick={() => handleDeleteArticle(art.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"><Trash2 size={15}/></button>
-                            </div>
-                          </div>
+                          <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold mt-1">{s.label}</p>
                         </motion.div>
                       ))}
                     </div>
-                  )}
-                </div>
-                </>
-                )}
-              </div>
-            )}
 
-            {/* ═══════════════ EVENTS TAB ═══════════════ */}
-            {activeTab === 'events' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
-                    <Calendar className="text-rose-500"/> {lang === 'ar' ? 'إدارة الفعاليات' : 'Events Management'}
-                  </h3>
-                  <button
-                    onClick={() => { 
-                      setEditingEvent(null); 
-                      setShowEventEditor(true); 
-                    }}
-                    className="bg-gradient-to-r from-rose-500 to-pink-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-rose-500/20 transition-all hover:scale-105"
-                  >
-                    <Plus size={16}/> {lang === 'ar' ? 'فعالية جديدة' : 'New Event'}
-                  </button>
-                </div>
-
-                {showEventEditor ? (
-                  <SmartEventEditor 
-                    initialData={editingEvent || null}
-                    onCancel={() => setShowEventEditor(false)}
-                    onSave={handleSaveEventFromEditor}
-                  />
-                ) : (
-                  <>
-                    <div className="glass-card rounded-2xl p-6">
-                      {loadingEvents ? (
-                        <div className="flex justify-center p-8"><Loader2 className="animate-spin text-rose-500" size={32}/></div>
+                    {/* Articles List */}
+                    <div className="glass-card rounded-2xl p-4 md:p-6 overflow-hidden">
+                      {loadingArticles ? (
+                        <div className="flex justify-center p-8"><Loader2 className="animate-spin text-rose-500" size={32} /></div>
+                      ) : articles.length === 0 ? (
+                        <div className="py-10 px-4 text-center">
+                          <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-rose-50 dark:bg-rose-900/20 text-rose-500 flex items-center justify-center">
+                            <PenTool size={26} />
+                          </div>
+                          <h4 className="text-base font-bold text-[#1e3a5f] dark:text-white mb-1">
+                            {lang === 'ar' ? 'لا توجد مقالات بعد' : 'No articles yet'}
+                          </h4>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                            {lang === 'ar' ? 'ابدأ بإنشاء أول مقال باستخدام المحرر الذكي.' : 'Start by creating your first article with the smart editor.'}
+                          </p>
+                          <button
+                            onClick={() => {
+                              setEditingArticle(null);
+                              setArticleForm({ title: '', titleEn: '', author: '', status: 'Draft', content: '', category: '' });
+                              setArticleImage(null);
+                              setShowArticleModal(true);
+                            }}
+                            className="min-h-[44px] px-5 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold inline-flex items-center gap-2 hover:bg-rose-700 transition-colors"
+                          >
+                            <Plus size={16} />
+                            {lang === 'ar' ? 'إنشاء مقال جديد' : 'Create Article'}
+                          </button>
+                        </div>
                       ) : (
                         <div className="space-y-3">
-                          {events.map((ev, i) => (
-                            <motion.div key={ev.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
-                              className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow gap-3"
+                          {articles.map((art, i) => (
+                            <motion.div
+                              key={art.id}
+                              custom={i}
+                              variants={cardVariants}
+                              initial="hidden"
+                              animate="visible"
+                              className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow gap-3 overflow-hidden"
                             >
-                              <div className="flex-1 flex items-center gap-4">
-                                {ev.imageUrl && (
-                                  <img src={ev.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover hidden sm:block" />
+                              <div className="flex-1 min-w-0 w-full flex items-start sm:items-center gap-3 md:gap-4">
+                                {art.imageUrl && (
+                                  <img src={art.imageUrl} alt="" className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg object-cover shrink-0" />
                                 )}
-                                <div>
-                                  <h4 className="font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? (ev.title || ev.titleEn) : (ev.titleEn || ev.title)}</h4>
-                                  <div className="flex flex-wrap gap-3 mt-1">
-                                    <span className="text-xs text-slate-500 flex items-center gap-1"><Calendar size={12}/> {ev.startDate}</span>
-                                    <span className="text-xs text-slate-500 flex items-center gap-1"><MapPin size={12}/> {ev.mode === 'Online' ? 'عن بُعد' : ev.location}</span>
-                                    <span className="text-xs text-slate-500 flex items-center gap-1"><Users size={12}/> {ev.maxCapacity} Seats</span>
+                                <div className="min-w-0 flex-1">
+                                  <h4 className="font-bold text-sm md:text-base text-[#1e3a5f] dark:text-white break-words">
+                                    {lang === 'ar' ? (art.title || art.titleEn) : (art.titleEn || art.title)}
+                                  </h4>
+                                  <div className="flex flex-wrap gap-x-3 gap-y-1.5 mt-1.5">
+                                    <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"><Calendar size={12} className="shrink-0" /> {art.date}</span>
+                                    <span className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-full">{lang === 'ar' ? 'الكاتب: ' : 'By: '}{art.author}</span>
+                                    {art.views > 0 && <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"><Eye size={12} className="shrink-0" /> {art.views}</span>}
+                                    {art.category && <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"><Filter size={12} className="shrink-0" /> {art.category}</span>}
                                   </div>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-                                <span className={`px-3 py-1 text-[10px] rounded-full uppercase font-bold ${ev.isRegistrationOpen ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'}`}>
-                                  {ev.isRegistrationOpen ? 'Open' : 'Closed'}
+                              <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800">
+                                <span className={`px-3 py-1 text-[11px] rounded-full uppercase font-bold shrink-0 ${statusColors[art.status] || statusColors.Draft}`}>
+                                  {art.status || 'Draft'}
                                 </span>
-                                <div className="flex gap-1 border-l border-slate-200 dark:border-slate-700 pl-3">
-                                  <button onClick={() => { setEditingEvent(ev); setShowEventEditor(true); }} className="text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg transition-colors"><Edit size={15}/></button>
-                                  <button onClick={() => handleDeleteEvent(ev.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"><Trash2 size={15}/></button>
+                                <div className="flex items-center gap-1.5 md:border-s md:border-slate-200 md:dark:border-slate-700 md:ps-3">
+                                  <button
+                                    onClick={() => handleEditArticle(art)}
+                                    aria-label={lang === 'ar' ? 'تعديل المقال' : 'Edit article'}
+                                    className="min-h-[44px] min-w-[44px] flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"
+                                  >
+                                    <Edit size={16} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteArticle(art.id)}
+                                    aria-label={lang === 'ar' ? 'حذف المقال' : 'Delete article'}
+                                    className="min-h-[44px] min-w-[44px] flex items-center justify-center text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
                                 </div>
                               </div>
                             </motion.div>
                           ))}
-                          {events.length === 0 && (
-                            <p className="text-center text-slate-500 font-bold py-8">{lang === 'ar' ? 'لا توجد فعاليات' : 'No events found'}</p>
-                          )}
                         </div>
                       )}
                     </div>
@@ -782,67 +828,217 @@ export default function ContentManagerDashboard() {
               </div>
             )}
 
-            {/* ═══════════════ COURSES TAB ═══════════════ */}
-            {activeTab === 'courses' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
-                    <BookOpen className="text-teal-500"/> {lang === 'ar' ? 'هيكلة التداريب (Academy)' : 'Course Management'}
+            {/* ═══════════════ EVENTS TAB ═══════════════ */}
+            {activeTab === 'events' && (
+              <div className="space-y-5 md:space-y-6 w-full min-w-0">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                  <h3 className="text-xl md:text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 min-w-0">
+                    <Calendar className="text-rose-500 shrink-0" size={22} />
+                    <span className="truncate">{lang === 'ar' ? 'إدارة الفعاليات' : 'Events Management'}</span>
                   </h3>
                   <button
-                    onClick={() => { 
-                      setEditingCourse(null); 
-                      setShowCourseEditor(true); 
+                    onClick={() => {
+                      setEditingEvent(null);
+                      setShowEventEditor(true);
                     }}
-                    className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-teal-500/20 transition-all hover:scale-105"
+                    className="w-full sm:w-auto min-h-[44px] justify-center bg-gradient-to-r from-rose-500 to-pink-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-rose-500/20 transition-all md:hover:scale-105"
                   >
-                    <Plus size={16}/> {lang === 'ar' ? 'مسار جديد' : 'New Course'}
+                    <Plus size={18} className="shrink-0" />
+                    <span>{lang === 'ar' ? 'فعالية جديدة' : 'New Event'}</span>
                   </button>
                 </div>
 
-                {showCourseEditor ? (
-                  <SmartCourseBuilder 
-                    initialData={editingCourse || null}
-                    onCancel={() => setShowCourseEditor(false)}
-                    onSave={handleSaveCourseFromEditor}
-                  />
+                {showEventEditor ? (
+                  <div className="w-full min-w-0 overflow-x-auto">
+                    <SmartEventEditor
+                      initialData={editingEvent || null}
+                      onCancel={() => setShowEventEditor(false)}
+                      onSave={handleSaveEventFromEditor}
+                    />
+                  </div>
                 ) : (
-                  <div className="glass-card rounded-2xl p-6">
-                    {loadingCourses ? (
-                      <div className="flex justify-center p-8"><Loader2 className="animate-spin text-teal-500" size={32}/></div>
+                  <div className="glass-card rounded-2xl p-4 md:p-6 overflow-hidden">
+                    {loadingEvents ? (
+                      <div className="flex justify-center p-8"><Loader2 className="animate-spin text-rose-500" size={32} /></div>
+                    ) : events.length === 0 ? (
+                      <div className="py-10 px-4 text-center">
+                        <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-rose-50 dark:bg-rose-900/20 text-rose-500 flex items-center justify-center">
+                          <Calendar size={26} />
+                        </div>
+                        <h4 className="text-base font-bold text-[#1e3a5f] dark:text-white mb-1">
+                          {lang === 'ar' ? 'لا توجد فعاليات حالياً' : 'No events found'}
+                        </h4>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                          {lang === 'ar' ? 'أضف فعالية جديدة ليتمكن الأعضاء من التسجيل فيها.' : 'Create a new event so members can register.'}
+                        </p>
+                        <button
+                          onClick={() => {
+                            setEditingEvent(null);
+                            setShowEventEditor(true);
+                          }}
+                          className="min-h-[44px] px-5 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold inline-flex items-center gap-2 hover:bg-rose-700 transition-colors"
+                        >
+                          <Plus size={16} />
+                          {lang === 'ar' ? 'إضافة فعالية' : 'Add Event'}
+                        </button>
+                      </div>
                     ) : (
                       <div className="space-y-3">
-                        {courses.map((course, i) => (
-                          <motion.div key={course.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
-                            className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow gap-3"
+                        {events.map((ev, i) => (
+                          <motion.div
+                            key={ev.id}
+                            custom={i}
+                            variants={cardVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow gap-3 overflow-hidden"
                           >
-                            <div className="flex-1 flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-500 hidden sm:flex">
-                                <BookOpen size={24} />
-                              </div>
-                              <div>
-                                <h4 className="font-bold text-[#1e3a5f] dark:text-white">{course.title}</h4>
-                                <div className="flex flex-wrap gap-3 mt-1">
-                                  <span className="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">{course.track}</span>
-                                  <span className="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">{course.level}</span>
-                                  <span className="text-xs text-slate-500 flex items-center gap-1">{course.modules?.length || 0} Modules</span>
+                            <div className="flex-1 min-w-0 w-full flex items-start sm:items-center gap-3 md:gap-4">
+                              {ev.imageUrl && (
+                                <img src={ev.imageUrl} alt="" className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg object-cover shrink-0" />
+                              )}
+                              <div className="min-w-0 flex-1">
+                                <h4 className="font-bold text-sm md:text-base text-[#1e3a5f] dark:text-white break-words">
+                                  {lang === 'ar' ? (ev.title || ev.titleEn) : (ev.titleEn || ev.title)}
+                                </h4>
+                                <div className="flex flex-wrap gap-x-3 gap-y-1.5 mt-1.5">
+                                  <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"><Calendar size={12} className="shrink-0" /> {ev.startDate}</span>
+                                  <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"><MapPin size={12} className="shrink-0" /> {ev.mode === 'Online' ? 'عن بُعد' : ev.location}</span>
+                                  <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"><Users size={12} className="shrink-0" /> {ev.maxCapacity} Seats</span>
                                 </div>
                               </div>
                             </div>
-                            <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-                              <span className={`px-3 py-1 text-[10px] rounded-full uppercase font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400`}>
-                                {course.status || 'Published'}
+                            <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800">
+                              <span className={`px-3 py-1 text-[11px] rounded-full uppercase font-bold shrink-0 ${ev.isRegistrationOpen ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'}`}>
+                                {ev.isRegistrationOpen ? 'Open' : 'Closed'}
                               </span>
-                              <div className="flex gap-1 border-l border-slate-200 dark:border-slate-700 pl-3">
-                                <button onClick={() => { setEditingCourse(course); setShowCourseEditor(true); }} className="text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg transition-colors"><Edit size={15}/></button>
-                                <button onClick={() => handleDeleteCourse(course.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"><Trash2 size={15}/></button>
+                              <div className="flex items-center gap-1.5 md:border-s md:border-slate-200 md:dark:border-slate-700 md:ps-3">
+                                <button
+                                  onClick={() => { setEditingEvent(ev); setShowEventEditor(true); }}
+                                  aria-label={lang === 'ar' ? 'تعديل الفعالية' : 'Edit event'}
+                                  className="min-h-[44px] min-w-[44px] flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"
+                                >
+                                  <Edit size={16} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteEvent(ev.id)}
+                                  aria-label={lang === 'ar' ? 'حذف الفعالية' : 'Delete event'}
+                                  className="min-h-[44px] min-w-[44px] flex items-center justify-center text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
                               </div>
                             </div>
                           </motion.div>
                         ))}
-                        {courses.length === 0 && (
-                          <p className="text-center text-slate-500 font-bold py-8">{lang === 'ar' ? 'لا توجد مسارات أكاديمية' : 'No courses found'}</p>
-                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ═══════════════ COURSES TAB ═══════════════ */}
+            {activeTab === 'courses' && (
+              <div className="space-y-5 md:space-y-6 w-full min-w-0">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                  <h3 className="text-xl md:text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 min-w-0">
+                    <BookOpen className="text-teal-500 shrink-0" size={22} />
+                    <span className="truncate">{lang === 'ar' ? 'هيكلة التداريب (Academy)' : 'Course Management'}</span>
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setEditingCourse(null);
+                      setShowCourseEditor(true);
+                    }}
+                    className="w-full sm:w-auto min-h-[44px] justify-center bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-teal-500/20 transition-all md:hover:scale-105"
+                  >
+                    <Plus size={18} className="shrink-0" />
+                    <span>{lang === 'ar' ? 'مسار جديد' : 'New Course'}</span>
+                  </button>
+                </div>
+
+                {showCourseEditor ? (
+                  <div className="w-full min-w-0 overflow-x-auto">
+                    <SmartCourseBuilder
+                      initialData={editingCourse || null}
+                      onCancel={() => setShowCourseEditor(false)}
+                      onSave={handleSaveCourseFromEditor}
+                    />
+                  </div>
+                ) : (
+                  <div className="glass-card rounded-2xl p-4 md:p-6 overflow-hidden">
+                    {loadingCourses ? (
+                      <div className="flex justify-center p-8"><Loader2 className="animate-spin text-teal-500" size={32} /></div>
+                    ) : courses.length === 0 ? (
+                      <div className="py-10 px-4 text-center">
+                        <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-teal-50 dark:bg-teal-900/20 text-teal-500 flex items-center justify-center">
+                          <BookOpen size={26} />
+                        </div>
+                        <h4 className="text-base font-bold text-[#1e3a5f] dark:text-white mb-1">
+                          {lang === 'ar' ? 'لا توجد مسارات أكاديمية' : 'No courses found'}
+                        </h4>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                          {lang === 'ar' ? 'أنشئ مساراً تدريبياً جديداً لنشره في الأكاديمية.' : 'Create a new training course to publish in the Academy.'}
+                        </p>
+                        <button
+                          onClick={() => {
+                            setEditingCourse(null);
+                            setShowCourseEditor(true);
+                          }}
+                          className="min-h-[44px] px-5 py-2.5 rounded-xl bg-teal-600 text-white text-xs font-bold inline-flex items-center gap-2 hover:bg-teal-700 transition-colors"
+                        >
+                          <Plus size={16} />
+                          {lang === 'ar' ? 'إنشاء مسار جديد' : 'Create Course'}
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {courses.map((course, i) => (
+                          <motion.div
+                            key={course.id}
+                            custom={i}
+                            variants={cardVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow gap-3 overflow-hidden"
+                          >
+                            <div className="flex-1 min-w-0 w-full flex items-start sm:items-center gap-3 md:gap-4">
+                              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0">
+                                <BookOpen size={22} />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <h4 className="font-bold text-sm md:text-base text-[#1e3a5f] dark:text-white break-words">{course.title}</h4>
+                                <div className="flex flex-wrap gap-2 mt-1.5">
+                                  {course.track && <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-md">{course.track}</span>}
+                                  {course.level && <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-md">{course.level}</span>}
+                                  <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">{course.modules?.length || 0} Modules</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800">
+                              <span className="px-3 py-1 text-[11px] rounded-full uppercase font-bold shrink-0 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                {course.status || 'Published'}
+                              </span>
+                              <div className="flex items-center gap-1.5 md:border-s md:border-slate-200 md:dark:border-slate-700 md:ps-3">
+                                <button
+                                  onClick={() => { setEditingCourse(course); setShowCourseEditor(true); }}
+                                  aria-label={lang === 'ar' ? 'تعديل المسار' : 'Edit course'}
+                                  className="min-h-[44px] min-w-[44px] flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"
+                                >
+                                  <Edit size={16} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteCourse(course.id)}
+                                  aria-label={lang === 'ar' ? 'حذف المسار' : 'Delete course'}
+                                  className="min-h-[44px] min-w-[44px] flex items-center justify-center text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -852,65 +1048,107 @@ export default function ContentManagerDashboard() {
 
             {/* ═══════════════ PROJECTS TAB ═══════════════ */}
             {activeTab === 'projects' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
-                    <Rocket className="text-indigo-500"/> {lang === 'ar' ? 'إدارة المشاريع الهندسية' : 'Engineering Projects'}
+              <div className="space-y-5 md:space-y-6 w-full min-w-0">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                  <h3 className="text-xl md:text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 min-w-0">
+                    <Rocket className="text-indigo-500 shrink-0" size={22} />
+                    <span className="truncate">{lang === 'ar' ? 'إدارة المشاريع الهندسية' : 'Engineering Projects'}</span>
                   </h3>
                   <button
-                    onClick={() => { 
-                      setEditingProject(null); 
-                      setShowProjectEditor(true); 
+                    onClick={() => {
+                      setEditingProject(null);
+                      setShowProjectEditor(true);
                     }}
-                    className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-indigo-500/20 transition-all hover:scale-105"
+                    className="w-full sm:w-auto min-h-[44px] justify-center bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-indigo-500/20 transition-all md:hover:scale-105"
                   >
-                    <Plus size={16}/> {lang === 'ar' ? 'مشروع جديد' : 'New Project'}
+                    <Plus size={18} className="shrink-0" />
+                    <span>{lang === 'ar' ? 'مشروع جديد' : 'New Project'}</span>
                   </button>
                 </div>
 
                 {showProjectEditor ? (
-                  <SmartProjectBuilder 
-                    initialData={editingProject || null}
-                    onCancel={() => setShowProjectEditor(false)}
-                    onSave={handleSaveProjectFromEditor}
-                  />
+                  <div className="w-full min-w-0 overflow-x-auto">
+                    <SmartProjectBuilder
+                      initialData={editingProject || null}
+                      onCancel={() => setShowProjectEditor(false)}
+                      onSave={handleSaveProjectFromEditor}
+                    />
+                  </div>
                 ) : (
-                  <div className="glass-card rounded-2xl p-6">
+                  <div className="glass-card rounded-2xl p-4 md:p-6 overflow-hidden">
                     {loadingProjects ? (
-                      <div className="flex justify-center p-8"><Loader2 className="animate-spin text-indigo-500" size={32}/></div>
+                      <div className="flex justify-center p-8"><Loader2 className="animate-spin text-indigo-500" size={32} /></div>
+                    ) : projects.length === 0 ? (
+                      <div className="py-10 px-4 text-center">
+                        <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 flex items-center justify-center">
+                          <Rocket size={26} />
+                        </div>
+                        <h4 className="text-base font-bold text-[#1e3a5f] dark:text-white mb-1">
+                          {lang === 'ar' ? 'لا توجد مشاريع هندسية' : 'No projects found'}
+                        </h4>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                          {lang === 'ar' ? 'أضف أول مشروع هندسي لعرضه في بوابة المشاريع.' : 'Add your first engineering project to showcase in the Projects Hub.'}
+                        </p>
+                        <button
+                          onClick={() => {
+                            setEditingProject(null);
+                            setShowProjectEditor(true);
+                          }}
+                          className="min-h-[44px] px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold inline-flex items-center gap-2 hover:bg-indigo-700 transition-colors"
+                        >
+                          <Plus size={16} />
+                          {lang === 'ar' ? 'إضافة مشروع' : 'Add Project'}
+                        </button>
+                      </div>
                     ) : (
                       <div className="space-y-3">
                         {projects.map((project, i) => (
-                          <motion.div key={project.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
-                            className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow gap-3"
+                          <motion.div
+                            key={project.id}
+                            custom={i}
+                            variants={cardVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 hover:shadow-md transition-shadow gap-3 overflow-hidden"
                           >
-                            <div className="flex-1 flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-500 hidden sm:flex shrink-0">
-                                <Rocket size={24} />
+                            <div className="flex-1 min-w-0 w-full flex items-start sm:items-center gap-3 md:gap-4">
+                              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+                                <Rocket size={22} />
                               </div>
-                              <div>
-                                <h4 className="font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? (project.titleAr || project.titleEn) : (project.titleEn || project.titleAr)}</h4>
-                                <div className="flex flex-wrap gap-3 mt-1">
-                                  <span className="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">{project.category}</span>
-                                  <span className="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md text-indigo-500">{project.progress}%</span>
-                                  <span className="text-xs text-slate-500 flex items-center gap-1"><Users size={12}/> {project.teamMembers?.length || 0} Members</span>
+                              <div className="min-w-0 flex-1">
+                                <h4 className="font-bold text-sm md:text-base text-[#1e3a5f] dark:text-white break-words">
+                                  {lang === 'ar' ? (project.titleAr || project.titleEn) : (project.titleEn || project.titleAr)}
+                                </h4>
+                                <div className="flex flex-wrap gap-2 mt-1.5">
+                                  {project.category && <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-md">{project.category}</span>}
+                                  <span className="text-xs font-bold bg-indigo-50 dark:bg-indigo-900/30 px-2.5 py-0.5 rounded-md text-indigo-600 dark:text-indigo-400">{project.progress}%</span>
+                                  <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"><Users size={12} className="shrink-0" /> {project.teamMembers?.length || 0} Members</span>
                                 </div>
                               </div>
                             </div>
-                            <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-                              <span className={`px-3 py-1 text-[10px] rounded-full uppercase font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400`}>
+                            <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800">
+                              <span className="px-3 py-1 text-[11px] rounded-full uppercase font-bold shrink-0 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
                                 {project.status}
                               </span>
-                              <div className="flex gap-1 border-l border-slate-200 dark:border-slate-700 pl-3">
-                                <button onClick={() => { setEditingProject(project); setShowProjectEditor(true); }} className="text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg transition-colors"><Edit size={15}/></button>
-                                <button onClick={() => handleDeleteProject(project.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"><Trash2 size={15}/></button>
+                              <div className="flex items-center gap-1.5 md:border-s md:border-slate-200 md:dark:border-slate-700 md:ps-3">
+                                <button
+                                  onClick={() => { setEditingProject(project); setShowProjectEditor(true); }}
+                                  aria-label={lang === 'ar' ? 'تعديل المشروع' : 'Edit project'}
+                                  className="min-h-[44px] min-w-[44px] flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"
+                                >
+                                  <Edit size={16} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteProject(project.id)}
+                                  aria-label={lang === 'ar' ? 'حذف المشروع' : 'Delete project'}
+                                  className="min-h-[44px] min-w-[44px] flex items-center justify-center text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
                               </div>
                             </div>
                           </motion.div>
                         ))}
-                        {projects.length === 0 && (
-                          <p className="text-center text-slate-500 font-bold py-8">{lang === 'ar' ? 'لا توجد مشاريع هندسية' : 'No projects found'}</p>
-                        )}
                       </div>
                     )}
                   </div>
@@ -920,42 +1158,68 @@ export default function ContentManagerDashboard() {
 
             {/* ═══════════════ MEMBERS TAB ═══════════════ */}
             {activeTab === 'members' && (
-              <div className="space-y-6">
+              <div className="space-y-6 w-full min-w-0 overflow-x-auto">
                 <MembersDashboard />
               </div>
             )}
 
             {/* ═══════════════ ACTIVITY TAB ═══════════════ */}
             {activeTab === 'activity' && (
-              <div className="space-y-6">
+              <div className="space-y-6 w-full min-w-0 overflow-x-auto">
                 <ActivityLog />
               </div>
             )}
 
             {/* ═══════════════ MEDIA LIBRARY TAB ═══════════════ */}
             {activeTab === 'media' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
-                    <ImageIcon className="text-indigo-500"/> {lang === 'ar' ? 'مكتبة الوسائط' : 'Media Library'}
+              <div className="space-y-5 md:space-y-6 w-full min-w-0">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                  <h3 className="text-xl md:text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 min-w-0">
+                    <ImageIcon className="text-indigo-500 shrink-0" size={22} />
+                    <span className="truncate">{lang === 'ar' ? 'مكتبة الوسائط' : 'Media Library'}</span>
                   </h3>
-                  <button 
+                  <button
                     onClick={() => { setShowMediaModal(true); setMediaForm({ title: '', category: '' }); setMediaFiles([]); }}
-                    className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg transition-all hover:scale-105"
+                    className="w-full sm:w-auto min-h-[44px] justify-center bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:shadow-lg transition-all md:hover:scale-105"
                   >
-                    <Upload size={16}/> {lang === 'ar' ? 'رفع ملف' : 'Upload File'}
+                    <Upload size={18} className="shrink-0" />
+                    <span>{lang === 'ar' ? 'رفع ملف' : 'Upload File'}</span>
                   </button>
                 </div>
 
                 {loadingMedia ? (
-                  <div className="flex justify-center p-8"><Loader2 className="animate-spin text-indigo-500" size={32}/></div>
+                  <div className="flex justify-center p-8"><Loader2 className="animate-spin text-indigo-500" size={32} /></div>
+                ) : mediaItems.length === 0 ? (
+                  <div className="glass-card rounded-2xl p-10 text-center overflow-hidden">
+                    <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 flex items-center justify-center">
+                      <ImageIcon size={26} />
+                    </div>
+                    <h4 className="text-base font-bold text-[#1e3a5f] dark:text-white mb-1">
+                      {lang === 'ar' ? 'مكتبة الوسائط فارغة' : 'Media library is empty'}
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                      {lang === 'ar' ? 'ارفع الصور أو الفيديوهات لتظهر في المعرض.' : 'Upload images or videos to display them in the gallery.'}
+                    </p>
+                    <button
+                      onClick={() => { setShowMediaModal(true); setMediaForm({ title: '', category: '' }); setMediaFiles([]); }}
+                      className="min-h-[44px] px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold inline-flex items-center gap-2 hover:bg-indigo-700 transition-colors"
+                    >
+                      <Upload size={16} />
+                      {lang === 'ar' ? 'رفع أول ملف' : 'Upload First File'}
+                    </button>
+                  </div>
                 ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     {mediaItems.map((item, i) => (
-                      <motion.div key={item.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
-                        className="glass-card rounded-2xl overflow-hidden border border-slate-200/50 dark:border-slate-800 group relative cursor-pointer hover:shadow-lg transition-all"
+                      <motion.div
+                        key={item.id}
+                        custom={i}
+                        variants={cardVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="glass-card rounded-2xl overflow-hidden border border-slate-200/50 dark:border-slate-800 group relative hover:shadow-lg transition-all"
                       >
-                        <div className="h-32 relative bg-slate-100 dark:bg-slate-800">
+                        <div className="aspect-video md:aspect-auto md:h-32 relative bg-slate-100 dark:bg-slate-800 overflow-hidden">
                           {item.type === 'image' && item.url ? (
                             <img src={item.url} alt={item.title} className="w-full h-full object-cover" />
                           ) : item.type === 'video' && item.url ? (
@@ -965,19 +1229,51 @@ export default function ContentManagerDashboard() {
                               <ImageIcon size={32} className="text-indigo-300" />
                             </div>
                           )}
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/20 rounded-full hover:bg-white/40 text-white backdrop-blur-sm transition-all"><Eye size={20}/></a>
-                            <button onClick={(e) => { e.stopPropagation(); handleDeleteMedia(item.id); }} className="p-2 bg-red-500/80 rounded-full hover:bg-red-600 text-white backdrop-blur-sm transition-all"><Trash2 size={20}/></button>
+                          <div className="hidden md:flex absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={lang === 'ar' ? 'معاينة الملف' : 'Preview media'}
+                              className="min-h-[44px] min-w-[44px] flex items-center justify-center bg-white/20 rounded-full hover:bg-white/40 text-white backdrop-blur-sm transition-all"
+                            >
+                              <Eye size={20} />
+                            </a>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleDeleteMedia(item.id); }}
+                              aria-label={lang === 'ar' ? 'حذف الملف' : 'Delete media'}
+                              className="min-h-[44px] min-w-[44px] flex items-center justify-center bg-red-500/80 rounded-full hover:bg-red-600 text-white backdrop-blur-sm transition-all"
+                            >
+                              <Trash2 size={20} />
+                            </button>
                           </div>
                           {item.type === 'video' && (
-                            <span className="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">VIDEO</span>
+                            <span className="absolute top-2 end-2 bg-black/60 text-white text-[11px] px-2.5 py-0.5 rounded-full font-bold">VIDEO</span>
                           )}
                         </div>
                         <div className="p-3">
                           <p className="text-xs font-bold text-[#1e3a5f] dark:text-white truncate">{item.title}</p>
-                          <div className="flex justify-between items-center mt-1">
-                            <span className="text-[10px] text-slate-600 dark:text-slate-400">{item.size}</span>
-                            <span className="text-[10px] text-slate-600 dark:text-slate-400">{item.date}</span>
+                          <div className="flex justify-between items-center gap-2 mt-1">
+                            <span className="text-[11px] text-slate-600 dark:text-slate-400">{item.size}</span>
+                            <span className="text-[11px] text-slate-600 dark:text-slate-400">{item.date}</span>
+                          </div>
+                          <div className="flex md:hidden items-center gap-2 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800">
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 min-h-[44px] rounded-xl bg-slate-100 dark:bg-slate-800 text-[#1e3a5f] dark:text-white text-xs font-bold flex items-center justify-center gap-1.5"
+                            >
+                              <Eye size={16} />
+                              <span>{lang === 'ar' ? 'عرض' : 'View'}</span>
+                            </a>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleDeleteMedia(item.id); }}
+                              aria-label={lang === 'ar' ? 'حذف الملف' : 'Delete media'}
+                              className="min-h-[44px] min-w-[44px] rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center"
+                            >
+                              <Trash2 size={16} />
+                            </button>
                           </div>
                         </div>
                       </motion.div>
@@ -988,48 +1284,72 @@ export default function ContentManagerDashboard() {
                 {/* Media Upload Modal */}
                 <AnimatePresence>
                   {showMediaModal && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-[100] bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
                       onClick={() => setShowMediaModal(false)}
                     >
-                      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                      <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
                         onClick={e => e.stopPropagation()}
-                        className="glass-card rounded-2xl p-6 w-full max-w-lg border border-slate-200 dark:border-slate-700"
+                        className="bg-white dark:bg-slate-900 rounded-2xl p-5 md:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700 shadow-2xl"
                       >
-                        <div className="flex justify-between items-center mb-6">
-                          <h3 className="text-xl font-bold text-[#1e3a5f] dark:text-white">
+                        <div className="flex justify-between items-center gap-3 mb-5">
+                          <h3 className="text-lg md:text-xl font-bold text-[#1e3a5f] dark:text-white">
                             {lang === 'ar' ? 'رفع وسائط جديدة' : 'Upload New Media'}
                           </h3>
-                          <button onClick={() => setShowMediaModal(false)} className="text-slate-600 dark:text-slate-400 hover:text-slate-600 p-1"><X size={20}/></button>
+                          <button
+                            onClick={() => setShowMediaModal(false)}
+                            aria-label={lang === 'ar' ? 'إغلاق' : 'Close'}
+                            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                          >
+                            <X size={20} />
+                          </button>
                         </div>
                         <div className="space-y-4">
                           <div>
-                            <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'العنوان (اختياري)' : 'Title (Optional)'}</label>
-                            <input type="text" value={mediaForm.title} onChange={e => setMediaForm(p => ({...p, title: e.target.value}))}
-                              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                            <label className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-2 block">{lang === 'ar' ? 'العنوان (اختياري)' : 'Title (Optional)'}</label>
+                            <input
+                              type="text"
+                              value={mediaForm.title}
+                              onChange={e => setMediaForm(p => ({ ...p, title: e.target.value }))}
+                              className="w-full min-h-[44px] p-3 text-base sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                             />
                           </div>
                           <div>
-                            <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'التصنيف' : 'Category'}</label>
-                            <input type="text" value={mediaForm.category} onChange={e => setMediaForm(p => ({...p, category: e.target.value}))}
-                              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                            <label className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-2 block">{lang === 'ar' ? 'التصنيف' : 'Category'}</label>
+                            <input
+                              type="text"
+                              value={mediaForm.category}
+                              onChange={e => setMediaForm(p => ({ ...p, category: e.target.value }))}
+                              className="w-full min-h-[44px] p-3 text-base sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                             />
                           </div>
                           <div>
-                            <label className="text-sm font-bold text-slate-500 mb-2 block">{lang === 'ar' ? 'الملفات' : 'Files'}</label>
-                            <input type="file" multiple accept="image/*,video/*" onChange={e => setMediaFiles(Array.from(e.target.files))}
-                              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-900/30 dark:file:text-indigo-400"
+                            <label className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-2 block">{lang === 'ar' ? 'الملفات' : 'Files'}</label>
+                            <input
+                              type="file"
+                              multiple
+                              accept="image/*,video/*"
+                              onChange={e => setMediaFiles(Array.from(e.target.files))}
+                              className="w-full p-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none file:me-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-900/30 dark:file:text-indigo-400"
                             />
                             {mediaFiles.length > 0 && (
-                              <p className="text-xs text-indigo-500 mt-2 font-bold">
+                              <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-2 font-bold">
                                 {mediaFiles.length} {lang === 'ar' ? 'ملفات محددة' : 'files selected'}
                               </p>
                             )}
                           </div>
-                          <button onClick={handleUploadMedia} disabled={mediaFiles.length === 0 || isUploadingMedia}
-                            className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+                          <button
+                            onClick={handleUploadMedia}
+                            disabled={mediaFiles.length === 0 || isUploadingMedia}
+                            className="w-full min-h-[48px] py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-2"
                           >
-                            {isUploadingMedia ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16}/>} 
+                            {isUploadingMedia ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
                             {isUploadingMedia ? (lang === 'ar' ? 'جاري الرفع...' : 'Uploading...') : (lang === 'ar' ? 'رفع الملفات' : 'Upload Files')}
                           </button>
                         </div>
@@ -1042,50 +1362,61 @@ export default function ContentManagerDashboard() {
 
             {/* ═══════════════ SEO TOOLS TAB ═══════════════ */}
             {activeTab === 'seo' && (
-              <div className="space-y-6">
-                <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
-                  <Search className="text-emerald-500"/> {lang === 'ar' ? 'أدوات تحسين محركات البحث' : 'SEO Tools Dashboard'}
+              <div className="space-y-5 md:space-y-6 w-full min-w-0">
+                <h3 className="text-xl md:text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
+                  <Search className="text-emerald-500 shrink-0" size={22} />
+                  <span>{lang === 'ar' ? 'أدوات تحسين محركات البحث' : 'SEO Tools Dashboard'}</span>
                 </h3>
 
                 {/* SEO Status Cards */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                   {[
                     { label: lang === 'ar' ? 'الصفحات المفهرسة' : 'Indexed Pages', value: seoData.indexedPages, icon: Globe, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
                     { label: lang === 'ar' ? 'آخر زحف' : 'Last Crawl', value: seoData.lastCrawl, icon: Calendar, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
                     { label: lang === 'ar' ? 'حالة خريطة الموقع' : 'Sitemap', value: lang === 'ar' ? 'سليمة' : 'Healthy', icon: CheckCircle, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
                     { label: lang === 'ar' ? 'أخطاء' : 'Errors', value: seoData.errors, icon: AlertTriangle, color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20' },
                   ].map((stat, i) => (
-                    <motion.div key={i} custom={i} variants={cardVariants} initial="hidden" animate="visible"
-                      className={`glass-card rounded-2xl p-4 ${stat.bg}`}
+                    <motion.div
+                      key={i}
+                      custom={i}
+                      variants={cardVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className={`glass-card rounded-2xl p-4 overflow-hidden ${stat.bg}`}
                     >
-                      <stat.icon className={`mb-2 ${stat.color}`} size={22}/>
-                      <p className="text-lg font-bold text-[#1e3a5f] dark:text-white">{stat.value}</p>
-                      <p className="text-xs text-slate-500 font-semibold">{stat.label}</p>
+                      <stat.icon className={`mb-2 ${stat.color}`} size={22} />
+                      <p className="text-lg font-bold text-[#1e3a5f] dark:text-white truncate">{stat.value}</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">{stat.label}</p>
                     </motion.div>
                   ))}
                 </div>
 
                 {/* Page Title Checker */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                  className="glass-card rounded-2xl p-6"
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="glass-card rounded-2xl p-4 md:p-6 overflow-hidden"
                 >
                   <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2">
-                    <FileText size={18} className="text-blue-500"/> {lang === 'ar' ? 'فحص عنوان الصفحة' : 'Page Title Checker'}
+                    <FileText size={18} className="text-blue-500 shrink-0" />
+                    <span>{lang === 'ar' ? 'فحص عنوان الصفحة' : 'Page Title Checker'}</span>
                   </h4>
                   <div className="space-y-3">
                     <input
-                      type="text" value={seoData.pageTitle}
+                      type="text"
+                      value={seoData.pageTitle}
                       onChange={e => setSeoData(p => ({ ...p, pageTitle: e.target.value }))}
-                      className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                      className="w-full min-h-[44px] p-3 text-base sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
                     />
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 w-48">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 flex-1 min-w-[160px] max-w-xs">
+                        <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
                           <div className="h-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400" style={{ width: `${seoData.titleScore}%` }} />
                         </div>
-                        <span className="text-sm font-bold text-emerald-500">{seoData.titleScore}/100</span>
+                        <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 shrink-0">{seoData.titleScore}/100</span>
                       </div>
-                      <span className={`text-xs font-bold ${seoData.pageTitle.length <= 60 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                      <span className={`text-xs font-bold shrink-0 ${seoData.pageTitle.length <= 60 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
                         {seoData.pageTitle.length}/60 {lang === 'ar' ? 'حرف' : 'chars'}
                       </span>
                     </div>
@@ -1093,26 +1424,31 @@ export default function ContentManagerDashboard() {
                 </motion.div>
 
                 {/* Meta Description Editor */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                  className="glass-card rounded-2xl p-6"
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="glass-card rounded-2xl p-4 md:p-6 overflow-hidden"
                 >
                   <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2">
-                    <Edit size={18} className="text-purple-500"/> {lang === 'ar' ? 'محرر الوصف التعريفي' : 'Meta Description Editor'}
+                    <Edit size={18} className="text-purple-500 shrink-0" />
+                    <span>{lang === 'ar' ? 'محرر الوصف التعريفي' : 'Meta Description Editor'}</span>
                   </h4>
                   <div className="space-y-3">
                     <textarea
-                      rows={3} value={seoData.metaDescription}
+                      rows={3}
+                      value={seoData.metaDescription}
                       onChange={e => setSeoData(p => ({ ...p, metaDescription: e.target.value }))}
-                      className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+                      className="w-full p-3 text-base sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[#1e3a5f] dark:text-white focus:ring-2 focus:ring-purple-500 outline-none resize-none"
                     />
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-48 bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 flex-1 min-w-[160px] max-w-xs">
+                        <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
                           <div className="h-2.5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-400" style={{ width: `${seoData.descriptionScore}%` }} />
                         </div>
-                        <span className="text-sm font-bold text-purple-500">{seoData.descriptionScore}/100</span>
+                        <span className="text-xs sm:text-sm font-bold text-purple-600 dark:text-purple-400 shrink-0">{seoData.descriptionScore}/100</span>
                       </div>
-                      <span className={`text-xs font-bold ${seoData.metaDescription.length <= 160 ? 'text-emerald-500' : 'text-red-500'}`}>
+                      <span className={`text-xs font-bold shrink-0 ${seoData.metaDescription.length <= 160 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                         {seoData.metaDescription.length}/160 {lang === 'ar' ? 'حرف' : 'chars'}
                       </span>
                     </div>
@@ -1120,32 +1456,36 @@ export default function ContentManagerDashboard() {
                 </motion.div>
 
                 {/* Sitemap Status */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-                  className="glass-card rounded-2xl p-6"
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="glass-card rounded-2xl p-4 md:p-6 overflow-hidden"
                 >
                   <h4 className="font-bold text-[#1e3a5f] dark:text-white mb-4 flex items-center gap-2">
-                    <Link2 size={18} className="text-emerald-500"/> {lang === 'ar' ? 'حالة خريطة الموقع' : 'Sitemap Status'}
+                    <Link2 size={18} className="text-emerald-500 shrink-0" />
+                    <span>{lang === 'ar' ? 'حالة خريطة الموقع' : 'Sitemap Status'}</span>
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200/50 dark:border-emerald-900/30 flex items-center gap-3">
-                      <CheckCircle className="text-emerald-500" size={24}/>
-                      <div>
-                        <p className="font-bold text-sm text-[#1e3a5f] dark:text-white">sitemap.xml</p>
-                        <p className="text-xs text-emerald-600 dark:text-emerald-400">{lang === 'ar' ? 'سليمة ومحدثة' : 'Valid & Up-to-date'}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+                    <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200/50 dark:border-emerald-900/30 flex items-center gap-3 overflow-hidden">
+                      <CheckCircle className="text-emerald-500 shrink-0" size={24} />
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm text-[#1e3a5f] dark:text-white truncate">sitemap.xml</p>
+                        <p className="text-xs text-emerald-700 dark:text-emerald-400">{lang === 'ar' ? 'سليمة ومحدثة' : 'Valid & Up-to-date'}</p>
                       </div>
                     </div>
-                    <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200/50 dark:border-emerald-900/30 flex items-center gap-3">
-                      <CheckCircle className="text-emerald-500" size={24}/>
-                      <div>
-                        <p className="font-bold text-sm text-[#1e3a5f] dark:text-white">robots.txt</p>
-                        <p className="text-xs text-emerald-600 dark:text-emerald-400">{lang === 'ar' ? 'مُعدّ بشكل صحيح' : 'Properly Configured'}</p>
+                    <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200/50 dark:border-emerald-900/30 flex items-center gap-3 overflow-hidden">
+                      <CheckCircle className="text-emerald-500 shrink-0" size={24} />
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm text-[#1e3a5f] dark:text-white truncate">robots.txt</p>
+                        <p className="text-xs text-emerald-700 dark:text-emerald-400">{lang === 'ar' ? 'مُعدّ بشكل صحيح' : 'Properly Configured'}</p>
                       </div>
                     </div>
-                    <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200/50 dark:border-amber-900/30 flex items-center gap-3">
-                      <AlertTriangle className="text-amber-500" size={24}/>
-                      <div>
-                        <p className="font-bold text-sm text-[#1e3a5f] dark:text-white">canonical URLs</p>
-                        <p className="text-xs text-amber-600 dark:text-amber-400">{lang === 'ar' ? 'خطأان يحتاجان إصلاح' : '2 issues need fixing'}</p>
+                    <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200/50 dark:border-amber-900/30 flex items-center gap-3 overflow-hidden">
+                      <AlertTriangle className="text-amber-500 shrink-0" size={24} />
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm text-[#1e3a5f] dark:text-white truncate">canonical URLs</p>
+                        <p className="text-xs text-amber-700 dark:text-amber-400">{lang === 'ar' ? 'خطأان يحتاجان إصلاح' : '2 issues need fixing'}</p>
                       </div>
                     </div>
                   </div>
@@ -1155,60 +1495,76 @@ export default function ContentManagerDashboard() {
 
             {/* ═══════════════ PUBLISHING QUEUE TAB ═══════════════ */}
             {activeTab === 'queue' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2">
-                    <ListChecks className="text-amber-500"/> {lang === 'ar' ? 'طابور النشر' : 'Publishing Queue'}
+              <div className="space-y-5 md:space-y-6 w-full min-w-0">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                  <h3 className="text-xl md:text-2xl font-bold text-[#1e3a5f] dark:text-white flex items-center gap-2 min-w-0">
+                    <ListChecks className="text-amber-500 shrink-0" size={22} />
+                    <span className="truncate">{lang === 'ar' ? 'طابور النشر' : 'Publishing Queue'}</span>
                   </h3>
-                  <span className="px-4 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full text-sm font-bold">
+                  <span className="self-start sm:self-auto px-4 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full text-xs sm:text-sm font-bold">
                     {publishQueue.length} {lang === 'ar' ? 'بانتظار المراجعة' : 'Pending Review'}
                   </span>
                 </div>
 
                 {publishQueue.length === 0 ? (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    className="glass-card rounded-2xl p-12 text-center"
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="glass-card rounded-2xl p-8 md:p-12 text-center overflow-hidden"
                   >
-                    <CheckCircle className="mx-auto text-emerald-400 mb-4" size={48}/>
-                    <h4 className="text-xl font-bold text-[#1e3a5f] dark:text-white mb-2">{lang === 'ar' ? 'كل شيء محدث!' : 'All Caught Up!'}</h4>
-                    <p className="text-sm text-slate-500">{lang === 'ar' ? 'لا توجد عناصر بانتظار المراجعة.' : 'No items pending review.'}</p>
+                    <CheckCircle className="mx-auto text-emerald-500 mb-4" size={44} />
+                    <h4 className="text-lg md:text-xl font-bold text-[#1e3a5f] dark:text-white mb-2">
+                      {lang === 'ar' ? 'كل شيء محدث!' : 'All Caught Up!'}
+                    </h4>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      {lang === 'ar' ? 'لا توجد عناصر بانتظار المراجعة.' : 'No items pending review.'}
+                    </p>
                   </motion.div>
                 ) : (
                   <div className="space-y-4">
                     {publishQueue.map((item, i) => (
-                      <motion.div key={item.id} custom={i} variants={cardVariants} initial="hidden" animate="visible"
-                        className="glass-card rounded-2xl p-5 border border-slate-200/50 dark:border-slate-800"
+                      <motion.div
+                        key={item.id}
+                        custom={i}
+                        variants={cardVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="glass-card rounded-2xl p-4 md:p-5 border border-slate-200/50 dark:border-slate-800 overflow-hidden"
                       >
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className={`px-2 py-0.5 text-[10px] rounded-full uppercase font-bold ${
-                                item.type === 'article' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
-                                : item.type === 'press' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400'
-                                : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
+                          <div className="flex-1 min-w-0 w-full">
+                            <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                              <span className={`px-2.5 py-0.5 text-[11px] rounded-full uppercase font-bold ${
+                                item.type === 'article' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                : item.type === 'press' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                                : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
                               }`}>{item.type}</span>
-                              <span className={`px-2 py-0.5 text-[10px] rounded-full uppercase font-bold ${
-                                item.priority === 'high' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
-                                : item.priority === 'medium' ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
+                              <span className={`px-2.5 py-0.5 text-[11px] rounded-full uppercase font-bold ${
+                                item.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                : item.priority === 'medium' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                                 : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
                               }`}>{item.priority}</span>
                             </div>
-                            <h4 className="font-bold text-[#1e3a5f] dark:text-white">{lang === 'ar' ? item.titleAr : item.title}</h4>
-                            <div className="flex gap-3 mt-1">
-                              <span className="text-xs text-slate-500">{lang === 'ar' ? 'بواسطة: ' : 'By: '}{item.author}</span>
-                              <span className="text-xs text-slate-500 flex items-center gap-1"><Clock size={11}/> {item.submittedDate}</span>
+                            <h4 className="font-bold text-sm md:text-base text-[#1e3a5f] dark:text-white break-words">
+                              {lang === 'ar' ? item.titleAr : item.title}
+                            </h4>
+                            <div className="flex flex-wrap gap-3 mt-1.5">
+                              <span className="text-xs text-slate-500 dark:text-slate-400">{lang === 'ar' ? 'بواسطة: ' : 'By: '}{item.author}</span>
+                              <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"><Clock size={12} className="shrink-0" /> {item.submittedDate}</span>
                             </div>
                           </div>
-                          <div className="flex gap-2">
-                            <button onClick={() => handleApproveQueue(item.id)}
-                              className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:shadow-lg transition-all hover:scale-105"
+                          <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                            <button
+                              onClick={() => handleApproveQueue(item.id)}
+                              className="w-full sm:w-auto min-h-[44px] justify-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:shadow-lg transition-all md:hover:scale-105"
                             >
-                              <CheckCircle size={16}/> {lang === 'ar' ? 'موافقة' : 'Approve'}
+                              <CheckCircle size={16} /> {lang === 'ar' ? 'موافقة' : 'Approve'}
                             </button>
-                            <button onClick={() => handleRejectQueue(item.id)}
-                              className="bg-slate-100 dark:bg-slate-800 text-red-500 px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                            <button
+                              onClick={() => handleRejectQueue(item.id)}
+                              className="w-full sm:w-auto min-h-[44px] justify-center bg-slate-100 dark:bg-slate-800 text-red-600 dark:text-red-400 px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                             >
-                              <XCircle size={16}/> {lang === 'ar' ? 'رفض' : 'Reject'}
+                              <XCircle size={16} /> {lang === 'ar' ? 'رفض' : 'Reject'}
                             </button>
                           </div>
                         </div>
@@ -1221,41 +1577,19 @@ export default function ContentManagerDashboard() {
 
             {/* ═══════════════ PROFILE TAB ═══════════════ */}
             {activeTab === 'profile' && (
-              <UserProfileSettings currentUser={{
-                name: managerName,
-                role: 'content_manager',
-                email: managerEmail,
-                badges: currentUser?.badges || ['writer', 'designer'],
-                membershipId: currentUser?.membershipId || 'GITM-2026-MEDIA'
-              }} />
+              <div className="w-full min-w-0">
+                <UserProfileSettings currentUser={{
+                  name: managerName,
+                  role: 'content_manager',
+                  email: managerEmail,
+                  badges: currentUser?.badges || ['writer', 'designer'],
+                  membershipId: currentUser?.membershipId || 'GITM-2026-MEDIA'
+                }} />
+              </div>
             )}
 
           </motion.div>
         </AnimatePresence>
-      </div>
-
-      {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 z-50 px-2 py-2 flex justify-between items-center overflow-x-auto hide-scrollbar shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
-        {tabs.map(tab => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center justify-center p-2 min-w-[64px] rounded-xl transition-all ${
-                isActive
-                ? 'text-rose-500 dark:text-rose-400 font-bold scale-105'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-              }`}
-            >
-              <div className={`p-1.5 rounded-lg mb-1 ${isActive ? 'bg-rose-100 dark:bg-rose-900/30' : ''}`}>
-                <Icon size={20} className={isActive ? 'animate-bounce' : ''} />
-              </div>
-              <span className="text-[9px] whitespace-nowrap">{tab.label}</span>
-            </button>
-          );
-        })}
       </div>
     </div>
   );
