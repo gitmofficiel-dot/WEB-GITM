@@ -20,6 +20,17 @@ const ROUTES = [
   '/login',
   '/register',
   '/forgot-password',
+  '/projects',
+  '/hardware-request',
+  '/virtual-lab',
+  '/collab-board',
+  '/hackathon-arena',
+  '/digital-twin',
+  '/architecture-builder',
+  '/talent-hub',
+  '/methodology',
+  '/privacy-policy',
+  '/terms-of-service',
 ];
 
 async function waitForServer(url, timeoutMs = 20000) {
