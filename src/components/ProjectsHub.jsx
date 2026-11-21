@@ -309,7 +309,7 @@ const ProjectsHub = () => {
             <AnimatePresence>
               {currentProjects.map((proj) => {
                 const title = getLocalized(proj, 'title');
-                const desc = getLocalized(proj, 'description') || getLocalized(proj, 'desc');
+                const desc = toPlainText(getLocalized(proj, 'description') || getLocalized(proj, 'desc'));
 
                 return (
                   <motion.article
@@ -383,6 +383,18 @@ const ProjectsHub = () => {
 
     </div>
   );
+};
+
+// Descriptions may be stored as (double-encoded) HTML; show them as clean plain text in cards.
+const toPlainText = (value) => {
+  if (!value || typeof value !== 'string') return value;
+  let text = value;
+  for (let i = 0; i < 3; i += 1) {
+    if (!/[<&]/.test(text)) break;
+    const doc = new DOMParser().parseFromString(text, 'text/html');
+    text = doc.body.textContent || '';
+  }
+  return text.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
 };
 
 export default ProjectsHub;
