@@ -56,7 +56,7 @@ export default function ProjectDetails() {
     facebookUrl: 'https://facebook.com/gitmofficiel',
     gallery: [
       'https://images.unsplash.com/photo-1527443195645-1133f7f28990?w=800&q=80',
-      'https://images.unsplash.com/photo-1531297172867-4f50fcc2cb26?w=800&q=80',
+      'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
       'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80'
     ],
     files: [
