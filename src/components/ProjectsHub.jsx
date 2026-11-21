@@ -42,12 +42,86 @@ const ProjectsHub = () => {
     };
     fetchProjects();
   }, [lang]);
+  const PROJECT_TRANSLATIONS = {
+    'منصة إديوكونيكت': { en: 'EduConnect Platform', fr: 'Plateforme EduConnect' },
+    'تراث المغرب بالواقع الافتراضي': { en: 'Morocco Heritage VR', fr: 'Patrimoine du Maroc en VR' },
+    'نظام الري الذكي بالطاقة الشمسية': { en: 'Solar Smart Irrigation System', fr: "Système d'Irrigation Solaire Intelligent" },
+    'نظام الري الذكي': { en: 'Solar Smart Irrigation System', fr: "Système d'Irrigation Solaire Intelligent" },
+    'تجربة الواقع الافتراضي للمدينة': { en: 'Smart City VR Experience', fr: 'Expérience VR Ville Intelligente' },
+    'تجربة الواقع الافتراضي للمدينة الذكية': { en: 'Smart City VR Experience', fr: 'Expérience VR Ville Intelligente' },
+    'نظام إدارة المرور الذكية عبر الدرونز': { en: 'Smart Drone Traffic Management', fr: 'Gestion Intelligente du Trafic par Drones' },
+  };
+const DESCRIPTION_TRANSLATIONS = [
+    {
+      keywords: ['إديوكونيكت', 'educonnect', 'تعليم', 'تعلم'],
+      en: 'An interactive digital learning platform connecting students and educators with smart educational resources.',
+      fr: "Une plateforme d'apprentissage numérique interactive reliant étudiants et enseignants avec des ressources pédagogiques intelligentes."
+    },
+    {
+      keywords: ['تراث المغرب', 'heritage', 'تراث'],
+      en: "An immersive virtual reality experience showcasing Morocco's rich historical landmarks and cultural heritage.",
+      fr: 'Une expérience de réalité virtuelle immersive mettant en valeur les monuments historiques et le patrimoine culturel du Maroc.'
+    },
+    {
+      keywords: ['الري الذكي', 'الطاقة الشمسية', 'irrigation', 'زراعة'],
+      en: 'An IoT-powered automated irrigation system driven by solar energy to optimize agricultural water usage.',
+      fr: "Un système d'irrigation automatisé alimenté par l'énergie solaire et l'IoT pour optimiser la consommation d'eau agricole."
+    },
+    {
+      keywords: ['الواقع الافتراضي للمدينة', 'مدينة ذكية', 'smart city'],
+      en: 'A virtual reality simulation exploring sustainable smart city infrastructure and urban innovation.',
+      fr: "Une simulation en réalité virtuelle explorant les infrastructures durables des villes intelligentes et l'innovation urbaine."
+    },
+    {
+      keywords: ['المرور', 'الدرونز', 'drone', 'درون'],
+      en: 'An intelligent aerial monitoring system using autonomous drones and AI to optimize urban traffic flow.',
+      fr: "Un système de surveillance aérienne intelligent utilisant des drones autonomes et l'IA pour fluidifier le trafic urbain."
+    }
+  ];
 
+  const getDefaultCoverImage = (proj) => {
+    const text = [proj?.title, proj?.titleAr, proj?.titleEn, proj?.category].filter(Boolean).join(' ').toLowerCase();
+    if (text.includes('تراث') || text.includes('heritage')) {
+      return 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80';
+    }
+    if (text.includes('الواقع الافتراضي') || text.includes('vr') || text.includes('ar') || text.includes('المدينة') || text.includes('city')) {
+      return 'https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=800&q=80';
+    }
+    if (text.includes('الري') || text.includes('irrigation') || text.includes('شمسية') || text.includes('solar') || text.includes('iot') || text.includes('زراعة')) {
+      return 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80';
+    }
+    if (text.includes('درون') || text.includes('drone') || text.includes('مرور') || text.includes('traffic')) {
+      return 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=800&q=80';
+    }
+    if (text.includes('إديوكونيكت') || text.includes('educonnect') || text.includes('تعليم') || text.includes('edu')) {
+      return 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800&q=80';
+    }
+    return 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80';
+  };
   const getLocalized = (obj, field) => {
     if (!obj) return '';
     if (obj[`${field}Ar`] && lang === 'ar') return obj[`${field}Ar`];
     if (obj[`${field}En`] && lang === 'en') return obj[`${field}En`];
     if (obj[`${field}_${lang}`]) return obj[`${field}_${lang}`];
+    if (obj[`${field}Fr`] && lang === 'fr') return obj[`${field}Fr`];
+    if (obj[`${field}_fr`] && lang === 'fr') return obj[`${field}_fr`];
+    const rawVal = (obj[field] || '').trim();
+    if (lang === 'en' || lang === 'fr') {
+      if (PROJECT_TRANSLATIONS[rawVal]?.[lang]) {
+        return PROJECT_TRANSLATIONS[rawVal][lang];
+      }
+      if (field === 'title') {
+        const matchedKey = Object.keys(PROJECT_TRANSLATIONS).find(k => rawVal.includes(k));
+        if (matchedKey && PROJECT_TRANSLATIONS[matchedKey]?.[lang]) {
+          return PROJECT_TRANSLATIONS[matchedKey][lang];
+        }
+      }
+      if (field === 'description' || field === 'desc') {
+        const contextText = `${obj.title || ''} ${obj.titleAr || ''} ${rawVal}`.toLowerCase();
+        const match = DESCRIPTION_TRANSLATIONS.find(item => item.keywords.some(k => contextText.includes(k)));
+        if (match?.[lang]) return match[lang];
+      }
+    }
     return obj[field] || '';
   };
 
@@ -115,11 +189,11 @@ const ProjectsHub = () => {
                 >
                   {/* Background Image */}
                   <img 
-                    src={proj.coverImage || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80'} 
+                    src={proj.coverImage || getDefaultCoverImage(proj)} 
                     alt={getLocalized(proj, 'title')} 
                     onError={(e) => {
                       e.currentTarget.onerror = null;
-                      e.currentTarget.src = 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80';
+                      e.currentTarget.src = getDefaultCoverImage(proj);
                       }}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
