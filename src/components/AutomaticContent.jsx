@@ -128,7 +128,7 @@ export default function AutomaticContent({ kind }) {
           placeholder={t.search}
           value={query}
           onChange={event => { setQuery(event.target.value); setLimit(9); }}
-          className="min-w-0 flex-1 basis-56 min-h-[48px] sm:min-h-[44px] px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-base sm:text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500/40"
+          className="min-w-0 w-full sm:w-auto sm:flex-1 sm:basis-56 min-h-[48px] sm:min-h-[44px] px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-base sm:text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500/40"
         />
       </div>
 
