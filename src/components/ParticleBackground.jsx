@@ -7,6 +7,9 @@ const ParticleBackground = () => {
   const { theme } = useLanguage();
 
   useEffect(() => {
+    // Skip the heavy WebGL effect on phones/touch devices and for users who prefer reduced motion.
+    const lowPower = window.matchMedia('(max-width: 767px), (pointer: coarse), (prefers-reduced-motion: reduce)').matches;
+    if (lowPower || !mountRef.current) return;
     let width = mountRef.current.clientWidth;
     let height = mountRef.current.clientHeight;
 
@@ -16,9 +19,9 @@ const ParticleBackground = () => {
 
     let renderer;
     try {
-      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false });
       renderer.setSize(width, height);
-      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       mountRef.current.appendChild(renderer.domElement);
     } catch (e) {
       console.warn("WebGL not supported, skipping particle background:", e);
@@ -26,7 +29,7 @@ const ParticleBackground = () => {
     }
 
     // Particles
-    const particleCount = 200;
+    const particleCount = 120;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const velocities = [];
@@ -91,6 +94,7 @@ const ParticleBackground = () => {
     let animationFrameId;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
+      if (document.hidden) return;
 
       camera.position.x += (mouseX - camera.position.x) * 0.05;
       camera.position.y += (-mouseY - camera.position.y) * 0.05;
