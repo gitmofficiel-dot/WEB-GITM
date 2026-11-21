@@ -89,7 +89,7 @@ export default function Hero() {
           </div>
 
           <div className="min-h-[7rem] sm:min-h-[9rem] md:min-h-[12rem] flex items-end md:items-center justify-start md:justify-center mb-3 md:mb-4">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" initial={false}>
               <motion.h1
                 key={titleIndex}
                 initial={{ opacity: 0, y: 20 }}
@@ -119,7 +119,7 @@ export default function Hero() {
             </button>
             <button 
               onClick={() => navigate('/about')}
-              className="w-full sm:w-auto bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-sm border border-white/20 hover:-translate-y-1 active:scale-[0.98]"
+              className="w-full sm:w-auto bg-slate-900/80 hover:bg-slate-900/90 active:bg-slate-900 dark:bg-white/15 dark:hover:bg-white/25 dark:active:bg-white/30 backdrop-blur-md text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-sm border border-white/20 hover:-translate-y-1 active:scale-[0.98]"
             >
               {t('hero.ctaSecondary')}
             </button>
