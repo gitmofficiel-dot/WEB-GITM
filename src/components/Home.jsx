@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { ArrowRight, Newspaper, Calendar, GraduationCap, Users, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -15,9 +14,9 @@ import PartnersSlider from './PartnersSlider';
 const Section = ({ title, subtitle, icon: Icon, children, bgClass, linkText, linkUrl, colorTheme }) => {
   const { lang } = useLanguage();
   const navigate = useNavigate();
-  
+
   let accentColor, accentBg;
-  switch(colorTheme) {
+  switch (colorTheme) {
     case 'red':
       accentColor = 'text-gitm-red';
       accentBg = 'bg-gitm-red/20 dark:bg-gitm-red/30';
@@ -34,32 +33,34 @@ const Section = ({ title, subtitle, icon: Icon, children, bgClass, linkText, lin
       accentColor = 'text-gitm-red';
       accentBg = 'bg-gitm-red/20 dark:bg-gitm-red/30';
   }
-  
+
   return (
-    <section className={`w-full py-6 md:py-20 relative ${bgClass}`}>
+    <section className={`w-full py-8 md:py-20 relative ${bgClass}`}>
       <div className="container mx-auto max-w-7xl relative z-10 px-4">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-12 gap-4 md:gap-6">
-          <div className="flex-1">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-5 md:mb-12 gap-3 md:gap-6">
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-2 md:mb-4">
-              <div className={`p-2.5 md:p-3 rounded-xl ${accentBg} backdrop-blur-sm`}>
-                <Icon size={22} className={`md:w-7 md:h-7 ${accentColor}`} />
+              <div className={`p-2.5 md:p-3 rounded-xl shrink-0 ${accentBg} backdrop-blur-sm`}>
+                <Icon size={20} className={`md:w-7 md:h-7 ${accentColor}`} />
               </div>
-              <h2 className="text-xl md:text-5xl font-bold tracking-tight text-gitm-textLight dark:text-white drop-shadow-md">
+              <h2 className="text-xl sm:text-2xl md:text-5xl font-bold tracking-tight text-gitm-textLight dark:text-white leading-snug break-words">
                 {title}
               </h2>
             </div>
             {subtitle && (
-              <p className="text-gray-800 dark:text-gray-200 text-sm md:text-lg max-w-3xl rtl:ml-0 font-medium drop-shadow mt-1 md:mt-0">
+              <p className="text-slate-700 dark:text-slate-300 text-sm md:text-lg max-w-3xl rtl:ml-0 font-medium leading-relaxed mt-1 md:mt-0">
                 {subtitle}
               </p>
             )}
           </div>
           {linkText && linkUrl && (
-            <button 
+            <button
+              type="button"
               onClick={() => navigate(linkUrl)}
-              className={`flex items-center gap-2 font-bold ${accentColor} hover:underline transition-all whitespace-nowrap drop-shadow-md`}
+              className={`inline-flex items-center gap-2 min-h-[44px] md:min-h-0 self-start md:self-auto text-sm md:text-base font-bold ${accentColor} hover:underline transition-all whitespace-nowrap`}
             >
-              {linkText} <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''} />
+              <span>{linkText}</span>
+              <ArrowRight size={18} className={lang === 'ar' ? 'rotate-180' : ''} />
             </button>
           )}
         </div>
@@ -75,13 +76,13 @@ export default function Home() {
 
   return (
     <div className="flex flex-col w-full bg-transparent">
-      
+
       <Hero />
 
       <PartnersSlider />
 
-      {/* 1. News Section (Full Width) */}
-      <Section 
+      {/* 1. News Section */}
+      <Section
         title={t('home.newsTitle')}
         subtitle={t('home.newsSubtitle')}
         icon={Newspaper}
@@ -90,13 +91,13 @@ export default function Home() {
         linkText={t('home.newsBrowseAll')}
         linkUrl="/news"
       >
-        <div className="glass-card p-3 md:p-8 rounded-2xl md:rounded-3xl shadow-xl">
+        <div className="glass-card p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-xl">
           <LatestNews />
         </div>
       </Section>
 
-      {/* 2. Events Section (Full Width) */}
-      <Section 
+      {/* 2. Events Section */}
+      <Section
         title={t('home.eventsTitle')}
         subtitle={t('home.eventsSubtitle')}
         icon={Calendar}
@@ -110,7 +111,7 @@ export default function Home() {
         </div>
       </Section>
 
-      {/* 3. Academy Section (Full Width) */}
+      {/* 3. Academy Section */}
       <Section
         title={t('home.academyTitle')}
         subtitle={t('home.academySubtitle')}
@@ -133,39 +134,45 @@ export default function Home() {
         bgClass="bg-white/10 dark:bg-black/20 backdrop-blur-sm border-b border-white/20 dark:border-white/5"
         colorTheme="blue"
       >
-        <div className="glass-card p-6 md:p-12 rounded-2xl md:rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 bg-gradient-to-br from-blue-50 to-white dark:from-blue-900/30 dark:to-slate-900/50">
-          <div className="flex-1">
-            <h3 className="text-2xl md:text-3xl font-bold text-gitm-textLight dark:text-white mb-4">
-              {lang === 'ar' ? 'معايير الانضمام إلى الجمعية' : lang === 'fr' ? 'Critères d\'adhésion à l\'association' : 'Association Membership Criteria'}
+        <div className="glass-card p-5 md:p-12 rounded-2xl md:rounded-3xl shadow-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6 md:gap-12 bg-gradient-to-br from-blue-50 to-white dark:from-blue-900/30 dark:to-slate-900/50 border border-slate-200/80 dark:border-slate-700/60">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg sm:text-2xl md:text-3xl font-bold text-gitm-textLight dark:text-white mb-4 leading-snug">
+              {lang === 'ar'
+                ? 'معايير الانضمام إلى الجمعية'
+                : lang === 'fr'
+                  ? "Critères d'adhésion à l'association"
+                  : 'Association Membership Criteria'}
             </h3>
-            <ul className="space-y-3 mb-6 text-slate-700 dark:text-slate-300">
-              <li className="flex items-start gap-2">
-                <ArrowRight size={18} className={`mt-1 text-blue-500 shrink-0 ${lang === 'ar' ? 'rotate-180' : ''}`} />
+            <ul className="space-y-3 mb-2 md:mb-6 text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+              <li className="flex items-start gap-2.5">
+                <ArrowRight size={18} className={`mt-1 text-blue-600 dark:text-blue-400 shrink-0 ${lang === 'ar' ? 'rotate-180' : ''}`} />
                 <span>{lang === 'ar' ? 'طالب هندسة أو تكنولوجيا، أو خريج شغوف بالابتكار.' : 'Engineering or technology student, or a graduate passionate about innovation.'}</span>
               </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight size={18} className={`mt-1 text-blue-500 shrink-0 ${lang === 'ar' ? 'rotate-180' : ''}`} />
-                <span>{lang === 'ar' ? 'الالتزام بحضور الفعاليات والمساهمة الفعالة في مشاريع الجمعية.' : 'Commitment to attend events and actively contribute to the association\'s projects.'}</span>
+              <li className="flex items-start gap-2.5">
+                <ArrowRight size={18} className={`mt-1 text-blue-600 dark:text-blue-400 shrink-0 ${lang === 'ar' ? 'rotate-180' : ''}`} />
+                <span>{lang === 'ar' ? 'الالتزام بحضور الفعاليات والمساهمة الفعالة في مشاريع الجمعية.' : "Commitment to attend events and actively contribute to the association's projects."}</span>
               </li>
-              <li className="flex items-start gap-2">
-                <ArrowRight size={18} className={`mt-1 text-blue-500 shrink-0 ${lang === 'ar' ? 'rotate-180' : ''}`} />
-                <span>{lang === 'ar' ? 'الموافقة على سياسة الخصوصية وقانون الجمعية الداخلي.' : 'Agreement to the privacy policy and the association\'s internal regulations.'}</span>
+              <li className="flex items-start gap-2.5">
+                <ArrowRight size={18} className={`mt-1 text-blue-600 dark:text-blue-400 shrink-0 ${lang === 'ar' ? 'rotate-180' : ''}`} />
+                <span>{lang === 'ar' ? 'الموافقة على سياسة الخصوصية وقانون الجمعية الداخلي.' : "Agreement to the privacy policy and the association's internal regulations."}</span>
               </li>
             </ul>
           </div>
-          <div className="flex flex-col gap-4 w-full md:w-auto">
-            <button 
+          <div className="flex flex-col gap-3 md:gap-4 w-full md:w-auto">
+            <button
+              type="button"
               onClick={() => navigate('/register')}
-              className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-1"
+              className="w-full md:w-auto min-h-[48px] bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]"
             >
-              <UserPlus size={22} />
-              {lang === 'ar' ? 'سجل كعضو جديد' : 'Register as a New Member'}
+              <UserPlus size={20} className="md:w-[22px] md:h-[22px]" />
+              <span>{lang === 'ar' ? 'سجل كعضو جديد' : 'Register as a New Member'}</span>
             </button>
-            <button 
+            <button
+              type="button"
               onClick={() => navigate('/contact')}
-              className="w-full md:w-auto bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-sm"
+              className="w-full md:w-auto min-h-[48px] bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98]"
             >
-              {lang === 'ar' ? 'تواصل معنا للاستفسار' : 'Contact Us for Inquiries'}
+              <span>{lang === 'ar' ? 'تواصل معنا للاستفسار' : 'Contact Us for Inquiries'}</span>
             </button>
           </div>
         </div>
