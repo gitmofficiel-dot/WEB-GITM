@@ -42,7 +42,8 @@ const ProjectsHub = () => {
     };
     fetchProjects();
   }, [lang]);
-  const PROJECT_TRANSLATIONS = {
+  const PROJECT_TRANSLATIONS = { 'تجربة الواقع الافتراضي للمدينة العتيقة': { en: 'Old Medina VR Experience', fr: "Expérience VR de l'Ancienne Médina" }, 'روبوت روح الأطلس': { en: 'Atlas Spirit Robot', fr: "Robot Esprit de l'Atlas" }, 'منصة التكنولوجيا الزراعية': { en: 'AgriTech Platform', fr: 'Plateforme AgriTech' },
+                                
     'منصة إديوكونيكت': { en: 'EduConnect Platform', fr: 'Plateforme EduConnect' },
     'تراث المغرب بالواقع الافتراضي': { en: 'Morocco Heritage VR', fr: 'Patrimoine du Maroc en VR' },
     'نظام الري الذكي بالطاقة الشمسية': { en: 'Solar Smart Irrigation System', fr: "Système d'Irrigation Solaire Intelligent" },
@@ -51,7 +52,8 @@ const ProjectsHub = () => {
     'تجربة الواقع الافتراضي للمدينة الذكية': { en: 'Smart City VR Experience', fr: 'Expérience VR Ville Intelligente' },
     'نظام إدارة المرور الذكية عبر الدرونز': { en: 'Smart Drone Traffic Management', fr: 'Gestion Intelligente du Trafic par Drones' },
   };
-const DESCRIPTION_TRANSLATIONS = [
+const DESCRIPTION_TRANSLATIONS = [ { keywords: ['تجربة الواقع الافتراضي للمدينة العتيقة', 'المدينة العتيقة', 'medina'], en: 'An immersive virtual reality tour exploring the historic alleys, architecture, and heritage of the Old Medina.', fr: "Une visite immersive en réalité virtuelle explorant les ruelles historiques, l'architecture et le patrimoine de l'ancienne Médina." }, { keywords: ['روبوت روح الأطلس', 'روح الأطلس', 'روبوت', 'atlas spirit', 'robot'], en: 'An autonomous intelligent robot engineered for exploration, assistance, and smart automation in challenging environments.', fr: "Un robot intelligent autonome conçu pour l'exploration, l'assistance et l'automatisation intelligente dans des environnements complexes." }, { keywords: ['منصة التكنولوجيا الزراعية', 'التكنولوجيا الزراعية', 'الزراعية', 'agritech', 'agriculture'], en: 'A smart digital agriculture platform leveraging sensors and data analytics to boost crop yield and sustainability.', fr: "Une plateforme d'agriculture numérique intelligente exploitant des capteurs et l'analyse de données pour optimiser les rendements et la durabilité." },
+                                  
     {
       keywords: ['إديوكونيكت', 'educonnect', 'تعليم', 'تعلم'],
       en: 'An interactive digital learning platform connecting students and educators with smart educational resources.',
@@ -80,7 +82,8 @@ const DESCRIPTION_TRANSLATIONS = [
   ];
 
   const getDefaultCoverImage = (proj) => {
-    const text = [proj?.title, proj?.titleAr, proj?.titleEn, proj?.category].filter(Boolean).join(' ').toLowerCase();
+    const text = [proj?.title, proj?.titleAr, proj?.titleEn, proj?.category].filter(Boolean).join(' ').toLowerCase(); if (text.includes('روبوت') || text.includes('روح الأطلس') || text.includes('robot') || text.includes('atlas')) return 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80'; if (text.includes('الزراعية') || text.includes('agritech') || text.includes('agriculture')) return 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80';
+    
     if (text.includes('تراث') || text.includes('heritage')) {
       return 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=800&q=80';
     }
@@ -97,15 +100,16 @@ const DESCRIPTION_TRANSLATIONS = [
       return 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800&q=80';
     }
     return 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80';
-  };
+  }; const getProjectCoverImage = (proj) => { const img = (proj?.coverImage || '').trim(); return (!img || img.includes('photo-1518770660439-4636190af475')) ? getDefaultCoverImage(proj) : img; };
+  
   const getLocalized = (obj, field) => {
-    if (!obj) return '';
+    if (!obj) return ''; const hasArabic = (s) => /[\u0600-\u06FF]/.test(s || ''); const candidate = lang === 'ar' ? (obj[`${field}Ar`] || obj[`${field}_ar`] || obj[field] || '') : (lang === 'en' ? obj[`${field}En`] : obj[`${field}Fr`]) || obj[`${field}_${lang}`] || (lang === 'fr' ? obj[`${field}_fr`] : '') || obj[field] || ''; const rawVal = String(candidate).trim(); if (lang === 'ar' || (rawVal && !hasArabic(rawVal))) return rawVal; /*
     if (obj[`${field}Ar`] && lang === 'ar') return obj[`${field}Ar`];
     if (obj[`${field}En`] && lang === 'en') return obj[`${field}En`];
     if (obj[`${field}_${lang}`]) return obj[`${field}_${lang}`];
     if (obj[`${field}Fr`] && lang === 'fr') return obj[`${field}Fr`];
     if (obj[`${field}_fr`] && lang === 'fr') return obj[`${field}_fr`];
-    const rawVal = (obj[field] || '').trim();
+    const rawVal = (obj[field] || '').trim(); */
     if (lang === 'en' || lang === 'fr') {
       if (PROJECT_TRANSLATIONS[rawVal]?.[lang]) {
         return PROJECT_TRANSLATIONS[rawVal][lang];
@@ -189,7 +193,7 @@ const DESCRIPTION_TRANSLATIONS = [
                 >
                   {/* Background Image */}
                   <img 
-                    src={proj.coverImage || getDefaultCoverImage(proj)} 
+                    src={getProjectCoverImage(proj)} 
                     alt={getLocalized(proj, 'title')} 
                     onError={(e) => {
                       e.currentTarget.onerror = null;
