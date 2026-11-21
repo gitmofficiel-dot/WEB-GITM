@@ -3,7 +3,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { Hammer, Cpu, Camera, Terminal, Layers, Globe, Eye } from 'lucide-react';
 
 const Archive = () => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const archiveItems = [
     {
