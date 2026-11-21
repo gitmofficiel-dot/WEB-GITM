@@ -29,13 +29,13 @@ export default function PartnersSlider() {
   const duplicatedPartners = partnerList.length > 0 ? [...partnerList, ...partnerList] : [];
 
   return (
-    <div className="w-full overflow-hidden bg-white dark:bg-gitm-cardDark py-12 relative border-y border-gray-200 dark:border-gitm-borderDark">
+    <div className={`w-full overflow-hidden bg-white dark:bg-gitm-cardDark ${partnerList.length === 0 ? 'py-5' : 'py-12'} relative border-y border-gray-200 dark:border-gitm-borderDark`}>
       
-      <div className="text-center mb-10 px-4">
+      <div className={`text-center ${partnerList.length === 0 ? 'mb-0' : 'mb-10'} px-4`}>
         <h3 className="text-2xl font-bold text-gitm-textLight dark:text-white mb-2">
           {lang === 'ar' ? 'الشركاء الاستراتيجيون والمؤسسات الداعمة' : 'Strategic Partners & Supporting Institutions'}
         </h3>
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-gray-700 dark:text-gray-300">
           {lang === 'ar' ? 'نعمل جنباً إلى جنب مع كبرى المؤسسات الوطنية والعالمية' : 'Working alongside major national and global institutions'}
         </p>
       </div>
