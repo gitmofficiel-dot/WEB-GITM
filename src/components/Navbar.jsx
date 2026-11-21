@@ -13,7 +13,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
-  
+  const isRtl = lang === 'ar';
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langDropdown, setLangDropdown] = useState(false);
@@ -30,14 +31,14 @@ const Navbar = () => {
       setSearchResults([]);
       return;
     }
-    
+
     const fetchSearchResults = async () => {
       try {
         const apiKey = import.meta.env.VITE_ALGOLIA_SEARCH_KEY;
         if (apiKey) {
           const client = algoliasearch('53BOZ8TCA9', apiKey);
           const { results } = await client.search([{ indexName: 'gitm_users', query: searchQuery }]);
-          
+
           if (results && results[0] && results[0].hits) {
             setSearchResults(results[0].hits.map(h => ({
               id: h.objectID || h.id,
@@ -47,10 +48,9 @@ const Navbar = () => {
             })));
           }
         } else {
-          // Fallback to local array
           const q = searchQuery.toLowerCase();
-          const results = (users || []).filter(u => 
-            u.name.toLowerCase().includes(q) || 
+          const results = (users || []).filter(u =>
+            u.name.toLowerCase().includes(q) ||
             (u.memberId && u.memberId.toLowerCase().includes(q))
           );
           setSearchResults(results);
@@ -58,14 +58,14 @@ const Navbar = () => {
       } catch (err) {
         console.warn("Algolia search failed (using fallback):", err);
         const q = searchQuery.toLowerCase();
-        const results = (users || []).filter(u => 
-          u.name.toLowerCase().includes(q) || 
+        const results = (users || []).filter(u =>
+          u.name.toLowerCase().includes(q) ||
           (u.memberId && u.memberId.toLowerCase().includes(q))
         );
         setSearchResults(results);
       }
     };
-    
+
     fetchSearchResults();
   }, [searchQuery, users]);
 
@@ -76,10 +76,20 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    setMobileOpen(false); setLangDropdown(false); setProfileDropdown(false); setToolsDropdown(false); setSearchOpen(false);
+    setMobileOpen(false);
+    setLangDropdown(false);
+    setProfileDropdown(false);
+    setToolsDropdown(false);
+    setSearchOpen(false);
   }, [currentPath, location.search, location.key]);
 
-  // Navigation items using translation keys
+  useEffect(() => {
+    document.body.classList.toggle('mobile-drawer-open', mobileOpen);
+    return () => {
+      document.body.classList.remove('mobile-drawer-open');
+    };
+  }, [mobileOpen]);
+
   const navItems = [
     { id: 'home', path: '/', tKey: 'nav.home' },
     { id: 'news', path: '/news', tKey: 'nav.news' },
@@ -97,17 +107,38 @@ const Navbar = () => {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'glass-nav py-3 shadow-soft' : 'bg-transparent py-5'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-          
-          {/* Logo */}
-          <button onClick={() => navigate('/')} className="flex items-center gap-3 group">
-            <img 
-              src="/logo.png" 
-              alt="GITM Logo" 
-              className="h-10 md:h-12 object-contain group-hover:scale-105 transition-transform dark:invert dark:hue-rotate-180 dark:mix-blend-screen" 
-            />
-          </button>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled
+            ? 'glass-nav h-16 md:h-auto md:py-3 shadow-soft'
+            : 'glass-nav md:bg-transparent md:backdrop-blur-none md:border-b-0 h-16 md:h-auto md:py-5'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-2">
+
+          {/* Start Side: Mobile Menu Button (rightmost in RTL, leftmost in LTR) + Logo */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label={lang === 'ar' ? 'فتح القائمة' : 'Open menu'}
+              className="md:hidden flex items-center justify-center min-w-[44px] min-h-[44px] rounded-xl text-gitm-textLight dark:text-gitm-textDark hover:bg-gray-100 dark:hover:bg-gray-800 active:scale-95 transition-colors"
+              onClick={() => setMobileOpen(true)}
+            >
+              <Menu size={22} />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="flex items-center gap-3 group min-h-[44px]"
+            >
+              <img
+                src="/logo.png"
+                alt="GITM Logo"
+                className="h-9 md:h-12 w-auto object-contain bg-transparent group-hover:scale-105 transition-transform dark:invert dark:hue-rotate-180 dark:mix-blend-screen"
+              />
+            </button>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-0.5">
@@ -118,8 +149,8 @@ const Navbar = () => {
                   key={item.id}
                   onClick={() => navigate(item.path)}
                   className={`relative px-2 lg:px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                    isActive 
-                      ? 'text-gitm-blue dark:text-gitm-cyan bg-blue-50/50 dark:bg-blue-900/20' 
+                    isActive
+                      ? 'text-gitm-blue dark:text-gitm-cyan bg-blue-50/50 dark:bg-blue-900/20'
                       : 'text-gitm-textLight dark:text-gitm-textDark hover:text-gitm-blue dark:hover:text-gitm-cyan hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
                   }`}
                 >
@@ -133,8 +164,8 @@ const Navbar = () => {
               <button
                 onClick={() => setToolsDropdown(!toolsDropdown)}
                 className={`flex items-center gap-1 px-2 lg:px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                  toolsDropdown 
-                    ? 'text-gitm-blue dark:text-gitm-cyan bg-blue-50/50 dark:bg-blue-900/20' 
+                  toolsDropdown
+                    ? 'text-gitm-blue dark:text-gitm-cyan bg-blue-50/50 dark:bg-blue-900/20'
                     : 'text-gitm-textLight dark:text-gitm-textDark hover:text-gitm-blue dark:hover:text-gitm-cyan hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
                 }`}
               >
@@ -152,7 +183,7 @@ const Navbar = () => {
                       exit={{ opacity: 0, y: 10 }}
                       className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-72 bg-white/95 dark:bg-[#0d1527]/95 backdrop-blur-xl border border-gray-200 dark:border-cyan-500/20 rounded-2xl shadow-2xl z-50 p-2 grid grid-cols-1 gap-1"
                     >
-                      <div className="px-3 py-2 text-xs font-bold text-gray-400 dark:text-cyan-400/80 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800">
+                      <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-cyan-400/80 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800">
                         {t('nav.innovationHubDesc')}
                       </div>
                       {toolItems.map(tool => (
@@ -172,21 +203,21 @@ const Navbar = () => {
             </div>
           </nav>
 
-          {/* Right Controls */}
-          <div className="flex items-center gap-1 sm:gap-2 relative">
-            
-            {/* Search Bar */}
-            <div className="relative hidden sm:flex items-center">
+          {/* End Side Controls: Theme + Notifications + Language (Desktop) + Login/Profile */}
+          <div className="flex items-center gap-2 relative">
+
+            {/* Search Bar (Desktop/Tablet) */}
+            <div className="relative hidden md:flex items-center">
               <AnimatePresence>
                 {searchOpen && (
-                  <motion.div 
-                    initial={{ width: 0, opacity: 0 }} 
-                    animate={{ width: 200, opacity: 1 }} 
+                  <motion.div
+                    initial={{ width: 0, opacity: 0 }}
+                    animate={{ width: 200, opacity: 1 }}
                     exit={{ width: 0, opacity: 0 }}
-                    className="overflow-hidden mr-2"
+                    className="overflow-hidden mr-2 rtl:mr-0 rtl:ml-2"
                   >
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder={t('nav.searchFull')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -196,24 +227,27 @@ const Navbar = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
-              <button 
-                onClick={() => { setSearchOpen(!searchOpen); setSearchQuery(''); }} 
+              <button
+                type="button"
+                aria-label={t('nav.search') || 'Search'}
+                onClick={() => { setSearchOpen(!searchOpen); setSearchQuery(''); }}
                 className="p-2.5 rounded-lg text-gitm-mutedLight dark:text-gitm-mutedDark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
                 {searchOpen ? <X size={18} /> : <Search size={18} />}
               </button>
-              
-              {/* Search Results Dropdown */}
+
               <AnimatePresence>
                 {searchOpen && searchQuery && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                    className="absolute top-full mt-2 right-0 w-72 max-h-80 overflow-y-auto bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 py-2"
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-72 max-h-80 overflow-y-auto bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 py-2"
                   >
                     {searchResults.length > 0 ? (
                       searchResults.map(res => (
-                        <button 
-                          key={res.id} 
+                        <button
+                          key={res.id}
                           onClick={() => { navigate(`/profile/${res.id}`); setSearchOpen(false); setSearchQuery(''); }}
                           className="w-full text-left rtl:text-right px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 flex flex-col border-b border-gray-100 dark:border-gray-800 last:border-0"
                         >
@@ -230,29 +264,39 @@ const Navbar = () => {
                 )}
               </AnimatePresence>
             </div>
-            
-            <button onClick={toggleTheme} className="p-2.5 rounded-lg text-gitm-mutedLight dark:text-gitm-mutedDark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+
+            {/* Theme Toggle */}
+            <button
+              type="button"
+              aria-label={t('nav.darkMode') || 'Toggle theme'}
+              onClick={toggleTheme}
+              className="flex items-center justify-center min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 md:p-2.5 rounded-xl md:rounded-lg text-slate-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-gray-800 active:scale-95 transition-colors"
+            >
+              {theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
             </button>
 
             {user && (
               <div className="relative">
-                <button 
-                  onClick={() => { setNotificationsOpen(!notificationsOpen); setProfileDropdown(false); setLangDropdown(false); }} 
-                  className="p-2.5 rounded-lg text-gitm-mutedLight dark:text-gitm-mutedDark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
+                <button
+                  type="button"
+                  aria-label={t('nav.notifications') || 'Notifications'}
+                  onClick={() => { setNotificationsOpen(!notificationsOpen); setProfileDropdown(false); setLangDropdown(false); }}
+                  className="flex items-center justify-center min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 md:p-2.5 rounded-xl md:rounded-lg text-slate-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
                 >
-                  <Bell size={18} />
+                  <Bell size={19} />
                   {unreadCount > 0 && (
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                    <span className="absolute top-2.5 right-2.5 md:top-2 md:right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                   )}
                 </button>
                 <AnimatePresence>
                   {notificationsOpen && (
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setNotificationsOpen(false)} />
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                        className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-80 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden"
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-[calc(100vw-2rem)] max-w-80 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden"
                       >
                         <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
                           <h4 className="font-bold text-sm text-gitm-textLight dark:text-gitm-textDark">{t('nav.notifications')}</h4>
@@ -272,15 +316,17 @@ const Navbar = () => {
                             </div>
                           ) : (
                             notifications.map(n => (
-                              <div 
-                                key={n.id} 
-                                onClick={() => { markAsRead(n.id); if(n.link) { navigate(n.link); setNotificationsOpen(false); } }}
+                              <div
+                                key={n.id}
+                                onClick={() => { markAsRead(n.id); if (n.link) { navigate(n.link); setNotificationsOpen(false); } }}
                                 className={`p-4 border-b border-gray-50 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer ${!n.read ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}`}
                               >
                                 <h5 className="font-bold text-sm text-gitm-textLight dark:text-gitm-textDark mb-1">{n.title}</h5>
                                 <p className="text-xs text-gitm-mutedLight dark:text-gitm-mutedDark mb-1">{n.message}</p>
-                                <span className="text-[10px] text-gray-400">
-                                  {n.createdAt && typeof n.createdAt.toDate === 'function' ? new Intl.DateTimeFormat(lang === 'ar' ? 'ar-MA' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(n.createdAt.toDate()) : 'Recently'}
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                  {n.createdAt && typeof n.createdAt.toDate === 'function'
+                                    ? new Intl.DateTimeFormat(lang === 'ar' ? 'ar-MA' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(n.createdAt.toDate())
+                                    : 'Recently'}
                                 </span>
                               </div>
                             ))
@@ -292,10 +338,11 @@ const Navbar = () => {
                 </AnimatePresence>
               </div>
             )}
-            
-            
-            <div className="relative hidden sm:block">
-              <button 
+
+            {/* Desktop Language Switcher */}
+            <div className="relative hidden md:block">
+              <button
+                type="button"
                 onClick={() => { setLangDropdown(!langDropdown); setProfileDropdown(false); }}
                 className="flex items-center gap-1 p-2.5 rounded-lg text-sm font-semibold text-gitm-mutedLight dark:text-gitm-mutedDark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
@@ -303,19 +350,21 @@ const Navbar = () => {
                 <span className="uppercase ml-1">{lang}</span>
                 <ChevronDown size={14} className="ml-1 opacity-50" />
               </button>
-              
+
               <AnimatePresence>
                 {langDropdown && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setLangDropdown(false)} />
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                      className="absolute top-full mt-2 right-0 w-40 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden py-1"
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute top-full mt-2 right-0 rtl:right-auto rtl:left-0 w-40 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden py-1"
                     >
                       {Object.entries(languages).filter(([code]) => code !== 'tzm').map(([code, langInfo]) => (
-                        <button 
+                        <button
                           key={code}
-                          onClick={() => {changeLanguage(code); setLangDropdown(false)}} 
+                          onClick={() => { changeLanguage(code); setLangDropdown(false); }}
                           className={`w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2 ${lang === code ? 'text-gitm-blue font-bold' : 'text-gray-800 dark:text-gray-100'}`}
                         >
                           <span>{langInfo.flag}</span>
@@ -328,13 +377,15 @@ const Navbar = () => {
               </AnimatePresence>
             </div>
 
+            {/* User Profile / Login Button */}
             {user ? (
               <div className="relative">
-                <button 
+                <button
+                  type="button"
                   onClick={() => { setProfileDropdown(!profileDropdown); setLangDropdown(false); }}
-                  className="flex items-center gap-2 pl-3 pr-1 py-1.5 ml-2 rounded-full border border-gray-200 dark:border-gitm-borderDark hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-center justify-center gap-2 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 px-1.5 md:pl-3 md:pr-1 md:py-1.5 rounded-full border border-gray-200 dark:border-gitm-borderDark hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
-                  <span className="text-sm font-semibold hidden sm:block">{user.name}</span>
+                  <span className="text-sm font-semibold hidden md:block">{user.name}</span>
                   {user.photoURL ? (
                     <img src={user.photoURL} alt={user.name} className="w-8 h-8 rounded-full object-cover border border-gray-200" />
                   ) : (
@@ -347,8 +398,10 @@ const Navbar = () => {
                   {profileDropdown && (
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setProfileDropdown(false)} />
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
                         className="absolute top-full mt-2 right-0 rtl:left-0 rtl:right-auto w-56 bg-white dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl shadow-xl z-50 overflow-hidden py-2"
                       >
                         <div className="px-4 py-2 border-b border-gray-100 dark:border-gitm-borderDark mb-2 flex items-center gap-3">
@@ -364,11 +417,17 @@ const Navbar = () => {
                             <p className="text-xs text-gitm-mutedLight dark:text-gitm-mutedDark truncate">{user.email}</p>
                           </div>
                         </div>
-                        <button onClick={() => {navigate('/dashboard'); setProfileDropdown(false)}} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
-                          <LayoutDashboard size={16} className="text-gitm-blue"/> {t('nav.dashboard')}
+                        <button
+                          onClick={() => { navigate('/dashboard'); setProfileDropdown(false); }}
+                          className="w-full min-h-[44px] md:min-h-0 text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800"
+                        >
+                          <LayoutDashboard size={16} className="text-gitm-blue" /> {t('nav.dashboard')}
                         </button>
-                        <button onClick={async () => { await logout(); navigate('/'); setProfileDropdown(false); }} className="w-full text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 mt-1">
-                          <LogOut size={16}/> {t('nav.logout')}
+                        <button
+                          onClick={async () => { await logout(); navigate('/'); setProfileDropdown(false); }}
+                          className="w-full min-h-[44px] md:min-h-0 text-left rtl:text-right flex items-center gap-3 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 mt-1"
+                        >
+                          <LogOut size={16} /> {t('nav.logout')}
                         </button>
                       </motion.div>
                     </>
@@ -376,154 +435,269 @@ const Navbar = () => {
                 </AnimatePresence>
               </div>
             ) : (
-              <button 
+              <button
+                type="button"
                 onClick={() => navigate('/login')}
-                className="bg-gitm-blue hover:bg-blue-700 text-white px-3 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold ml-1 sm:ml-2 transition-colors"
+                className="bg-gitm-blue hover:bg-blue-700 text-white min-h-[44px] md:min-h-0 px-4 md:px-5 py-2 rounded-xl md:rounded-full text-xs sm:text-sm font-bold whitespace-nowrap active:scale-95 transition-colors"
               >
                 {t('nav.login')}
               </button>
             )}
-
-            {/* Mobile Menu Toggle */}
-            <button className="md:hidden p-2 ml-1 text-gitm-textLight dark:text-gitm-textDark" onClick={() => setMobileOpen(true)}>
-              <Menu size={22} />
-            </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Slide-Over Drawer (opens from Right in RTL, Left in LTR) */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div 
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-            className="fixed inset-0 z-[999] bg-gitm-light dark:bg-gitm-dark flex flex-col overflow-hidden"
-          >
-            <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gitm-borderDark">
-              <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="GITM" className="h-8  dark:invert dark:hue-rotate-180 dark:mix-blend-screen object-contain" />
-                <span className="font-bold text-xl">GITM</span>
-              </div>
-              <button onClick={() => setMobileOpen(false)} className="p-2.5 bg-gray-200 dark:bg-gray-800 rounded-full active:scale-95 transition-transform">
-                <X size={20} />
-              </button>
-            </div>
-            <div className="p-5 pb-28 flex flex-col gap-3 overflow-y-auto flex-1 scroll-container">
-              {/* Search Bar in Mobile Menu */}
-              <div className="relative mb-2">
-                <Search size={18} className="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 -translate-y-1/2 text-gray-400" />
-                <input 
-                  type="text" 
-                  placeholder={t('nav.search')}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full p-3 pl-10 rtl:pr-10 rtl:pl-3 text-sm bg-gray-100 dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl text-gitm-textLight dark:text-gitm-textDark focus:ring-2 focus:ring-gitm-blue outline-none"
-                />
-              </div>
+          <div className="fixed inset-0 z-[999] md:hidden flex" role="dialog" aria-modal="true" aria-label={lang === 'ar' ? 'قائمة التنقل' : 'Navigation menu'}>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setMobileOpen(false)}
+            />
 
-              {navItems.map(item => {
-                const isActive = currentPath === item.path;
-                return (
-                  <button 
-                    key={item.id} 
-                    onClick={() => { navigate(item.path); setMobileOpen(false); }} 
-                    className={`text-base font-bold text-left rtl:text-right p-4 rounded-xl transition-colors active:scale-[0.98] ${
-                      isActive 
-                        ? 'bg-gitm-blue/10 dark:bg-gitm-blue/20 text-gitm-blue dark:text-gitm-cyan border border-gitm-blue/20' 
-                        : 'bg-gray-50 dark:bg-gitm-cardDark hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
-                  >
-                    {t(item.tKey)}
-                  </button>
-                );
-              })}
-
-              {/* Innovation Tools in Mobile Menu */}
-              <div className="mt-2 pt-4 border-t border-gray-200 dark:border-gitm-borderDark">
-                <h4 className="text-xs font-bold text-gray-500 dark:text-cyan-400 uppercase tracking-wider mb-2 px-1">
-                  {t('nav.innovationHub')}
-                </h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {toolItems.map(tool => (
-                    <button
-                      key={tool.id}
-                      onClick={() => { navigate(tool.path); setMobileOpen(false); }}
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-gray-50 dark:bg-gitm-cardDark hover:bg-cyan-500/10 text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors text-left rtl:text-right"
-                    >
-                      <span>{tool.icon}</span>
-                      <span className="truncate">{t(tool.tKey)}</span>
-                    </button>
-                  ))}
+            {/* Drawer Panel */}
+            <motion.aside
+              initial={{ x: isRtl ? '100%' : '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: isRtl ? '100%' : '-100%' }}
+              transition={{ type: 'spring', bounce: 0, duration: 0.35 }}
+              className="relative z-10 w-[85vw] max-w-[320px] h-full bg-white dark:bg-gitm-dark text-gitm-textLight dark:text-gitm-textDark shadow-2xl flex flex-col overflow-hidden"
+            >
+              <div className="px-4 h-16 shrink-0 flex justify-between items-center border-b border-gray-200 dark:border-gitm-borderDark">
+                <div className="flex items-center gap-2.5">
+                  <img
+                    src="/logo.png"
+                    alt="GITM"
+                    className="h-8 w-auto bg-transparent dark:invert dark:hue-rotate-180 dark:mix-blend-screen object-contain"
+                  />
+                  <span className="font-bold text-lg tracking-tight">GITM</span>
                 </div>
-              </div>
-              
-              {/* Theme Toggle in Mobile Menu */}
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gitm-borderDark">
-                <button 
-                  onClick={toggleTheme} 
-                  className="w-full flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gitm-cardDark"
+                <button
+                  type="button"
+                  aria-label={lang === 'ar' ? 'إغلاق القائمة' : 'Close menu'}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-center min-w-[44px] min-h-[44px] bg-gray-100 dark:bg-gray-800 text-slate-700 dark:text-slate-200 rounded-xl active:scale-95 transition-transform"
                 >
-                  <span className="font-bold text-sm">{t('nav.darkMode')}</span>
-                  <div className={`w-12 h-7 rounded-full relative transition-colors ${theme === 'dark' ? 'bg-gitm-blue' : 'bg-gray-300'}`}>
-                    <div className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform ${theme === 'dark' ? 'translate-x-5 rtl:-translate-x-5' : 'translate-x-0.5 rtl:-translate-x-0.5'}`} />
-                  </div>
+                  <X size={20} />
                 </button>
               </div>
 
-              {/* Language Selection */}
-              <div className="mt-2 pt-4 border-t border-gray-200 dark:border-gitm-borderDark">
-                <h4 className="text-xs font-bold text-gitm-mutedLight dark:text-gitm-mutedDark uppercase tracking-wider mb-3 px-1">
-                  {t('nav.chooseLanguage')}
-                </h4>
-                <div className="grid grid-cols-3 gap-2">
-                  {Object.entries(languages).filter(([code]) => code !== 'tzm').map(([code, langInfo]) => (
-                    <button 
-                      key={code}
-                      onClick={() => changeLanguage(code)} 
-                      className={`py-2.5 text-center rounded-lg text-sm font-bold transition-colors active:scale-95 ${lang === code ? 'bg-gitm-blue text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800'}`}
+              <div className="p-4 pb-28 flex flex-col gap-2.5 overflow-y-auto flex-1 scroll-container">
+                {/* Search Bar in Mobile Drawer */}
+                <div className="relative mb-1">
+                  <Search size={18} className="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder={t('nav.search')}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full min-h-[48px] py-2.5 pl-10 pr-3 rtl:pr-10 rtl:pl-3 text-base bg-gray-100 dark:bg-gitm-cardDark border border-gray-200 dark:border-gitm-borderDark rounded-xl text-gitm-textLight dark:text-gitm-textDark focus:ring-2 focus:ring-gitm-blue outline-none"
+                  />
+                </div>
+
+                {/* Mobile Search Results */}
+                {searchQuery.trim() && (
+                  <div className="mb-2 rounded-xl border border-gray-200 dark:border-gitm-borderDark bg-white dark:bg-gitm-cardDark overflow-hidden">
+                    {searchResults.length > 0 ? (
+                      searchResults.slice(0, 5).map(res => (
+                        <button
+                          key={res.id}
+                          onClick={() => { navigate(`/profile/${res.id}`); setMobileOpen(false); setSearchQuery(''); }}
+                          className="w-full min-h-[44px] text-left rtl:text-right px-3.5 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 flex flex-col border-b border-gray-100 dark:border-gray-800 last:border-0"
+                        >
+                          <span className="font-bold text-sm text-gitm-textLight dark:text-gitm-textDark">{res.name}</span>
+                          <span className="text-xs text-slate-600 dark:text-slate-300">{res.memberId || 'N/A'} - {res.role}</span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-3.5 py-3 text-xs text-center text-slate-600 dark:text-slate-300">
+                        {t('nav.noResults')}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {navItems.map(item => {
+                  const isActive = currentPath === item.path;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => { navigate(item.path); setMobileOpen(false); }}
+                      className={`min-h-[44px] text-base font-bold text-left rtl:text-right px-4 py-3 rounded-xl transition-colors active:scale-[0.98] ${
+                        isActive
+                          ? 'bg-gitm-blue/10 dark:bg-gitm-blue/20 text-gitm-blue dark:text-gitm-cyan border border-gitm-blue/25'
+                          : 'bg-gray-50 dark:bg-gitm-cardDark text-slate-800 dark:text-slate-100 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      }`}
                     >
-                      {langInfo.name}
+                      {t(item.tKey)}
                     </button>
-                  ))}
+                  );
+                })}
+
+                {/* Innovation Tools in Mobile Drawer */}
+                <div className="mt-2 pt-3 border-t border-gray-200 dark:border-gitm-borderDark">
+                  <h4 className="text-xs font-bold text-slate-600 dark:text-cyan-400 uppercase tracking-wider mb-2 px-1">
+                    {t('nav.innovationHub')}
+                  </h4>
+                  <div className="grid grid-cols-1 gap-2">
+                    {toolItems.map(tool => (
+                      <button
+                        key={tool.id}
+                        onClick={() => { navigate(tool.path); setMobileOpen(false); }}
+                        className="min-h-[44px] flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-gitm-cardDark hover:bg-cyan-500/10 text-sm font-medium text-slate-800 dark:text-slate-100 transition-colors text-left rtl:text-right"
+                      >
+                        <span>{tool.icon}</span>
+                        <span className="truncate">{t(tool.tKey)}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Theme Toggle in Mobile Drawer */}
+                <div className="mt-2 pt-3 border-t border-gray-200 dark:border-gitm-borderDark">
+                  <button
+                    type="button"
+                    onClick={toggleTheme}
+                    className="w-full min-h-[48px] flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50 dark:bg-gitm-cardDark text-slate-800 dark:text-slate-100"
+                  >
+                    <span className="font-bold text-sm">{t('nav.darkMode')}</span>
+                    <div className={`w-12 h-7 rounded-full relative transition-colors ${theme === 'dark' ? 'bg-gitm-blue' : 'bg-gray-300'}`}>
+                      <div className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform ${theme === 'dark' ? 'translate-x-5 rtl:-translate-x-5' : 'translate-x-0.5 rtl:-translate-x-0.5'}`} />
+                    </div>
+                  </button>
+                </div>
+
+                {/* Language Selection */}
+                <div className="mt-2 pt-3 border-t border-gray-200 dark:border-gitm-borderDark">
+                  <h4 className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2.5 px-1">
+                    {t('nav.chooseLanguage')}
+                  </h4>
+                  <div className="grid grid-cols-3 gap-2">
+                    {Object.entries(languages).filter(([code]) => code !== 'tzm').map(([code, langInfo]) => (
+                      <button
+                        key={code}
+                        type="button"
+                        onClick={() => changeLanguage(code)}
+                        className={`min-h-[44px] px-2 py-2.5 text-center rounded-xl text-xs font-bold transition-colors active:scale-95 ${
+                          lang === code
+                            ? 'bg-gitm-blue text-white shadow-md'
+                            : 'bg-gray-100 dark:bg-gray-800 text-slate-800 dark:text-slate-100'
+                        }`}
+                      >
+                        {langInfo.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Account CTA at bottom of Drawer */}
+                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gitm-borderDark">
+                  {user ? (
+                    <div className="flex flex-col gap-2">
+                      <button
+                        type="button"
+                        onClick={() => { navigate('/dashboard'); setMobileOpen(false); }}
+                        className="w-full min-h-[48px] flex items-center justify-center gap-2 rounded-xl bg-gitm-blue text-white font-bold text-sm"
+                      >
+                        <LayoutDashboard size={18} />
+                        <span>{t('nav.dashboard')}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => { await logout(); navigate('/'); setMobileOpen(false); }}
+                        className="w-full min-h-[44px] flex items-center justify-center gap-2 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold text-sm"
+                      >
+                        <LogOut size={16} />
+                        <span>{t('nav.logout')}</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => { navigate('/login'); setMobileOpen(false); }}
+                      className="w-full min-h-[48px] flex items-center justify-center rounded-xl bg-gitm-blue hover:bg-blue-700 text-white font-bold text-sm"
+                    >
+                      {t('nav.login')}
+                    </button>
+                  )}
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.aside>
+          </div>
         )}
       </AnimatePresence>
 
-      {/* App-like Bottom Navigation for Mobile */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-gray-200/80 dark:border-gitm-borderDark mobile-bottom-nav px-2 sm:px-4 pt-2 pb-3 flex justify-between items-center shadow-[0_-4px_30px_rgba(0,0,0,0.12)]">
-        <button onClick={() => navigate('/')} className={`flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl transition-colors active:scale-95 ${currentPath === '/' ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
-          <Home size={20} strokeWidth={currentPath === '/' ? 2.5 : 1.5} />
-          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{t('nav.home')}</span>
+      {/* App-like Bottom Navigation for Mobile (64px height, >=11px labels, >=44px touch targets) */}
+      <nav
+        aria-label={lang === 'ar' ? 'التنقل السفلي' : 'Bottom navigation'}
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 min-h-[64px] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-gray-200/80 dark:border-gitm-borderDark mobile-bottom-nav px-2 pt-1.5 pb-2 flex justify-between items-center shadow-[0_-4px_30px_rgba(0,0,0,0.12)]"
+      >
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className={`flex flex-col items-center justify-center gap-0.5 w-[20%] min-h-[44px] py-1 rounded-xl transition-colors active:scale-95 ${
+            currentPath === '/' ? 'text-gitm-blue dark:text-gitm-cyan' : 'text-slate-600 dark:text-slate-400'
+          }`}
+        >
+          <Home size={20} strokeWidth={currentPath === '/' ? 2.5 : 1.75} />
+          <span className="text-[11px] font-bold leading-tight whitespace-nowrap">{t('nav.home')}</span>
           {currentPath === '/' && <span className="mobile-nav-active-dot" />}
         </button>
-        <button onClick={() => navigate('/news')} className={`flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl transition-colors active:scale-95 ${currentPath.startsWith('/news') ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
-          <Compass size={20} strokeWidth={currentPath.startsWith('/news') ? 2.5 : 1.5} />
-          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{t('nav.explore')}</span>
-          {currentPath.startsWith('/news') && <span className="mobile-nav-active-dot" />}
+
+        <button
+          type="button"
+          onClick={() => navigate('/projects-hub')}
+          className={`flex flex-col items-center justify-center gap-0.5 w-[20%] min-h-[44px] py-1 rounded-xl transition-colors active:scale-95 ${
+            currentPath.startsWith('/project') ? 'text-gitm-blue dark:text-gitm-cyan' : 'text-slate-600 dark:text-slate-400'
+          }`}
+        >
+          <Compass size={20} strokeWidth={currentPath.startsWith('/project') ? 2.5 : 1.75} />
+          <span className="text-[11px] font-bold leading-tight whitespace-nowrap">{t('nav.projects')}</span>
+          {currentPath.startsWith('/project') && <span className="mobile-nav-active-dot" />}
         </button>
-        <button onClick={() => navigate('/academy')} className={`flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl transition-colors active:scale-95 ${currentPath === '/academy' ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
-          <BookOpen size={20} strokeWidth={currentPath === '/academy' ? 2.5 : 1.5} />
-          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{t('nav.academy')}</span>
-          {currentPath === '/academy' && <span className="mobile-nav-active-dot" />}
+
+        <button
+          type="button"
+          onClick={() => navigate('/academy')}
+          className={`flex flex-col items-center justify-center gap-0.5 w-[20%] min-h-[44px] py-1 rounded-xl transition-colors active:scale-95 ${
+            currentPath.startsWith('/academy') ? 'text-gitm-blue dark:text-gitm-cyan' : 'text-slate-600 dark:text-slate-400'
+          }`}
+        >
+          <BookOpen size={20} strokeWidth={currentPath.startsWith('/academy') ? 2.5 : 1.75} />
+          <span className="text-[11px] font-bold leading-tight whitespace-nowrap">{t('nav.academy')}</span>
+          {currentPath.startsWith('/academy') && <span className="mobile-nav-active-dot" />}
         </button>
-        <button onClick={() => navigate('/events')} className={`flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl transition-colors active:scale-95 ${currentPath.startsWith('/events') ? 'text-gitm-blue' : 'text-gray-400 dark:text-gray-500'}`}>
-          <Calendar size={20} strokeWidth={currentPath.startsWith('/events') ? 2.5 : 1.5} />
-          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{t('nav.events')}</span>
+
+        <button
+          type="button"
+          onClick={() => navigate('/events')}
+          className={`flex flex-col items-center justify-center gap-0.5 w-[20%] min-h-[44px] py-1 rounded-xl transition-colors active:scale-95 ${
+            currentPath.startsWith('/events') ? 'text-gitm-blue dark:text-gitm-cyan' : 'text-slate-600 dark:text-slate-400'
+          }`}
+        >
+          <Calendar size={20} strokeWidth={currentPath.startsWith('/events') ? 2.5 : 1.75} />
+          <span className="text-[11px] font-bold leading-tight whitespace-nowrap">{t('nav.events')}</span>
           {currentPath.startsWith('/events') && <span className="mobile-nav-active-dot" />}
         </button>
-        <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center justify-center gap-1 w-[20%] py-1 rounded-xl text-gray-400 dark:text-gray-500 active:scale-95 transition-transform">
-          <Menu size={20} strokeWidth={1.5} />
-          <span className="text-[9px] sm:text-[10px] font-bold whitespace-nowrap">{t('nav.more')}</span>
+
+        <button
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          className="flex flex-col items-center justify-center gap-0.5 w-[20%] min-h-[44px] py-1 rounded-xl text-slate-600 dark:text-slate-400 active:scale-95 transition-transform"
+        >
+          <Menu size={20} strokeWidth={1.75} />
+          <span className="text-[11px] font-bold leading-tight whitespace-nowrap">{t('nav.more')}</span>
         </button>
-      </div>
+      </nav>
     </>
   );
 };
 
 export default Navbar;
+
