@@ -221,17 +221,17 @@ const AIChatBot = () => {
   };
 
   return (
-    <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 rtl:left-4 md:rtl:left-6 rtl:right-auto z-[60]">
+    <div className="fixed bottom-24 md:bottom-6 right-4 md:right-6 rtl:left-4 md:rtl:left-6 rtl:right-auto z-[60]">
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label={lang === 'ar' ? 'مساعد GITM الذكي' : 'GITM AI assistant'}
         aria-expanded={isOpen}
         aria-controls="gitm-ai-panel"
-        className="h-12 md:h-14 px-4 rounded-2xl flex items-center justify-center gap-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border border-slate-700 dark:border-white shadow-lg transition-colors hover:bg-slate-800 dark:hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+        className="w-12 h-12 md:h-14 p-0 md:px-4 rounded-full md:rounded-2xl md:w-auto flex items-center justify-center gap-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border border-slate-700 dark:border-white shadow-lg transition-colors hover:bg-slate-800 dark:hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
       >
-        {isOpen ? <X size={20} /> : <BrainCircuit size={20} strokeWidth={2} />}
-        <span className="text-sm font-semibold tracking-wide" dir="ltr">GITM AI</span>
+        {isOpen ? <X size={20}className="text-white dark:text-slate-900"  /> : <BrainCircuit size={20}className="text-white dark:text-slate-900"  strokeWidth={2} />}
+        <span className="hidden md:inline text-white dark:text-slate-900 text-sm font-semibold tracking-wide" dir="ltr">GITM AI</span>
       </button>
 
       {/* Chat Window */}
