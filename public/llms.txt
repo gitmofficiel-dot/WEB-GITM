@@ -1,0 +1,20 @@
+# GITM — Groupe Innovation Technologique Maroc
+
+> Official web platform of Groupe Innovation Technologique Maroc (مجموعة الابتكار التكنولوجي المغرب — GITM), founded and led by Mohammed Rhzaouni (محمد غزاوني) in Oued Zem, Morocco. Focuses on robotics, embedded systems, AI, IoT, VR/AR, and technology education.
+
+## Public Pages
+- [Home](https://gitm.pages.dev/): Overview of GITM innovation lab, leadership, projects, and academy.
+- [About Us](https://gitm.pages.dev/about-us): Mission, vision, founding story, and leadership team.
+- [Projects Hub](https://gitm.pages.dev/projects-hub): Showcase of GITM projects (EduConnect, Morocco Heritage VR, Solar Smart Irrigation, Medina VR, Atlas Spirit Robot, AgriTech).
+- [Academy](https://gitm.pages.dev/academy): Training courses and educational resources.
+- [Events](https://gitm.pages.dev/events): GITM, national, and international tech events.
+- [News](https://gitm.pages.dev/news): Official GITM updates and tech/environment news.
+- [Gallery](https://gitm.pages.dev/gallery): Visual showcase of GITM activities.
+- [Verify Certificate](https://gitm.pages.dev/verify-certificate): Public certificate verification tool.
+- [Contact](https://gitm.pages.dev/contact): Contact GITM Innovation Lab (Oued Zem, Morocco).
+
+## Read-Only MCP Server (Streamable HTTP / JSON-RPC 2.0)
+- **Endpoint:** `https://gitm.pages.dev/mcp` (open CORS, no authentication required)
+- **Server Info:** `GET https://gitm.pages.dev/mcp`
+- **Available Tools:** `list_news`, `list_events`, `list_projects`, `list_courses`, `list_team`
+
