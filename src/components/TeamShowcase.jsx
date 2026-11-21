@@ -67,7 +67,7 @@ export default function TeamShowcase() {
             className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border ${
               activeFilter === filter.id
                 ? 'bg-gitm-red text-white border-gitm-red shadow-lg shadow-gitm-red/20'
-                : 'bg-white dark:bg-gitm-cardDark text-gitm-mutedLight dark:text-gitm-mutedDark border-gray-200 dark:border-gitm-borderDark hover:border-gitm-red hover:text-gitm-red'
+                : 'bg-white dark:bg-gitm-cardDark text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gitm-borderDark hover:border-gitm-red hover:text-gitm-red'
             }`}
           >
             {lang === 'ar' ? filter.labelAr : filter.labelEn}
@@ -75,7 +75,7 @@ export default function TeamShowcase() {
         ))}
       </div>
 
-      <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+      <motion.div layout className="grid grid-cols-1 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
         <AnimatePresence>
           {filteredTeam.map((member, index) => (
             <motion.div
@@ -121,13 +121,13 @@ export default function TeamShowcase() {
               </div>
 
               <div className="p-4 md:p-8 flex-1 flex flex-col bg-white dark:bg-gitm-cardDark border-t-2 md:border-t-4 border-gitm-red">
-                <h3 className="text-base md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2 text-gitm-textLight dark:text-white group-hover:text-gitm-red transition-colors">
+                <h3 className="break-words text-base md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2 text-gitm-textLight dark:text-white group-hover:text-gitm-red transition-colors">
                   {lang === 'ar' ? member.nameAr : member.nameEn}
                 </h3>
                 <p className="text-xs md:text-base lg:text-lg text-gitm-green font-bold mb-2 md:mb-5">
                   {lang === 'ar' ? member.roleAr : member.roleEn}
                 </p>
-                <p className="text-xs md:text-base text-gitm-mutedLight dark:text-gitm-mutedDark line-clamp-2 md:line-clamp-3 leading-tight md:leading-relaxed border-t border-gray-100 dark:border-gitm-borderDark pt-2 md:pt-5">
+                <p className="text-xs md:text-base text-gray-700 dark:text-gray-300 line-clamp-2 md:line-clamp-3 leading-tight md:leading-relaxed border-t border-gray-100 dark:border-gitm-borderDark pt-2 md:pt-5">
                   {lang === 'ar' ? member.bioAr : member.bioEn}
                 </p>
               </div>
