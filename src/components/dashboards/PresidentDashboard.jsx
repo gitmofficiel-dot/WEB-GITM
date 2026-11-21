@@ -242,9 +242,11 @@ export default function PresidentDashboard() {
         <div>
           <p className="text-slate-500 dark:text-slate-400 font-medium mb-1">{title}</p>
           <h3 className="text-3xl font-bold text-[#1e3a5f] dark:text-white">{value}</h3>
-          <p className={`text-sm mt-2 font-medium ${trend.startsWith('+') ? 'text-emerald-500' : 'text-amber-500'}`}>
+         {trend && (
+      <p className={`text-sm mt-2 font-medium ${trend.startsWith('+') ? 'text-emerald-500' : 'text-amber-500'}`}>
             {trend} this month
           </p>
+       )}
         </div>
         <div className={`p-3 rounded-xl bg-${color}-100 dark:bg-${color}-900/30 text-${color}-600 dark:text-${color}-400`}>
           <Icon size={24} />
