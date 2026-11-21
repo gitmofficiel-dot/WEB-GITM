@@ -77,7 +77,7 @@ const Navbar = () => {
 
   useEffect(() => {
     setMobileOpen(false); setLangDropdown(false); setProfileDropdown(false); setToolsDropdown(false); setSearchOpen(false);
-  }, [currentPath]);
+  }, [currentPath, location.search, location.key]);
 
   // Navigation items using translation keys
   const navItems = [
@@ -105,7 +105,7 @@ const Navbar = () => {
             <img 
               src="/logo.png" 
               alt="GITM Logo" 
-              className="h-10 md:h-12 object-contain group-hover:scale-105 transition-transform" 
+              className="h-10 md:h-12 object-contain group-hover:scale-105 transition-transform dark:invert dark:hue-rotate-180 dark:mix-blend-screen" 
             />
           </button>
 
@@ -400,18 +400,18 @@ const Navbar = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-            className="fixed inset-0 z-[60] bg-gitm-light dark:bg-gitm-dark flex flex-col"
+            className="fixed inset-0 z-[999] bg-gitm-light dark:bg-gitm-dark flex flex-col overflow-hidden"
           >
             <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gitm-borderDark">
               <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="GITM" className="h-8 object-contain" />
+                <img src="/logo.png" alt="GITM" className="h-8  dark:invert dark:hue-rotate-180 dark:mix-blend-screen object-contain" />
                 <span className="font-bold text-xl">GITM</span>
               </div>
               <button onClick={() => setMobileOpen(false)} className="p-2.5 bg-gray-200 dark:bg-gray-800 rounded-full active:scale-95 transition-transform">
                 <X size={20} />
               </button>
             </div>
-            <div className="p-5 flex flex-col gap-3 overflow-y-auto flex-1 scroll-container">
+            <div className="p-5 pb-28 flex flex-col gap-3 overflow-y-auto flex-1 scroll-container">
               {/* Search Bar in Mobile Menu */}
               <div className="relative mb-2">
                 <Search size={18} className="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 -translate-y-1/2 text-gray-400" />
