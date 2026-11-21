@@ -489,8 +489,8 @@ export default function Academy() {
                  ? (lang === 'ar' ? 'الدورات المتاحة' : 'Available Courses')
                  : (lang === 'ar' ? 'الكتب المتاحة' : 'Available Books')
                }
-               <span className="text-slate-400 text-sm ml-3 font-normal">
-                 ({activeTab === 'courses' ? filteredCourses.length : books.length} results)
+               <span className="text-slate-400 text-sm ml-3 rtl:ml-0 rtl:mr-3 font-normal">
+                 ({activeTab === 'courses' ? filteredCourses.length : books.length} {lang === 'ar' ? ((activeTab === 'courses' ? filteredCourses.length : books.length) === 1 || (activeTab === 'courses' ? filteredCourses.length : books.length) > 10 ? 'نتيجة' : 'نتائج') : ((activeTab === 'courses' ? filteredCourses.length : books.length) === 1 ? 'result' : 'results')})
                </span>
              </h2>
              
@@ -551,7 +551,7 @@ export default function Academy() {
                           
                           <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 mt-auto pt-4 border-t border-slate-100 dark:border-slate-700">
                              {course.duration && <div className="flex items-center gap-1.5 font-medium">{course.duration}</div>}
-                             {course.level && <div className="flex items-center gap-1.5 font-medium border-l border-slate-300 dark:border-slate-600 pl-4 rtl:pr-4 rtl:pl-0 rtl:border-l-0 rtl:border-r">{course.level}</div>}
+                             {course.level && <div className="flex items-center gap-1.5 font-medium border-l border-slate-300 dark:border-slate-600 pl-4 rtl:pr-4 rtl:pl-0 rtl:border-l-0 rtl:border-r">{({ beginner: lang === 'ar' ? 'مبتدئ' : 'Beginner', intermediate: lang === 'ar' ? 'متوسط' : 'Intermediate', advanced: lang === 'ar' ? 'متقدم' : 'Advanced' }[course.level?.toLowerCase()] || course.level)}</div>}
                           </div>
                         </div>
                       </motion.div>
