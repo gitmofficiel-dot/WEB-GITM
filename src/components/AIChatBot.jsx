@@ -7,6 +7,17 @@ import { useAuth } from '../context/AuthContext';
 import { db } from '../config/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
+// Minimal, safe markdown for bot replies: **bold**, *italic*, `code`. No HTML is ever injected.
+const renderRichText = (text) => {
+  const parts = String(text || '').split(/(\*\*[^*\n]+\*\*|`[^`\n]+`|\*[^*\s][^*\n]*\*)/g);
+  return parts.map((part, i) => {
+    if (/^\*\*[^*]+\*\*$/.test(part)) return <strong key={i}>{part.slice(2, -2)}</strong>;
+    if (/^`[^`]+`$/.test(part)) return <code key={i} className="px-1 rounded bg-slate-100 dark:bg-slate-700 text-[0.9em]">{part.slice(1, -1)}</code>;
+    if (/^\*[^*]+\*$/.test(part)) return <em key={i}>{part.slice(1, -1)}</em>;
+    return part.replace(/\*\*/g, '');
+  });
+};
+
 const AIChatBot = () => {
   const { lang, users, courses, news, events } = useLanguage();
   const { chatWithGitmai } = useAI();
@@ -306,7 +317,7 @@ const AIChatBot = () => {
                       </div>
                     )}
                     {msg.text && (
-                      <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.text}</div>
+                      <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.sender === 'ai' ? renderRichText(msg.text) : msg.text}</div>
                     )}
                   </div>
                   <span className={`text-xs text-slate-500 dark:text-slate-400 ${msg.sender === 'user' ? 'text-right rtl:text-left' : 'text-left rtl:text-right'}`}>
