@@ -175,6 +175,9 @@ async function main() {
   }
 
   console.log(`\n[OK] All ${ROUTES.length} routes passed mobile 375px smoke test with 0 runtime crashes.`);
+  // `npx` leaves the vite child alive after SIGTERM, which keeps the stdio pipes open
+  // and the process never exits. Exit explicitly so CI does not hang until the job timeout.
+  process.exit(0);
 }
 
 main().catch((err) => {
