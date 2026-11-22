@@ -5,7 +5,7 @@ import { toast } from '../utils/toast';
 import { useAI } from '../hooks/useAI';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../config/firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 // Minimal, safe markdown for bot replies: **bold**, *italic*, `code`. No HTML is ever injected.
 const renderRichText = (text) => {
@@ -18,6 +18,41 @@ const renderRichText = (text) => {
   });
 };
 
+// Plain text from possibly-HTML / double-encoded descriptions.
+const plain = (value, max = 220) => {
+  if (!value || typeof value !== 'string') return '';
+  let t = value;
+  for (let i = 0; i < 3; i += 1) {
+    if (!/[<&]/.test(t)) break;
+    t = new DOMParser().parseFromString(t, 'text/html').body.textContent || '';
+  }
+  t = t.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+  return t.length > max ? `${t.slice(0, max)}...` : t;
+};
+
+// Pick a localized string from a field that may be a string, {ar,en,fr}, or sibling fields (titleAr/titleEn).
+const loc = (obj, field, lang) => {
+  const v = obj?.[field];
+  const cap = field.charAt(0).toUpperCase() + field.slice(1);
+  const pick = (x) => (typeof x === 'string' ? x : x && typeof x === 'object' ? (x[lang] || x.ar || x.en || '') : '');
+  return pick(lang === 'ar' ? (obj?.[`${field}Ar`] || obj?.[`${field}_ar`] || v) : (obj?.[`${field}${lang === 'en' ? 'En' : 'Fr'}`] || obj?.[`${field}_${lang}`] || v)) || pick(obj?.[`${field}Ar`]) || pick(obj?.[`${field}En`]) || pick(v);
+};
+
+// Real site content for the bot, from live Firestore data already loaded by the app.
+const buildSiteContext = ({ courses, news, events, users }, lang) => {
+  const origin = 'https://gitm.pages.dev';
+  const c = (courses || []).slice(0, 25).map((x) => {
+    const lessons = Array.isArray(x.lessons) ? x.lessons.map((l) => loc(l, 'title', lang)).filter(Boolean).slice(0, 8).join('، ') : '';
+    return `- دورة: ${loc(x, 'title', lang)} | المدرّب: ${loc(x, 'instructor', lang) || 'غير محدد'} | المستوى: ${x.level || '-'} | المدة: ${x.duration || '-'} | المجال: ${x.category || '-'} | الوصف: ${plain(loc(x, 'description', lang))}${lessons ? ` | الدروس: ${lessons}` : ''}`;
+  }).join('\n');
+  const n = (news || []).slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || ''))).slice(0, 12).map((x) => `- خبر: ${loc(x, 'title', lang)} | التاريخ: ${x.date || '-'} | المصدر: ${x.source || '-'} | ${plain(loc(x, 'description', lang), 180)} | الرابط: ${origin}/news/${x.id}`).join('\n');
+  const e = (events || []).slice(0, 15).map((x) => `- فعالية: ${loc(x, 'title', lang)} | التاريخ: ${x.date || x.startDate || '-'} | المكان: ${loc(x, 'location', lang) || x.location || '-'} | ${plain(loc(x, 'description', lang), 160)} | الرابط: ${origin}/events/${x.id}`).join('\n');
+  const t = (users || []).filter((u) => u.isTeamMember).slice(0, 12).map((u) => `- ${u.name || u.firstName || ''} (${u.role || ''})`).join('\n');
+  return `الدورات (الأكاديمية، ${origin}/academy):\n${c || 'لا توجد دورات منشورة حالياً.'}\n\nآخر الأخبار (${origin}/news):\n${n || 'لا توجد أخبار حالياً.'}\n\nالفعاليات (${origin}/events):\n${e || 'لا توجد فعاليات منشورة حالياً.'}\n\nفريق GITM:\n${t || 'غير متوفر.'}`;
+};
+
+const COMPLAINT_RE = /(شكوى|شكاية|شكايه|اشتكي|أشتكي|تظلم|مشكل[ةه]? في|complain|complaint|réclamation|reclamation|plainte|contact (you|us|the team)|تواصل معكم|اريد التواصل|أريد التواصل|بغيت نتواصل|راسل)/i;
+
 const AIChatBot = () => {
   const { lang, users, courses, news, events } = useLanguage();
   const { chatWithGitmai } = useAI();
@@ -27,6 +62,9 @@ const AIChatBot = () => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', type: 'complaint', message: '' });
+  const [sending, setSending] = useState(false);
   const fileInputRef = useRef(null);
 
   const defaultModels = [
@@ -175,7 +213,50 @@ const AIChatBot = () => {
     { id: 'gitm', label: lang === 'ar' ? 'ما هي GITM؟' : 'What is GITM?' },
     { id: 'academy', label: lang === 'ar' ? 'دورات الأكاديمية' : 'Academy Courses' },
     { id: 'contact', label: lang === 'ar' ? 'معلومات الاتصال' : 'Contact Info' },
+    { id: 'complaint', label: lang === 'ar' ? 'تقديم شكوى' : 'Submit a complaint', form: 'complaint' },
   ];
+
+  const submitComplaint = async (e) => {
+    e.preventDefault();
+    if (sending) return;
+    const name = form.name.trim(); const email = form.email.trim(); const message = form.message.trim();
+    if (!name || !message || !/^\S+@\S+\.\S+$/.test(email)) {
+      toast.error(lang === 'ar' ? 'المرجو إدخال الاسم، بريد إلكتروني صحيح، والرسالة.' : 'Please enter your name, a valid email and a message.');
+      return;
+    }
+    const last = parseInt(localStorage.getItem('gitm_ai_last_msg') || '0', 10);
+    if (Date.now() - last < 60000) {
+      toast.error(lang === 'ar' ? 'المرجو الانتظار دقيقة قبل إرسال رسالة أخرى.' : 'Please wait a minute before sending another message.');
+      return;
+    }
+    setSending(true);
+    try {
+      await addDoc(collection(db, 'contact_messages'), {
+        name, email,
+        subject: form.type === 'complaint' ? 'شكوى (عبر GITM AI)' : 'رسالة تواصل (عبر GITM AI)',
+        message,
+        type: form.type,
+        source: 'ai_chat',
+        lang,
+        submittedAt: serverTimestamp()
+      });
+      localStorage.setItem('gitm_ai_last_msg', String(Date.now()));
+      setShowForm(false);
+      setForm({ name: '', email: '', type: 'complaint', message: '' });
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), sender: 'ai', text: lang === 'ar' ? `شكراً ${name}، وصلتنا رسالتك وسيراجعها فريق GITM ويتواصل معك عبر ${email}.` : `Thank you ${name}, your message reached the GITM team. They will reply to ${email}.`, time: new Date() }]);
+    } catch (err) {
+      console.error('Complaint submit failed:', err);
+      toast.error(lang === 'ar' ? 'تعذر إرسال الرسالة الآن. حاول لاحقاً أو استعمل صفحة التواصل.' : 'Could not send right now. Try again later or use the contact page.');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const openForm = (type) => {
+    setForm(f => ({ ...f, type }));
+    setShowForm(true);
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+  };
 
   const handleSend = async (text = input, attachmentMsg = null) => {
     if (isTyping || (!text.trim() && !attachmentMsg)) return;
@@ -203,12 +284,7 @@ const AIChatBot = () => {
         };
       });
 
-      const globalContext = `
-      Team Members: ${users?.filter(u => u.isTeamMember)?.map(u => `${u.name || u.firstName} (${u.role}) - ${u.bio || ''}`)?.join(' | ') || 'None'}
-      Courses: ${courses?.map(c => `${c.title?.en || c.title_en || c.title_ar || c.title} (Instructor: ${typeof c.instructor === 'object' ? (c.instructor.en || c.instructor.ar) : c.instructor})`)?.join(' | ') || 'None'}
-      News: ${news?.map(n => n.title?.en || n.title_en || n.title_ar)?.join(' | ') || 'None'}
-      Events: ${events?.map(e => e.title?.en || e.title_en || e.title_ar)?.join(' | ') || 'None'}
-      `;
+      const globalContext = buildSiteContext({ courses, news, events, users }, lang);
 
       const aiMsgId = crypto.randomUUID();
       setMessages(prev => [...prev, { id: aiMsgId, sender: 'ai', text: '', time: new Date() }]);
@@ -218,6 +294,7 @@ const AIChatBot = () => {
       });
 
       if (!responseText?.trim()) throw new Error('Empty response');
+      if (COMPLAINT_RE.test(newUserMsg.text || '')) setShowForm(true);
       setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, text: responseText } : m));
     } catch {
       setMessages(prev => [...prev.filter(m => m.text || m.image), { id: Date.now(), sender: 'ai', text: lang === 'ar' ? 'عذراً، المساعد الذكي غير متاح حالياً للتحديث. يرجى المحاولة لاحقاً.' : 'Sorry, the AI Assistant is currently offline for updates. Please try again later.', time: new Date() }]);
@@ -327,6 +404,25 @@ const AIChatBot = () => {
               </div>
             ))}
 
+            {showForm && (
+              <form onSubmit={submitComplaint} className="self-stretch bg-white dark:bg-slate-800 border border-teal-300 dark:border-teal-700 rounded-2xl p-3.5 flex flex-col gap-2.5 shadow-sm">
+                <div className="flex gap-2">
+                  {['complaint', 'contact'].map(tp => (
+                    <button key={tp} type="button" onClick={() => setForm(f => ({ ...f, type: tp }))} className={`flex-1 min-h-[40px] rounded-xl text-xs font-bold ${form.type === tp ? 'bg-teal-500 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200'}`}>
+                      {tp === 'complaint' ? (lang === 'ar' ? 'شكوى' : 'Complaint') : (lang === 'ar' ? 'تواصل' : 'Contact')}
+                    </button>
+                  ))}
+                </div>
+                <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} maxLength={80} placeholder={lang === 'ar' ? 'الاسم' : 'Name'} className="min-h-[44px] px-3 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white" />
+                <input type="email" dir="ltr" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} maxLength={120} placeholder="email@example.com" className="min-h-[44px] px-3 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white" />
+                <textarea value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} maxLength={1500} rows={3} placeholder={lang === 'ar' ? 'اكتب رسالتك أو شكواك' : 'Your message'} className="px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white resize-none" />
+                <div className="flex gap-2">
+                  <button type="submit" disabled={sending} className="flex-1 min-h-[44px] rounded-xl bg-teal-500 hover:bg-teal-600 text-white text-sm font-bold disabled:opacity-60">{sending ? '...' : (lang === 'ar' ? 'إرسال' : 'Send')}</button>
+                  <button type="button" onClick={() => setShowForm(false)} className="min-h-[44px] px-4 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm">{lang === 'ar' ? 'إلغاء' : 'Cancel'}</button>
+                </div>
+              </form>
+            )}
+
             {isTyping && (
               <div className="flex gap-3 self-start">
                 <div className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center shadow-sm bg-teal-500 text-white">
@@ -349,7 +445,7 @@ const AIChatBot = () => {
                 <button
                   key={s.id}
                   type="button"
-                  onClick={() => handleSend(s.label)}
+                  onClick={() => (s.form ? openForm(s.form) : handleSend(s.label))}
                   className="min-h-[44px] sm:min-h-0 px-3.5 py-2 sm:py-1.5 rounded-full text-xs font-bold bg-slate-100 hover:bg-teal-50 dark:bg-slate-800 dark:hover:bg-teal-900/30 text-slate-700 dark:text-slate-200 hover:text-teal-600 dark:hover:text-teal-400 border border-slate-200 dark:border-slate-700 transition-colors whitespace-nowrap"
                 >
                   {s.label}
