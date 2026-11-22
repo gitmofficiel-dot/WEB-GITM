@@ -135,11 +135,21 @@ export default function TechProjectsPage() {
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                   key={proj.id}
                   onClick={() => navigate(`/project-details/${proj.id}`)}
-                  className="group relative aspect-square rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+                  className="group relative aspect-square rounded-3xl overflow-hidden cursor-pointer bg-gradient-to-br from-teal-700/40 via-slate-800 to-slate-900 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
                 >
                   <img 
                     src={proj.image || proj.coverImage || proj.imageUrl || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80'} 
                     alt={getLocalizedTitle(proj, lang)} 
+                    loading="lazy"
+                    onError={(e) => {
+                      const fallback = 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80';
+                      if (e.currentTarget.dataset.fallback !== '1' && e.currentTarget.src !== fallback) {
+                        e.currentTarget.dataset.fallback = '1';
+                        e.currentTarget.src = fallback;
+                      } else {
+                        e.currentTarget.style.display = 'none';
+                      }
+                    }}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   
