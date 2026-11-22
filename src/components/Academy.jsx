@@ -216,9 +216,27 @@ export default function Academy() {
     return lvl;
   };
 
+  // Category matching is tolerant: data may store the track in any case, in Arabic,
+  // or as a generic value such as "Technology", so also match keywords in title/description.
+  const CATEGORY_KEYWORDS = {
+    'AI': ['ai', 'artificial', 'machine learning', 'ذكاء', 'تعلم الآلة', 'التعلم الآلي', 'intelligence'],
+    'Web Dev': ['web', 'frontend', 'backend', 'react', 'html', 'ويب', 'مواقع'],
+    'Security': ['security', 'cyber', 'أمن', 'سيبراني', 'sécurité'],
+    'Data Science': ['data', 'بيانات', 'données', 'analytics'],
+    'Cloud': ['cloud', 'سحاب', 'aws', 'devops']
+  };
+  const courseMatchesCategory = (c, cat) => {
+    const track = String(c.track || '').trim().toLowerCase();
+    if (track && track === cat.toLowerCase()) return true;
+    const kws = CATEGORY_KEYWORDS[cat] || [];
+    const hay = [track, c.title, c.titleAr, c.titleEn, c.titleFr, c.description, c.descriptionAr, c.descriptionEn]
+      .filter((v) => typeof v === 'string').join(' ').toLowerCase();
+    return kws.some((k) => hay.includes(k));
+  };
+
   const filteredCourses = courses.filter(c => {
-    if (selectedCategory !== 'All' && c.track !== selectedCategory) return false;
-    if (selectedLevel !== 'All' && c.level !== selectedLevel) return false;
+    if (selectedCategory !== 'All' && !courseMatchesCategory(c, selectedCategory)) return false;
+    if (selectedLevel !== 'All' && String(c.level || '').trim().toLowerCase() !== selectedLevel.toLowerCase()) return false;
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     const title = getLocalized(c, 'title', lang).toLowerCase();
@@ -817,7 +835,10 @@ export default function Academy() {
                         <motion.article
                           key={book.id}
                           whileTap={{ scale: 0.99 }}
-                          onClick={() => window.open(info.previewLink, '_blank')}
+                          onClick={() => {
+                            const link = (info.previewLink || info.infoLink || '').replace(/^http:\/\//, 'https://');
+                            if (link) window.open(link, '_blank', 'noopener,noreferrer');
+                          }}
                           className="group flex flex-col w-full rounded-2xl md:rounded-3xl overflow-hidden cursor-pointer bg-white dark:bg-slate-800 shadow-md hover:shadow-2xl hover:shadow-indigo-500/15 hover:-translate-y-1 transition-all duration-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500/50"
                         >
                           <CourseThumbnail
