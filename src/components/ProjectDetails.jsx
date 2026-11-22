@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { db } from '../config/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'framer-motion';
@@ -37,33 +39,61 @@ export default function ProjectDetails() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // Mock Idea Data - In real app, fetch from Firestore using ID
-  const project = {
-    title: 'نظام إدارة المرور الذكية عبر الدرونز',
-    titleEn: 'Smart Traffic via Drones',
-    subtitle: 'استخدام أسراب الطائرات بدون طيار المجهزة بالذكاء الاصطناعي لحل أزمات المرور',
-    subtitleEn: 'Using AI-equipped drone swarms to solve traffic congestion',
-    tags: ['Robotics', 'Computer Vision', 'AI', 'Smart City'],
-    ideaExplanation: `تعتمد فكرة هذا المشروع على الاستغناء عن كاميرات المراقبة الثابتة واستبدالها بسرب من الطائرات بدون طيار (الدرونز) التي تتواصل مع بعضها البعض. 
-    الفكرة تكمن في قدرة الدرون على التحليق فوق التقاطعات المزدحمة، وجمع البيانات المرورية الحية، ومن ثم إرسالها إلى خادم مركزي. الخادم يقوم بتحليل البيانات وتوجيه إشارات المرور أو إرسال تنبيهات لتغيير المسارات بشكل ديناميكي.
-    هذه الفكرة لا توفر الكود بحد ذاته، بل تطرح معمارية نظام (Architecture) يمكن لمهندسي المدن الذكية البناء عليها لتقليل الازدحام بنسبة 40%.`,
-    ideaExplanationEn: `The core idea of this project replaces static surveillance cameras with a communicating swarm of drones. 
-    The concept lies in the drone's ability to hover over congested intersections, collect live traffic data, and send it to a central server. The server analyzes the data and dynamically controls traffic lights or routes. 
-    This idea presents a system architecture that smart city engineers can build upon to reduce congestion by 40%.`,
-    ytVideo: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    githubUrl: 'https://github.com/gitmofficiel-dot',
-    youtubeUrl: 'https://youtube.com',
-    facebookUrl: 'https://facebook.com/gitmofficiel',
-    gallery: [
-      'https://images.unsplash.com/photo-1527443195645-1133f7f28990?w=800&q=80',
-      'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
-      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80'
-    ],
-    files: [
-      { name: 'Architecture_Diagram.pdf', size: '2.4 MB' },
-      { name: 'Concept_Presentation.pptx', size: '14.5 MB' }
-    ]
+  const [data, setData] = useState(null);
+  const [status, setStatus] = useState('loading');
+
+  useEffect(() => {
+    let alive = true;
+    setStatus('loading');
+    setData(null);
+    window.scrollTo(0, 0);
+    (async () => {
+      try {
+        const snap = await getDoc(doc(db, 'projects', String(id)));
+        if (!alive) return;
+        if (snap.exists()) { setData({ id: snap.id, ...snap.data() }); setStatus('ok'); }
+        else setStatus('missing');
+      } catch (e) {
+        console.error('Error loading project:', e);
+        if (alive) setStatus('missing');
+      }
+    })();
+    return () => { alive = false; };
+  }, [id]);
+
+  const pick = (...vals) => vals.find(v => typeof v === 'string' && v.trim()) || '';
+  const arr = (v) => Array.isArray(v) ? v.filter(Boolean) : (typeof v === 'string' && v.trim() ? v.split(',').map(x => x.trim()).filter(Boolean) : []);
+  const d = data || {};
+  const toEmbed = (u) => {
+    const m = String(u || '').match(/(?:youtu\.be\/|v=|embed\/)([\w-]{11})/);
+    return m ? `https://www.youtube.com/embed/${m[1]}` : '';
   };
+  const project = {
+    title: pick(d.titleAr, d.title, d.titleEn),
+    titleEn: pick(d.titleEn, d.title, d.titleAr),
+    subtitle: pick(d.subtitleAr, d.descriptionAr, d.description, d.desc),
+    subtitleEn: pick(d.subtitleEn, d.descriptionEn, d.description, d.desc, d.descriptionAr),
+    tags: arr(d.tags).length ? arr(d.tags) : arr(d.category),
+    ideaExplanation: pick(d.ideaExplanationAr, d.ideaExplanation, d.contentAr, d.content, d.descriptionAr, d.description, d.desc),
+    ideaExplanationEn: pick(d.ideaExplanationEn, d.contentEn, d.descriptionEn, d.ideaExplanation, d.content, d.description, d.desc, d.descriptionAr),
+    ytVideo: toEmbed(d.ytVideo || d.videoUrl || d.youtubeUrl),
+    githubUrl: pick(d.githubUrl, d.github, d.repoUrl),
+    youtubeUrl: pick(d.youtubeUrl),
+    facebookUrl: pick(d.facebookUrl),
+    gallery: arr(d.gallery).length ? arr(d.gallery) : arr(d.coverImage),
+    files: Array.isArray(d.files) ? d.files.filter(f => f && f.name) : []
+  };
+
+  if (status !== 'ok') {
+    return (
+      <div className="min-h-screen pt-24 pb-16 bg-gitm-light dark:bg-gitm-dark flex items-center justify-center px-4">
+        <div className="text-center text-slate-700 dark:text-slate-300">
+          <p className="mb-4">{status === 'loading' ? (lang === 'ar' ? 'جاري التحميل...' : 'Loading...') : (lang === 'ar' ? 'هذا المشروع غير موجود.' : 'Project not found.')}</p>
+          <button type="button" onClick={() => navigate('/projects-hub')} className="px-4 min-h-[44px] rounded-xl bg-gitm-blue text-white">{lang === 'ar' ? 'العودة لمعرض الأفكار' : 'Back to Ideas Gallery'}</button>
+        </div>
+      </div>
+    );
+  }
 
   const currentTitle = lang === 'ar' ? project.title : project.titleEn;
   const currentSubtitle = lang === 'ar' ? project.subtitle : project.subtitleEn;
