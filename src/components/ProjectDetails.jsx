@@ -34,6 +34,19 @@ const GalleryImage = ({ src, alt }) => {
   );
 };
 
+const toText = (value, keepBreaks) => {
+  if (!value || typeof value !== 'string') return '';
+  let text = value;
+  for (let i = 0; i < 3; i += 1) {
+    if (!/[<&]/.test(text)) break;
+    if (keepBreaks) text = text.replace(/<\/(p|div|li|h[1-6])>|<br\s*\/?>/gi, '\n');
+    const d = new DOMParser().parseFromString(text, 'text/html');
+    text = d.body.textContent || '';
+  }
+  text = text.replace(/\u00a0/g, ' ');
+  return keepBreaks ? text.replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n\n').trim() : text.replace(/\s+/g, ' ').trim();
+};
+
 export default function ProjectDetails() {
   const { lang } = useLanguage();
   const navigate = useNavigate();
@@ -96,11 +109,11 @@ export default function ProjectDetails() {
   }
 
   const currentTitle = lang === 'ar' ? project.title : project.titleEn;
-  const currentSubtitle = lang === 'ar' ? project.subtitle : project.subtitleEn;
-  const currentExplanation = lang === 'ar' ? project.ideaExplanation : project.ideaExplanationEn;
+  const currentSubtitle = toText(lang === 'ar' ? project.subtitle : project.subtitleEn).slice(0, 300);
+  const currentExplanation = toText(lang === 'ar' ? project.ideaExplanation : project.ideaExplanationEn, true);
 
   return (
-    <div className="min-h-screen pt-24 pb-16 md:pb-20 bg-gitm-light dark:bg-gitm-dark">
+    <div className="min-h-screen pt-24 pb-16 md:pb-20 bg-gitm-light dark:bg-gitm-dark overflow-x-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Back Button (>=44px touch target) */}
@@ -180,7 +193,7 @@ export default function ProjectDetails() {
                 <Lightbulb className="w-6 h-6 md:w-8 md:h-8 shrink-0" />
                 <span>{lang === 'ar' ? 'شرح فكرة المشروع' : 'Project Idea Explanation'}</span>
               </h2>
-              <div className="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed font-medium whitespace-pre-line text-sm sm:text-base md:text-lg">
+              <div className="whitespace-pre-line break-words prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed font-medium whitespace-pre-line text-sm sm:text-base md:text-lg">
                 {currentExplanation}
               </div>
             </div>
