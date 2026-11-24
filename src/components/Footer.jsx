@@ -23,11 +23,11 @@ export default function Footer() {
         email,
         subscribedAt: serverTimestamp()
       });
-      toast.success(lang === 'ar' ? 'تم الاشتراك بنجاح! شكراً لك.' : 'Subscribed successfully! Thank you.');
+      toast.success(lang === 'ar' ? 'تم الاشتراك بنجاح! شكراً لك.' : lang === 'fr' ? 'Inscription réussie ! Merci.' : 'Subscribed successfully! Thank you.');
       setEmail('');
     } catch (error) {
       console.error(error);
-      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الاشتراك.' : 'Subscription failed.');
+      toast.error(lang === 'ar' ? 'حدث خطأ أثناء الاشتراك.' : lang === 'fr' ? "Échec de l'inscription." : 'Subscription failed.');
     } finally {
       setIsSubmitting(false);
     }
@@ -56,7 +56,7 @@ export default function Footer() {
             <p className="text-slate-300 leading-relaxed text-sm">
               {lang === 'ar'
                 ? 'نصنع أنظمة ذكية تعيد تعريف المستقبل. نعمل على تطوير حلول في الذكاء الاصطناعي، إنترنت الأشياء، والروبوتات المتقدمة.'
-                : 'We engineer smart systems that redefine the future. Developing cutting-edge solutions in AI, IoT, and Advanced Robotics.'}
+                : lang === 'fr' ? "Nous concevons des systèmes intelligents qui redéfinissent l'avenir. Nous développons des solutions en IA, IoT et robotique avancée." : 'We engineer smart systems that redefine the future. Developing cutting-edge solutions in AI, IoT, and Advanced Robotics.'}
             </p>
             <div className="flex gap-3">
               <a
@@ -96,15 +96,15 @@ export default function Footer() {
           {/* Quick Links */}
           <div>
             <h3 className="text-white font-bold text-lg mb-3 md:mb-6 border-b border-slate-700 pb-2 inline-block">
-              {lang === 'ar' ? 'روابط سريعة' : 'Quick Links'}
+              {lang === 'ar' ? 'روابط سريعة' : lang === 'fr' ? 'Liens rapides' : 'Quick Links'}
             </h3>
             <ul className="grid grid-cols-2 sm:grid-cols-1 gap-x-4 gap-y-0 md:space-y-2.5">
               {[
-                { key: 'home', path: '/', label: lang === 'ar' ? 'الرئيسية' : 'Home' },
-                { key: 'news', path: '/news', label: lang === 'ar' ? 'الأخبار' : 'News' },
-                { key: 'events', path: '/events', label: lang === 'ar' ? 'الفعاليات' : 'Events' },
-                { key: 'academy', path: '/academy', label: lang === 'ar' ? 'الأكاديمية' : 'Academy' },
-                { key: 'projects', path: '/projects-hub', label: lang === 'ar' ? 'المشاريع' : 'Projects' }
+                { key: 'home', path: '/', label: lang === 'ar' ? 'الرئيسية' : lang === 'fr' ? 'Accueil' : 'Home' },
+                { key: 'news', path: '/news', label: lang === 'ar' ? 'الأخبار' : lang === 'fr' ? 'Actualités' : 'News' },
+                { key: 'events', path: '/events', label: lang === 'ar' ? 'الفعاليات' : lang === 'fr' ? 'Événements' : 'Events' },
+                { key: 'academy', path: '/academy', label: lang === 'ar' ? 'الأكاديمية' : lang === 'fr' ? 'Académie' : 'Academy' },
+                { key: 'projects', path: '/projects-hub', label: lang === 'ar' ? 'المشاريع' : lang === 'fr' ? 'Projets' : 'Projects' }
               ].map(link => (
                 <li key={link.key}>
                   <button
@@ -123,12 +123,12 @@ export default function Footer() {
           {/* Contact Info */}
           <div>
             <h3 className="text-white font-bold text-lg mb-3 md:mb-6 border-b border-slate-700 pb-2 inline-block">
-              {lang === 'ar' ? 'تواصل معنا' : 'Contact Us'}
+              {lang === 'ar' ? 'تواصل معنا' : lang === 'fr' ? 'Contactez-nous' : 'Contact Us'}
             </h3>
             <ul className="space-y-3.5">
               <li className="flex items-start gap-3 text-slate-300 text-sm">
                 <MapPin size={18} className="text-cyan-400 shrink-0 mt-0.5" />
-                <span>GITM Innovation Lab, OUED ZEM, Morocco</span>
+                <span>{lang === 'fr' ? "Laboratoire d'innovation GITM, OUED ZEM, Maroc" : lang === 'ar' ? 'مختبر الابتكار GITM، وادي زم، المغرب' : 'GITM Innovation Lab, OUED ZEM, Morocco'}</span>
               </li>
               <li className="flex items-center gap-3 text-slate-300 text-sm">
                 <Mail size={18} className="text-cyan-400 shrink-0" />
@@ -144,15 +144,15 @@ export default function Footer() {
           {/* Newsletter */}
           <div>
             <h3 className="text-white font-bold text-lg mb-3 md:mb-6 border-b border-slate-700 pb-2 inline-block">
-              {lang === 'ar' ? 'النشرة البريدية' : 'Newsletter'}
+              {lang === 'ar' ? 'النشرة البريدية' : lang === 'fr' ? "Lettre d'information" : 'Newsletter'}
             </h3>
             <p className="text-slate-300 text-sm mb-4">
-              {lang === 'ar' ? 'اشترك ليصلك أحدث مشاريعنا وابتكاراتنا.' : 'Subscribe to receive our latest projects and innovations.'}
+              {lang === 'ar' ? 'اشترك ليصلك أحدث مشاريعنا وابتكاراتنا.' : lang === 'fr' ? 'Abonnez-vous pour recevoir nos derniers projets et innovations.' : 'Subscribe to receive our latest projects and innovations.'}
             </p>
             <form className="flex flex-col sm:block sm:relative gap-2.5" onSubmit={handleSubscribe}>
               <input
                 type="email"
-                placeholder={lang === 'ar' ? 'بريدك الإلكتروني' : 'Your email'}
+                placeholder={lang === 'ar' ? 'بريدك الإلكتروني' : lang === 'fr' ? 'Votre e-mail' : 'Your email'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full min-h-[48px] md:min-h-0 bg-slate-800/80 border border-slate-700 rounded-xl md:rounded-lg py-2.5 px-4 text-white text-base md:text-sm focus:outline-none focus:border-cyan-400 transition-colors placeholder:text-slate-400"
@@ -163,7 +163,7 @@ export default function Footer() {
                 disabled={isSubmitting}
                 className="w-full sm:w-auto min-h-[48px] sm:min-h-0 sm:absolute sm:right-1 sm:rtl:right-auto sm:rtl:left-1 sm:top-1 sm:bottom-1 bg-cyan-500 hover:bg-cyan-400 text-[#0B132B] px-4 rounded-xl sm:rounded-md font-bold text-sm sm:text-xs transition-colors disabled:opacity-50"
               >
-                {isSubmitting ? '...' : (lang === 'ar' ? 'اشترك' : 'Subscribe')}
+                {isSubmitting ? '...' : (lang === 'ar' ? 'اشترك' : lang === 'fr' ? "S'abonner" : 'Subscribe')}
               </button>
             </form>
           </div>
@@ -207,7 +207,7 @@ export default function Footer() {
               >
                 <span className="flex items-center gap-1.5 truncate">
                   <MapPin size={13} className="text-cyan-400 shrink-0" />
-                  <span>{lang === 'ar' ? 'تواصل معنا' : 'Contact'}</span>
+                  <span>{lang === 'ar' ? 'تواصل معنا' : lang === 'fr' ? 'Contact' : 'Contact'}</span>
                 </span>
                 <ChevronDown size={13} className={`transition-transform duration-200 shrink-0 ${expandedSection === 'contact' ? 'rotate-180' : ''}`} />
               </button>
@@ -223,7 +223,7 @@ export default function Footer() {
               >
                 <span className="flex items-center gap-1.5 truncate">
                   <Mail size={13} className="text-cyan-400 shrink-0" />
-                  <span>{lang === 'ar' ? 'النشرة' : 'Newsletter'}</span>
+                  <span>{lang === 'ar' ? 'النشرة' : lang === 'fr' ? 'Bulletin' : 'Newsletter'}</span>
                 </span>
                 <ChevronDown size={13} className={`transition-transform duration-200 shrink-0 ${expandedSection === 'newsletter' ? 'rotate-180' : ''}`} />
               </button>
@@ -235,7 +235,7 @@ export default function Footer() {
             <div id="mobile-contact-details" className="p-2.5 bg-slate-900/90 rounded-xl border border-slate-800 space-y-1.5 text-xs text-slate-300">
               <p className="flex items-center gap-2">
                 <MapPin size={13} className="text-cyan-400 shrink-0" />
-                <span>GITM Innovation Lab, OUED ZEM, Morocco</span>
+                <span>{lang === 'fr' ? "Laboratoire d'innovation GITM, OUED ZEM, Maroc" : lang === 'ar' ? 'مختبر الابتكار GITM، وادي زم، المغرب' : 'GITM Innovation Lab, OUED ZEM, Morocco'}</span>
               </p>
               <p className="flex items-center gap-2">
                 <Mail size={13} className="text-cyan-400 shrink-0" />
@@ -252,7 +252,7 @@ export default function Footer() {
             <form id="mobile-newsletter-details" onSubmit={handleSubscribe} className="p-2.5 bg-slate-900/90 rounded-xl border border-slate-800 space-y-1.5">
               <input
                 type="email"
-                placeholder={lang === 'ar' ? 'بريدك الإلكتروني' : 'Your email'}
+                placeholder={lang === 'ar' ? 'بريدك الإلكتروني' : lang === 'fr' ? 'Votre e-mail' : 'Your email'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full min-h-[38px] bg-slate-800 border border-slate-700 rounded-lg py-1 px-3 text-white text-xs focus:outline-none focus:border-cyan-400"
@@ -263,7 +263,7 @@ export default function Footer() {
                 disabled={isSubmitting}
                 className="w-full min-h-[36px] bg-cyan-500 hover:bg-cyan-400 text-[#0B132B] px-3 rounded-lg font-bold text-xs transition-colors disabled:opacity-50"
               >
-                {isSubmitting ? '...' : (lang === 'ar' ? 'اشترك في النشرة' : 'Subscribe')}
+                {isSubmitting ? '...' : (lang === 'ar' ? 'اشترك في النشرة' : lang === 'fr' ? "S'abonner" : 'Subscribe')}
               </button>
             </form>
           )}
@@ -272,7 +272,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="pt-1.5 md:pt-8 border-t border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-0.5 md:gap-4 pe-16 md:pe-40 text-start">
           <p className="text-slate-300 text-[11px] leading-4 md:text-sm">
-            &copy; {new Date().getFullYear()} GITM. {lang === 'ar' ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}
+            &copy; {new Date().getFullYear()} GITM. {lang === 'ar' ? 'جميع الحقوق محفوظة.' : lang === 'fr' ? 'Tous droits réservés.' : 'All rights reserved.'}
           </p>
           <div className="flex flex-wrap items-center justify-start gap-x-3 gap-y-0.5 md:gap-6 text-[11px] md:text-sm text-slate-300">
             <button
@@ -280,14 +280,14 @@ export default function Footer() {
               onClick={() => navigate('/privacy-policy')}
               className="min-h-[28px] md:min-h-0 px-1.5 md:px-2 hover:text-cyan-400 transition-colors flex items-center gap-1.5"
             >
-              <ShieldCheck size={13} /> {lang === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
+              <ShieldCheck size={13} /> {lang === 'ar' ? 'سياسة الخصوصية' : lang === 'fr' ? 'Confidentialité' : 'Privacy Policy'}
             </button>
             <button
               type="button"
               onClick={() => navigate('/terms-of-service')}
               className="min-h-[28px] md:min-h-0 px-1.5 md:px-2 hover:text-cyan-400 transition-colors"
             >
-              {lang === 'ar' ? 'شروط الاستخدام' : 'Terms of Service'}
+              {lang === 'ar' ? 'شروط الاستخدام' : lang === 'fr' ? "Conditions d'utilisation" : 'Terms of Service'}
             </button>
           </div>
         </div>
