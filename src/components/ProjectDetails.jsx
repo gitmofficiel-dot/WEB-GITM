@@ -117,7 +117,7 @@ export default function ProjectDetails() {
 
 
   return (
-    <div className="min-h-screen pt-24 pb-16 md:pb-20 bg-gitm-light dark:bg-gitm-dark overflow-x-hidden">
+    <div className="pt-6 pb-4 md:pb-8 bg-gitm-light dark:bg-gitm-dark overflow-x-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Back Button (>=44px touch target) */}
