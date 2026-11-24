@@ -1,3 +1,4 @@
+import {projectField, projectCategory} from '../utils/projectPresentation';
 import React, { useState, useEffect } from 'react';
 import { db } from '../config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -97,20 +98,23 @@ export default function ProjectDetails() {
     files: Array.isArray(d.files) ? d.files.filter(f => f && f.name) : []
   };
 
+  const label = (ar,en,fr) => lang==='ar'?ar:lang==='fr'?fr:en;
   if (status !== 'ok') {
     return (
       <div className="min-h-screen pt-24 pb-16 bg-gitm-light dark:bg-gitm-dark flex items-center justify-center px-4">
         <div className="text-center text-slate-700 dark:text-slate-300">
           <p className="mb-4">{status === 'loading' ? (lang === 'ar' ? 'جاري التحميل...' : 'Loading...') : (lang === 'ar' ? 'هذا المشروع غير موجود.' : 'Project not found.')}</p>
-          <button type="button" onClick={() => navigate('/projects-hub')} className="px-4 min-h-[44px] rounded-xl bg-gitm-blue text-white">{lang === 'ar' ? 'العودة لمعرض الأفكار' : 'Back to Ideas Gallery'}</button>
+          <button type="button" onClick={() => navigate('/projects')} className="px-4 min-h-[44px] rounded-xl bg-gitm-blue text-white">{label('العودة للمشاريع','Back to Projects','Retour aux projets')}</button>
         </div>
       </div>
     );
   }
 
-  const currentTitle = lang === 'ar' ? project.title : project.titleEn;
-  const currentSubtitle = toText(lang === 'ar' ? project.subtitle : project.subtitleEn).slice(0, 300);
-  const currentExplanation = toText(lang === 'ar' ? project.ideaExplanation : project.ideaExplanationEn, true);
+  const currentTitle = projectField(d,'title',lang);
+  const currentExplanation = toText(projectField(d,'ideaExplanation',lang) || projectField(d,'content',lang) || projectField(d,'description',lang) || d.desc,true);
+  const explicitSubtitle = projectField(d,'subtitle',lang);
+  const currentSubtitle = toText(explicitSubtitle).trim() === toText(currentExplanation).trim() ? '' : toText(explicitSubtitle).slice(0,300);
+
 
   return (
     <div className="min-h-screen pt-24 pb-16 md:pb-20 bg-gitm-light dark:bg-gitm-dark overflow-x-hidden">
@@ -119,11 +123,11 @@ export default function ProjectDetails() {
         {/* Back Button (>=44px touch target) */}
         <button
           type="button"
-          onClick={() => navigate('/projects-hub')}
+          onClick={() => navigate('/projects')}
           className="mb-4 md:mb-6 inline-flex items-center min-h-[44px] px-2 -mx-2 text-slate-700 dark:text-slate-300 hover:text-gitm-blue dark:hover:text-cyan-400 transition font-bold text-sm md:text-base"
         >
           <ArrowLeft className="w-5 h-5 mr-2 rtl:mr-0 rtl:ml-2 rtl:rotate-180 shrink-0" />
-          <span>{lang === 'ar' ? 'العودة لمعرض الأفكار' : 'Back to Ideas Gallery'}</span>
+          <span>{label('العودة للمشاريع','Back to Projects','Retour aux projets')}</span>
         </button>
 
         {/* Header */}
@@ -131,9 +135,9 @@ export default function ProjectDetails() {
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-black text-gitm-textLight dark:text-white mb-3 md:mb-4 leading-tight break-words">
             {currentTitle}
           </h1>
-          <p className="text-sm sm:text-base md:text-xl text-slate-700 dark:text-slate-300 max-w-3xl mb-5 md:mb-6 leading-relaxed">
+          {currentSubtitle && <p className="text-sm sm:text-base md:text-xl text-slate-700 dark:text-slate-300 max-w-3xl mb-5 md:mb-6 leading-relaxed">
             {currentSubtitle}
-          </p>
+          </p>}
           {/* Tags with LTR isolation so '#' never flips to the end in Arabic RTL */}
           <div className="filter-scroll md:flex-wrap pb-1">
             {project.tags.map((tag, i) => (
@@ -142,7 +146,7 @@ export default function ProjectDetails() {
                 dir="ltr"
                 className="inline-flex items-center px-3.5 py-1.5 bg-gitm-blue/10 dark:bg-gitm-blue/25 text-gitm-blue dark:text-cyan-300 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap"
               >
-                #{tag}
+                #{projectCategory(tag,lang)}
               </span>
             ))}
           </div>
@@ -191,7 +195,7 @@ export default function ProjectDetails() {
             <div className="bg-white dark:bg-gitm-cardDark rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-sm border border-slate-200 dark:border-gitm-borderDark">
               <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gitm-blue dark:text-cyan-400 flex items-center gap-2.5">
                 <Lightbulb className="w-6 h-6 md:w-8 md:h-8 shrink-0" />
-                <span>{lang === 'ar' ? 'شرح فكرة المشروع' : 'Project Idea Explanation'}</span>
+                <span>{label('شرح فكرة المشروع','Project Overview','Présentation du projet')}</span>
               </h2>
               <div className="whitespace-pre-line break-words prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed font-medium whitespace-pre-line text-sm sm:text-base md:text-lg">
                 {currentExplanation}
@@ -203,7 +207,7 @@ export default function ProjectDetails() {
               <div className="bg-white dark:bg-gitm-cardDark rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-sm border border-slate-200 dark:border-gitm-borderDark">
                 <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gitm-textLight dark:text-white flex items-center gap-2.5">
                   <ImageIcon className="w-6 h-6 md:w-7 md:h-7 text-gitm-green shrink-0" />
-                  <span>{lang === 'ar' ? 'معرض الصور' : 'Image Gallery'}</span>
+                  <span>{label('معرض الصور','Image Gallery','Galerie d’images')}</span>
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {project.gallery.map((img, idx) => (
@@ -221,7 +225,7 @@ export default function ProjectDetails() {
               <div className="bg-white dark:bg-gitm-cardDark rounded-2xl md:rounded-3xl p-5 md:p-6 shadow-sm border border-slate-200 dark:border-gitm-borderDark lg:sticky lg:top-28">
                 <h2 className="text-lg font-bold mb-4 md:mb-6 flex items-center gap-2 text-gitm-textLight dark:text-white">
                   <Download className="w-5 h-5 md:w-6 md:h-6 text-gitm-red shrink-0" />
-                  <span>{lang === 'ar' ? 'مرفقات الفكرة' : 'Idea Attachments'}</span>
+                  <span>{label('مرفقات المشروع','Project Attachments','Pièces jointes')}</span>
                 </h2>
                 <div className="space-y-3">
                   {project.files.map((f, i) => (

@@ -1,3 +1,4 @@
+import {asList,memberList} from '../../utils/projectPresentation';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -36,9 +37,9 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
     ytVideo: initialData?.ytVideo || '',
   });
 
-  const [teamMembers, setTeamMembers] = useState(initialData?.teamMembers || []);
-  const [techStack, setTechStack] = useState(initialData?.techStack?.join(', ') || '');
-  const [attachments, setAttachments] = useState(initialData?.attachments || []);
+  const [teamMembers, setTeamMembers] = useState(memberList(initialData?.teamMembers));
+  const [techStack, setTechStack] = useState(asList(initialData?.techStack).join(', '));
+  const [attachments, setAttachments] = useState(asList(initialData?.attachments));
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
@@ -81,9 +82,9 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
               fbVideo: data.fbVideo || '',
               ytVideo: data.ytVideo || '',
             });
-            setTeamMembers(data.teamMembers || []);
-            setTechStack(data.techStack?.join(', ') || '');
-            setAttachments(data.attachments || []);
+            setTeamMembers(memberList(data.teamMembers));
+            setTechStack(asList(data.techStack).join(', '));
+            setAttachments(asList(data.attachments));
           }
         } catch (error) {
           console.error("Error fetching project:", error);
@@ -356,13 +357,13 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
               <div>
                 <label className="text-sm font-bold text-slate-500 mb-1 block">Description (Arabic)</label>
                 <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
-                  <ReactQuill theme="snow" value={formData.descriptionAr} onChange={v => setFormData({...formData, descriptionAr: v})} className="h-32 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200" />
+                  <ReactQuill theme="snow" value={formData.descriptionAr} onChange={(v,delta,source) => { if (source === 'user') setFormData(prev => ({...prev, descriptionAr: v})); }} className="h-32 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200" />
                 </div>
               </div>
               <div className="mt-10">
                 <label className="text-sm font-bold text-slate-500 mb-1 block">Description (English)</label>
                 <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
-                  <ReactQuill theme="snow" value={formData.descriptionEn} onChange={v => setFormData({...formData, descriptionEn: v})} className="h-32 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200" />
+                  <ReactQuill theme="snow" value={formData.descriptionEn} onChange={(v,delta,source) => { if (source === 'user') setFormData(prev => ({...prev, descriptionEn: v})); }} className="h-32 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200" />
                 </div>
               </div>
             </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { Facebook, Youtube, MapPin, Mail, Phone, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Facebook, Youtube, MapPin, Mail, Phone, ArrowRight, ShieldCheck, ChevronDown } from 'lucide-react';
 import { toast } from '../utils/toast';
 import { db } from '../config/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -11,6 +11,7 @@ export default function Footer() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [expandedSection, setExpandedSection] = useState(null);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -33,11 +34,12 @@ export default function Footer() {
   };
 
   return (
-    <footer className="block relative mt-10 md:mt-24 pt-10 md:pt-16 pb-24 md:pb-8 border-t border-cyan-500/20 bg-[#0B132B]/95 dark:bg-[#0B132B]/90 backdrop-blur-xl overflow-hidden z-20">
+    <footer className="block relative mt-6 md:mt-24 pt-2 md:pt-16 pb-2 md:pb-8 border-t border-cyan-500/20 bg-[#0B132B]/95 dark:bg-[#0B132B]/90 backdrop-blur-xl overflow-hidden z-20">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-cyan-900/20 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12 mb-6 md:mb-16">
+        {/* Desktop 4-column Grid (Unchanged) */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12 mb-6 md:mb-16">
 
           {/* Brand & About */}
           <div className="space-y-4 md:space-y-6">
@@ -168,23 +170,122 @@ export default function Footer() {
 
         </div>
 
+        {/* Mobile Compact View (< md, <=211px closed height on 390x844 incl. bottom-nav clearance) */}
+        <div className="md:hidden space-y-1.5 mb-3">
+          {/* Row 1: Brand & Compact Socials */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="inline-flex items-center justify-center bg-white rounded-md p-0.5 shadow-sm shrink-0">
+                <img src="/logo.png" alt="GITM Logo" className="w-5 h-5 object-contain" />
+              </span>
+              <span className="font-sans font-bold text-sm text-white tracking-wider">GITM</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <a href="https://www.youtube.com/@GIT-MAROC" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center text-slate-200 hover:text-white">
+                <Youtube size={14} />
+              </a>
+              <a href="https://x.com/GITMAROC" target="_blank" rel="noopener noreferrer" aria-label="X" className="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center text-slate-200 hover:text-white">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className="w-3 h-3">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 5.936H5.045z" />
+                </svg>
+              </a>
+              <a href="https://www.facebook.com/share/1EMk6JsB4H/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center text-slate-200 hover:text-white">
+                <Facebook size={14} />
+              </a>
+            </div>
+          </div>
+
+          {/* Row 2: Accessible Expandable Controls for Contact & Newsletter */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 overflow-hidden">
+              <button
+                type="button"
+                aria-expanded={expandedSection === 'contact'}
+                aria-controls="mobile-contact-details"
+                onClick={() => setExpandedSection(prev => prev === 'contact' ? null : 'contact')}
+                className="w-full min-h-[34px] px-2.5 py-1 flex items-center justify-between text-xs font-semibold text-slate-200 hover:text-cyan-400"
+              >
+                <span className="flex items-center gap-1.5 truncate">
+                  <MapPin size={13} className="text-cyan-400 shrink-0" />
+                  <span>{lang === 'ar' ? 'تواصل معنا' : 'Contact'}</span>
+                </span>
+                <ChevronDown size={13} className={`transition-transform duration-200 shrink-0 ${expandedSection === 'contact' ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 overflow-hidden">
+              <button
+                type="button"
+                aria-expanded={expandedSection === 'newsletter'}
+                aria-controls="mobile-newsletter-details"
+                onClick={() => setExpandedSection(prev => prev === 'newsletter' ? null : 'newsletter')}
+                className="w-full min-h-[34px] px-2.5 py-1 flex items-center justify-between text-xs font-semibold text-slate-200 hover:text-cyan-400"
+              >
+                <span className="flex items-center gap-1.5 truncate">
+                  <Mail size={13} className="text-cyan-400 shrink-0" />
+                  <span>{lang === 'ar' ? 'النشرة' : 'Newsletter'}</span>
+                </span>
+                <ChevronDown size={13} className={`transition-transform duration-200 shrink-0 ${expandedSection === 'newsletter' ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+          </div>
+
+          {/* Expanded Content Drawers */}
+          {expandedSection === 'contact' && (
+            <div id="mobile-contact-details" className="p-2.5 bg-slate-900/90 rounded-xl border border-slate-800 space-y-1.5 text-xs text-slate-300">
+              <p className="flex items-center gap-2">
+                <MapPin size={13} className="text-cyan-400 shrink-0" />
+                <span>GITM Innovation Lab, OUED ZEM, Morocco</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Mail size={13} className="text-cyan-400 shrink-0" />
+                <a href="mailto:gitm.officiel@gmail.com" className="text-cyan-400 break-all">gitm.officiel@gmail.com</a>
+              </p>
+              <p className="flex items-center gap-2">
+                <Phone size={13} className="text-cyan-400 shrink-0" />
+                <a href="tel:+212618941409" dir="ltr" className="hover:text-cyan-400">+212 618941409</a>
+              </p>
+            </div>
+          )}
+
+          {expandedSection === 'newsletter' && (
+            <form id="mobile-newsletter-details" onSubmit={handleSubscribe} className="p-2.5 bg-slate-900/90 rounded-xl border border-slate-800 space-y-1.5">
+              <input
+                type="email"
+                placeholder={lang === 'ar' ? 'بريدك الإلكتروني' : 'Your email'}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full min-h-[38px] bg-slate-800 border border-slate-700 rounded-lg py-1 px-3 text-white text-xs focus:outline-none focus:border-cyan-400"
+                required
+              />
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full min-h-[36px] bg-cyan-500 hover:bg-cyan-400 text-[#0B132B] px-3 rounded-lg font-bold text-xs transition-colors disabled:opacity-50"
+              >
+                {isSubmitting ? '...' : (lang === 'ar' ? 'اشترك في النشرة' : 'Subscribe')}
+              </button>
+            </form>
+          )}
+        </div>
+
         {/* Bottom Bar */}
-        <div className="pt-6 md:pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 text-center md:text-start">
-          <p className="text-slate-300 text-xs sm:text-sm">
+        <div className="pt-1.5 md:pt-8 border-t border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-0.5 md:gap-4 pe-16 md:pe-40 text-start">
+          <p className="text-slate-300 text-[11px] leading-4 md:text-sm">
             &copy; {new Date().getFullYear()} GITM. {lang === 'ar' ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-xs sm:text-sm text-slate-300">
+          <div className="flex flex-wrap items-center justify-start gap-x-3 gap-y-0.5 md:gap-6 text-[11px] md:text-sm text-slate-300">
             <button
               type="button"
               onClick={() => navigate('/privacy-policy')}
-              className="min-h-[44px] md:min-h-0 px-2 hover:text-cyan-400 transition-colors flex items-center gap-1.5"
+              className="min-h-[28px] md:min-h-0 px-1.5 md:px-2 hover:text-cyan-400 transition-colors flex items-center gap-1.5"
             >
-              <ShieldCheck size={14} /> {lang === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
+              <ShieldCheck size={13} /> {lang === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
             </button>
             <button
               type="button"
               onClick={() => navigate('/terms-of-service')}
-              className="min-h-[44px] md:min-h-0 px-2 hover:text-cyan-400 transition-colors"
+              className="min-h-[28px] md:min-h-0 px-1.5 md:px-2 hover:text-cyan-400 transition-colors"
             >
               {lang === 'ar' ? 'شروط الاستخدام' : 'Terms of Service'}
             </button>

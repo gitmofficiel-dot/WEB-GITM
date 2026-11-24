@@ -1,3 +1,4 @@
+import {projectField, projectCategory} from '../utils/projectPresentation';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
@@ -172,37 +173,12 @@ const ProjectsHub = () => {
   };
 
   const getProjectCoverImage = (proj) => {
+    if (proj.id === 'dZrGePCDDuoAcmZEEyXM' && !proj.coverImage && !proj.imageUrl) return '';
     const img = (proj?.coverImage || '').trim();
     return (!img || img.includes('photo-1518770660439-4636190af475')) ? getDefaultCoverImage(proj) : img;
   };
 
-  const getLocalized = (obj, field) => {
-    if (!obj) return '';
-    const hasArabic = (s) => /[\u0600-\u06FF]/.test(s || '');
-    const candidate = lang === 'ar'
-      ? (obj[`${field}Ar`] || obj[`${field}_ar`] || obj[field] || '')
-      : (lang === 'en' ? obj[`${field}En`] : obj[`${field}Fr`]) || obj[`${field}_${lang}`] || (lang === 'fr' ? obj[`${field}_fr`] : '') || obj[field] || '';
-    const rawVal = String(candidate).trim();
-    if (lang === 'ar' || (rawVal && !hasArabic(rawVal))) return rawVal;
-
-    if (lang === 'en' || lang === 'fr') {
-      if (PROJECT_TRANSLATIONS[rawVal]?.[lang]) {
-        return PROJECT_TRANSLATIONS[rawVal][lang];
-      }
-      if (field === 'title') {
-        const matchedKey = Object.keys(PROJECT_TRANSLATIONS).find(k => rawVal.includes(k));
-        if (matchedKey && PROJECT_TRANSLATIONS[matchedKey]?.[lang]) {
-          return PROJECT_TRANSLATIONS[matchedKey][lang];
-        }
-      }
-      if (field === 'description' || field === 'desc') {
-        const contextText = `${obj.title || ''} ${obj.titleAr || ''} ${rawVal}`.toLowerCase();
-        const match = DESCRIPTION_TRANSLATIONS.find(item => item.keywords.some(k => contextText.includes(k)));
-        if (match?.[lang]) return match[lang];
-      }
-    }
-    return obj[field] || '';
-  };
+  const getLocalized = (obj,field) => projectField(obj,field,lang);
 
   const categories = useMemo(() => {
     const set = new Set();
@@ -275,7 +251,7 @@ const ProjectsHub = () => {
                   : 'bg-white dark:bg-gitm-cardDark text-slate-700 dark:text-slate-200 border-slate-200 dark:border-gitm-borderDark hover:border-gitm-blue hover:text-gitm-blue'
               }`}
             >
-              {cat === 'all' ? (lang === 'ar' ? 'الكل' : lang === 'fr' ? 'Tous' : 'All') : cat}
+              {cat === 'all' ? (lang === 'ar' ? 'الكل' : lang === 'fr' ? 'Tous' : 'All') : projectCategory(cat,lang)}
             </button>
           ))}
         </div>
@@ -325,7 +301,7 @@ const ProjectsHub = () => {
                     {/* 16:9 Cover Image with Unified Fallback & Skeleton */}
                     <ProjectCardImage
                       src={getProjectCoverImage(proj)}
-                      fallbackSrc={getDefaultCoverImage(proj)}
+                      fallbackSrc={proj.id === 'dZrGePCDDuoAcmZEEyXM' ? '' : getDefaultCoverImage(proj)}
                       alt={title}
                     />
 
@@ -333,7 +309,7 @@ const ProjectsHub = () => {
                     <div className="p-4 md:p-5 flex-1 flex flex-col">
                       <div className="mb-2.5">
                         <span className="inline-block bg-gitm-blue/10 dark:bg-gitm-blue/25 text-gitm-blue dark:text-cyan-300 text-xs font-bold px-3 py-1 rounded-full">
-                          {proj.category || 'Innovation'}
+                          {projectCategory(proj.category,lang) || 'Innovation'}
                         </span>
                       </div>
 

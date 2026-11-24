@@ -190,7 +190,7 @@ const COLLECTION_WHITELISTS = {
     'status', 'createdAt', 'updatedAt',
   ]),
   projects: new Set([
-    'titleAr', 'titleEn', 'descriptionAr', 'descriptionEn', 'status',
+    'titleAr', 'titleEn', 'titleFr', 'descriptionAr', 'descriptionEn', 'descriptionFr', 'imageUrl', 'status',
     'category', 'githubUrl', 'progress', 'coverImage', 'fbVideo',
     'ytVideo', 'teamMembers', 'attachments', 'techStack', 'author',
     'createdAt', 'updatedAt',

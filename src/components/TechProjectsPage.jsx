@@ -1,3 +1,4 @@
+import {projectField, projectCategory} from '../utils/projectPresentation';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code, Github, ExternalLink, Cpu, Database, Layers, Loader2 } from 'lucide-react';
@@ -39,17 +40,8 @@ export default function TechProjectsPage() {
     fetchProjects();
   }, [lang]);
 
-  const getLocalizedTitle = (proj, l) => {
-    if (!proj) return '';
-    if (l === 'ar') return proj.titleAr || proj.titleEn || proj.title || '';
-    return proj.titleEn || proj.titleAr || proj.title || '';
-  };
-
-  const getLocalizedDesc = (proj, l) => {
-    if (!proj) return '';
-    if (l === 'ar') return proj.descriptionAr || proj.descriptionEn || proj.description || '';
-    return proj.descriptionEn || proj.descriptionAr || proj.description || '';
-  };
+  const getLocalizedTitle = (p,l) => projectField(p,'title',l);
+  const getLocalizedDesc = (p,l) => projectField(p,'description',l);
 
   const emptyMessage = {
     en: 'No tech projects available at the moment.',
@@ -137,7 +129,7 @@ export default function TechProjectsPage() {
                   onClick={() => navigate(`/project-details/${proj.id}`)}
                   className="group relative aspect-square rounded-3xl overflow-hidden cursor-pointer bg-gradient-to-br from-teal-700/40 via-slate-800 to-slate-900 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
                 >
-                  <img 
+                  {(proj.image || proj.coverImage || proj.imageUrl) && <img
                     src={proj.image || proj.coverImage || proj.imageUrl || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80'} 
                     alt={getLocalizedTitle(proj, lang)} 
                     loading="lazy"
@@ -151,13 +143,13 @@ export default function TechProjectsPage() {
                       }
                     }}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
+                  />}
                   
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:via-black/50" />
                   
                   {proj.category && (
                     <div className="absolute top-4 right-4 bg-teal-500/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full">
-                      {proj.category}
+                      {projectCategory(proj.category,lang)}
                     </div>
                   )}
 
