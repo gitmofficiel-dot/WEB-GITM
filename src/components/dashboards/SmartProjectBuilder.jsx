@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Rocket, Save, X, ArrowLeft, Image as ImageIcon, Github, Users, Activity, Plus, Trash2, Percent, AlertCircle
+  Rocket, Save, X, ArrowLeft, Image as ImageIcon, Github, Users, Activity, Plus, Trash2, Percent, AlertCircle, Upload
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -9,6 +9,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, getDocs, collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { toast } from '../../utils/toast';
+import { uploadProjectFiles, applyCoverIfUnchanged } from '../../utils/projectUpload';
+import { uploadToCloudinary } from '../../utils/cloudinary';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
@@ -38,6 +40,9 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
   const [techStack, setTechStack] = useState(initialData?.techStack?.join(', ') || '');
   const [attachments, setAttachments] = useState(initialData?.attachments || []);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+  const coverFileInputRef = React.useRef(null);
   const [registeredUsers, setRegisteredUsers] = useState([]);
 
   // Fetch registered users
@@ -121,6 +126,7 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
   };
 
   const handleConfirmDraft = async (saveAsDraft) => {
+    if (isSaving || isUploading) return;
     if (saveAsDraft) {
       setIsSaving(true);
       try {
@@ -178,6 +184,7 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
   };
 
   const handleSubmit = async () => {
+    if (isSaving || isUploading) return;
     setIsSaving(true);
     const projectData = {
       ...formData,
@@ -210,14 +217,61 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
     }
   };
 
-  const handleFileUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const newAttachments = files.map(file => ({
-      name: file.name,
-      size: (file.size / 1024).toFixed(1) + ' KB',
-      type: file.type
-    }));
-    setAttachments([...attachments, ...newAttachments]);
+  const handleFileUpload = async (e) => {
+    if (isUploading || isSaving) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const startingCover = formData.coverImage;
+    setIsUploading(true);
+    setUploadError(null);
+    try {
+      const result = await uploadProjectFiles({
+        files,
+        currentCoverImage: startingCover,
+        uploader: uploadToCloudinary,
+      });
+      setAttachments(prev => [...prev, ...result.attachments]);
+      if (result.coverImage) {
+        setFormData(prev => {
+          const updatedCover = applyCoverIfUnchanged(prev.coverImage, startingCover, result.coverImage);
+          return updatedCover === prev.coverImage ? prev : { ...prev, coverImage: updatedCover };
+        });
+      }
+      toast.success(lang === 'ar' ? 'تم رفع الملفات بنجاح' : 'Files uploaded successfully');
+    } catch (error) {
+      console.error('File upload error:', error);
+      const message = error?.message || (lang === 'ar' ? 'فشل رفع الملفات' : 'Failed to upload files');
+      setUploadError(message);
+      toast.error(message);
+    } finally {
+      setIsUploading(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
+  const handleCoverUpload = async (e) => {
+    if (isUploading || isSaving) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const startingCover = formData.coverImage;
+    setIsUploading(true);
+    setUploadError(null);
+    try {
+      const url = await uploadToCloudinary(file, 'image');
+      setFormData(prev => {
+        const updatedCover = applyCoverIfUnchanged(prev.coverImage, startingCover, url);
+        return updatedCover === prev.coverImage ? prev : { ...prev, coverImage: updatedCover };
+      });
+      toast.success(lang === 'ar' ? 'تم رفع صورة الغلاف بنجاح' : 'Cover image uploaded successfully');
+    } catch (error) {
+      console.error('Cover upload error:', error);
+      const message = error?.message || (lang === 'ar' ? 'فشل رفع صورة الغلاف' : 'Failed to upload cover image');
+      setUploadError(message);
+      toast.error(message);
+    } finally {
+      setIsUploading(false);
+      if (e.target) e.target.value = '';
+    }
   };
 
   if (isLoading) {
@@ -241,8 +295,8 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
               {lang === 'ar' ? 'لديك تغييرات غير محفوظة. هل تريد حفظها كمسودة قبل المغادرة؟' : 'You have unsaved changes. Do you want to save as draft before leaving?'}
             </p>
             <div className="flex flex-col gap-2">
-              <button onClick={() => handleConfirmDraft(true)} className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-colors">
-                {lang === 'ar' ? 'حفظ كمسودة' : 'Save as Draft'}
+              <button onClick={() => handleConfirmDraft(true)} disabled={isSaving || isUploading} className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-colors disabled:opacity-50">
+                {isSaving ? (lang === 'ar' ? 'جاري الحفظ...' : 'Saving...') : (lang === 'ar' ? 'حفظ كمسودة' : 'Save as Draft')}
               </button>
               <button onClick={() => handleConfirmDraft(false)} className="w-full py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl font-bold transition-colors">
                 {lang === 'ar' ? 'الخروج بدون حفظ' : 'Discard & Leave'}
@@ -270,11 +324,15 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
         </div>
         
         <button 
-          onClick={handleSubmit} disabled={isSaving || !formData.titleAr}
+          onClick={handleSubmit} disabled={isSaving || isUploading || !formData.titleAr}
           className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-bold shadow-lg hover:shadow-indigo-500/30 hover:scale-105 transition-all disabled:opacity-50 disabled:scale-100"
         >
-          {isSaving ? <Activity size={18} className="animate-spin"/> : <Save size={18}/>} 
-          {lang === 'ar' ? 'حفظ المشروع' : 'Save Project'}
+          {isSaving || isUploading ? <Activity size={18} className="animate-spin"/> : <Save size={18}/>} 
+          {isUploading 
+            ? (lang === 'ar' ? 'جاري الرفع...' : 'Uploading...') 
+            : isSaving 
+              ? (lang === 'ar' ? 'جاري الحفظ...' : 'Saving...') 
+              : (lang === 'ar' ? 'حفظ المشروع' : 'Save Project')}
         </button>
       </div>
 
@@ -414,8 +472,24 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
               </div>
 
               <div>
-                 <label className="text-sm font-bold text-slate-500 mb-1 flex items-center gap-2"><ImageIcon size={16}/> Cover Image URL</label>
+                 <div className="flex items-center justify-between mb-1">
+                   <label className="text-sm font-bold text-slate-500 flex items-center gap-2"><ImageIcon size={16}/> Cover Image URL</label>
+                   <input type="file" accept="image/*" ref={coverFileInputRef} onChange={handleCoverUpload} className="hidden" />
+                   <button
+                     type="button"
+                     disabled={isUploading}
+                     onClick={() => coverFileInputRef.current?.click()}
+                     className="text-xs font-bold text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-50 flex items-center gap-1"
+                   >
+                     <Upload size={13} /> {lang === 'ar' ? 'رفع صورة' : 'Upload file'}
+                   </button>
+                 </div>
                  <input type="text" value={formData.coverImage} onChange={e=>setFormData({...formData, coverImage: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-indigo-500 text-sm" placeholder="https://..." dir="ltr" />
+                 {formData.coverImage && (
+                   <div className="mt-2 relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 max-h-36">
+                     <img src={formData.coverImage} alt="Cover preview" className="w-full h-36 object-cover" />
+                   </div>
+                 )}
               </div>
               
               <div>
@@ -433,24 +507,49 @@ export default function SmartProjectBuilder({ initialData, onCancel, onSave, sta
           <div className="glass-card rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
              <h3 className="text-lg font-bold text-[#1e3a5f] dark:text-white mb-4">{lang === 'ar' ? 'المرفقات والصور (متعدد)' : 'Attachments & Gallery'}</h3>
              
+             {isUploading && (
+               <div className="mb-3 flex items-center gap-2 p-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl text-xs font-semibold">
+                 <Activity size={14} className="animate-spin shrink-0" />
+                 <span>{lang === 'ar' ? 'جاري رفع الملفات إلى Cloudinary...' : 'Uploading files to Cloudinary...'}</span>
+               </div>
+             )}
+
+             {uploadError && (
+               <div className="mb-3 flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-xs font-semibold">
+                 <AlertCircle size={14} className="shrink-0" />
+                 <span className="truncate">{uploadError}</span>
+               </div>
+             )}
+
              <div className="space-y-3">
                {attachments.map((file, i) => (
                  <div key={i} className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
                    <div className="flex items-center gap-2 overflow-hidden">
                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">{file.name}</span>
+                     {file.size && <span className="text-[10px] text-slate-400">({file.size})</span>}
                    </div>
-                   <button onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))} className="text-slate-600 dark:text-slate-400 hover:text-red-500 shrink-0 p-1">
-                     <X size={14}/>
-                   </button>
+                   <div className="flex items-center gap-1.5 shrink-0">
+                     {file.url && (
+                       <a href={file.url} target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:text-indigo-600 text-xs px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-900/30 font-medium">
+                         URL
+                       </a>
+                     )}
+                     <button onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))} className="text-slate-600 dark:text-slate-400 hover:text-red-500 shrink-0 p-1">
+                       <X size={14}/>
+                     </button>
+                   </div>
                  </div>
                ))}
                
                <input type="file" multiple ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
                <button 
-                 onClick={() => fileInputRef.current.click()}
-                 className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors text-slate-500 font-bold text-sm flex items-center justify-center gap-2"
+                 type="button"
+                 disabled={isUploading}
+                 onClick={() => fileInputRef.current?.click()}
+                 className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors text-slate-500 font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                >
-                 <Plus size={16}/> {lang === 'ar' ? 'رفع ملفات / صور متعددة' : 'Upload Files / Multiple Images'}
+                 {isUploading ? <Activity size={16} className="animate-spin" /> : <Plus size={16}/>}
+                 {isUploading ? (lang === 'ar' ? 'جاري الرفع...' : 'Uploading...') : (lang === 'ar' ? 'رفع ملفات / صور متعددة' : 'Upload Files / Multiple Images')}
                </button>
              </div>
           </div>
