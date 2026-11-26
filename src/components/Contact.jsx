@@ -1,40 +1,49 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Send, Calendar, Mail, MapPin, CheckCircle, RefreshCw } from 'lucide-react';
 import { toast } from '../utils/toast';
 import { db } from '../config/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { submitContactForm } from '../utils/contactSubmit';
+
+const contactMemoryFallback = { lastSubmit: null };
 
 const Contact = () => {
   const { t, lang } = useLanguage();
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState('idle');
+  const isSubmittingRef = useRef(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) return;
-
-    const lastSubmit = localStorage.getItem('lastContactSubmit');
-    if (lastSubmit && Date.now() - parseInt(lastSubmit) < 60000) {
-      toast.error(t('contact.rateLimit') || 'Please wait a minute before sending another message.');
-      return;
-    }
-
-    try {
-      setStatus('sending');
-      await addDoc(collection(db, 'contact_messages'), {
-        ...formData,
-        submittedAt: serverTimestamp()
-      });
-      localStorage.setItem('lastContactSubmit', Date.now().toString());
-      setStatus('success');
-      setFormData({ name: '', email: '', subject: '', message: '' });
-      setTimeout(() => setStatus('idle'), 5000);
-    } catch (error) {
-      console.error('Error submitting contact form:', error);
-      toast.error(t('contact.error') || 'Failed to send message. Please try again later.');
-      setStatus('idle');
-    }
+    await submitContactForm({
+      formData,
+      isSubmittingRef,
+      getStorage: () => globalThis.localStorage,
+      memoryFallback: contactMemoryFallback,
+      now: Date.now,
+      sendMessage: (payload) =>
+        addDoc(collection(db, 'contact_messages'), {
+          ...payload,
+          submittedAt: serverTimestamp()
+        }),
+      onRateLimit: () => {
+        toast.error(t('contact.rateLimit') || 'Please wait a minute before sending another message.');
+      },
+      onSending: () => {
+        setStatus('sending');
+      },
+      onSuccess: () => {
+        setStatus('success');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setTimeout(() => setStatus('idle'), 5000);
+      },
+      onError: (error) => {
+        console.error('Error submitting contact form:', error);
+        toast.error(t('contact.error') || 'Failed to send message. Please try again later.');
+        setStatus('idle');
+      }
+    });
   };
 
   return (
