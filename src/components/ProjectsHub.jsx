@@ -1,6 +1,12 @@
 import {projectField, projectCategory} from '../utils/projectPresentation';
-import React, { useState, useEffect, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  buildProjectsHubParams,
+  parseProjectsHubParams,
+  resolveProjectsHubCategory,
+  resolveProjectsHubPage,
+} from '../utils/projectsHubUrl';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { AlertCircle, ArrowRight, Cpu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -58,13 +64,13 @@ const ProjectsHub = () => {
   const { lang } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Pagination, Category & Search
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [currentPage, setCurrentPage] = useState(1);
+  // Pagination, Category & Search (URL-backed)
+  const parsedParams = useMemo(() => parseProjectsHubParams(searchParams), [searchParams]);
+  const searchQuery = parsedParams.q;
   const itemsPerPage = 8;
 
   useEffect(() => {
@@ -189,6 +195,8 @@ const ProjectsHub = () => {
     return ['all', ...Array.from(set)];
   }, [projects]);
 
+  const selectedCategory = resolveProjectsHubCategory(parsedParams.category, categories, loading);
+
   const filteredProjects = projects.filter(proj => {
     const matchesCategory = selectedCategory === 'all' || proj.category === selectedCategory;
     if (!matchesCategory) return false;
@@ -200,7 +208,46 @@ const ProjectsHub = () => {
   });
 
   const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
+  const currentPage = resolveProjectsHubPage(parsedParams.page, totalPages, loading);
   const currentProjects = filteredProjects.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  useEffect(() => {
+    if (loading) return;
+    const canonical = buildProjectsHubParams(searchParams, {
+      q: searchQuery,
+      category: selectedCategory,
+      page: currentPage,
+    });
+    if (canonical.toString() !== searchParams.toString()) {
+      setSearchParams(canonical, { replace: true });
+    }
+  }, [loading, searchParams, setSearchParams, searchQuery, selectedCategory, currentPage]);
+
+  const searchParamsRef = useRef(searchParams);
+  useEffect(() => {
+    searchParamsRef.current = searchParams;
+  }, [searchParams]);
+
+  const handleSearch = useCallback((val) => {
+    const prev = searchParamsRef.current;
+    const next = buildProjectsHubParams(prev, { q: val, page: 1 });
+    if (next.toString() === prev.toString()) return;
+    setSearchParams(next, { replace: true });
+  }, [setSearchParams]);
+
+  const handleCategoryChange = useCallback((cat) => {
+    const prev = searchParamsRef.current;
+    const next = buildProjectsHubParams(prev, { category: cat, page: 1 });
+    if (next.toString() === prev.toString()) return;
+    setSearchParams(next);
+  }, [setSearchParams]);
+
+  const handlePageChange = useCallback((page) => {
+    const prev = searchParamsRef.current;
+    const next = buildProjectsHubParams(prev, { page });
+    if (next.toString() === prev.toString()) return;
+    setSearchParams(next);
+  }, [setSearchParams]);
 
   return (
     <div className="min-h-screen pt-24 md:pt-32 pb-16 md:pb-20 px-4 md:px-8 max-w-7xl mx-auto">
@@ -227,7 +274,8 @@ const ProjectsHub = () => {
       {/* Search */}
       <div className="max-w-2xl mx-auto mb-4 md:mb-8">
         <SearchBar
-          onSearch={(val) => { setSearchQuery(val); setCurrentPage(1); }}
+          value={searchQuery}
+          onSearch={handleSearch}
           placeholder={
             lang === 'ar'
               ? 'ابحث في الأفكار والمشاريع...'
@@ -245,7 +293,7 @@ const ProjectsHub = () => {
             <button
               key={cat}
               type="button"
-              onClick={() => { setSelectedCategory(cat); setCurrentPage(1); }}
+              onClick={() => handleCategoryChange(cat)}
               className={`min-h-[44px] px-4 md:px-5 py-2 rounded-full text-xs sm:text-sm font-bold border transition-all whitespace-nowrap ${
                 selectedCategory === cat
                   ? 'bg-gitm-blue text-white border-gitm-blue shadow-md shadow-gitm-blue/20'
@@ -351,7 +399,9 @@ const ProjectsHub = () => {
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onPageChange={setCurrentPage}
+                onPageChange={handlePageChange}
+                hasPrevPage={currentPage > 1}
+                hasNextPage={currentPage < totalPages}
               />
             </div>
           )}

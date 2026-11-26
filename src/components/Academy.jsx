@@ -292,12 +292,14 @@ export default function Academy() {
                 {getLocalized(activeCourse, 'description', lang)}
               </p>
 
-              <div className="flex flex-wrap items-center gap-4 md:gap-6 text-xs sm:text-sm text-slate-200 mb-6 md:mb-8">
-                <div className="flex items-center gap-1.5">
-                  <Clock size={16} />
-                  <span>{activeCourse.duration || (lang === 'fr' ? '6 mois' : '6 Months')} {t('من الدراسة', 'to complete', 'pour terminer')}</span>
+              {String(activeCourse.duration || '').trim() && (
+                <div className="flex flex-wrap items-center gap-4 md:gap-6 text-xs sm:text-sm text-slate-200 mb-6 md:mb-8">
+                  <div className="flex items-center gap-1.5">
+                    <Clock size={16} />
+                    <span>{String(activeCourse.duration).trim()} {t('من الدراسة', 'to complete', 'pour terminer')}</span>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4 w-full sm:w-auto">
                 {!isCourseStarted ? (
@@ -355,25 +357,9 @@ export default function Academy() {
                 <Library className="text-teal-500 shrink-0" />
                 <span>{t('حول هذه الدورة', 'About this Course', 'À propos de ce cours')}</span>
               </h2>
-              <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-sm sm:text-base md:text-lg mb-6 md:mb-8">
+              <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-sm sm:text-base md:text-lg">
                 {getLocalized(activeCourse, 'longDescription', lang) || getLocalized(activeCourse, 'description', lang)}
               </p>
-
-              <h3 className="text-lg md:text-xl font-bold mb-4 text-slate-900 dark:text-white">
-                {t('ماذا ستتعلم', 'What you will learn', 'Ce que vous allez apprendre')}
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6">
-                {[
-                  t('اكتساب مهارات عملية قابلة للتطبيق مباشرة', 'Gain hands-on practical skills', 'Acquérir des compétences pratiques directement applicables'),
-                  t('بناء مشاريع حقيقية لتعزيز سيرتك الذاتية', 'Build real-world projects for your resume', 'Réaliser des projets concrets pour enrichir votre CV'),
-                  t('التعلم من خبراء الصناعة', 'Learn from industry experts', 'Apprendre auprès d’experts du secteur'),
-                ].map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-3 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl">
-                    <CheckCircle className="text-teal-500 mt-0.5 shrink-0" size={20} />
-                    <span className="text-sm md:text-base text-slate-700 dark:text-slate-300 font-medium">{item}</span>
-                  </div>
-                ))}
-              </div>
             </div>
           ) : !activeCourse.modules || activeCourse.modules.length === 0 ? (
             <div className="text-center py-16 md:py-24 px-4 bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800">
@@ -478,7 +464,7 @@ export default function Academy() {
             {t('تعلم بلا حدود مع', 'Learn Without Limits with', 'Apprenez sans limites avec')} <span className="text-teal-400">GITM</span>
           </h1>
           <p className="text-sm sm:text-base md:text-2xl text-slate-200 max-w-3xl md:mx-auto mb-6 md:mb-10 leading-relaxed">
-            {t('اكتسب المهارات التي تحتاجها من أفضل الخبراء في التكنولوجيا والأعمال.', 'Build the skills you need from top experts in technology and business.', 'Développez les compétences clés auprès d’experts en technologie et en affaires.')}
+            {t('تصفح دورات أكاديمية GITM والمكتبة الرقمية المتاحة.', 'Browse available GITM Academy courses and digital library resources.', 'Parcourez les cours disponibles de la GITM Academy et la bibliothèque numérique.')}
           </p>
 
           <div className="max-w-2xl md:mx-auto relative flex items-center">

@@ -1,26 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, X, Loader2 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { shouldEmitSearch, syncExternalSearchValue } from '../../utils/searchBarSync';
 
-const SearchBar = ({ onSearch, placeholder, isSearching, debounceTime = 500 }) => {
-  const [query, setQuery] = useState('');
+const SearchBar = ({ onSearch, placeholder, isSearching, debounceTime = 500, value }) => {
+  const isControlled = value !== undefined;
+  const initialSync = isControlled ? syncExternalSearchValue(value) : { nextInput: '', nextLastEmitted: '' };
+  const [prevExternalValue, setPrevExternalValue] = useState(initialSync.nextInput);
+  const [query, setQuery] = useState(initialSync.nextInput);
+  const onSearchRef = useRef(onSearch);
+  const lastEmittedRef = useRef(initialSync.nextLastEmitted);
   const { t, language } = useLanguage();
 
+  if (isControlled && initialSync.nextInput !== prevExternalValue) {
+    setPrevExternalValue(initialSync.nextInput);
+    setQuery(initialSync.nextInput);
+  }
+
   useEffect(() => {
+    onSearchRef.current = onSearch;
+  }, [onSearch]);
+
+  useEffect(() => {
+    if (!isControlled) return;
+    lastEmittedRef.current = syncExternalSearchValue(value).nextLastEmitted;
+  }, [isControlled, value]);
+
+  useEffect(() => {
+    const { shouldEmit, next } = shouldEmitSearch(query, lastEmittedRef.current);
+    if (!shouldEmit) return undefined;
+
     const timer = setTimeout(() => {
-      if (query.trim() !== '') {
-        onSearch(query);
-      } else {
-        onSearch('');
+      if (next !== lastEmittedRef.current) {
+        lastEmittedRef.current = next;
+        onSearchRef.current?.(next);
       }
     }, debounceTime);
 
     return () => clearTimeout(timer);
-  }, [query, debounceTime, onSearch]);
+  }, [query, debounceTime]);
 
   const clearSearch = () => {
     setQuery('');
-    onSearch('');
+    if (lastEmittedRef.current !== '') {
+      lastEmittedRef.current = '';
+      onSearchRef.current?.('');
+    }
   };
 
   return (
@@ -42,7 +67,9 @@ const SearchBar = ({ onSearch, placeholder, isSearching, debounceTime = 500 }) =
       />
       {query && (
         <button
+          type="button"
           onClick={clearSearch}
+          aria-label="Clear search"
           className="absolute inset-y-0 right-0 pr-3 flex items-center rtl:right-auto rtl:left-0 rtl:pl-3 rtl:pr-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
         >
           <X className="h-5 w-5" />
