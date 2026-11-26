@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { hasCourseModules, resolveCourseStartTransition } from '../utils/academyCourseState';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { BookOpen, PlayCircle, Lock, CheckCircle, ChevronRight, Library, Search, Filter, Clock, Video } from 'lucide-react';
@@ -141,12 +142,10 @@ export default function Academy() {
   };
 
   const startCourseFlow = () => {
-    setIsCourseStarted(true);
-    if (activeCourse.courseIntroVideo || activeCourse.courseIntroText) {
-      setShowCourseIntro(true);
-    } else {
-      setShowCourseIntro(false);
-    }
+    const next = resolveCourseStartTransition(activeCourse);
+    if (!next.allowed) return;
+    setIsCourseStarted(next.started);
+    setShowCourseIntro(next.showIntro);
   };
 
   const closeCourse = () => {
@@ -302,7 +301,16 @@ export default function Academy() {
               )}
 
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4 w-full sm:w-auto">
-                {!isCourseStarted ? (
+                {!hasCourseModules(activeCourse) ? (
+                  <button
+                    type="button"
+                    disabled
+                    aria-disabled="true"
+                    className="w-full sm:w-auto min-h-[48px] px-6 md:px-8 py-3.5 bg-slate-600/80 text-slate-200 font-bold rounded-xl shadow-lg cursor-not-allowed"
+                  >
+                    {t('الدروس قيد التجهيز', 'Curriculum is being prepared', 'Le programme est en cours de préparation')}
+                  </button>
+                ) : !isCourseStarted ? (
                   <button
                     type="button"
                     onClick={startCourseFlow}
@@ -336,14 +344,16 @@ export default function Academy() {
                     alt={getLocalized(activeCourse, 'title', lang)}
                   />
                 </div>
-                <div
-                  onClick={startCourseFlow}
-                  className="absolute inset-0 flex items-center justify-center bg-black/35 group-hover:bg-black/20 transition-all rounded-xl cursor-pointer"
-                >
-                  <div className="w-14 h-14 md:w-16 md:h-16 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <PlayCircle className="text-white w-9 h-9 md:w-10 md:h-10" />
+                {hasCourseModules(activeCourse) && (
+                  <div
+                    onClick={startCourseFlow}
+                    className="absolute inset-0 flex items-center justify-center bg-black/35 group-hover:bg-black/20 transition-all rounded-xl cursor-pointer"
+                  >
+                    <div className="w-14 h-14 md:w-16 md:h-16 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <PlayCircle className="text-white w-9 h-9 md:w-10 md:h-10" />
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
