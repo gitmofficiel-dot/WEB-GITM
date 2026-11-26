@@ -5,7 +5,7 @@ import { Code, Github, ExternalLink, Cpu, Database, Layers, Loader2 } from 'luci
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../config/firebase';
 import { collection, getDocs, query } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ICON_MAP = {
   Database,
@@ -18,6 +18,7 @@ export default function TechProjectsPage() {
   const { lang } = useLanguage();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -126,7 +127,7 @@ export default function TechProjectsPage() {
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                   key={proj.id}
-                  onClick={() => navigate(`/project-details/${proj.id}`)}
+                  onClick={() => navigate(`/project-details/${proj.id}`, { state: { from: `${location.pathname}${location.search}` } })}
                   className="group relative aspect-square rounded-3xl overflow-hidden cursor-pointer bg-gradient-to-br from-teal-700/40 via-slate-800 to-slate-900 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
                 >
                   {(proj.image || proj.coverImage || proj.imageUrl) && <img

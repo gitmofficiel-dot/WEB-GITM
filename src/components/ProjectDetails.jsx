@@ -2,7 +2,7 @@ import {projectField, projectCategory} from '../utils/projectPresentation';
 import React, { useState, useEffect } from 'react';
 import { db } from '../config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Download, Github, Facebook, Youtube, Lightbulb, Image as ImageIcon } from 'lucide-react';
@@ -48,9 +48,30 @@ const toText = (value, keepBreaks) => {
   return keepBreaks ? text.replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n\n').trim() : text.replace(/\s+/g, ' ').trim();
 };
 
+const ALLOWED_RETURN_PREFIXES = ['/projects-hub', '/projects'];
+const DEFAULT_PROJECTS_RETURN = '/projects-hub';
+
+const getSafeReturnPath = (candidate) => {
+  if (typeof candidate !== 'string' || !candidate.startsWith('/') || candidate.startsWith('//') || candidate.includes('\\')) {
+    return DEFAULT_PROJECTS_RETURN;
+  }
+  try {
+    const parsed = new URL(candidate, window.location.origin);
+    if (parsed.origin !== window.location.origin) return DEFAULT_PROJECTS_RETURN;
+    const isAllowed = ALLOWED_RETURN_PREFIXES.some(
+      (prefix) => parsed.pathname === prefix || parsed.pathname.startsWith(`${prefix}/`)
+    );
+    return isAllowed ? `${parsed.pathname}${parsed.search}${parsed.hash}` : DEFAULT_PROJECTS_RETURN;
+  } catch {
+    return DEFAULT_PROJECTS_RETURN;
+  }
+};
+
 export default function ProjectDetails() {
   const { lang } = useLanguage();
+  const location = useLocation();
   const navigate = useNavigate();
+  const backTarget = getSafeReturnPath(location.state?.from);
   const { id } = useParams();
 
   const [data, setData] = useState(null);
@@ -104,7 +125,7 @@ export default function ProjectDetails() {
       <div className="min-h-screen pt-24 pb-16 bg-gitm-light dark:bg-gitm-dark flex items-center justify-center px-4">
         <div className="text-center text-slate-700 dark:text-slate-300">
           <p className="mb-4">{status === 'loading' ? (lang === 'ar' ? 'جاري التحميل...' : 'Loading...') : (lang === 'ar' ? 'هذا المشروع غير موجود.' : 'Project not found.')}</p>
-          <button type="button" onClick={() => navigate('/projects')} className="px-4 min-h-[44px] rounded-xl bg-gitm-blue text-white">{label('العودة للمشاريع','Back to Projects','Retour aux projets')}</button>
+          <button type="button" onClick={() => navigate(backTarget)} className="px-4 min-h-[44px] rounded-xl bg-gitm-blue text-white">{label('العودة للمشاريع','Back to Projects','Retour aux projets')}</button>
         </div>
       </div>
     );
@@ -123,7 +144,7 @@ export default function ProjectDetails() {
         {/* Back Button (>=44px touch target) */}
         <button
           type="button"
-          onClick={() => navigate('/projects')}
+          onClick={() => navigate(backTarget)}
           className="mb-4 md:mb-6 inline-flex items-center min-h-[44px] px-2 -mx-2 text-slate-700 dark:text-slate-300 hover:text-gitm-blue dark:hover:text-cyan-400 transition font-bold text-sm md:text-base"
         >
           <ArrowLeft className="w-5 h-5 mr-2 rtl:mr-0 rtl:ml-2 rtl:rotate-180 shrink-0" />

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
-import { BookOpen, PlayCircle, Lock, CheckCircle, ChevronRight, Library, Search, Star, Filter, Users, Clock, Video } from 'lucide-react';
+import { BookOpen, PlayCircle, Lock, CheckCircle, ChevronRight, Library, Search, Filter, Clock, Video } from 'lucide-react';
 import LessonView from './academy/LessonView';
 import QuizEngine from './academy/QuizEngine';
 import { db } from '../config/firebase';
 import { collection, getDocs } from 'firebase/firestore';
-import { toast } from '../utils/toast';
 import SearchBar from './ui/SearchBar';
 import Pagination from './ui/Pagination';
 
@@ -45,6 +44,7 @@ const CourseThumbnail = ({ src, alt, icon: Icon = BookOpen, contain = false }) =
 
 export default function Academy() {
   const { lang } = useLanguage();
+  const t = (ar, en, fr) => (lang === 'ar' ? ar : lang === 'fr' ? fr : en);
   const [courses, setCourses] = useState([]);
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -174,10 +174,6 @@ export default function Academy() {
     setCourseCompleted(true);
   };
 
-  const generateCertificate = () => {
-    toast.success(lang === 'ar' ? 'تم إصدار شهادتك بنجاح! رقم: GITM-CERT-9092' : 'Certificate issued successfully! ID: GITM-CERT-9092');
-    closeCourse();
-  };
 
   const getLocalized = (obj, field, l) => {
     if (!obj) return '';
@@ -190,6 +186,18 @@ export default function Academy() {
   };
 
   const getCategoryLabel = (cat) => {
+    if (lang === 'fr') {
+      const frMap = {
+        All: 'Toutes',
+        AI: 'IA',
+        'Web Dev': 'Développement Web',
+        Security: 'Sécurité',
+        'Data Science': 'Science des données',
+        Cloud: 'Cloud',
+        Technology: 'Technologie'
+      };
+      return frMap[cat] || cat;
+    }
     if (lang !== 'ar') return cat;
     const map = {
       All: 'الكل',
@@ -250,16 +258,18 @@ export default function Academy() {
   const categories = ['All', 'AI', 'Web Dev', 'Security', 'Data Science', 'Cloud'];
   const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'];
   const bookLangs = [
-    { value: 'All', labelAr: 'الكل', labelEn: 'All' },
-    { value: 'ar', labelAr: 'العربية', labelEn: 'Arabic' },
-    { value: 'en', labelAr: 'الإنجليزية', labelEn: 'English' },
-    { value: 'fr', labelAr: 'الفرنسية', labelEn: 'French' }
+    { value: 'All', labelAr: 'الكل', labelEn: 'All', labelFr: 'Toutes' },
+    { value: 'ar', labelAr: 'العربية', labelEn: 'Arabic', labelFr: 'Arabe' },
+    { value: 'en', labelAr: 'الإنجليزية', labelEn: 'English', labelFr: 'Anglais' },
+    { value: 'fr', labelAr: 'الفرنسية', labelEn: 'French', labelFr: 'Français' }
   ];
 
   const activeCount = activeTab === 'courses' ? filteredCourses.length : books.length;
   const countLabel = lang === 'ar'
     ? (activeCount === 1 || activeCount > 10 ? 'نتيجة' : 'نتائج')
-    : (activeCount === 1 ? 'result' : 'results');
+    : lang === 'fr'
+      ? (activeCount === 1 ? 'résultat' : 'résultats')
+      : (activeCount === 1 ? 'result' : 'results');
 
   if (activeCourse) {
     return (
@@ -283,18 +293,9 @@ export default function Academy() {
               </p>
 
               <div className="flex flex-wrap items-center gap-4 md:gap-6 text-xs sm:text-sm text-slate-200 mb-6 md:mb-8">
-                <div className="flex items-center gap-1 text-yellow-400 font-bold">
-                  <Star fill="currentColor" size={16} />
-                  <span>{activeCourse.rating || '4.8'}</span>
-                  <span className="text-slate-300 font-normal ml-1">(12k reviews)</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Users size={16} />
-                  <span>{activeCourse.students || '10,000+'} {lang === 'ar' ? 'طالب مسجل' : 'already enrolled'}</span>
-                </div>
                 <div className="flex items-center gap-1.5">
                   <Clock size={16} />
-                  <span>{activeCourse.duration || '6 Months'} {lang === 'ar' ? 'من الدراسة' : 'to complete'}</span>
+                  <span>{activeCourse.duration || (lang === 'fr' ? '6 mois' : '6 Months')} {t('من الدراسة', 'to complete', 'pour terminer')}</span>
                 </div>
               </div>
 
@@ -305,14 +306,14 @@ export default function Academy() {
                     onClick={startCourseFlow}
                     className="w-full sm:w-auto min-h-[48px] px-6 md:px-8 py-3.5 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-xl shadow-lg transition-all"
                   >
-                    {lang === 'ar' ? 'سجل مجاناً وابدأ الدورة' : 'Enroll & Start Course'}
+                    {t('سجل مجاناً وابدأ الدورة', 'Enroll & Start Course', "S'inscrire et commencer le cours")}
                   </button>
                 ) : (
                   <button
                     type="button"
                     className="w-full sm:w-auto min-h-[48px] px-6 md:px-8 py-3.5 bg-emerald-500 text-white font-bold rounded-xl shadow-lg cursor-default flex items-center justify-center gap-2"
                   >
-                    <CheckCircle size={20} /> {lang === 'ar' ? 'أنت مسجل في الدورة' : 'Enrolled'}
+                    <CheckCircle size={20} /> {t('أنت مسجل في الدورة', 'Enrolled', 'Inscrit')}
                   </button>
                 )}
                 <button
@@ -320,7 +321,7 @@ export default function Academy() {
                   onClick={closeCourse}
                   className="w-full sm:w-auto min-h-[48px] px-6 md:px-8 py-3.5 bg-white/15 hover:bg-white/25 text-white font-bold rounded-xl backdrop-blur-md transition-all"
                 >
-                  {lang === 'ar' ? 'العودة للمقررات' : 'Back to Catalog'}
+                  {t('العودة للمقررات', 'Back to Catalog', 'Retour au catalogue')}
                 </button>
               </div>
             </div>
@@ -352,21 +353,20 @@ export default function Academy() {
             <div className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
               <h2 className="text-xl md:text-2xl font-bold mb-5 text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-4 flex items-center gap-2">
                 <Library className="text-teal-500 shrink-0" />
-                <span>{lang === 'ar' ? 'حول هذه الدورة' : 'About this Course'}</span>
+                <span>{t('حول هذه الدورة', 'About this Course', 'À propos de ce cours')}</span>
               </h2>
               <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-sm sm:text-base md:text-lg mb-6 md:mb-8">
                 {getLocalized(activeCourse, 'longDescription', lang) || getLocalized(activeCourse, 'description', lang)}
               </p>
 
               <h3 className="text-lg md:text-xl font-bold mb-4 text-slate-900 dark:text-white">
-                {lang === 'ar' ? 'ماذا ستتعلم' : 'What you will learn'}
+                {t('ماذا ستتعلم', 'What you will learn', 'Ce que vous allez apprendre')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6">
                 {[
-                  lang === 'ar' ? 'اكتساب مهارات عملية قابلة للتطبيق مباشرة' : 'Gain hands-on practical skills',
-                  lang === 'ar' ? 'بناء مشاريع حقيقية لتعزيز سيرتك الذاتية' : 'Build real-world projects for your resume',
-                  lang === 'ar' ? 'التعلم من خبراء الصناعة' : 'Learn from industry experts',
-                  lang === 'ar' ? 'الحصول على شهادة معتمدة عند الإتمام' : 'Earn a verified certificate upon completion',
+                  t('اكتساب مهارات عملية قابلة للتطبيق مباشرة', 'Gain hands-on practical skills', 'Acquérir des compétences pratiques directement applicables'),
+                  t('بناء مشاريع حقيقية لتعزيز سيرتك الذاتية', 'Build real-world projects for your resume', 'Réaliser des projets concrets pour enrichir votre CV'),
+                  t('التعلم من خبراء الصناعة', 'Learn from industry experts', 'Apprendre auprès d’experts du secteur'),
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-start gap-3 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl">
                     <CheckCircle className="text-teal-500 mt-0.5 shrink-0" size={20} />
@@ -379,16 +379,16 @@ export default function Academy() {
             <div className="text-center py-16 md:py-24 px-4 bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800">
               <Video className="w-14 h-14 text-slate-400 dark:text-slate-600 mx-auto mb-4" />
               <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-2">
-                {lang === 'ar' ? 'الدروس قيد التجهيز' : 'Curriculum is being prepared'}
+                {t('الدروس قيد التجهيز', 'Curriculum is being prepared', 'Le programme est en cours de préparation')}
               </h3>
               <p className="text-sm md:text-base text-slate-600 dark:text-slate-300">
-                {lang === 'ar' ? 'سيتم إضافة محتوى الفيديو قريباً. يرجى العودة لاحقاً.' : 'Video content will be uploaded soon. Please check back later.'}
+                {t('سيتم إضافة محتوى الفيديو قريباً. يرجى العودة لاحقاً.', 'Video content will be uploaded soon. Please check back later.', 'Le contenu vidéo sera bientôt disponible. Revenez plus tard.')}
               </p>
             </div>
           ) : showCourseIntro ? (
             <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 text-center">
               <h2 className="text-2xl md:text-3xl font-bold mb-5 text-slate-900 dark:text-white">
-                {lang === 'ar' ? 'مقدمة التدريب' : 'Course Introduction'}
+                {t('مقدمة التدريب', 'Course Introduction', 'Introduction du cours')}
               </h2>
 
               {activeCourse.courseIntroVideo && (
@@ -413,7 +413,7 @@ export default function Academy() {
                 onClick={() => setShowCourseIntro(false)}
                 className="w-full sm:w-auto min-h-[48px] px-10 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all text-base md:text-lg"
               >
-                {lang === 'ar' ? 'ابدأ الدرس الأول' : 'Start First Lesson'}
+                {t('ابدأ الدرس الأول', 'Start First Lesson', 'Commencer la première leçon')}
               </button>
             </div>
           ) : (
@@ -428,7 +428,7 @@ export default function Academy() {
               <div className="lg:col-span-1">
                 <div className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl p-5 md:p-6 border border-slate-200 dark:border-slate-800 shadow-sm lg:sticky lg:top-24">
                   <h3 className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-slate-900 dark:text-white">
-                    {lang === 'ar' ? 'محتوى الدورة' : 'Course Content'}
+                    {t('محتوى الدورة', 'Course Content', 'Contenu du cours')}
                   </h3>
                   <div className="flex flex-col gap-2.5">
                     {activeCourse.modules.map((mod, idx) => (
@@ -451,7 +451,7 @@ export default function Academy() {
                             <Lock size={18} className="text-slate-400" />
                           )}
                           <span className="font-semibold text-sm">
-                            {lang === 'ar' ? `الدرس ${idx + 1}` : `Lesson ${idx + 1}`}
+                            {t(`الدرس ${idx + 1}`, `Lesson ${idx + 1}`, `Leçon ${idx + 1}`)}
                           </span>
                         </div>
                         {currentModuleIndex > idx && <CheckCircle size={16} className="text-green-500" />}
@@ -475,10 +475,10 @@ export default function Academy() {
         <div className="absolute inset-0 bg-gradient-to-r from-teal-900/80 to-blue-900/80" />
         <div className="max-w-7xl mx-auto relative z-10 text-start md:text-center">
           <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-3 md:mb-6 font-sans tracking-tight leading-tight">
-            {lang === 'ar' ? 'تعلم بلا حدود مع' : 'Learn Without Limits with'} <span className="text-teal-400">GITM</span>
+            {t('تعلم بلا حدود مع', 'Learn Without Limits with', 'Apprenez sans limites avec')} <span className="text-teal-400">GITM</span>
           </h1>
           <p className="text-sm sm:text-base md:text-2xl text-slate-200 max-w-3xl md:mx-auto mb-6 md:mb-10 leading-relaxed">
-            {lang === 'ar' ? 'اكتسب المهارات التي تحتاجها من أفضل الخبراء في التكنولوجيا والأعمال.' : 'Build the skills you need from top experts in technology and business.'}
+            {t('اكتسب المهارات التي تحتاجها من أفضل الخبراء في التكنولوجيا والأعمال.', 'Build the skills you need from top experts in technology and business.', 'Développez les compétences clés auprès d’experts en technologie et en affaires.')}
           </p>
 
           <div className="max-w-2xl md:mx-auto relative flex items-center">
@@ -487,14 +487,14 @@ export default function Academy() {
               type="text"
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-              placeholder={lang === 'ar' ? 'ماذا تريد أن تتعلم اليوم؟' : 'What do you want to learn today?'}
+              placeholder={t('ماذا تريد أن تتعلم اليوم؟', 'What do you want to learn today?', 'Que souhaitez-vous apprendre aujourd’hui ?')}
               className="w-full min-h-[48px] pl-12 pr-24 rtl:pr-12 rtl:pl-24 md:pl-14 md:pr-32 md:rtl:pr-14 md:rtl:pl-32 py-3.5 md:py-5 rounded-full bg-white text-slate-900 placeholder:text-slate-500 focus:outline-none focus:ring-4 focus:ring-teal-500/30 text-base md:text-lg shadow-2xl"
             />
             <button
               type="button"
               className="absolute right-1.5 rtl:right-auto rtl:left-1.5 min-h-[44px] px-4 md:px-6 py-2 md:py-3 bg-teal-500 hover:bg-teal-600 text-white font-bold text-sm rounded-full transition-colors"
             >
-              {lang === 'ar' ? 'بحث' : 'Search'}
+              {t('بحث', 'Search', 'Rechercher')}
             </button>
           </div>
         </div>
@@ -506,7 +506,7 @@ export default function Academy() {
         <div className="lg:hidden space-y-3">
           <div>
             <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mb-2">
-              {lang === 'ar' ? 'التخصصات' : 'Categories'}
+              {t('التخصصات', 'Categories', 'Catégories')}
             </p>
             <div className="filter-scroll pb-1">
               {categories.map(cat => (
@@ -529,7 +529,7 @@ export default function Academy() {
           {activeTab === 'courses' ? (
             <div>
               <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mb-2">
-                {lang === 'ar' ? 'المستوى' : 'Level'}
+                {t('المستوى', 'Level', 'Niveau')}
               </p>
               <div className="filter-scroll pb-1">
                 {levels.map(lvl => (
@@ -551,7 +551,7 @@ export default function Academy() {
           ) : (
             <div>
               <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mb-2">
-                {lang === 'ar' ? 'لغة الكتاب' : 'Book Language'}
+                {t('لغة الكتاب', 'Book Language', 'Langue du livre')}
               </p>
               <div className="filter-scroll pb-1">
                 {bookLangs.map(bl => (
@@ -565,7 +565,7 @@ export default function Academy() {
                         : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700'
                     }`}
                   >
-                    {lang === 'ar' ? bl.labelAr : bl.labelEn}
+                    {lang === 'ar' ? bl.labelAr : lang === 'fr' ? bl.labelFr : bl.labelEn}
                   </button>
                 ))}
               </div>
@@ -578,12 +578,12 @@ export default function Academy() {
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm sticky top-24">
             <div className="flex items-center gap-2 mb-6 text-slate-800 dark:text-white">
               <Filter size={20} />
-              <h3 className="font-bold text-lg">{lang === 'ar' ? 'تصفية النتائج' : 'Filters'}</h3>
+              <h3 className="font-bold text-lg">{t('تصفية النتائج', 'Filters', 'Filtres')}</h3>
             </div>
 
             <div className="mb-8">
               <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-                {lang === 'ar' ? 'التخصصات' : 'Categories'}
+                {t('التخصصات', 'Categories', 'Catégories')}
               </h4>
               <div className="flex flex-col gap-2">
                 {categories.map(cat => (
@@ -606,7 +606,7 @@ export default function Academy() {
             {activeTab === 'courses' ? (
               <div>
                 <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-                  {lang === 'ar' ? 'المستوى' : 'Level'}
+                  {t('المستوى', 'Level', 'Niveau')}
                 </h4>
                 <div className="flex flex-col gap-2">
                   {levels.map(lvl => (
@@ -628,7 +628,7 @@ export default function Academy() {
             ) : (
               <div>
                 <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-                  {lang === 'ar' ? 'لغة الكتاب' : 'Book Language'}
+                  {t('لغة الكتاب', 'Book Language', 'Langue du livre')}
                 </h4>
                 <div className="flex flex-col gap-2">
                   {bookLangs.map(bl => (
@@ -641,7 +641,7 @@ export default function Academy() {
                         className="w-4 h-4 text-indigo-500 focus:ring-indigo-500 border-gray-300"
                       />
                       <span className={`text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors ${selectedBookLang === bl.value ? 'font-bold text-indigo-600 dark:text-indigo-400' : ''}`}>
-                        {lang === 'ar' ? bl.labelAr : bl.labelEn}
+                        {lang === 'ar' ? bl.labelAr : lang === 'fr' ? bl.labelFr : bl.labelEn}
                       </span>
                     </label>
                   ))}
@@ -657,8 +657,8 @@ export default function Academy() {
             <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white flex flex-wrap items-baseline gap-2">
               <span>
                 {activeTab === 'courses'
-                  ? (lang === 'ar' ? 'الدورات المتاحة' : 'Available Courses')
-                  : (lang === 'ar' ? 'الكتب المتاحة' : 'Available Books')}
+                  ? t('الدورات المتاحة', 'Available Courses', 'Cours disponibles')
+                  : t('الكتب المتاحة', 'Available Books', 'Livres disponibles')}
               </span>
               <span className="text-slate-600 dark:text-slate-400 text-sm font-normal">
                 ({activeCount} {countLabel})
@@ -677,7 +677,7 @@ export default function Academy() {
                 }`}
               >
                 <PlayCircle size={16} />
-                <span>{lang === 'ar' ? 'الدورات' : 'Courses'}</span>
+                <span>{t('الدورات', 'Courses', 'Cours')}</span>
               </button>
               <button
                 type="button"
@@ -689,7 +689,7 @@ export default function Academy() {
                 }`}
               >
                 <BookOpen size={16} />
-                <span>{lang === 'ar' ? 'المكتبة والكتب' : 'Library & Books'}</span>
+                <span>{t('المكتبة والكتب', 'Library & Books', 'Bibliothèque & Livres')}</span>
               </button>
             </div>
           </div>
@@ -713,14 +713,14 @@ export default function Academy() {
               <div className="text-center py-14 px-4 bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-slate-800">
                 <BookOpen className="w-12 h-12 text-slate-400 mx-auto mb-3" />
                 <p className="text-slate-700 dark:text-slate-300 text-base md:text-lg font-medium">
-                  {lang === 'ar' ? 'لا توجد دورات مطابقة للفلتر.' : 'No courses match your filters.'}
+                  {t('لا توجد دورات مطابقة للفلتر.', 'No courses match your filters.', 'Aucun cours ne correspond à vos filtres.')}
                 </p>
                 <button
                   type="button"
                   onClick={() => { setSelectedCategory('All'); setSelectedLevel('All'); setSearchQuery(''); }}
                   className="mt-4 min-h-[44px] px-5 py-2 rounded-xl bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 font-bold text-sm hover:bg-teal-100 transition-colors"
                 >
-                  {lang === 'ar' ? 'مسح الفلاتر' : 'Clear Filters'}
+                  {t('مسح الفلاتر', 'Clear Filters', 'Réinitialiser les filtres')}
                 </button>
               </div>
             ) : (
@@ -770,7 +770,7 @@ export default function Academy() {
                               {course.modules?.length > 0 && (
                                 <div className="flex items-center gap-1.5 font-medium">
                                   <PlayCircle size={14} className="text-teal-600 dark:text-teal-400 shrink-0" />
-                                  <span>{course.modules.length} {lang === 'ar' ? 'دروس' : 'lessons'}</span>
+                                  <span>{course.modules.length} {t('دروس', 'lessons', 'leçons')}</span>
                                 </div>
                               )}
                             </div>
@@ -784,7 +784,7 @@ export default function Academy() {
                               className="w-full min-h-[48px] px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm flex items-center justify-center gap-2 transition-colors"
                             >
                               <PlayCircle size={17} />
-                              <span>{lang === 'ar' ? 'ابدأ الدورة' : 'Start Course'}</span>
+                              <span>{t('ابدأ الدورة', 'Start Course', 'Commencer le cours')}</span>
                             </button>
                           </div>
                         </motion.article>
@@ -820,10 +820,10 @@ export default function Academy() {
                   <div className="text-center py-14 px-4 bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-slate-800">
                     <Library className="w-12 h-12 text-slate-400 mx-auto mb-3" />
                     <h3 className="text-base md:text-lg font-bold text-slate-900 dark:text-white mb-1">
-                      {lang === 'ar' ? 'المكتبة فارغة حالياً' : 'No books found right now'}
+                      {t('المكتبة فارغة حالياً', 'No books found right now', 'Aucun livre trouvé pour le moment')}
                     </h3>
                     <p className="text-sm text-slate-600 dark:text-slate-300">
-                      {lang === 'ar' ? 'جرّب تغيير لغة البحث أو الكلمات المفتاحية.' : 'Try adjusting the search keywords or language filter.'}
+                      {t('جرّب تغيير لغة البحث أو الكلمات المفتاحية.', 'Try adjusting the search keywords or language filter.', 'Essayez d’ajuster les mots-clés ou le filtre de langue.')}
                     </p>
                   </div>
                 ) : (

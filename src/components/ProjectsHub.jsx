@@ -1,6 +1,6 @@
 import {projectField, projectCategory} from '../utils/projectPresentation';
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { AlertCircle, ArrowRight, Cpu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -56,6 +56,7 @@ const ProjectCardImage = ({ src, fallbackSrc, alt }) => {
 
 const ProjectsHub = () => {
   const { lang } = useLanguage();
+  const location = useLocation();
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -295,7 +296,7 @@ const ProjectsHub = () => {
                     exit={{ opacity: 0, scale: 0.96 }}
                     transition={{ duration: 0.3 }}
                     key={proj.id}
-                    onClick={() => navigate(`/project-details/${proj.id}`)}
+                    onClick={() => navigate(`/project-details/${proj.id}`, { state: { from: `${location.pathname}${location.search}` } })}
                     className="group rounded-2xl md:rounded-3xl overflow-hidden cursor-pointer bg-white dark:bg-gitm-cardDark border border-slate-200 dark:border-gitm-borderDark shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
                   >
                     {/* 16:9 Cover Image with Unified Fallback & Skeleton */}
@@ -329,7 +330,7 @@ const ProjectsHub = () => {
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/project-details/${proj.id}`);
+                          navigate(`/project-details/${proj.id}`, { state: { from: `${location.pathname}${location.search}` } });
                         }}
                         className="w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-gitm-blue text-slate-900 dark:text-white group-hover:text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors"
                       >
