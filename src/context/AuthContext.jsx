@@ -7,6 +7,7 @@ import {
   onAuthStateChanged 
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import safeStorage from '../utils/safeStorage';
 
 const AuthContext = createContext();
 
@@ -50,7 +51,7 @@ export function AuthProvider({ children }) {
   }
 
   function logout() {
-    localStorage.removeItem('gitm_user');
+    safeStorage.removeItem('gitm_user');
     return signOut(auth);
   }
 
@@ -77,9 +78,14 @@ export function AuthProvider({ children }) {
           unsubscribeDoc();
           unsubscribeDoc = null;
         }
-        const saved = localStorage.getItem('gitm_user');
+        const saved = safeStorage.getItem('gitm_user');
         if (saved) {
-          setCurrentUser(JSON.parse(saved));
+          try {
+            const parsed = JSON.parse(saved);
+            setCurrentUser(parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null);
+          } catch {
+            setCurrentUser(null);
+          }
         } else {
           setCurrentUser(null);
         }
@@ -97,7 +103,7 @@ export function AuthProvider({ children }) {
 
   const demoLogin = (email, role, name) => {
     const newUser = { email, role, name, badges: [] };
-    localStorage.setItem('gitm_user', JSON.stringify(newUser));
+    safeStorage.setItem('gitm_user', JSON.stringify(newUser));
     setCurrentUser(newUser);
   };
 

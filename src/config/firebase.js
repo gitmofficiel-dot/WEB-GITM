@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, initializeAuth, inMemoryPersistence } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -14,8 +14,54 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-Z9JEFBG3GZ"
 };
 
+function probeStorage(getStore) {
+  let store = null;
+  let probeKey = null;
+  let removeAttempted = false;
+  try {
+    store = getStore();
+    if (
+      !store ||
+      typeof store.getItem !== "function" ||
+      typeof store.setItem !== "function" ||
+      typeof store.removeItem !== "function"
+    ) {
+      return false;
+    }
+    probeKey = `__gitm_storage_probe_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    store.setItem(probeKey, "1");
+    const value = store.getItem(probeKey);
+    removeAttempted = true;
+    store.removeItem(probeKey);
+    return value === "1";
+  } catch {
+    return false;
+  } finally {
+    if (store && probeKey && !removeAttempted) {
+      try {
+        store.removeItem(probeKey);
+      } catch {
+        // Ignore cleanup errors on restricted storage
+      }
+    }
+  }
+}
+
+function isBrowserStorageAvailable() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  return (
+    probeStorage(() => window.localStorage) &&
+    probeStorage(() => window.sessionStorage)
+  );
+}
+
 export const app = initializeApp(firebaseConfig);
 export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 export const db = getFirestore(app);
-export const auth = getAuth(app);
+export const auth =
+  typeof window === "undefined" || isBrowserStorageAvailable()
+    ? getAuth(app)
+    : initializeAuth(app, { persistence: inMemoryPersistence });
 export const storage = getStorage(app);

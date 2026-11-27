@@ -1,5 +1,3 @@
-import emailjs from '@emailjs/browser';
-
 /**
  * Utility for sending email notifications via EmailJS.
  */
@@ -21,6 +19,8 @@ export const sendEmailNotification = async (templateId, templateParams) => {
   }
 
   try {
+    const emailjsModule = await import('@emailjs/browser');
+    const emailjs = emailjsModule.default || emailjsModule;
     const res = await emailjs.send(serviceId, templateId, templateParams, publicKey);
     return res;
   } catch (error) {
